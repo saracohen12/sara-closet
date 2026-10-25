@@ -38,7 +38,7 @@ function load(){if(SUB)return;
  try{if(typeof DB!='undefined'&&DB){let first=true;SUB=DB.collection(LK).onSnapshot(sn=>{const a=[];sn.docs.forEach(d=>{const v=d.data();if(v)a.push(Object.assign({},v,{id:d.id}))});
    // checks saved in this browser before the db was there go up once
    if(first){first=false;const have=new Set(a.map(x=>x.id)),up=lsGet().filter(x=>x&&x.id&&!have.has(x.id));if(up.length){up.forEach(x=>{a.push(x);const {id,...v}=x;DB.collection(LK).doc(id).set(v).catch(e=>ERR('up',e))});try{localStorage.removeItem(LK)}catch(_){}}}
-   ARC=a;sortA();render();homeBtn()},e=>ERR('snap',e));return}}catch(e){ERR('load',e)}
+   ARC=a;sortA();const f=document.activeElement;if(!(W&&f&&W.contains(f)&&/^(TEXTAREA|INPUT|SELECT)$/.test(f.tagName)))render();homeBtn()},e=>ERR('snap',e));return}}catch(e){ERR('load',e)}
  if(!LOCAL){LOCAL=true;ARC=lsGet();sortA()}}
 [1200,4000,9000].forEach(ms=>setTimeout(()=>{load();homeBtn()},ms));
 async function put(r){const i=ARC.findIndex(x=>x.id==r.id);if(i>=0)ARC[i]=r;else ARC.unshift(r);sortA();
@@ -175,6 +175,7 @@ function cmpView(){const L=[...CMP].map(rec).filter(Boolean).slice(0,3);
  ${row('דומים בארון',r=>r.similar&&r.similar.length?`<b class="w187">${r.similar.length}</b>`:'<span class="ok187">אין</span>')}${row('לוקים מהארון',r=>String((r.looks||[]).length))}
  ${row('מידה',r=>es(r.size||'–'))}${row('לכל לבישה',r=>r.price&&r.wears?money(r.price/r.wears):'–')}${row('צניעות',r=>r.modest?'⚠':'✓')}${row('החלטתי',r=>sPill(r.st))}</tbody></table></div>`}
 function render(){if(!W||!W.open)return;const b=W.querySelector('.w187b');const y=b.scrollTop;
+ const g=k=>W.querySelector(k);if(g('#t187')){F.txt=g('#t187').value;F.price=g('#pr187').value;F.store=g('#so187').value}
  $a('.w187t button',W).forEach(x=>{x.setAttribute('aria-selected',x.dataset.t==TB);const k=x.querySelector('b');if(k){const v=x.dataset.t=='arc'?ARC.length:0;k.textContent=v||'';k.hidden=!v}});
  const r=CUR&&rec(CUR);
  b.innerHTML=BUSY?`<div class="b187" role="status" aria-live="polite"><i aria-hidden="true"></i><span>${es(BUSY)}</span><small>זה לוקח בערך חצי דקה</small></div>`:VIEW=='cmp'?cmpView():r?resView(r):TB=='arc'?arcView():formView();
