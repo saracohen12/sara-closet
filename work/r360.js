@@ -23,7 +23,7 @@ const CLASH={d:['b','s'],b:['d'],s:['d']};   // a dress takes the top and the sk
 // see-through lace: x<k>u<view> is what shows through it (the arm as GPT drew it); with a base shirt it is tinted. value = its mean luminance
 const LACE={d:149};
 const CAM=[{k:'black',n:'שחור',c:[24,24,26]},{k:'green',n:'ירוק כהה',c:[28,52,40]},{k:'navy',n:'כחול כהה',c:[30,38,66]},{k:'nude',n:'בז׳',c:[206,182,158]},{k:'white',n:'לבן',c:[242,240,234]},{k:'',n:'בלי',c:null}];
-const HEADS=[{k:'c',n:'הכיסוי הבסיסי',src:'a8/t_c.webp'},{k:'w',n:'פאה (בתיקון)',src:'a8/t_w.webp'}];  // the wig is pasted from a sheet drawn at other angles (Sara 21:13 "לא טוב"); waiting for her GPT sheet of the wig on this doll
+const HEADS=[{k:'c',n:'הכיסוי הבסיסי',src:'a8/t_c.webp'},{k:'w',n:'פאה',src:'a8/t_w.webp'}];  // v184: the wig from her 8-angle sheet (25/10 22:17), whole head incl. face, on a head-less doll
 Object.entries(READY).forEach(([id,r])=>{if(r.head)HEADS.push({k:r.k[0],id})});
 const CATS=[['all','הכל'],['ready','✓ כבר על האווטאר'],['dresses','שמלות'],['tops','חולצות'],['sweaters','סוודרים'],['skirts','חצאיות'],['sets','סטים'],['outer','ז׳קטים ומעילים'],['scarves','כיסויי ראש'],['shoes','נעליים'],['belts','חגורות'],['jewelry','תכשיטים'],['bags','תיקים']];
 const CATIDS=new Set(CATS.slice(2).map(c=>c[0]));
@@ -88,7 +88,8 @@ function bgCanvas(k){if(BGC[k])return BGC[k];const b=bgList().find(x=>x.k==k);if
   const i=await new Promise(r=>{const m=new Image();m.onload=()=>r(m);m.onerror=()=>r(null);m.src=u});if(tmp)setTimeout(()=>URL.revokeObjectURL(tmp),2000);
   if(!i||!i.naturalWidth){delete BGC[k];return null}
   const s=Math.max(W/i.naturalWidth,H/i.naturalHeight),w=i.naturalWidth*s,h=i.naturalHeight*s;x.drawImage(i,(W-w)/2,H-h,w,h);return c})()}
-async function paint(cv,v,s){const bg=s.bg||'';let base=await im((bg?'c':'n')+(v+1));if(!base&&bg)base=await im('n'+(v+1));if(!base)return false;
+async function paint(cv,v,s){const bg=s.bg||'';const hw=s.head=='w'?'h':'';   // v184: with the wig the doll's own head is taken away (nh/ch), the wig layer brings the whole head
+ let base=await im((bg?'c':'n')+hw+(v+1));if(!base&&hw)base=await im((bg?'c':'n')+(v+1));if(!base&&bg)base=await im('n'+(v+1));if(!base)return false;
  const L=layersFor(v,s);const [ms,bc]=await Promise.all([Promise.all(L.map(l=>im(l.s))),bg?bgCanvas(bg):null]);
  const c=cv.getContext('2d');if(cv.width!=base.naturalWidth){cv.width=base.naturalWidth;cv.height=base.naturalHeight}
  c.clearRect(0,0,cv.width,cv.height);

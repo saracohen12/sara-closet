@@ -173,7 +173,7 @@ html[data-d180] .toast{background:var(--z-pri)!important;color:var(--z-pri-ink)!
 html[data-d180] .ctrl{background:var(--z-bar)!important;border-color:var(--z-line)!important}
 
 /* ---------- night: dialogs and inputs stay light (see the night variables above) ---------- */
-html[data-d180=night] dialog:not(#r360):not(#zpick):not(#c180p):not(#r3mk):not(#r3cmp):not(#r3sh):not(#a11y):not(#gs183){--bg:#f7f1ea;--glass:rgba(255,250,244,.94);--glass2:#fff;color-scheme:light;color:var(--fg)}
+html[data-d180=night] dialog:not(#r360):not(#zpick):not(#c180p):not(#r3mk):not(#r3cmp):not(#r3sh):not(#a11y):not(#gs183):not(#col184){--bg:#f7f1ea;--glass:rgba(255,250,244,.94);--glass2:#fff;color-scheme:light;color:var(--fg)}
 
 /* ---------- the chooser ---------- */
 #zpick{width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 24px);padding:0;border:0;border-radius:28px;background:var(--z-solid,#fff);color:var(--z-ink,#222);box-shadow:0 30px 80px rgba(0,0,0,.35);overflow:auto;font-family:var(--z-body,system-ui)}

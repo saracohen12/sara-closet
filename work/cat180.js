@@ -38,7 +38,8 @@ function paint(){const C=cov();const ids=[];
  document.querySelectorAll('.h9cat[data-h9cat]').forEach(b=>{const sid=b.dataset.h9cat.slice(1);const id=C[sid];b.classList.toggle('c180mine',!!id);if(!id||!D[id])return;
   let im=b.querySelector('.h9im img');if(!im){const sp=b.querySelector('.h9im');if(!sp)return;sp.classList.remove('h9e');sp.innerHTML='<img alt="" loading="lazy">';im=sp.firstChild}
   if(im.dataset.th!=id){im.dataset.th=id;im.src=url(id);ids.push(id)}});
- document.querySelectorAll('#cl163 [data-cl163]').forEach(b=>{const id=C[b.dataset.cl163];b.classList.toggle('c180mine',!!id);if(!id||!D[id])return;const ph=b.querySelector('.ph');const u=url(id);
+ const k184=(document.getElementById('cl163')||{dataset:{}}).dataset.col||'';  // v184: a colour is chosen → her picture only if it is that colour
+ document.querySelectorAll('#cl163 [data-cl163]').forEach(b=>{let id=C[b.dataset.cl163];if(id&&k184){const cd=document.querySelector(`.card[data-id="${id}"]`);if(!cd||cd.dataset.c!=k184)id=''}b.classList.toggle('c180mine',!!id);if(!id||!D[id])return;const ph=b.querySelector('.ph');const u=url(id);
   if(ph&&u&&ph.dataset.c180!=id+u){ph.dataset.c180=id+u;ph.style.backgroundImage=`url('${u}')`;if(u==TPH)ids.push(id)}});
  if(ids.length)loadTh(ids)}
 setInterval(paint,1500);
