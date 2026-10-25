@@ -1,0 +1,66 @@
+// ---- v53 (2026-10-21): תכשיטים על האווטאר — GPT draws the set as 3 panels (necklace / one earring / bracelet); the site cuts them and puts
+// the necklace at the neck, the earring on BOTH ears (mirrored for the second ear) and the bracelet on the wrist, in every pose of the new avatar
+const JWPARTS=[['neck','שרשרת'],['ear','עגיל'],['brac','צמיד']];
+// landmarks in the 399×1365 avatar frame: ear lobes, neck (centre x, top y, width), wrists
+const JWL={front:{ear:[[148,185],[255,185]],neck:[200,290,96],wrist:[[52,688],[348,688]]},side:{ear:[[215,185]]},half:{ear:[[280,185]],neck:[215,290,80]},hip:{ear:[[127,395],[202,395]],neck:[161,468,70]},back:{}};
+const JWPROMPT=`מצורפת תמונה של תכשיט (או סט תכשיטים) שקניתי.
+צרי תמונה אחת רחבה עם 3 חלקים שווים זה לצד זה, מופרדים בקו לבן דק, על רקע אפור בהיר חלק ואחיד, בסדר הזה בדיוק:
+1) שרשרת  2) עגיל אחד  3) צמיד.
+בכל חלק מופיע רק החלק הזה מהתכשיט שבתמונה, בלי גוף, בלי צוואר, בלי אוזן, בלי יד ואצבעות, בלי קופסה, בלי צל, בלי טקסט.
+אם חלק לא קיים בסט (למשל אין צמיד) – להשאיר את החלק ריק, רק הרקע האפור.
+שרשרת: מלפנים, כמו שהיא תלויה על צוואר: בצורת U פתוחה, התליון למטה באמצע, מהסוגר ועד התליון.
+עגיל: עגיל אחד בלבד, מלפנים, תלוי ישר כלפי מטה, החלק שנכנס לאוזן למעלה.
+צמיד: מלפנים, כמו על פרק יד (עיגול או קשת).
+לא לשנות צבע, צורה, חומר, אבנים או אורך. גודל יחסי נכון: השרשרת גדולה מהעגיל, העגיל גדול מהצמיד רק אם כך באמת.
+כל חלק ממלא את גובה החלק שלו אבל לא נוגע בקווים הלבנים.`;
+function jwOf(id){const j=(IT[id]||{}).jw;return j&&(j.neck||j.ear||j.brac)?j:null}
+function jwUrl(j,k){return (j.u&&j.u[k])||('/_blob/'+j[k])}
+function jwSlice(im){const rd=tieRead(im);const {d,W,H}=rd;const grp=tieThinGroups(d,W,H);const xs=[0];for(const g of grp){xs.push(g[0],g[1]+1)}xs.push(W);let b=[];for(let i=0;i<xs.length;i+=2){if(xs[i+1]-xs[i]>W*.08)b.push([xs[i],xs[i+1]])}
+ if(b.length!=3){const w=W/3;b=[0,1,2].map(i=>[Math.round(i*w),Math.round((i+1)*w)])}
+ return b.map(([x0,x1])=>{try{const c=tieCutPanel(d,W,H,x0+6,x1-6,0);if(!c||c.w<8||c.h<8||c.w*c.h<(x1-x0)*H*.002)return null;return p5gClean(c)}catch(_){return null}})}
+function jwSt(id,k,msg){UPST[id+'_jw']=[k,msg];const s=document.querySelector(`[data-imgrow="${id}"] .jwbox .gst`);if(!s)return setSt(id,k,msg);s.className='gst st2 '+k;s.textContent=msg}
+async function upJw(id,file){if(UPST[id]=='busy'){toast('רגע, עוד שומרת');return}let a=null;try{a=await claude.use('assets')}catch(_){}if(!a){jwSt(id,'err','העלאת תמונות לא זמינה כאן');return}
+ UPST[id]='busy';jwSt(id,'busy','חותכת לשרשרת / עגיל / צמיד ומורידה רקע…');let cuts;try{cuts=jwSlice(await tieLoadImg(file))}catch(_){UPST[id]='';jwSt(id,'err','לא הצלחתי לקרוא את התמונה');return}
+ if(!cuts.some(Boolean)){UPST[id]='';jwSt(id,'err','לא מצאתי תכשיט בתמונה. צריך תמונה רחבה עם 3 חלקים על רקע אפור אחיד');return}
+ const j={u:{},a:{},t:Date.now()};
+ try{for(let i=0;i<3;i++){const c=cuts[i];if(!c)continue;const k=JWPARTS[i][0];jwSt(id,'busy',`שומרת ${JWPARTS[i][1]}…`);const r=await a.upload(await tieBlob(c.canvas));j[k]=r.id;if(r.url)j.u[k]=r.url;j.a[k]=Math.round(c.w/c.h*100)/100}
+  await putItem(id,{jw:j});UPST[id]='';jwSt(id,'ok','✓ נשמר: '+JWPARTS.filter(([k])=>j[k]).map(([,n])=>n).join(' + ')+'. בבניית הלוק כל חלק יושב במקומו');toast('✓ התכשיט מוכן לאווטאר');renderImgRow(id)}
+ catch(e){UPST[id]='';jwSt(id,'err','לא הצלחתי לשמור. נסי שוב');renderImgRow(id)}}
+window.upJw=upJw;
+function jwHTML(id){const j=jwOf(id);const [sk,sm]=UPST[id+'_jw']||['',''];
+ return `<span class="gst st2 ${sk}">${esc(sm)}</span>
+ ${j?`<div class="p5r">${JWPARTS.map(([k,n])=>j[k]?`<figure><img src="${jwUrl(j,k)}" alt="" loading="lazy"><figcaption>${n}</figcaption></figure>`:'').join('')}</div>`:''}
+ <div class="ib">${j?`<button class="go" data-jwtry="${id}">👗 על הדמות</button>`:''}<button class="${j?'':'go'}" data-upimg="${id}" data-upm="jw">${j?'🔄 החליפי':'📥 העלי מ-GPT (3 חלקים)'}</button><button data-jwcopy="1">📋 פרומפט ל-GPT</button>${j?`<button data-jwdel="${id}">🗑 מחקי</button>`:''}</div>
+ <small class="ghint">GPT מצייר שרשרת, עגיל וצמיד בנפרד. האתר שם שרשרת בצוואר, עגיל בכל אוזן וצמיד ביד</small>`}
+{const _rr=renderImgRow;renderImgRow=function(id){_rr(id);const el=document.querySelector(`[data-imgrow="${id}"]`);if(!el)return;let box=el.querySelector('.jwbox');
+ let ok=false;try{ok=curCat(id)=='jewelry'}catch(_){}if(!ok){if(box)box.remove();return}
+ if(!box){const dm=el.querySelector('details.dmore');const h='<details class="jwbox" open><summary>💎 התכשיט על האווטאר</summary><div class="gslot"></div></details>';if(dm)dm.insertAdjacentHTML('beforebegin',h);else el.insertAdjacentHTML('beforeend',h);box=el.querySelector('.jwbox')}
+ box.querySelector('.gslot').innerHTML=jwHTML(id)}}
+document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.closest('[data-jwcopy],[data-jwtry],[data-jwdel]');if(!t)return;e.preventDefault();e.stopPropagation();
+ if(t.dataset.jwcopy){copyTxt(JWPROMPT).then(()=>toast('✓ הפרומפט הועתק. הדביקי ב-GPT עם תמונת התכשיט')).catch(()=>toast('לא הצלחתי להעתיק'));return}
+ if(t.dataset.jwtry){const id=t.dataset.jwtry;await openStudio(null,{jewelry:id});return}
+ if(t.dataset.jwdel){const id=t.dataset.jwdel;if(!sure(t,'🗑 בטוח? לחצי שוב'))return;await putItem(id,{jw:{__delete__:true}});toast('נמחק');renderImgRow(id)}},true);
+// upload routing (the overlay input in the button)
+{const _ru=routeUp;routeUp=async function(id,f,mode){if(mode=='jw')return upJw(id,f);return _ru(id,f,mode)}}
+// studio: parts instead of the flat picture (new avatar only)
+const JWZ={neck:51,ear:55,brac:51};
+{const _si=stageInner;stageInner=async function(S,opt={}){let html=await _si(S,opt);if((S.avbase||'long')!='p5')return html;const id=S.items.jewelry;const j=id&&jwOf(id);if(!j)return html;
+ const tf=S.tf.jewelry||{};if(tf.hidden&&!opt.edit)return html;const v=S.view||'front';const L=JWL[v]||{};const on=Object.assign({neck:1,ear:1,brac:1},tf.jw||{});
+ html=html.replace(/<img class="sl[^"]*" data-slot="jewelry"[^>]*>/g,'');const px=x=>Math.round(x/399*1000)/10,py=y=>Math.round(y/1365*1000)/10;const sc=(tf.jws||1);let add='';
+ const img=(k,x,y,w,mir)=>`<img class="sl jwp${opt.edit&&SSEL=='jewelry'?' sel':''}" data-slot="jewelry" data-part="${k}" src="${jwUrl(j,k)}" style="left:${px(x)}%;top:${py(y)}%;width:${px(w*sc)}%;z-index:${JWZ[k.replace(/\d/,'')]};transform:translate(-50%,0)${mir?' scaleX(-1)':''}" alt="" draggable="false">`;
+ if(j.neck&&on.neck&&L.neck){const [cx,y,w]=L.neck;add+=img('neck',cx,y,w)}
+ if(j.ear&&on.ear&&L.ear){const h=64,w=h*((j.a&&j.a.ear)||.4);L.ear.forEach(([x,y],i)=>{add+=img('ear'+i,x,y,w,i==1)})}
+ if(j.brac&&on.brac&&L.wrist){const w=46;add+=img('brac',L.wrist[0][0],L.wrist[0][1],w)}
+ return stageAdd(html,add)}}
+// bottom panel: which parts to wear + size
+{const _ps=paintSel;paintSel=function(){_ps();const c=$('#ssel');if(!c||!ST||SSEL!='jewelry'||(ST.avbase||'long')!='p5')return;const id=ST.items.jewelry;const j=id&&jwOf(id);if(!j)return;const tf=ST.tf.jewelry||{};const on=Object.assign({neck:1,ear:1,brac:1},tf.jw||{});
+ c.insertAdjacentHTML('beforeend',`<div class="lpics jwt"><span>💎 מה ללבוש:</span>${JWPARTS.filter(([k])=>j[k]).map(([k,n])=>`<button data-jwt="${k}" aria-pressed="${!!on[k]}">${n}</button>`).join('')}<button data-jws="-1">➖ קטן</button><button data-jws="1">➕ גדול</button></div>`)}}
+document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('#ssel [data-jwt],#ssel [data-jws]');if(!b||!ST||!ST.items.jewelry)return;e.preventDefault();e.stopPropagation();pushH();const tf=ST.tf.jewelry=ST.tf.jewelry||{};
+ if(b.dataset.jwt){tf.jw=Object.assign({neck:1,ear:1,brac:1},tf.jw||{});tf.jw[b.dataset.jwt]=tf.jw[b.dataset.jwt]?0:1}else{tf.jws=Math.max(.5,Math.min(2,(tf.jws||1)+(+b.dataset.jws)*.15))}
+ const keep=SSEL;await drawStudio();SSEL=keep;paintSel()},true);
+// readiness dot: a jewelry item is "ready" when its parts exist
+{const _av=avStat;avStat=function(id){try{if(curCat(id)=='jewelry'){const it=IT[id]||{};if(it.av)return it.av;return jwOf(id)?'ok':'no'}}catch(_){}return _av(id)};window.avStat=avStat}
+// ---- v53: warn when a worn garment has no cut-out yet (the raw product photo, model included, is what shows)
+async function isRawLayer(id){const it=IT[id]||{},gm=(window.GPTM||{})[id]||{};if(p5gOf(id)||gm.f||it.cutimg)return false;if(it.img)return true;try{return !(await getCut(id))}catch(_){return true}}
+{const _ds=drawStudio;drawStudio=async function(){const r=await _ds.apply(this,arguments);try{if(!ST)return r;const st=$('#sstage');if(!st)return r;const raw=[];for(const [slot,id] of Object.entries(ST.items)){if(!id||!D[id]||!MAINSL.includes(slot)||(ST.tf[slot]||{}).hidden)continue;if(await isRawLayer(id))raw.push(id)}
+ st.querySelectorAll('.rawnote').forEach(e=>e.remove());if(raw.length&&!st.querySelector('.p5note:not(.rawnote)'))st.insertAdjacentHTML('beforeend',`<p class="p5note rawnote">⚠️ ${esc(D[raw[0]].short.slice(0,24))}: אין עדיין גזירה, זו התמונה המקורית. בחלון הבגד: 📥 העלי בגד בלבד – 5 תנוחות</p>`)}catch(_){}return r}}

@@ -1,0 +1,16 @@
+/* ===== v84: phone round */
+.nx83{flex-wrap:wrap;align-items:center}
+.sz84{display:inline-flex;align-items:center;gap:6px;margin-inline:auto}
+.sz84 b{font-size:.8rem;font-weight:600;color:var(--muted)}
+.sz84 button{font:inherit;font-size:1rem;width:44px;height:38px;padding:0;border:1px solid var(--line);background:#fff;color:var(--fg);border-radius:var(--pill,999px);cursor:pointer;display:grid;place-items:center}
+#sstage{touch-action:none}
+/* studio "⋯ עוד" menu: the menu is a scrolling column – its buttons were squeezed to 43px, so each title + line of text
+   spilled over the next button and a tap opened the wrong screen */
+html.d73 #studio .smenu>button,html.d73 #studio .avbl>button{flex:0 0 auto!important;height:auto!important;min-height:50px!important;padding:8px 16px!important;border-radius:var(--r2,18px)!important;justify-content:center;gap:1px!important}
+/* side index (v83): only while scrolling, smaller, never on top of a card when hidden */
+#ix83{visibility:hidden;pointer-events:none;padding:4px 2px!important;background:rgba(255,255,255,.7)!important}
+#ix83.on{visibility:visible;pointer-events:auto}
+#ix83 button{font-size:.62rem!important;padding:4px 3px!important;max-width:40px!important}
+/* search: room for 🎤 and ✕ so they do not sit on the text */
+html.d73.d78 #q{padding-inline-end:84px!important}
+.mic83{inset-inline-end:44px!important;width:32px!important;height:32px!important;font-size:.9rem!important;z-index:2}

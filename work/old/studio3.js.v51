@@ -1,0 +1,76 @@
+// ---- studio3 (v35): zoom in/out/reset, free size, picture per layer, turntable (360°), dress+top together, tidy bottom panel
+const S3V=1;
+// 1) background removal also for photos Sara uploaded herself (unless "עם רקע")
+function cutSafe(u){return Promise.race([cutBg(u),new Promise(r=>setTimeout(()=>r(u),5000))])}
+function picsOf(id){const it=IT[id]||{};const gm=GPTM[id]||{};const L=[{k:'main',n:'ראשית'}];
+ (it.pics||[]).forEach(p=>L.push({k:p.id,n:p.k||'גב',u:'/_blob/'+p.id}));
+ if(it.cutback)L.push({k:it.cutback,n:'גב (GPT)',u:'/_blob/'+it.cutback});else if(gm.b)L.push({k:'gptb',n:'גב (GPT)',u:gm.b});
+ return L}
+{const _so=srcOf;srcOf=async function(slot,id,tf){const it=IT[id]||{};const gm=GPTM[id]||{};
+ if(tf&&tf.pic&&!(tf&&tf.raw)){const p=picsOf(id).find(x=>x.k==tf.pic);if(p&&p.u)return p.k=='gptb'?p.u:await cutSafe(p.u)}
+ if(tf&&tf.pic&&tf.raw){const p=picsOf(id).find(x=>x.k==tf.pic);if(p&&p.u)return p.u}
+ if(ST&&ST.view=='back'&&!(tf&&tf.raw)&&!it.cutback&&!gm.b){const bp=(it.pics||[]).find(p=>p.k=='גב');if(bp)return await cutSafe('/_blob/'+bp.id)}
+ const r=await _so(slot,id,tf);
+ if(it.img&&r=='/_blob/'+it.img&&!(tf&&tf.raw))return await cutSafe(r);
+ return r}}
+// 2) layer order when a dress and a top live together: the top goes under the dress (⬆ קדימה brings it forward)
+function layerOrder(slot){if(!ST)return;const top=ST.tf.top,dr=ST.items.dress||ST.items.set;
+ if(ST.items.top&&dr&&top&&(top.z==null||top.z==SLOTZ.top)){top.z=15;if(slot=='top'||slot=='dress'||slot=='set')toast('החולצה מתחת לשמלה. בחרי אותה ולחצי ⬆ קדימה כדי להביא אותה קדימה')}}
+// 3) bottom panel: picture strip + free size
+{const _ps=paintSel;paintSel=function(){_ps();const c=$('#ssel');if(!c||!ST)return;const slot=SSEL;
+ const sw=$('#sw');if(sw){sw.max=400;sw.step=1}
+ if(!slot||!ST.items[slot]){if(lookIds(ST).length&&!c.querySelector('#sclear'))c.insertAdjacentHTML('beforeend','<button id="sclear" class="mini2">🧹 הסירי הכל</button>');return}
+ const id=ST.items[slot],tf=ST.tf[slot]||{};const L=picsOf(id);if(L.length<2)return;
+ const cur=tf.pic||'main';
+ c.insertAdjacentHTML('beforeend',`<div class="lpics"><span>📷 תמונה על הדמות:</span>${L.map(p=>`<button data-lpic="${p.k}" aria-pressed="${cur==p.k}" title="${esc(p.n)}"><img src="${p.u||img(id)||TPH}" alt=""><small>${esc(p.n)}</small></button>`).join('')}</div>`)}}
+// 4) stage zoom: real size change (the stage scrolls), not a cropped transform
+function zoomTo(z){const st=$('#sstage'),sm=$('#studio .smain');if(!st||!sm)return;z=Math.max(1,Math.min(3,Math.round(z*100)/100));
+ const cy=sm.scrollHeight?(sm.scrollTop+sm.clientHeight/2)/sm.scrollHeight:0.3;
+ st.dataset.z=z;st.style.transform='';st.style.transformOrigin='';
+ if(z==1){st.style.height='';st.style.maxHeight='';st.style.flex=''}else{st.style.height=`calc(${Math.round(z*100)}% - 4px)`;st.style.maxHeight='none';st.style.flex='none'}
+ requestAnimationFrame(()=>{sm.scrollTop=Math.max(0,cy*sm.scrollHeight-sm.clientHeight/2);const cx=(sm.scrollWidth-sm.clientWidth)/2;if(cx>0)sm.scrollLeft=cx});
+ const zl=$('#szlbl');if(zl)zl.textContent=z==1?'':Math.round(z*100)+'%'}
+function stageZ(){return +($('#sstage')?.dataset.z||1)}
+// 5) turntable: front → half → side → back → side → half → front
+const SPINSEQ=[['front',0],['half',0],['side',0],['back',0],['side',1],['half',1]];
+let SPINT=null;
+function spinIdx(){if(!ST)return 0;const v=ST.view||'front',m=ST.mir?1:0;let i=SPINSEQ.findIndex(([a,b])=>a==v&&b==m);if(i<0)i=SPINSEQ.findIndex(([a])=>a==v);return i<0?0:i}
+async function setSpin(i,quiet){if(!ST)return;if((ST.avbase||'long')!='p5'){ST.avbase='p5';SET.avbase='p5';try{saveSet()}catch(_){}}
+ const n=SPINSEQ.length;i=((i%n)+n)%n;const [v,m]=SPINSEQ[i];ST.view=v;ST.mir=m;SSEL=null;paintTop();await drawStudio();paintSpin()}
+function spinStop(){if(SPINT){clearInterval(SPINT);SPINT=null;paintSpin()}}
+function spinPlay(){spinStop();SPINT=setInterval(()=>{if(!$('#studio').open){spinStop();return}setSpin(spinIdx()+1,true)},950);paintSpin();setSpin(spinIdx()+1,true)}
+function paintSpin(){const el=$('#spin');if(!el||!ST)return;el.classList.remove('hide');// v51: visible on every base — pressing it switches to the new avatar
+ const i=spinIdx();el.querySelector('#spinplay').textContent=SPINT?'⏸ עצרי':'▶ סיבוב 360°';el.querySelector('#spinplay').setAttribute('aria-pressed',!!SPINT);
+ el.querySelectorAll('.spdot i').forEach((d,k)=>d.classList.toggle('on',k==i))}
+// mirrored + approximate poses: in side / half-side poses garments without a GPT render are shown squeezed on the body (paper-doll style)
+{const _si=stageInner;stageInner=async function(S,opt={}){let html=await _si(S,opt);
+ if((S.avbase||'long')=='p5'&&POSEIMG[S.view]){const mid=p5Main(S);const real=mid&&IT[mid].p5&&IT[mid].p5[S.view];
+  if(!real){const sq={side:.52,half:.8,hip:1}[S.view]||1;const lays=[];
+   for(const [slot,id] of Object.entries(S.items)){if(!id||!D[id])continue;const tf=S.tf[slot]||{};if(tf.hidden)continue;if(slot=='jewelry'&&S.view=='side')continue;
+    const it=IT[id]||{};const sp=S.view!='hip'&&(it.pics||[]).find(p=>p.k=='צד');const src=sp?await cutSafe('/_blob/'+sp.id):await srcOf(slot,id,tf);const k=sp?.72:sq;
+    lays.push(`<img class="sl ap" data-slot="${slot}" src="${src}" style="left:${50+((tf.x||50)-50)*k}%;top:${tf.y||50}%;width:${(tf.w||40)*k}%;z-index:${tf.z!=null?tf.z:SLOTZ[slot]};transform:translate(-50%,-50%) rotate(${tf.r||0}deg)" alt="" draggable="false" onerror="this.remove()">`)}
+   html=html.replace(/<p class="p5note">[\s\S]*?<\/p>/,'');
+   if(lays.length){html+=lays.join('');if(opt.edit&&!SPINT&&!S.quiet)html+=`<p class="p5note sm">תצוגה משוערת · תמונה אמיתית בתנוחה הזו: 📥 תמונות מ-GPT</p>`}}}
+ if(S.mir&&opt.edit){const notes=[];html=html.replace(/<p class="p5note[^"]*">[\s\S]*?<\/p>/g,m=>{notes.push(m);return ''});html=`<div class="mirw">${html}</div>`+notes.join('')}
+ return html}}
+// 6) UI: zoom pill with reset, spin pill, handlers
+function s3Mount(){const sm=$('#studio .smain');if(!sm||$('#spin'))return;
+ const side=$('#studio .sside');if(side&&!$('#szreset')){side.insertAdjacentHTML('beforeend','<button id="szreset" title="איפוס תצוגה">↺</button><span id="szlbl"></span>')}
+ sm.insertAdjacentHTML('beforeend',`<div id="spin" class="hide"><button data-spin="-1" title="סובבי שמאלה">⟲</button><button id="spinplay">▶ סיבוב 360°</button><button data-spin="1" title="סובבי ימינה">⟳</button><span class="spdot">${SPINSEQ.map(()=>'<i></i>').join('')}</span></div>`)}
+{const _os=openStudio;openStudio=async function(look,items){s3Mount();spinStop();const r=await _os(look,items);try{if(ST){ST.mir=0;zoomTo(1);paintSpin()}}catch(_){}return r}}
+{const _pt=paintTop;paintTop=function(){_pt();try{paintSpin()}catch(_){}}}
+document.addEventListener('click',async e=>{const t=e.target;if(!t.closest||!ST)return;
+ if(t.closest('#szin')||t.closest('#szout')){e.stopPropagation();e.preventDefault();zoomTo(stageZ()+(t.closest('#szin')?.25:-.25));return}
+ if(t.closest('#szreset')){e.stopPropagation();e.preventDefault();spinStop();zoomTo(1);if(ST.view!='front'||ST.mir){ST.view='front';ST.mir=0;SSEL=null;paintTop();await drawStudio()}toast('חזרנו לתצוגה הרגילה');return}
+ const sp=t.closest('#spin [data-spin]');if(sp){e.stopPropagation();spinStop();setSpin(spinIdx()+ +sp.dataset.spin);return}
+ if(t.closest('#spinplay')){e.stopPropagation();if(SPINT)spinStop();else spinPlay();return}
+ if(t.closest('#sclear')){e.stopPropagation();pushH();ST.items={};ST.tf={};SSEL=null;DRAWER=null;$('#sdrawer').classList.remove('open');await drawStudio();toast('הדמות נקייה. אפשר להתחיל לוק חדש');return}
+ const lp=t.closest('[data-lpic]');if(lp&&SSEL){e.stopPropagation();const tf=ST.tf[SSEL];pushH();tf.pic=lp.dataset.lpic=='main'?null:lp.dataset.lpic;const keep=SSEL;await drawStudio();SSEL=keep;$$('#sstage img.sl').forEach(z=>z.classList.toggle('sel',z.dataset.slot==keep));paintSel();return}
+ const sv=t.closest('#studio [data-sview]');if(sv){spinStop();ST.mir=0}
+},true);
+// wheel over the stage background zooms; drag on the background turns the doll
+document.addEventListener('wheel',e=>{const st=e.target.closest&&e.target.closest('#sstage');if(!st||e.target.closest('img.sl.sel'))return;e.preventDefault();zoomTo(stageZ()+(e.deltaY<0?.15:-.15))},{passive:false});
+let SDR=null;
+document.addEventListener('pointerdown',e=>{if(!ST||(ST.avbase||'long')!='p5')return;const st=e.target.closest&&e.target.closest('#sstage');if(!st||e.target.closest('img.sl:not(.ap)'))return;SDR={x:e.clientX,acc:0,id:e.pointerId};spinStop()});
+document.addEventListener('pointermove',e=>{if(!SDR||e.pointerId!=SDR.id)return;const dx=e.clientX-SDR.x;if(Math.abs(dx)>=48){SDR.x=e.clientX;setSpin(spinIdx()+(dx>0?-1:1))}});
+const _s3end=e=>{if(SDR&&e.pointerId==SDR.id)SDR=null};document.addEventListener('pointerup',_s3end);document.addEventListener('pointercancel',_s3end);

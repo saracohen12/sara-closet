@@ -1,0 +1,82 @@
+/* ===== v71 "בוטיק": ivory + one accent (bordo / gold-rose), serif headings, line icons, photo-first cards ===== */
+html.d71{--bg:#f6f1ea;--card:#fffdf9;--fg:#231a17;--muted:#8b7e74;--line:#e8dfd4;--chip:#f0e8de;--accent:#7a1f3d;--accent-2:#9e3556;--rose:#7a1f3d;--price:#231a17;
+ --grad:linear-gradient(135deg,#7a1f3d,#a43c5e);--ink:#231a17;--serif:"Frank Ruhl Libre","David Libre",Georgia,serif;
+ --shadow:0 1px 0 rgba(35,26,23,.03),0 8px 22px rgba(35,26,23,.06);--shadow-lg:0 20px 50px rgba(35,26,23,.14)}
+html.d71[data-d71=gold]{--bg:#f8f3ee;--accent:#a36d52;--accent-2:#c48f72;--rose:#a36d52;--grad:linear-gradient(135deg,#a36d52,#d2a68b)}
+html.d71 body{background:var(--bg)!important;background-image:none!important}
+html.d71 h1,html.d71 h2,html.d71 h3,html.d71 .h9t,html.d71 .h9head h3,html.d71 dialog .pvh b{font-family:var(--serif)!important;letter-spacing:0!important}
+/* app bar */
+html.d71 .h9logo i{background:var(--accent);box-shadow:none;border-radius:50%}
+html.d71 .h9logo b{font-family:var(--serif);font-weight:700;font-size:1.45rem}
+html.d71 #d71t{width:38px;height:38px;min-height:0;padding:0;border-radius:50%;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;color:var(--accent)}
+html.d71 #d71t svg{width:20px;height:20px}
+/* hero: light editorial card with her avatar */
+html.d71 .h9hero{background:var(--card)!important;color:var(--fg)!important;border:1px solid var(--line);box-shadow:var(--shadow)!important;min-height:236px;padding:22px 20px 18px;padding-inline-end:min(44%,190px)}
+html.d71 .h9hero::after{display:none}
+html.d71 .h9hi{color:var(--muted);opacity:1;font-size:.85rem;letter-spacing:.06em}
+html.d71 .h9t{color:var(--fg)!important;font-weight:700!important;font-size:clamp(1.9rem,8vw,2.6rem)!important;line-height:1.08!important;margin:4px 0 6px!important}
+html.d71 .h9sub{color:var(--muted);opacity:1}html.d71 .h9sub b{color:var(--fg)}
+html.d71 .h9cta{flex-direction:column;gap:8px;max-width:210px}
+html.d71 .h9cta button{border-radius:99px!important;min-height:46px;font-weight:600}
+html.d71 .h9cta .h9b1{background:var(--accent)!important;color:#fff!important;border:0!important;box-shadow:0 8px 20px color-mix(in srgb,var(--accent) 30%,transparent)!important}
+html.d71 .h9cta .h9b2{background:transparent!important;color:var(--fg)!important;border:1px solid var(--line)!important}
+html.d71 .h9cta i svg{width:19px;height:19px}
+html.d71 .h9av{position:absolute;inset-block:0;inset-inline-end:0;width:min(44%,190px);overflow:hidden;cursor:pointer;background:linear-gradient(180deg,var(--chip),transparent)}
+html.d71 .h9av img{position:absolute;inset-inline-start:50%;top:10px;width:150%;max-width:none;transform:translateX(-50%);filter:drop-shadow(0 10px 16px rgba(35,26,23,.12))}
+html.d71[dir=rtl] .h9av img,html.d71 [dir=rtl] .h9av img{transform:translateX(50%)}
+html.d71 .h9av small{position:absolute;bottom:10px;inset-inline:0;text-align:center;font-size:.72rem;color:var(--muted);background:linear-gradient(0deg,var(--card) 40%,transparent);padding-top:14px}
+/* tiles */
+html.d71 .h9tiles button{background:var(--card)!important;border:1px solid var(--line)!important;box-shadow:none!important;border-radius:18px!important}
+html.d71 .h9tiles i{background:none!important;color:var(--accent)!important;width:auto!important;height:auto!important;box-shadow:none!important}
+html.d71 .h9tiles i svg{width:22px;height:22px}
+html.d71 .h9tiles .h9n{font-family:var(--serif);font-weight:700;font-size:1.5rem}
+/* categories: arched photos */
+html.d71 .h9cat .h9im{border-radius:999px 999px 16px 16px!important;box-shadow:none!important;border:1px solid var(--line)}
+html.d71 .h9cat b{font-family:var(--serif);font-weight:700;font-size:1rem}
+/* closet cards: photo first, no prices */
+html.d71 .card{background:transparent!important;box-shadow:none!important;padding:0 0 6px!important}
+html.d71 .card:hover{transform:none}
+html.d71 .card .ph{border-radius:18px!important;overflow:hidden;box-shadow:var(--shadow);background:var(--card)}
+html.d71 .card .ph>img{aspect-ratio:3/4;object-fit:cover;width:100%;height:auto}
+html.d71 .card .pr,html.d71 .card .was,html.d71 .card .sb{display:none!important}
+html.d71 .card .t{font-weight:500!important;font-size:.86rem!important;padding:8px 4px 0!important;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+html.d71 .card .m{padding-inline:4px!important;color:var(--muted)}
+html.d71 .card .ret{margin:4px 4px 0!important;background:transparent!important;border:1px solid var(--line)!important;color:var(--muted)!important}
+html.d71 .card .mode{background:rgba(255,253,249,.85)!important;box-shadow:none!important}
+html.d71 .card .mode span{font-size:.62rem!important;padding:4px 7px!important}
+html.d71 .card .fav{color:var(--accent)!important}html.d71 .card .fav.on{background:var(--accent)!important;color:#fff!important}
+html.d71 .card .dup{background:var(--accent)!important}
+/* bottom nav: light bar, line icons, raised round "בניית לוק" */
+html.d71 .bnav{background:rgba(255,253,249,.94)!important;border-top:1px solid var(--line)!important;box-shadow:0 -6px 24px rgba(35,26,23,.06)!important}
+html.d71 .bnav button{color:var(--muted)!important;font-weight:500!important}
+html.d71 .bnav button i svg{width:23px;height:23px}
+html.d71 .bnav button.on{color:var(--accent)!important;background:transparent!important}
+html.d71 .bnav button[data-bn=studio] i{width:52px;height:52px;margin-top:-26px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;box-shadow:0 8px 20px color-mix(in srgb,var(--accent) 35%,transparent);border:4px solid var(--bg)}
+html.d71 .bnav button[data-bn=studio]{color:var(--fg)!important}
+/* chips, pills, search */
+html.d71 .subs a[aria-current],html.d71 .subs a.on,html.d71 .seg button[aria-pressed=true]{background:var(--fg)!important;color:#fff!important}
+html.d71 .ctrl .tools #fb{background:var(--fg)!important;color:#fff!important}
+html.d71 .e71{display:none!important}
+/* dialogs and hub: calmer chrome */
+html.d71 dialog{background:var(--bg)}
+html.d71 .tabs button,html.d71 [role=tablist] button{background:transparent!important;border:0!important;border-bottom:2px solid transparent!important;border-radius:0!important;color:var(--muted)!important;box-shadow:none!important;font-weight:600}
+html.d71 .tabs button[aria-selected=true],html.d71 .tabs button.on,html.d71 [role=tablist] button[aria-selected=true]{color:var(--fg)!important;border-bottom-color:var(--accent)!important}
+html.d71 button.pri,html.d71 .pri,html.d71 .bigbtn{background:var(--accent)!important;color:#fff!important}
+html.d71 #htabs{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:2px;scrollbar-width:none;border-bottom:1px solid var(--line)}
+html.d71 #htabs button{flex:none;background:transparent!important;border:0!important;border-bottom:2px solid transparent!important;border-radius:0!important;color:var(--muted)!important;box-shadow:none!important;font-weight:600;padding:10px 12px!important;min-height:44px}
+html.d71 #htabs button[aria-pressed=true]{color:var(--fg)!important;border-bottom-color:var(--accent)!important}
+/* studio: empty slots = a quiet "+" circle, chosen slots show the garment */
+html.d71 #srail .slot{background:var(--card)!important;border:1px solid var(--line)!important;box-shadow:none!important;border-radius:16px!important}
+html.d71 #srail .slot.on{border-color:var(--accent)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 25%,transparent)!important}
+html.d71 #srail .slot:not(.base) .ic{font-size:0!important;width:30px!important;height:30px!important;border-radius:50%!important;border:1.5px dashed color-mix(in srgb,var(--accent) 55%,transparent);display:grid!important;place-items:center;background:transparent!important}
+html.d71 #srail .slot:not(.base) .ic::before{content:"+";font-size:18px;line-height:1;color:var(--accent);font-weight:400}
+html.d71 #srail .slot b{font-weight:500!important;color:var(--fg)}
+html.d71 #srail .slot img{border-radius:12px}
+html.d71 #sstage{background:radial-gradient(60% 45% at 50% 38%,#fff 0,transparent 70%),linear-gradient(180deg,var(--chip),var(--bg))!important}
+html.d71 #studio .stop button{box-shadow:none!important;border:1px solid var(--line)!important}
+html.d71 #studio .stop #ssave,html.d71 #studio .stop .go{background:var(--accent)!important;color:#fff!important;border:0!important}
+/* v72 audit */
+#sstage{isolation:isolate}
+.pr72{display:none!important}
+html.d71 #dlbody .sim button.go,html.d71 #dlbody .simb button{border-radius:99px!important}
+html.d71 #dlbody .p5gv .pv img,html.d71 #dlbody .p5r img{background:#f3eee8!important}

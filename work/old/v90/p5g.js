@@ -1,0 +1,114 @@
+// ---- v43: garment-only 5-pose renders (GPT draws ONLY the garment on a ghost mannequin in the avatar's 5 poses) → IT[id].p5g
+// {front,side,back,half,hip: assetId, u:{view:url}, fit:{view:{x,y,w}}}. The studio lays the cut over the base in every pose; placement is per view (tf.pv) and adjustable per view.
+const P5G_VIEWS=['front','side','back','half','hip'];
+// body landmarks of the 5-pose base (stage px 399×1365): [cx,width] at shoulders / waist / hips, and rows
+const P5BODY={front:{sh:[200,290],wa:[200,200],hp:[200,244],y:{nk:262,sh:300,wa:570,hp:710}},back:{sh:[200,280],wa:[200,200],hp:[200,244],y:{nk:262,sh:300,wa:570,hp:710}},
+ side:{sh:[228,170],wa:[176,150],hp:[200,205],y:{nk:262,sh:300,wa:570,hp:710}},half:{sh:[217,230],wa:[216,190],hp:[210,242],y:{nk:262,sh:300,wa:570,hp:710}},
+ hip:{sh:[161,215],wa:[150,160],hp:[142,215],y:{nk:437,sh:469,wa:694,hp:811}}};
+const P5G_SLOTS=['dress','top','skirt','set','outer','jacket','sweater'];
+function p5gOfT(id,tf){const t=tf&&tf.gv;if(t){const g=p5gVars(id).find(v=>v.t==t);if(g&&g.front)return g}return p5gOf(id)}
+function p5gOf(id){const g=(IT[id]||{}).p5g;return g&&g.front?g:null}
+// v50: several variants (colours of a pack) per item – p5gv[] holds them all, p5g is the chosen one (what the studio uses)
+function p5gVars(id){const it=IT[id]||{};if(Array.isArray(it.p5gv)&&it.p5gv.length)return it.p5gv;return it.p5g&&it.p5g.front?[it.p5g]:[]}
+function p5gActive(id){const it=IT[id]||{};const vs=p5gVars(id);const i=vs.findIndex(v=>it.p5g&&v.t==it.p5g.t);return i<0?0:i}
+function p5gNameField(id){return document.querySelector(`[data-imgrow="${id}"] .p5gname`)}
+async function upP5gMany(id,files,upm){const fs=[...files].filter(Boolean);const mode=upm=='p5gadd'?'add':'replace';for(let i=0;i<fs.length;i++){await upP5g(id,fs[i],fs.length>1?'add':mode)}}
+window.upP5gMany=upP5gMany;
+function p5gUrl(g,v){return (g.u&&g.u[v])||('/_blob/'+g[v])}
+function p5gFit(view,slot,c){const B=P5BODY[view]||P5BODY.front;let s,top,cx,ccx;const r1=v=>Math.round(v*10)/10;
+ if(slot=='skirt'){s=B.wa[1]*1.06/Math.max(1,c.topW||c.domeW);top=B.y.wa-6;cx=B.wa[0];ccx=c.topCx!=null?c.topCx:c.domeCx}
+ else{const collar=(c.top3||0)<(c.domeW||1)*.45;s=B.sh[1]*1.12/Math.max(1,c.domeW);top=collar?B.y.nk:B.y.sh-8;cx=B.sh[0];ccx=c.domeCx}
+ /* safety: a product-photo cut can be read as 'narrow top' and blow up – keep the garment inside the body */
+ const maxW=(slot=='skirt'?.78:.84)*399,maxH=(slot=='skirt'?1330:B.y.hp+120)-top;if(c.w*s>maxW)s=maxW/c.w;if(c.h*s>maxH)s=Math.max(s*.6,maxH/c.h);
+ return {x:r1((cx+(c.w/2-ccx)*s)/399*100),y:r1((top+c.h*s/2)/1365*100),w:r1(c.w*s/399*100)}}
+// slice a 5-panel sheet (white dividers on grey; falls back to 5 equal columns)
+function p5gSlice(im){const rd=tieRead(im);const {d,W,H}=rd;const grp=tieThinGroups(d,W,H);let bounds=[];
+ const xs=[0];for(const g of grp){xs.push(g[0],g[1]+1)}xs.push(W);for(let i=0;i<xs.length;i+=2){if(xs[i+1]-xs[i]>W*.08)bounds.push([xs[i],xs[i+1]])}
+ if(bounds.length!=5){const w=W/5;bounds=[0,1,2,3,4].map(i=>[Math.round(i*w),Math.round((i+1)*w)])}
+ return bounds.map(([x0,x1])=>tieCutPanel(d,W,H,x0+6,x1-6,1))}
+const P5GPROMPT=`מצורפות שתי תמונות: (1) גיליון האווטר שלי ב-5 תנוחות (חזית, צד, גב, חצי צד, יד על המותן). (2) תמונה של בגד שקניתי.
+צרי תמונה אחת רחבה באותו סידור בדיוק כמו גיליון האווטר: 5 חלקים שווים זה לצד זה, מופרדים בקו לבן דק, על רקע אפור בהיר חלק ואחיד, באותו סדר: חזית, צד, גב, חצי צד, יד על המותן.
+בכל חלק מופיע רק הבגד מתמונה 2, לבוש על גוף בלתי נראה (ghost mannequin): בלי גוף, בלי ראש, בלי ידיים, בלי רגליים, בלי נעליים, בלי בגדים אחרים.
+אם בתמונה 2 יש בגדים נוספים או אביזרים – להתעלם מהם לגמרי. רק הבגד: ___ (למשל: החצאית / החולצה / השמלה).
+בכל חלק הבגד בזווית ובתנוחה המדויקת של האווטר באותו חלק (כולל חצי צד ויד על המותן), באותו גודל ובאותו גובה בדיוק כמו שהיה יושב על גוף האווטר: כתפיים / מותן / מכפלת באותם גבהים, רוחב לפי הגוף באותה תנוחה.
+לא לשנות את הבגד: צבע, דוגמה, בד, אורך, גזרה, שרוולים, צווארון, קפלים, קישוטים. בגב ובצד להראות איך הבגד נראה באמת מאחור ומהצד.
+חצאית או שמלה: הבגד תלוי טבעי כלפי מטה כמו על גוף עומד, לא פרוש לצדדים ולא מסתובב; רוחב המכפלת לא יותר מפי 1.5 מרוחב המותן; האורך האמיתי (חצאית מקסי מגיעה עד הקרסול).
+אותו קנה מידה בכל 5 החלקים: המותן (או הכתפיים) באותו גובה בדיוק בכל החלקים, והבגד ממלא את גובה החלק.
+בלי טקסט, בלי כותרות, בלי קולבים, בלי צל על הרקע, בלי חפצים נוספים.`;
+// v44: GPT spreads a long skirt wide, so the waist-fit scale leaves the hem at the knee – stretch the cut (≤1.4×) so the hem reaches the floor line
+function p5gLong(view,slot,c){if(slot!='skirt'||!c||!c.canvas)return c;const B=P5BODY[view]||P5BODY.front;const f=p5gFit(view,slot,c);const s=f.w/100*399/Math.max(1,c.w);const top=B.y.wa-6;const sy=Math.min(1.4,Math.max(1,(1340-top)/Math.max(1,c.h*s)));if(sy<1.04)return c;const cv=document.createElement('canvas');cv.width=c.canvas.width;cv.height=Math.round(c.canvas.height*sy);cv.getContext('2d').drawImage(c.canvas,0,0,cv.width,cv.height);return Object.assign({},c,{canvas:cv,h:cv.height,sy})}
+// v49: 'עלי ב-5 תנוחות' – draw the garment on the avatar in all 5 poses and open it in the zoom viewer
+async function p5gPreview(id){const g=p5gOf(id);if(!g)return;const ld=u=>new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>j(new Error(u));i.src=u});
+ toast('מציירת 5 תנוחות…');const W=399,H=1365,cv=document.createElement('canvas');cv.width=W*5+40;cv.height=H+70;const x=cv.getContext('2d');x.fillStyle='#e9e4dc';x.fillRect(0,0,cv.width,cv.height);
+ for(let i=0;i<5;i++){const v=P5G_VIEWS[i];const ox=i*(W+10);try{const b=await ld('av/p5_'+v+'.webp');x.drawImage(b,ox,0,W,H)}catch(_){}
+  const f=(g.fit||{})[v];if(g[v]&&f){try{const im=await ld(p5gUrl(g,v));const w=f.w/100*W,h=w*im.height/im.width;x.drawImage(im,ox+f.x/100*W-w/2,f.y/100*H-h/2,w,h)}catch(_){}}
+  x.fillStyle='#333';x.font='bold 34px sans-serif';x.textAlign='center';x.fillText((POSES[i]||[])[1]||v,ox+W/2,H+50)}
+ try{openZoom(cv.toDataURL('image/jpeg',.9))}catch(_){toast('לא הצלחתי לצייר')}}
+// v51: GPT writes labels (קדמי/צד…) above the garment – drop small blobs that sit outside the garment's box, then re-measure
+function p5gMeasure(cv){const W=cv.width,H=cv.height;const d=cv.getContext('2d').getImageData(0,0,W,H).data;const row=r=>{let a0=-1,a1=-1;for(let c=0;c<W;c++){if(d[(r*W+c)*4+3]>20){if(a0<0)a0=c;a1=c}}return a0<0?null:[a0,a1]};
+ let dw=0,dx0=W,dx1=0;const lim=Math.round(H*.38);for(let r=0;r<lim;r++){const q=row(r);if(!q)continue;if(q[1]-q[0]>dw)dw=q[1]-q[0];if(q[0]<dx0)dx0=q[0];if(q[1]>dx1)dx1=q[1]}
+ let topW=0,tx0=W,tx1=0,top3=0;const l12=Math.max(1,Math.round(H*.12)),l3=Math.max(1,Math.round(H*.03));for(let r=0;r<l12;r++){const q=row(r);if(!q)continue;if(q[1]-q[0]>topW)topW=q[1]-q[0];if(q[0]<tx0)tx0=q[0];if(q[1]>tx1)tx1=q[1];if(r<l3&&q[1]-q[0]>top3)top3=q[1]-q[0]}
+ return {canvas:cv,w:W,h:H,domeW:dw,domeCx:(dx0+dx1)/2,topW,topCx:(tx0+tx1)/2,top3,hole:null}}
+function p5gClean(c){try{const cv=c.canvas,W=cv.width,H=cv.height,N=W*H;const x=cv.getContext('2d');const img=x.getImageData(0,0,W,H);const d=img.data;const lab=new Int32Array(N);let n=0;const areas=[],bb=[];const st=[];
+ for(let i=0;i<N;i++){if(lab[i]||d[i*4+3]<=20)continue;n++;let a=0,x0=W,x1=0,y0=H,y1=0;st.push(i);lab[i]=n;while(st.length){const p=st.pop();a++;const px=p%W,py=(p/W)|0;if(px<x0)x0=px;if(px>x1)x1=px;if(py<y0)y0=py;if(py>y1)y1=py;
+   if(px>0){const q=p-1;if(!lab[q]&&d[q*4+3]>20){lab[q]=n;st.push(q)}}if(px<W-1){const q=p+1;if(!lab[q]&&d[q*4+3]>20){lab[q]=n;st.push(q)}}if(py>0){const q=p-W;if(!lab[q]&&d[q*4+3]>20){lab[q]=n;st.push(q)}}if(py<H-1){const q=p+W;if(!lab[q]&&d[q*4+3]>20){lab[q]=n;st.push(q)}}}
+  areas.push(a);bb.push([x0,y0,x1,y1])}
+ if(n<2)return c;let m=0;for(let i=1;i<n;i++)if(areas[i]>areas[m])m=i;const M=bb[m],mx=W*.02,my=H*.02;const kill=new Set();
+ for(let i=0;i<n;i++){if(i==m)continue;const b=bb[i];const inter=!(b[2]<M[0]-mx||b[0]>M[2]+mx||b[3]<M[1]-my||b[1]>M[3]+my);const atTop=b[3]<M[1]+H*.06;if(areas[i]<areas[m]*.004||(areas[i]<areas[m]*.04&&(!inter||atTop)))kill.add(i+1)}
+ if(!kill.size)return c;for(let i=0;i<N;i++)if(kill.has(lab[i]))d[i*4+3]=0;x.putImageData(img,0,0);
+ let x0=W,x1=0,y0=H,y1=0;for(let i=0;i<n;i++){if(kill.has(i+1))continue;const b=bb[i];if(b[0]<x0)x0=b[0];if(b[2]>x1)x1=b[2];if(b[1]<y0)y0=b[1];if(b[3]>y1)y1=b[3]}
+ const nc=document.createElement('canvas');nc.width=x1-x0+1;nc.height=y1-y0+1;nc.getContext('2d').drawImage(cv,x0,y0,nc.width,nc.height,0,0,nc.width,nc.height);const r=p5gMeasure(nc);r.cleaned=kill.size;return r}catch(_){return c}}
+function p5gSlot(id){try{return slotOf(id)}catch(_){return null}}
+async function upP5g(id,file,mode){if(UPST[id]=='busy'){toast('רגע, עוד שומרת');return}let a=null;try{a=await claude.use('assets')}catch(_){}if(!a){toast('העלאת תמונות לא זמינה כאן');p5gSt(id,'err','העלאת תמונות לא זמינה כאן');return}
+ UPST[id]='busy';p5gSt(id,'busy','חותכת ל-5 תנוחות ומורידה רקע…');let cuts;try{cuts=p5gSlice(await tieLoadImg(file))}catch(_){UPST[id]='';p5gSt(id,'err','לא הצלחתי לקרוא את התמונה');return}
+ if(cuts.filter(Boolean).length<5){UPST[id]='';p5gSt(id,'err','לא מצאתי 5 חלקים עם בגד. צריך תמונה רחבה עם 5 חלקים על רקע אפור אחיד');return}
+ const slot=p5gSlot(id)||'top';const g={u:{},fit:{},t:Date.now()};
+ try{for(let i=0;i<5;i++){const v=P5G_VIEWS[i];const c=p5gClean(cuts[i]);p5gSt(id,'busy',`שומרת ${POSES[i][1]} (${i+1} מתוך 5)…`);const c2=p5gLong(v,slot,c);const r=await a.upload(await tieBlob(c2.canvas));g[v]=r.id;if(r.url)g.u[v]=r.url;g.fit[v]=p5gFit(v,slot,c2)}
+  const vars=p5gVars(id).slice();const nf=p5gNameField(id);const nm=(nf&&nf.value.trim())||'';const add=mode=='add'||!vars.length;
+  if(add){g.n=nm||(vars.length?`גרסה ${vars.length+1}`:'');vars.push(g)}else{const i=p5gActive(id);g.n=nm||(vars[i]||{}).n||'';vars[i]=g}
+  if(nf)nf.value='';await putItem(id,{p5g:g,p5gv:vars.length>1?vars:null});UPST[id]='';p5gSt(id,'ok',vars.length>1?`✓ נשמרה הגרסה "${g.n}" (${vars.length} גרסאות). הגרסה המסומנת היא שעולה לאווטר`:'✓ נשמרו 5 תנוחות של הבגד. בבניית הלוק הבגד יושב על הדמות בכל תנוחה, ואפשר להזיז ולהגדיל בכל תנוחה בנפרד');toast('✓ נשמרו 5 תנוחות של הבגד');renderImgRow(id);return g}
+ catch(e){UPST[id]='';p5gSt(id,'err','לא הצלחתי לשמור. נסי שוב');toast('לא הצלחתי לשמור');renderImgRow(id)}}
+function p5gSt(id,k,msg){UPST[id+'_gm']=[k,msg];const s=document.querySelector(`[data-imgrow="${id}"] .p5gbox .gst`);if(!s)return setSt(id,k,msg);s.className='gst st2 '+k;s.textContent=msg}
+window.p5gSt=p5gSt;
+{const _ru=routeUp;routeUp=async function(id,f,mode){if(mode=='p5g')return upP5g(id,f,'replace');if(mode=='p5gadd')return upP5g(id,f,'add');return _ru(id,f,mode)}}
+// ---- item dialog box (clothing only), kept visible above "more options"
+function p5gHTML(id){const g=p5gOf(id);const [sk,sm]=UPST[id+'_gm']||['',''];
+ return `<span class="gst st2 ${sk}">${esc(sm)}</span>
+ ${(()=>{const vs=p5gVars(id);if(!vs.length)return '';const a=p5gActive(id);return `<div class="p5gv"><small class="pvh">צבעים/גרסאות:</small>${vs.map((v,i)=>`<button class="pv${i==a?' on':''}" data-p5gpick="${i}" title="לבחור את הגרסה הזו לאווטר"><img src="${p5gUrl(v,'front')}" alt="" loading="lazy"><span>${esc(v.n||('גרסה '+(i+1)))}</span>${i==a?'<b>✓ באווטר</b>':''}</button>`).join('')}</div>`})()}
+ ${g?`<div class="p5r">${POSES.map(([k,n])=>g[k]?`<figure><img src="${p5gUrl(g,k)}" alt="" loading="lazy"><figcaption>${n}</figcaption></figure>`:'').join('')}</div>`:''}
+ <div class="ib">${g?`<button class="go" data-p5gsee="${id}">👀 עלי ב-5 תנוחות</button>`:''}<button class="${g?'':'go'}" data-upimg="${id}" data-upm="p5g">${g?'🔄 החליפי':'📥 העלי בגד בלבד – 5 תנוחות'}</button>${g?`<button data-upimg="${id}" data-upm="p5gadd">➕ עוד גרסה (צבע אחר)</button>`:''}<button data-p5gcopy="1">📋 פרומפט ל-GPT</button><button data-zoom="av/p5_sheet.jpg">🖼 גיליון האווטר ל-GPT</button>${g?`<button data-p5gdel="${id}">🗑 מחקי${p5gVars(id).length>1?' את הגרסה':' את 5 התנוחות'}</button>`:''}</div>
+ ${g?`<div class="ib"><input class="p5gname" placeholder="שם לגרסה (בורדו / שחור / גמל…)" maxlength="40" value=""><button data-p5grn="${id}">✏️ שם</button></div>`:''}
+ <small class="ghint">GPT מצייר את הבגד ב-5 תנוחות, האתר מלביש אותו</small>`}
+{const _rr=renderImgRow;renderImgRow=function(id){_rr(id);const el=document.querySelector(`[data-imgrow="${id}"]`);if(!el)return;let box=el.querySelector('.p5gbox');
+ let ok=false;try{ok=GROUPOF(curCat(id))=='clo'}catch(_){}if(!ok){if(box)box.remove();return}
+ if(!box){const dm=el.querySelector('details.dmore');const h='<details class="p5gbox" open><summary>👗 הבגד על האווטר ב-5 תנוחות</summary><div class="gslot"></div></details>';if(dm)dm.insertAdjacentHTML('beforebegin',h);else el.insertAdjacentHTML('beforeend',h);box=el.querySelector('.p5gbox')}
+ box.querySelector('.gslot').innerHTML=p5gHTML(id)}}
+document.addEventListener('click',async e=>{const t=e.target;if(!t.closest)return;
+ const cp=t.closest('[data-p5gcopy]');if(cp){e.preventDefault();e.stopPropagation();const txt=P5GPROMPT;(navigator.clipboard?.writeText?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('✓ הפרומפט הועתק. הדביקי ב-GPT עם גיליון האווטר ותמונת הבגד')).catch(()=>{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('✓ הפרומפט הועתק')}catch(_){toast('לא הצלחתי להעתיק')}ta.remove()});return}
+ const pk=t.closest('[data-p5gpick]');if(pk){e.preventDefault();e.stopPropagation();const id=pk.closest('[data-imgrow]').dataset.imgrow;const vs=p5gVars(id);const v=vs[+pk.dataset.p5gpick];if(v){await putItem(id,{p5g:v});renderImgRow(id);toast(`✓ "${v.n||'הגרסה'}" עולה לאווטר`)}return}
+ const rn=t.closest('[data-p5grn]');if(rn){e.preventDefault();e.stopPropagation();const id=rn.dataset.p5grn;const nf=p5gNameField(id);const nm=nf?nf.value.trim():'';if(!nm){toast('כתבי שם בשדה');return}const vs=p5gVars(id).slice();const i=p5gActive(id);if(!vs[i])return;vs[i]=Object.assign({},vs[i],{n:nm});await putItem(id,{p5g:vs[i],p5gv:vs.length>1?vs:null});renderImgRow(id);toast('✓ השם נשמר');return}
+ const se=t.closest('[data-p5gsee]');if(se){e.preventDefault();e.stopPropagation();p5gPreview(se.dataset.p5gsee);return}
+ const dl=t.closest('[data-p5gdel]');if(dl){e.preventDefault();e.stopPropagation();const id=dl.dataset.p5gdel;if(!sure(dl,'בטוח? לחצי שוב למחיקה'))return;const vs=p5gVars(id).slice();const i=p5gActive(id);vs.splice(i,1);await putItem(id,{p5g:vs[0]||null,p5gv:vs.length>1?vs:null});delete UPST[id+'_gm'];renderImgRow(id);toast(vs.length?'נמחקה הגרסה':'נמחק');return}
+},true);
+// ---- studio: per-view placement. tf.x/y/w hold the placement of the view named in tf.pvv; the others live in tf.pv[view]
+function p5gSwap(){if(!ST||!ST.items)return;const v=ST.view||'front';
+ for(const [slot,id] of Object.entries(ST.items)){if(!id)continue;const tf=ST.tf[slot];const g=p5gOfT(id,tf);if(!g)continue;if(!tf||tf.x==null)continue;const cur=tf.pvv||'front';if(cur==v)continue;
+  tf.pv=tf.pv||{};tf.pv[cur]={x:tf.x,y:tf.y,w:tf.w,r:tf.r||0};const nv=tf.pv[v]||g.fit[v];if(nv){tf.x=nv.x;tf.y=nv.y;tf.w=nv.w;tf.r=nv.r||0}tf.pvv=v}}
+{const _ds=drawStudio;drawStudio=async function(...a){try{p5gSwap()}catch(_){}return _ds(...a)}}
+{const _si=stageInner;stageInner=async function(S,opt={}){if(S===ST)try{p5gSwap()}catch(_){}return _si(S,opt)}}
+// first placement / reset: the fit of the current view
+{const _at=autoTf;autoTf=async function(slot,id,fresh){const g=p5gOfT(id,ST&&ST.tf&&ST.tf[slot]);if(g){const v=(ST&&ST.view)||'front';const f=g.fit[v]||g.fit.front;if(f)return Object.assign({r:0,pvv:v},f)}return _at(slot,id,fresh)}}
+// front / back: the garment cut replaces the product picture
+{const _so=srcOf;srcOf=async function(slot,id,tf){const g=p5gOfT(id,tf);if(g&&!(tf&&tf.raw)&&!(tf&&tf.pic)){const v=ST?(ST.view||'front'):'front';if(v=='back'&&g.back)return p5gUrl(g,'back');if(v=='front'||!POSEIMG[v])return p5gUrl(g,'front')}return _so(slot,id,tf)}}
+{const _hb=typeof hasBack=='function'?hasBack:null;if(_hb)hasBack=function(id){const g=p5gOf(id);return !!(g&&g.back)||_hb(id)}}
+// side / half / hip: a real, draggable layer instead of the squeezed approximation
+function p5gStyle(tf,z){return `left:${tf.x}%;top:${tf.y}%;width:${tf.w}%;z-index:${z};transform:${tfStr(tf,false)}`}
+{const _si=stageInner;stageInner=async function(S,opt={}){let html=await _si(S,opt);if((S.avbase||'long')!='p5'||!POSEIMG[S.view])return html;const v=S.view;let n=0,all=true;
+ html=stageAdd(html,`<img class="sh" src="av/${S.head!='wig'?'p5c':'p5'}_${v}_head.webp" style="z-index:${SLOTZ.head}" alt="" onerror="this.remove()">`);// v51: head+hair above the garments in the pose views too
+ for(const [slot,id] of Object.entries(S.items)){if(!id||!D[id])continue;const tf=S.tf[slot]||{};const g=p5gOfT(id,tf);if(!g||!g[v]){if(P5G_SLOTS.includes(slot))all=false;continue}if(tf.hidden&&!opt.edit)continue;
+  const f=(tf.pvv==v&&tf.x!=null)?tf:((tf.pv||{})[v]||g.fit[v]);const z=tf.z!=null?tf.z:SLOTZ[slot];
+  const tag=`<img class="sl${opt.edit&&SSEL==slot?' sel':''}${tf.hidden?' ghost':''}" data-slot="${slot}" src="${p5gUrl(g,v)}" style="${p5gStyle(f,z)}" alt="" draggable="false">`;
+  const re=new RegExp(`<img class="sl ap" data-slot="${slot}"[^>]*>`);if(re.test(html))html=html.replace(re,tag);else html=html.replace(/(<p class="p5note[^"]*">)|$/,m=>tag+(m||''));n++}
+ if(n&&all)html=html.replace(/<p class="p5note sm">[\s\S]*?<\/p>/,'');
+ if(n&&S.mir&&opt.edit&&!/class="mirw"/.test(html)){/* already wrapped by studio3 when mirrored */}
+ return html}}

@@ -1,0 +1,175 @@
+// ===== ui round 1 (2026-10-20): thumbnails out of the page, bottom nav, collapsing header, item dialog layout =====
+const UI_VER=1;const UIO={};
+(function(){
+// --- thumbnails are started by thStart() in the page itself (before this bundle), so an error here never blanks the closet ---
+// zoom of a thumbnail that was not loaded when the button was made
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-zth]');if(b&&(!b.dataset.zoom||b.dataset.zoom==TPH)){const u=img(b.dataset.zth);if(u)b.dataset.zoom=u}},true);
+// after a bundle arrives, strips rendered later still get their pictures through img(); strips already on screen were patched by thApply
+
+// --- bottom navigation (mobile) ---
+const bn=document.createElement('nav');bn.className='bnav';bn.setAttribute('aria-label','ניווט');
+bn.innerHTML=`<button data-bn="home"><i>🏠</i>הארון</button><button data-bn="search"><i>🔍</i>חיפוש</button><button data-bn="studio"><i>👗</i>בניית לוק</button><button data-bn="hub"><i>🧰</i>לוקים וכלים</button><button data-bn="bell"><i>🔔</i>חשוב<b class="bd"></b></button>`;
+document.body.appendChild(bn);
+const ctrl=document.querySelector('.ctrl');
+bn.addEventListener('click',e=>{const b=e.target.closest('[data-bn]');if(!b)return;const k=b.dataset.bn;
+ if(k=='home'){if(innerWidth<=700)goTop();else window.scrollTo({top:0,behavior:'smooth'})}
+ if(k=='search'){const q=$('#q');LOCK=Date.now()+900;if(scrollY<topY())window.scrollTo({top:topY(),behavior:'smooth'});setTimeout(()=>q.focus(),350)}
+ if(k=='studio')$('#studiobtn').click();if(k=='hub')$('#hubbtn').click();if(k=='bell')$('#bell').click()});
+{const bi=$('#bell i');const bd=bn.querySelector('.bd');const bb=bn.querySelector('[data-bn=bell]');const sync=()=>{const t=bi?bi.textContent.trim():'';bd.textContent=t;bb.classList.toggle('hot',!!t)};sync();if(bi)new MutationObserver(sync).observe(bi,{childList:true,characterData:true,subtree:true})}
+
+// --- search: debounce, clear button, normalized matching lives in apply() ---
+{const q=$('#q');if(q){q.removeEventListener('input',apply);let qt;q.addEventListener('input',()=>{clearTimeout(qt);qt=setTimeout(apply,120)});
+ const w=document.createElement('span');w.className='qw';q.before(w);w.appendChild(q);const x=document.createElement('button');x.type='button';x.className='qclr';x.setAttribute('aria-label','ניקוי חיפוש');x.textContent='✕';w.appendChild(x);
+ const sync=()=>w.classList.toggle('has',!!q.value);q.addEventListener('input',sync);sync();
+ x.addEventListener('click',()=>{q.value='';sync();apply();if(typeof saveF=='function')saveF();q.focus()})}}
+
+// --- compact sticky bar on phones: one row (search + filter + categories) unless she is at the top or taps "קטגוריות" ---
+const tools=ctrl.querySelector('.tools');
+const xp=document.createElement('button');xp.className='xpand';xp.type='button';xp.textContent='▾ קטגוריות';tools.appendChild(xp);
+let lastY=scrollY,LOCK=0,tick=false,OPEN=false,openY=0;
+function setMin(on,nocomp){if(ctrl.classList.contains('min')==on)return false;const h0=ctrl.offsetHeight;ctrl.classList.toggle('min',on);const h1=ctrl.offsetHeight;if(!nocomp&&h1!=h0&&scrollY>$('#top').offsetHeight+10)window.scrollBy(0,h1-h0);lastY=scrollY;LOCK=Date.now()+150;xpLabel();return true}
+function xpLabel(){const min=ctrl.classList.contains('min');const g=ctrl.querySelector('.groups button[aria-pressed="true"]');const c=ctrl.querySelector('.subs a[aria-pressed="true"]');const gn=g?(g.firstChild.textContent||'').trim():'';const cn=c?(c.firstChild.textContent||'').trim():'';
+ xp.textContent=min?'▾ '+(cn||gn||'קטגוריות'):'▴ הסתרה';xp.hidden=!min&&!OPEN}
+const topY=()=>$('#top').offsetHeight;const stuck=()=>scrollY>=topY()-20;
+xp.addEventListener('click',()=>{if(ctrl.classList.contains('min')){OPEN=true;openY=scrollY;LOCK=Date.now()+400;setMin(false)}else{OPEN=false;if(stuck())setMin(true)}xpLabel()});
+window.addEventListener('scroll',()=>{if(tick)return;tick=true;requestAnimationFrame(()=>{tick=false;const y=scrollY;
+ if(innerWidth>700){if(ctrl.classList.contains('min'))ctrl.classList.remove('min');lastY=y;return}
+ if(Date.now()<LOCK){lastY=y;return}
+ if(OPEN&&y>openY+60){OPEN=false;xpLabel()}
+ const top=topY();
+ let ch=false;if(y<top-20)ch=setMin(false);else if(!OPEN)ch=setMin(true);
+ lastY=ch?scrollY:y})},{passive:true});
+['#q','#src','#sort'].forEach(q=>{const el=$(q);if(el)el.addEventListener('focus',()=>{LOCK=Date.now()+1500})});
+// choosing a group or a category: the page scrolls to the start of the closet and the bar folds to one row
+ctrl.addEventListener('click',e=>{if(innerWidth>700)return;if(e.target.closest('.groups button,.subs a')){OPEN=false;LOCK=Date.now()+900;setMin(true,true);window.scrollTo({top:topY(),behavior:'smooth'});setTimeout(()=>{lastY=scrollY;xpLabel()},900)}});
+// going to the very top (🏠 or ↑): let the smooth scroll finish, then open the bar
+function goTop(){LOCK=Date.now()+1200;window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>{if(scrollY<topY()-20)setMin(false);lastY=scrollY},1000)}
+{const tt=$('#totop');if(tt)tt.addEventListener('click',e=>{if(innerWidth<=700){e.stopImmediatePropagation();goTop()}},true)}
+{const _ap=apply;apply=function(){_ap();xpLabel()}}
+if(innerWidth<=700&&stuck())setMin(true);xpLabel();
+// filter panel: close / clear-all row at the end (phones can't reach past a tall sticky block)
+{const pn=$('#panel');if(pn){pn.insertAdjacentHTML('beforeend','<div class="row prow"><button type="button" class="fbtn go" id="pdone">✓ סגרי</button><button type="button" class="fbtn" id="pclr">🧹 נקי את כל הסינונים</button></div>');
+ pn.querySelector('#pdone').addEventListener('click',()=>{$('#fb').click()});
+ pn.querySelector('#pclr').addEventListener('click',()=>{let n=0,b;while((b=$('#chips .clr')||$('#chips button'))&&n++<40)b.click();const q=$('#q');if(q.value){q.value='';apply()}$$('#cols button').forEach(o=>o.setAttribute('aria-pressed',false));toast('הסינונים נוקו')})}}
+
+// --- item dialog: header on mobile, two columns on desktop, compact photo tools ---
+const dlg=$('#dlg'),wrap=dlg.querySelector('.dlwrap');
+const head=document.createElement('div');head.className='dhead';head.dir='rtl';head.innerHTML=`<button class="dx" type="button" aria-label="סגירה">✕</button><h4></h4><button type="button" data-dstep="-1" aria-label="הקודם">›</button><button type="button" data-dstep="1" aria-label="הבא">‹</button>`;wrap.prepend(head);
+head.querySelector('.dx').addEventListener('click',()=>dlg.close());
+head.addEventListener('click',e=>{const b=e.target.closest('[data-dstep]');if(b)step(+b.dataset.dstep)});
+function layoutDlg(id){const body=$('#dlbody');if(!body||body.querySelector('.dleft'))return;
+ head.querySelector('h4').textContent=(D[id]||{}).short||'';
+ const kids=[...body.children];
+ const media=kids.find(e=>e.matches('.mwrap,img.main'));const tools=kids.filter(e=>e.matches('.imgrow'));const info=kids.find(e=>e.tagName=='DIV'&&e.querySelector('h3'));
+ const rest=kids.filter(e=>e!==media&&!tools.includes(e)&&e!==info);
+ const L=document.createElement('div');L.className='dleft';const R=document.createElement('div');R.className='dright';
+ const dm=document.createElement('div');dm.className='dmedia';const dt=document.createElement('div');dt.className='dtools';const di=document.createElement('div');di.className='dinfo';const dr=document.createElement('div');dr.className='drest';
+ if(media)dm.appendChild(media);tools.forEach(t=>dt.appendChild(t));if(info){di.appendChild(info);const tb=info.querySelector(':scope>table');if(tb&&!info.querySelector('details.dinfo-more')){const d=document.createElement('details');d.className='dinfo-more';const paid=(D[id]||{}).paid;const srcl=((D[id]||{}).srcl||'').split(/[ (]/)[0];d.innerHTML=`<summary>ℹ️ פרטים נוספים${paid!=null&&typeof m=='function'?` <small>· שילמת ${m(paid)}</small>`:''}${srcl?` <small>· ${esc(srcl)}</small>`:''}</summary>`;tb.replaceWith(d);d.appendChild(tb)}}rest.forEach(r=>dr.appendChild(r));
+ L.append(dm,dt);R.append(di,dr);body.append(L,R);wrap.scrollTop=0;compactTools(id);try{tidyRest(id)}catch(e){(window.ERRS||[]).push('tidyRest '+e)}}
+// v44: one 'use' row = לבישות + מיקום + לוקים; buttons of the similar box in one line
+function tidyRest(id){const body=$('#dlbody');const wear=body.querySelector('.erow.wear');const rows=[...body.querySelectorAll('.ed:not(.edtop) .erow')];const loc=rows.find(r=>r.querySelector('.locsel'));const inl=body.querySelector('.inlooks');
+ if(wear&&!wear.classList.contains('use')){wear.classList.add('use');const pb=wear.querySelector('[data-wear="1"]');if(pb)pb.textContent='+ לבשתי';
+  if(loc){const sp=loc.querySelector(':scope>span');const sel=loc.querySelector('.locsel');if(sp){sp.classList.add('lbl2');wear.appendChild(sp)}if(sel)wear.appendChild(sel);loc.remove()}
+  if(inl){const h4=inl.querySelector('h4');const n=((h4?h4.textContent:'').match(/\d+/)||['0'])[0];const d=document.createElement('span');d.className='inl';d.innerHTML=`<span class="lbl2">לוקים</span><b class="n">${n}</b>`;[...inl.querySelectorAll('button')].forEach(b=>d.appendChild(b));const cut=inl.querySelector('small');if(cut)d.appendChild(cut);inl.remove();wear.appendChild(d)}}
+ const sim=[...body.querySelectorAll('.sim')].find(e=>e.querySelector('[data-lookfrom],[data-studio]'));if(sim&&!sim.querySelector('.simb')){const bs=[...sim.children].filter(e=>e.matches('button.go'));if(bs.length){const w=document.createElement('div');w.className='simb';sim.insertBefore(w,bs[0]);bs.forEach(b=>w.appendChild(b));const lf=w.querySelector('[data-lookfrom]');if(lf)lf.textContent='✨ הרכיבי לוק'}
+  const h4s=[...sim.querySelectorAll(':scope>h4')];if(h4s.length>1){const t=h4s.map(h=>h.textContent.trim().replace(/:$/,'')).join(' · ');h4s[0].textContent=t+':';h4s[0].className='simh';h4s.slice(1).forEach(h=>h.remove())}else if(h4s.length==1)h4s[0].className='simh'} fitRows();setTimeout(fitRows,350)}
+// v46: chip rows (מצב/סימון/סגנון/עונה) stay on ONE line – shrink the font, then the padding, until they fit (Sara's request)
+// v48: avatar readiness dot – 🟢 ok (5 poses / GPT render / tie), 🟠 fix (partial or manual), 🔴 not yet; manual IT[id].av wins
+function avStat(id){const it=IT[id]||{};if(it.av)return it.av;let cat='',g='';try{cat=curCat(id);g=GROUPOF(cat)}catch(_){return ''}
+ if(cat=='scarves'){return (it.ties||[]).length?'ok':'no'}
+ if(g!='clo')return '';const p=it.p5g;if(p&&p.front)return ['front','side','back','half','hip'].every(v=>p[v])?'ok':'fix';if(it.p5&&it.p5.front)return 'ok';return 'no'}
+function avCounts(ids){const n={ok:0,fix:0,no:0};ids.forEach(id=>{const s=avStat(id);if(n[s]!=null)n[s]++});const t=n.ok+n.fix+n.no;return t?` · אווטר: 🟢 ${n.ok} 🟠 ${n.fix} 🔴 ${n.no}`:''}
+window.avStat=avStat;window.avCounts=avCounts;setTimeout(()=>{try{paintAll()}catch(_){}},0);// the template's first paintAll ran before this file loaded
+// v49: confirm() is blocked inside the Claude app iframe (returns false) – two-tap confirmation instead
+function sure(btn,label){if(!btn)return true;if(btn.dataset.armed){delete btn.dataset.armed;btn.textContent=btn.dataset.orig||btn.textContent;btn.classList.remove('armed');return true}
+ btn.dataset.orig=btn.textContent;btn.dataset.armed='1';btn.textContent=label||'בטוח? לחצי שוב';btn.classList.add('armed');setTimeout(()=>{if(btn.dataset.armed){delete btn.dataset.armed;btn.textContent=btn.dataset.orig;btn.classList.remove('armed')}},4000);return false}
+window.sure=sure;
+function fitRows(){const rows=[...document.querySelectorAll('#dlbody .ed:not(.edtop) .erow')].filter(r=>r.querySelectorAll(':scope>button').length>=3&&!r.querySelector('select,input,textarea'));
+ rows.forEach(r=>{r.classList.add('fit1');let fs=.72,px=8;r.style.setProperty('--fs',fs+'rem');r.style.setProperty('--px',px+'px');const over=()=>r.scrollWidth>r.clientWidth+1;let n=0;while(over()&&n++<16){if(fs>.56)fs=Math.round((fs-.02)*100)/100;else if(px>3)px-=1;else break;r.style.setProperty('--fs',fs+'rem');r.style.setProperty('--px',px+'px')}if(over())r.classList.remove('fit1')})}
+let _frT;addEventListener('resize',()=>{clearTimeout(_frT);_frT=setTimeout(()=>{if($('#dlg')?.open)fitRows()},150)});
+function compactTools(id){const el=document.querySelector(`[data-imgrow="${id}"]`);if(!el||el.querySelector('details.dmore'))return;
+ const keep=[];const more=[];[...el.children].forEach(c=>{if(c.matches('.ib')||c.matches('.st2')||c.matches('.tiesbox')||c.matches('.p5gbox'))keep.push(c);else if(c.matches('small')&&/גרסה/.test(c.textContent)){c.className='stamp';keep.push(c)}else more.push(c)});
+ if(!more.length)return;const d=document.createElement('details');d.className='dmore';d.open=!!UIO[id];d.addEventListener('toggle',()=>{UIO[id]=d.open});d.innerHTML='<summary>⚙️ עוד אפשרויות: הדבקה, סידור ומחיקה, תמונות קודמות, אווטאר</summary>';more.forEach(c=>d.appendChild(c));el.appendChild(d);
+ // keep the status line right under the buttons
+ const st=el.querySelector('.st2');if(st)el.insertBefore(st,d);const stp=el.querySelector('.stamp');if(stp)el.insertBefore(stp,d);const tb=el.querySelector('.tiesbox');if(tb)el.insertBefore(tb,d);const gb=el.querySelector('.p5gbox');if(gb)el.insertBefore(gb,d)}// v39: the ties box stays visible, never inside 'more options'
+const _ao=afterOpen;afterOpen=function(id){_ao(id);layoutDlg(id)};
+
+// --- studio: save/undo near the start of the top bar, scroll hint, drawer closes after a pick on phones ---
+const stop=document.querySelector('#studio .stop');
+if(stop){const nm=$('#sname');['#ssv','#sundo','#sredo'].reverse().forEach(q=>{const b=$(q);if(b&&nm)nm.after(b)});
+ const fade=()=>{stop.classList.toggle('more',Math.abs(stop.scrollLeft)+stop.clientWidth<stop.scrollWidth-4)};stop.addEventListener('scroll',fade,{passive:true});new ResizeObserver(fade).observe(stop);fade()}
+document.addEventListener('click',e=>{const dp=e.target.closest&&e.target.closest('#sdrawer [data-dpick]');if(!dp||innerWidth>700||e.target.closest('.zm'))return;const was=dp.classList.contains('on');
+ setTimeout(()=>{if(!DRAWER)return;if(was)return;closeDrawer();toast('✓ הולבש. לחצי שוב על המשבצת למטה כדי להחליף')},350)});
+const _rr=renderImgRow;renderImgRow=function(id){_rr(id);compactTools(id)};
+})();
+// ===== ui round 4 (2026-10-21): sticky category titles, quick chips in the collapsed bar, haptics, position memory, return sort, tips =====
+(function(){
+const ctrl=document.querySelector('.ctrl');
+// --- height of the sticky bar as a CSS variable, so category titles stick right under it ---
+const setH=()=>document.documentElement.style.setProperty('--ctrlh',ctrl.offsetHeight+'px');setH();new ResizeObserver(setH).observe(ctrl);
+// --- when the bar collapses, keep the active category chip in view ---
+new MutationObserver(()=>{if(!ctrl.classList.contains('min'))return;const a=ctrl.querySelector('.subs a[aria-pressed="true"]');if(a)try{a.scrollIntoView({inline:'center',block:'nearest'})}catch(_){}}).observe(ctrl,{attributes:true,attributeFilter:['class']});
+// --- a small tick on toggles (Android) ---
+document.addEventListener('click',e=>{if(!e.target.closest)return;if(e.target.closest('.mode span,.fav,[data-mode],.groups button,.subs a,.bnav button,[data-sview],.seg button,#fb,.chips button,[data-dstep]'))try{navigator.vibrate&&navigator.vibrate(8)}catch(_){}},true);
+// --- sort by return deadline ---
+{const _key=key;key=function(c){if(SORT=='ret'){const n=daysLeft(c.dataset.rdl);return n==null||n<0?99999:n}return _key(c)};if(SORT=='ret'){$('#sort').value='ret';sortAll()}}
+// --- remember where she was (group, category, scroll) for a few hours ---
+{const PK='pos';let pt;const save=()=>{clearTimeout(pt);pt=setTimeout(()=>{try{localStorage.setItem(PK,JSON.stringify({y:scrollY,G,C,t:Date.now()}))}catch(_){}},300)};
+ addEventListener('scroll',save,{passive:true});addEventListener('pagehide',save);
+ let p=null;try{p=JSON.parse(localStorage.getItem(PK)||'null')}catch(_){}
+ if(p&&Date.now()-p.t<6*36e5&&p.y>400&&!location.hash){if(p.G&&p.G!=G&&$$('.groups button').some(o=>o.dataset.g==p.G)){G=p.G;C=p.C||'';$$('.groups button').forEach(o=>o.setAttribute('aria-pressed',o.dataset.g==G));apply()}
+  const go=()=>window.scrollTo(0,p.y);requestAnimationFrame(go);setTimeout(()=>{if(Math.abs(scrollY-p.y)>60)go();toast('חזרתי לאן שהיית. 🏠 מחזיר להתחלה')},350)}}
+// --- tips: a hub tab + a button in the header ---
+TABS.push(['tips','❓ טיפים']);
+function tipsHTML(){return `<div class="tips">
+<article><h3>🔍 חיפוש</h3><p>כותבים שם, צבע, מידה, או מספר בגד (למשל T183). אפשר גם לכתוב שם של קטגוריה כמו "שמלות". ✕ מנקה את החיפוש.</p></article>
+<article><h3>☀ חול / ✨ שבת</h3><p>בכל כרטיס יש כפתור חול/שבת. בגד יכול להיות גם וגם. למעלה בוחרים בגדי חול, בגדי שבת, ילדים, לילה ועוד.</p></article>
+<article><h3>👗 הבגד</h3><p>לחיצה על הכרטיס פותחת את הבגד. החלקה ימינה או שמאלה עוברת לבגד הבא. ♥ שומר למועדפים. בחלון הבגד מסמנים: שמרתי / החזרתי / למסור, מוסיפים הערה ומידה של ילד.</p></article>
+<article><h3>📷 תמונות</h3><p>בחלון הבגד: "הוסיפי תמונה" פותח את הגלריה (בטלפון: לפתוח את האתר בכרום). אפשר לבחור כמה תמונות ולסמן ראשית / קדימה / צד / גב. "תמונות קודמות" מחזיר תמונה ישנה.</p></article>
+<article><h3>🧍 בניית לוק</h3><p>בתפריט למטה: בניית לוק. לוחצים על משבצת (שמלה, חולצה, חצאית…) ובוחרים בגד. האווטאר החדש ב-5 תנוחות: חזית, צד, גב, חצי צד ויד על המותן. "🖼 כל התנוחות" מראה את הלוק בכולן ושומר תמונה. 💾 שומר את הלוק ל"לוקים וכלים".</p></article>
+<article><h3>🔔 החזרות</h3><p>הפעמון מראה כפולים שזמן ההחזרה שלהם נגמר בקרוב. במיון יש "להחזרה בקרוב". בלוקים וכלים: 💰 החזרות וקרדיטים.</p></article>
+<article><h3>📍 איפה הייתי</h3><p>האתר זוכר באיזו קטגוריה ואיפה בעמוד היית, ומחזיר לשם בפתיחה הבאה. 🏠 בתפריט למטה מחזיר להתחלה. הסרגל העליון מתכווץ בגלילה; "▾ קטגוריות" פותח אותו.</p></article>
+</div>`}
+{const _rh=renderHub;renderHub=function(){if($('#hub')&&$('#hub').open&&TAB=='tips'){$('#htabs').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" aria-pressed="${TAB==k}">${l}</button>`).join('');$('#hbody').innerHTML=tipsHTML();return}return _rh()}}
+{const hb=$('#helpb');if(hb)hb.addEventListener('click',()=>openHub('tips'))}
+})();
+// ===== ui round 5 (2026-10-21): card polish, long-press quick actions, recent searches =====
+(function(){
+// --- a small 📝 on cards that have a note ---
+{const _paint=paint;paint=function(id){_paint(id);const c=card(id);if(!c)return;const ph=c.querySelector('.ph');if(!ph)return;let n=ph.querySelector('.noteic');const it=IT[id]||{};if(it.note){if(!n){n=document.createElement('span');n.className='noteic';n.textContent='📝';ph.appendChild(n)}n.title=it.note}else if(n)n.remove()}}
+// --- long press (or right click) on a card: quick actions without opening the item ---
+const bd=document.createElement('div');bd.className='qabd hide';const qa=document.createElement('div');qa.className='qa hide';qa.dir='rtl';document.body.append(bd,qa);
+let QASUP=0;
+function closeQA(){qa.classList.add('hide');bd.classList.add('hide')}
+function openQA(id){const x=D[id];if(!x)return;const it=IT[id]||{};qa.dataset.id=id;
+ qa.innerHTML=`<div class="qah"><img data-th="${id}" src="${img(id)||TPH}" alt=""><div><b>${esc(x.short)}</b><small>${esc((x.srcl||'').split(' (')[0])} · ${m(x.paid)}${x.rdl&&daysLeft(x.rdl)>=0?' · להחזרה עוד '+daysLeft(x.rdl)+' ימים':''}</small></div><button class="x" data-qa="close" aria-label="סגירה">✕</button></div>
+ <div class="qab"><button data-qa="s:kept" aria-pressed="${it.s=='kept'}">✓ שמרתי</button><button data-qa="s:ret" aria-pressed="${it.s=='ret'}">↩ החזרתי</button><button data-qa="s:give" aria-pressed="${it.s=='give'}">🎁 למסור</button></div>
+ <div class="qab"><button data-qa="fav" aria-pressed="${!!it.fav}">${it.fav?'♥':'♡'} מועדף</button><button data-qa="studio">👗 ללוק</button><button data-qa="open">🔍 פתיחה</button></div>`;
+ qa.classList.remove('hide');bd.classList.remove('hide');QASUP=Date.now()+700;try{navigator.vibrate&&navigator.vibrate(14)}catch(_){}}
+bd.addEventListener('click',closeQA);
+qa.addEventListener('click',async e=>{const b=e.target.closest('[data-qa]');if(!b)return;const id=qa.dataset.id;const k=b.dataset.qa;const it=IT[id]||{};
+ if(k=='close')return closeQA();
+ if(k.startsWith('s:')){const v=k.slice(2);await putItem(id,{s:it.s==v?'':v});toast(it.s==v?'הסימון הוסר':{kept:'✓ סומן: שמרתי',ret:'✓ סומן: החזרתי',give:'✓ סומן: למסור'}[v]);return openQA(id)}
+ if(k=='fav'){await putItem(id,{fav:!it.fav});return openQA(id)}
+ closeQA();if(k=='open')openItem(id);
+ if(k=='studio'){const s=slotOf(id);if(s=='extra'||s=='kid'){toast('הפריט הזה לא נכנס על האווטאר');return}openStudio(null,{[s]:id})}});
+let lp=null,lpx=0,lpy=0;
+document.addEventListener('pointerdown',e=>{const c=e.target.closest&&e.target.closest('.grid .card');if(!c||e.button!==0||e.target.closest('.fav,.mode,.zm'))return;lpx=e.clientX;lpy=e.clientY;clearTimeout(lp);lp=setTimeout(()=>{lp=null;openQA(c.dataset.id)},480)},{passive:true});
+document.addEventListener('pointermove',e=>{if(lp&&Math.hypot(e.clientX-lpx,e.clientY-lpy)>10){clearTimeout(lp);lp=null}},{passive:true});
+['pointerup','pointercancel','scroll'].forEach(ev=>document.addEventListener(ev,()=>{clearTimeout(lp);lp=null},{passive:true,capture:true}));
+document.addEventListener('contextmenu',e=>{const c=e.target.closest&&e.target.closest('.grid .card');if(!c)return;e.preventDefault();clearTimeout(lp);lp=null;openQA(c.dataset.id)});
+document.addEventListener('click',e=>{if(Date.now()<QASUP&&e.target.closest&&e.target.closest('.grid .card')){e.stopPropagation();e.preventDefault()}},true);
+document.addEventListener('keydown',e=>{if(e.key=='Escape'&&!qa.classList.contains('hide'))closeQA()});
+// --- recent searches under the search field ---
+{const q=$('#q');const w=q&&q.closest('.qw');if(w){const sug=document.createElement('div');sug.className='qsug';sug.hidden=true;w.appendChild(sug);const RK='qrecent';let rec=[];try{rec=JSON.parse(localStorage.getItem(RK)||'[]')}catch(_){}
+ const save=()=>{try{localStorage.setItem(RK,JSON.stringify(rec))}catch(_){}};
+ const render=()=>{sug.innerHTML=rec.length?`<span class="lbl">חיפושים אחרונים<button type="button" data-qs="clear">🧹 נקי</button></span>`+rec.map(t=>`<button type="button" data-qs="${esc(t)}">${esc(t)}</button>`).join(''):''};
+ let rt;q.addEventListener('input',()=>{clearTimeout(rt);rt=setTimeout(()=>{const t=q.value.trim();if(t.length<2)return;rec=[t,...rec.filter(x=>x!=t)].slice(0,8);save();render()},1500)});
+ q.addEventListener('focus',()=>{render();sug.hidden=!rec.length});q.addEventListener('blur',()=>setTimeout(()=>{sug.hidden=true},180));
+ sug.addEventListener('pointerdown',e=>e.preventDefault());
+ sug.addEventListener('click',e=>{const b=e.target.closest('[data-qs]');if(!b)return;if(b.dataset.qs=='clear'){rec=[];save();render();sug.hidden=true;return}q.value=b.dataset.qs;q.dispatchEvent(new Event('input'));sug.hidden=true;apply();if(typeof saveF=='function')saveF()})}}
+})();
+/* v33: version badge toast */
+(function(){document.addEventListener('click',e=>{const b=e.target.closest('#ver');if(!b)return;if(window.toast)toast('גרסה '+window.VER+' · עודכנה ב-'+window.VDATE)})})();
+/* v34: studio preloads the thumbnails of every slot category, so the drawer never depends on scroll position */
+{const _os=openStudio;openStudio=async function(look,items){try{if(typeof thLoad=='function')SLOTS.forEach(s=>s[3].forEach(c=>thLoad(c).then(()=>{TH_DONE[c]=1})))}catch(_){}return _os(look,items)}}

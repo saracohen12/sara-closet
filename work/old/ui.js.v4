@@ -1,0 +1,104 @@
+// ===== ui round 1 (2026-10-20): thumbnails out of the page, bottom nav, collapsing header, item dialog layout =====
+const UI_VER=1;const UIO={};
+(function(){
+// --- thumbnails are started by thStart() in the page itself (before this bundle), so an error here never blanks the closet ---
+// zoom of a thumbnail that was not loaded when the button was made
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-zth]');if(b&&(!b.dataset.zoom||b.dataset.zoom==TPH)){const u=img(b.dataset.zth);if(u)b.dataset.zoom=u}},true);
+// after a bundle arrives, strips rendered later still get their pictures through img(); strips already on screen were patched by thApply
+
+// --- bottom navigation (mobile) ---
+const bn=document.createElement('nav');bn.className='bnav';bn.setAttribute('aria-label','ניווט');
+bn.innerHTML=`<button data-bn="home"><i>🏠</i>הארון</button><button data-bn="search"><i>🔍</i>חיפוש</button><button data-bn="studio"><i>👗</i>בניית לוק</button><button data-bn="hub"><i>🧰</i>לוקים וכלים</button><button data-bn="bell"><i>🔔</i>חשוב<b class="bd"></b></button>`;
+document.body.appendChild(bn);
+const ctrl=document.querySelector('.ctrl');
+bn.addEventListener('click',e=>{const b=e.target.closest('[data-bn]');if(!b)return;const k=b.dataset.bn;
+ if(k=='home'){ctrl.classList.remove('min');window.scrollTo({top:0,behavior:'smooth'})}
+ if(k=='search'){ctrl.classList.remove('min');const q=$('#q');window.scrollTo({top:$('#top').offsetHeight,behavior:'smooth'});setTimeout(()=>q.focus(),300)}
+ if(k=='studio')$('#studiobtn').click();if(k=='hub')$('#hubbtn').click();if(k=='bell')$('#bell').click()});
+{const bi=$('#bell i');const bd=bn.querySelector('.bd');const bb=bn.querySelector('[data-bn=bell]');const sync=()=>{const t=bi?bi.textContent.trim():'';bd.textContent=t;bb.classList.toggle('hot',!!t)};sync();if(bi)new MutationObserver(sync).observe(bi,{childList:true,characterData:true,subtree:true})}
+
+// --- search: debounce, clear button, normalized matching lives in apply() ---
+{const q=$('#q');if(q){q.removeEventListener('input',apply);let qt;q.addEventListener('input',()=>{clearTimeout(qt);qt=setTimeout(apply,120)});
+ const w=document.createElement('span');w.className='qw';q.before(w);w.appendChild(q);const x=document.createElement('button');x.type='button';x.className='qclr';x.setAttribute('aria-label','ניקוי חיפוש');x.textContent='✕';w.appendChild(x);
+ const sync=()=>w.classList.toggle('has',!!q.value);q.addEventListener('input',sync);sync();
+ x.addEventListener('click',()=>{q.value='';sync();apply();if(typeof saveF=='function')saveF();q.focus()})}}
+
+// --- collapsing sticky header on mobile: shrinks when scrolling down, comes back when scrolling up ---
+const tools=ctrl.querySelector('.tools');
+const xp=document.createElement('button');xp.className='xpand';xp.type='button';xp.textContent='▾ קטגוריות';tools.appendChild(xp);
+let lastY=scrollY,LOCK=0,tick=false;
+function setMin(on){if(ctrl.classList.contains('min')==on)return false;const h0=ctrl.offsetHeight;ctrl.classList.toggle('min',on);const h1=ctrl.offsetHeight;if(h1!=h0&&scrollY>$('#top').offsetHeight)window.scrollBy(0,h1-h0);lastY=scrollY;LOCK=Date.now()+150;return true}
+xp.addEventListener('click',()=>{LOCK=Date.now()+2000;setMin(false)});
+window.addEventListener('scroll',()=>{if(tick)return;tick=true;requestAnimationFrame(()=>{tick=false;const y=scrollY;
+ if(innerWidth>700){if(ctrl.classList.contains('min'))ctrl.classList.remove('min');lastY=y;return}
+ if(Date.now()<LOCK){lastY=y;return}
+ const top=$('#top').offsetHeight;
+ let ch=false;if(y<top+40||y<lastY-8)ch=setMin(false);else if(y>lastY+8&&y>top+160)ch=setMin(true);
+ lastY=ch?scrollY:y})},{passive:true});
+['#q','#src','#sort'].forEach(q=>{const el=$(q);if(el)el.addEventListener('focus',()=>{LOCK=Date.now()+1500})});
+{const fb=$('#fb');if(fb)fb.addEventListener('click',()=>{LOCK=Date.now()+1500;setMin(false)},true)}
+// filter panel: close / clear-all row at the end (phones can't reach past a tall sticky block)
+{const pn=$('#panel');if(pn){pn.insertAdjacentHTML('beforeend','<div class="row prow"><button type="button" class="fbtn go" id="pdone">✓ סגרי</button><button type="button" class="fbtn" id="pclr">🧹 נקי את כל הסינונים</button></div>');
+ pn.querySelector('#pdone').addEventListener('click',()=>{$('#fb').click()});
+ pn.querySelector('#pclr').addEventListener('click',()=>{let n=0,b;while((b=$('#chips .clr')||$('#chips button'))&&n++<40)b.click();const q=$('#q');if(q.value){q.value='';apply()}$$('#cols button').forEach(o=>o.setAttribute('aria-pressed',false));toast('הסינונים נוקו')})}}
+
+// --- item dialog: header on mobile, two columns on desktop, compact photo tools ---
+const dlg=$('#dlg'),wrap=dlg.querySelector('.dlwrap');
+const head=document.createElement('div');head.className='dhead';head.dir='rtl';head.innerHTML=`<button class="dx" type="button" aria-label="סגירה">✕</button><h4></h4><button type="button" data-dstep="-1" aria-label="הקודם">›</button><button type="button" data-dstep="1" aria-label="הבא">‹</button>`;wrap.prepend(head);
+head.querySelector('.dx').addEventListener('click',()=>dlg.close());
+head.addEventListener('click',e=>{const b=e.target.closest('[data-dstep]');if(b)step(+b.dataset.dstep)});
+function layoutDlg(id){const body=$('#dlbody');if(!body||body.querySelector('.dleft'))return;
+ head.querySelector('h4').textContent=(D[id]||{}).short||'';
+ const kids=[...body.children];
+ const media=kids.find(e=>e.matches('.mwrap,img.main'));const tools=kids.filter(e=>e.matches('.imgrow'));const info=kids.find(e=>e.tagName=='DIV'&&e.querySelector('h3'));
+ const rest=kids.filter(e=>e!==media&&!tools.includes(e)&&e!==info);
+ const L=document.createElement('div');L.className='dleft';const R=document.createElement('div');R.className='dright';
+ const dm=document.createElement('div');dm.className='dmedia';const dt=document.createElement('div');dt.className='dtools';const di=document.createElement('div');di.className='dinfo';const dr=document.createElement('div');dr.className='drest';
+ if(media)dm.appendChild(media);tools.forEach(t=>dt.appendChild(t));if(info)di.appendChild(info);rest.forEach(r=>dr.appendChild(r));
+ L.append(dm,dt);R.append(di,dr);body.append(L,R);wrap.scrollTop=0;compactTools(id)}
+function compactTools(id){const el=document.querySelector(`[data-imgrow="${id}"]`);if(!el||el.querySelector('details.dmore'))return;
+ const keep=[];const more=[];[...el.children].forEach(c=>{if(c.matches('.ib')||c.matches('.st2'))keep.push(c);else if(c.matches('small')&&/גרסה/.test(c.textContent)){c.className='stamp';keep.push(c)}else more.push(c)});
+ if(!more.length)return;const d=document.createElement('details');d.className='dmore';d.open=!!UIO[id];d.addEventListener('toggle',()=>{UIO[id]=d.open});d.innerHTML='<summary>⚙️ עוד אפשרויות: הדבקה, סידור ומחיקה, תמונות קודמות, אווטאר</summary>';more.forEach(c=>d.appendChild(c));el.appendChild(d);
+ // keep the status line right under the buttons
+ const st=el.querySelector('.st2');if(st)el.insertBefore(st,d);const stp=el.querySelector('.stamp');if(stp)el.insertBefore(stp,d)}
+const _ao=afterOpen;afterOpen=function(id){_ao(id);layoutDlg(id)};
+
+// --- studio: save/undo near the start of the top bar, scroll hint, drawer closes after a pick on phones ---
+const stop=document.querySelector('#studio .stop');
+if(stop){const nm=$('#sname');['#ssv','#sundo','#sredo'].reverse().forEach(q=>{const b=$(q);if(b&&nm)nm.after(b)});
+ const fade=()=>{stop.classList.toggle('more',Math.abs(stop.scrollLeft)+stop.clientWidth<stop.scrollWidth-4)};stop.addEventListener('scroll',fade,{passive:true});new ResizeObserver(fade).observe(stop);fade()}
+document.addEventListener('click',e=>{const dp=e.target.closest&&e.target.closest('#sdrawer [data-dpick]');if(!dp||innerWidth>700||e.target.closest('.zm'))return;const was=dp.classList.contains('on');
+ setTimeout(()=>{if(!DRAWER)return;if(was)return;closeDrawer();toast('✓ הולבש. לחצי שוב על המשבצת למטה כדי להחליף')},350)});
+const _rr=renderImgRow;renderImgRow=function(id){_rr(id);compactTools(id)};
+})();
+// ===== ui round 4 (2026-10-21): sticky category titles, quick chips in the collapsed bar, haptics, position memory, return sort, tips =====
+(function(){
+const ctrl=document.querySelector('.ctrl');
+// --- height of the sticky bar as a CSS variable, so category titles stick right under it ---
+const setH=()=>document.documentElement.style.setProperty('--ctrlh',ctrl.offsetHeight+'px');setH();new ResizeObserver(setH).observe(ctrl);
+// --- when the bar collapses, keep the active category chip in view ---
+new MutationObserver(()=>{if(!ctrl.classList.contains('min'))return;const a=ctrl.querySelector('.subs a[aria-pressed="true"]');if(a)try{a.scrollIntoView({inline:'center',block:'nearest'})}catch(_){}}).observe(ctrl,{attributes:true,attributeFilter:['class']});
+// --- a small tick on toggles (Android) ---
+document.addEventListener('click',e=>{if(!e.target.closest)return;if(e.target.closest('.mode span,.fav,[data-mode],.groups button,.subs a,.bnav button,[data-sview],.seg button,#fb,.chips button,[data-dstep]'))try{navigator.vibrate&&navigator.vibrate(8)}catch(_){}},true);
+// --- sort by return deadline ---
+{const _key=key;key=function(c){if(SORT=='ret'){const n=daysLeft(c.dataset.rdl);return n==null||n<0?99999:n}return _key(c)};if(SORT=='ret'){$('#sort').value='ret';sortAll()}}
+// --- remember where she was (group, category, scroll) for a few hours ---
+{const PK='pos';let pt;const save=()=>{clearTimeout(pt);pt=setTimeout(()=>{try{localStorage.setItem(PK,JSON.stringify({y:scrollY,G,C,t:Date.now()}))}catch(_){}},300)};
+ addEventListener('scroll',save,{passive:true});addEventListener('pagehide',save);
+ let p=null;try{p=JSON.parse(localStorage.getItem(PK)||'null')}catch(_){}
+ if(p&&Date.now()-p.t<6*36e5&&p.y>400&&!location.hash){if(p.G&&p.G!=G&&$$('.groups button').some(o=>o.dataset.g==p.G)){G=p.G;C=p.C||'';$$('.groups button').forEach(o=>o.setAttribute('aria-pressed',o.dataset.g==G));apply()}
+  const go=()=>window.scrollTo(0,p.y);requestAnimationFrame(go);setTimeout(()=>{if(Math.abs(scrollY-p.y)>60)go();toast('חזרתי לאן שהיית. 🏠 מחזיר להתחלה')},350)}}
+// --- tips: a hub tab + a button in the header ---
+TABS.push(['tips','❓ טיפים']);
+function tipsHTML(){return `<div class="tips">
+<article><h3>🔍 חיפוש</h3><p>כותבים שם, צבע, מידה, או מספר בגד (למשל T183). אפשר גם לכתוב שם של קטגוריה כמו "שמלות". ✕ מנקה את החיפוש.</p></article>
+<article><h3>☀ חול / ✨ שבת</h3><p>בכל כרטיס יש כפתור חול/שבת. בגד יכול להיות גם וגם. למעלה בוחרים בגדי חול, בגדי שבת, ילדים, לילה ועוד.</p></article>
+<article><h3>👗 הבגד</h3><p>לחיצה על הכרטיס פותחת את הבגד. החלקה ימינה או שמאלה עוברת לבגד הבא. ♥ שומר למועדפים. בחלון הבגד מסמנים: שמרתי / החזרתי / למסור, מוסיפים הערה ומידה של ילד.</p></article>
+<article><h3>📷 תמונות</h3><p>בחלון הבגד: "הוסיפי תמונה" פותח את הגלריה (בטלפון: לפתוח את האתר בכרום). אפשר לבחור כמה תמונות ולסמן ראשית / קדימה / צד / גב. "תמונות קודמות" מחזיר תמונה ישנה.</p></article>
+<article><h3>🧍 בניית לוק</h3><p>בתפריט למטה: בניית לוק. לוחצים על משבצת (שמלה, חולצה, חצאית…) ובוחרים בגד. האווטאר החדש ב-5 תנוחות: חזית, צד, גב, חצי צד ויד על המותן. "🖼 כל התנוחות" מראה את הלוק בכולן ושומר תמונה. 💾 שומר את הלוק ל"לוקים וכלים".</p></article>
+<article><h3>🔔 החזרות</h3><p>הפעמון מראה כפולים שזמן ההחזרה שלהם נגמר בקרוב. במיון יש "להחזרה בקרוב". בלוקים וכלים: 💰 החזרות וקרדיטים.</p></article>
+<article><h3>📍 איפה הייתי</h3><p>האתר זוכר באיזו קטגוריה ואיפה בעמוד היית, ומחזיר לשם בפתיחה הבאה. 🏠 בתפריט למטה מחזיר להתחלה. הסרגל העליון מתכווץ בגלילה; "▾ קטגוריות" פותח אותו.</p></article>
+</div>`}
+{const _rh=renderHub;renderHub=function(){if($('#hub')&&$('#hub').open&&TAB=='tips'){$('#htabs').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" aria-pressed="${TAB==k}">${l}</button>`).join('');$('#hbody').innerHTML=tipsHTML();return}return _rh()}}
+{const hb=$('#helpb');if(hb)hb.addEventListener('click',()=>openHub('tips'))}
+})();
