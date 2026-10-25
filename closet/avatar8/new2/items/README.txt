@@ -5,3 +5,4 @@ Steps: python3 crop.py <name>  ->  cd <name>; python3 ../layer_new.py [--head | 
 skirt: + cap/hemclean.py; all: cap/rimclean.py (NOT on jewelry: it fades thin pieces); belt: + beltband.py; necklace view 7: regone.py was tried (already aligned).
 Page order: shoes, skirt/blouse (tucked swaps), belt, necklace, head (cover = doll / wig lw / scarf xk), earrings (under the head from the back and under the wig).
 19:40 belt re-cut with belt2.py (v22): silver buckle/pale stones were dropped by the generic cutter (too close to the backdrop); band rows + any change vs doll, skin excluded, holes filled.
+19:50 scarf re-cut with scarf2.py (v23): head zone = every change above neck+6 (no beige cover peeking at forehead/sides), below only navy, no bridging between tails.
