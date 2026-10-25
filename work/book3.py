@@ -272,6 +272,7 @@ for i,(w,h,mode) in cm.items():
 for c,p in packs.items(): json.dump(p,open(f'{PUB}/cut/{c}.json','w'))
 out=out.replace('%%CUTMETA%%',json.dumps(CUTMETA)).replace('</style>',open('ui.css').read()+'\n'+open('look68_73.css').read()+'\n'+open('look77_84.css').read()+'\n'+open('fix85.css').read()+'\n'+open('fix91.css').read()+'\n'+open('lay91.css').read()+'\n'+open('fix93.css').read()+'\n'+open('orders123.css').read()+'\n'+open('r360.css').read()+'\n'+open('d180.css').read()+'\n</style>',1)
 shutil.copytree('a8',PUB+'/a8',dirs_exist_ok=True)
+shutil.copytree('bg',PUB+'/bg',dirs_exist_ok=True)
 os.makedirs(PUB+'/th',exist_ok=True)
 thp=collections.defaultdict(dict)
 for x in items:
