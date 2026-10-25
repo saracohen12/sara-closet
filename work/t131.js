@@ -1,0 +1,37 @@
+const LB=`[...document.querySelectorAll('#pk102 figure')].map(f=>{const s=f.querySelector('select');return s?s.value:f.querySelector('figcaption').textContent})`;
+const {chromium,devices}=require('playwright');const fs=require('fs');const S=process.argv[2];const M=process.argv[3]||'desk';
+const log=(...a)=>console.log(...a.map(x=>typeof x=='string'?x:JSON.stringify(x)));
+(async()=>{const b=await chromium.launch();const c=await b.newContext(M=='phone'?{...devices['Pixel 7'],hasTouch:true}:{viewport:{width:1280,height:800}});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.route('**/_blob/**',r=>r.fulfill({status:200,contentType:'image/webp',body:fs.readFileSync(S+'/build/pub/av/p6c_front.webp')}));
+await p.addInitScript(()=>{try{localStorage.setItem('tips77','1')}catch(_){}});
+await p.goto('http://localhost:8765/index.html');await p.addStyleTag({content:'img{max-width:100%}'});await p.waitForTimeout(2500);
+const id='T55';
+await p.evaluate(id=>{window.putItem=async(id,pt)=>{IT[id]=Object.assign({},IT[id],pt);Object.keys(IT[id]).forEach(k=>{if(IT[id][k]===''||IT[id][k]==null)delete IT[id][k]})};
+ IT[id]={img:'aaa1',pics:[{id:'bbb2',k:'קדימה'},{id:'ccc3',k:'צד'}],imgs:[{id:'ddd4',raw:1},{id:'eee5'}]};openItem(id)},id);
+await p.waitForTimeout(1500);
+log('mg',await p.evaluate(()=>[...document.querySelectorAll('#dlbody details.mg')].map(d=>{const r=d.getBoundingClientRect();const cs=getComputedStyle(d);return [d.querySelector('summary').textContent,r.width,r.height,cs.display,cs.visibility]})));
+log('imgrow',await p.evaluate(()=>{const e=document.querySelector('#dlbody [data-imgrow]');if(!e)return 'none';const r=e.getBoundingClientRect();let x=e,hid=[];while(x&&x!=document.body){const cs=getComputedStyle(x);if(cs.display=='none'||x.hidden)hid.push(x.tagName+'.'+x.className);x=x.parentElement}return [r.width,r.height,hid]}));
+await p.evaluate(()=>{const e=document.querySelector('#dlbody [data-imgrow]');e&&e.scrollIntoView({block:'center'})});await p.waitForTimeout(300);
+await p.screenshot({path:S+'/tests/v92/t131_item_'+M+'.png'});
+await p.evaluate(id=>openPick102(id),id);await p.waitForTimeout(800);
+log('gal',await p.evaluate(()=>[...document.querySelectorAll('#pk102 figure')].map(f=>[(f.querySelector('select')||f.querySelector('figcaption')).value||f.querySelector('figcaption')?.textContent,!!f.querySelector('.del')])));
+await p.screenshot({path:S+'/tests/v92/t131_gal_'+M+'.png'});
+log('hit',await p.evaluate(()=>{const b=document.querySelector('#pk102 figure:nth-child(2) .del');const r=b.getBoundingClientRect();const el=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return [el.tagName,el.className,el.textContent.slice(0,10)]}));await p.click('#pk102 figure:nth-child(2) .del');log('E',await p.evaluate(()=>window.ERRS||[]));await p.waitForTimeout(500);
+log('after del pic',await p.evaluate(id=>[JSON.stringify(IT[id]),[...document.querySelectorAll('#pk102 figure')].map(f=>{const s=f.querySelector('select');return s?s.value:f.querySelector('figcaption').textContent}),document.getElementById('toast').textContent],id));
+await p.click('#toast button');await p.waitForTimeout(500);
+log('undo',await p.evaluate(id=>[JSON.stringify(IT[id]),document.querySelectorAll('#pk102 figure').length],id));
+await p.click('#pk102 figure:nth-child(1) .del');await p.waitForTimeout(500);
+log('del main',await p.evaluate(id=>[JSON.stringify(IT[id]),[...document.querySelectorAll('#pk102 figure')].map(f=>{const s=f.querySelector('select');return s?s.value:f.querySelector('figcaption').textContent})],id));
+// store photo now main? delete it too
+const st=await p.evaluate(()=>[...document.querySelectorAll('#pk102 figure')].findIndex(f=>f.querySelector('.del')&&/ראשית|מהחנות/.test(f.textContent)));
+if(st>=0){await p.click(`#pk102 figure:nth-child(${st+1}) .del`);await p.waitForTimeout(500);log('del store',await p.evaluate(id=>[JSON.stringify(IT[id]),[...document.querySelectorAll('#pk102 figure')].map(f=>{const s=f.querySelector('select');return s?s.value:f.querySelector('figcaption').textContent}),galList(id).map(g=>g.n)],id))}
+await p.evaluate(id=>{IT[id]={img:'aaa1',pics:[{id:'bbb2',k:'קדימה'},{id:'ccc3',k:'צד'}],imgs:[{id:'ddd4',raw:1},{id:'eee5'}]};openPick102(id)},id);await p.waitForTimeout(500);
+log('labs',await p.evaluate(()=>[...document.querySelectorAll('#pk102 figure')].map(f=>{const s=f.querySelector('select');return s?s.value:f.querySelector('figcaption').textContent})));
+await p.selectOption('#pk102 figure:nth-child(3) select','גב');await p.waitForTimeout(400);
+log('צד→גב',await p.evaluate(id=>JSON.stringify(IT[id].pics),id));
+await p.selectOption('#pk102 figure:nth-child(6) select','חצי צד');await p.waitForTimeout(400);
+log('old→חצי צד',await p.evaluate(id=>[JSON.stringify(IT[id]),[...document.querySelectorAll('#pk102 figure')].map(f=>{const s=f.querySelector('select');return s?s.value:f.querySelector('figcaption').textContent})],id));
+await p.selectOption('#pk102 figure:nth-child(2) select','⭐');await p.waitForTimeout(400);
+log('קדימה→ראשית',await p.evaluate(id=>[JSON.stringify(IT[id]),[...document.querySelectorAll('#pk102 figure')].map(f=>{const s=f.querySelector('select');return s?s.value:f.querySelector('figcaption').textContent})],id));
+await p.screenshot({path:S+'/tests/v92/t131_gal2_'+M+'.png'});
+log('ERR',errs,await p.evaluate(()=>window.ERRS||[]));await b.close()})();

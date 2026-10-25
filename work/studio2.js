@@ -1,0 +1,106 @@
+/* ===== studio2: GPT import, fit memory, suggestions, cycling, calendar, compare, looks-per-item ===== */
+// 1) sources: GPT/clean image (cutimg) for avatar only — originals stay in the closet
+const GPTM=%%GPTM%%;function hasBack(id){return !!((IT[id]||{}).cutback||(GPTM[id]||{}).b)}
+srcOf=async function(slot,id,tf){const it=IT[id]||{};const gm=GPTM[id]||{};if(tf&&tf.raw)return await imgA(id);if(ST&&ST.view=='back'){if(it.cutback)return '/_blob/'+it.cutback;if(gm.b)return gm.b}if(!it.cutimg&&gm.f)return gm.f;if(it.cutimg)return '/_blob/'+it.cutimg;if(it.img)return '/_blob/'+it.img;const c=await getCut(id);if(c)return c.src;return cutBg(img(id))};
+// 2) fit memory: where you placed an item is remembered for next time
+autoTf=async function(slot,id,fresh){const f=(IT[id]||{}).fit;if(f&&!fresh)return {x:f.x,y:f.y,w:f.w,r:f.r||0};const s=await srcOf(slot,id);const [iw,ih]=await dims(s);const c=CM[id];const p=avPos(slot,iw,ih,(IT[id]||{}).cutimg?'cloth':c&&c[2]);return {x:p.x,y:p.y,w:p.w,r:0}};
+const FITT={};function saveFit(slot){if(!ST||ST.view=='back')return;const id=ST.items[slot],tf=ST.tf[slot];if(!id||!tf)return;clearTimeout(FITT[id]);FITT[id]=setTimeout(()=>putItem(id,{fit:{x:+tf.x.toFixed(2),y:+tf.y.toFixed(2),w:+tf.w.toFixed(2),r:tf.r||0}}),700)}
+let FSLOT=null;document.addEventListener('pointerdown',e=>{const l=e.target.closest('#sstage img.sl');FSLOT=l?l.dataset.slot:null});
+document.addEventListener('pointerup',()=>{if(FSLOT){saveFit(FSLOT);FSLOT=null}});
+document.addEventListener('change',e=>{if((e.target.id=='sw'||e.target.id=='sr')&&SSEL)saveFit(SSEL)});
+document.addEventListener('click',async e=>{const sa=e.target.closest('[data-sa="reset"]');if(sa&&SSEL&&ST.items[SSEL]){e.stopPropagation();pushH();const id=ST.items[SSEL];await putItem(id,{fit:null});ST.tf[SSEL]=Object.assign(await autoTf(SSEL,id,true),{});await drawStudio();toast('חזר למקום האוטומטי')}},true);
+// 3) cycle ◀ ▶ through matching items for the selected slot
+const _ps=paintSel;paintSel=function(){_ps();const slot=SSEL;if(!slot||!ST.items[slot])return;$('#ssel b').insertAdjacentHTML('afterend',`<span class="cyc"><button data-cyc="-1" title="הקודם">▶</button><button data-cyc="1" title="הבא">◀</button></span>`)};
+document.addEventListener('click',async e=>{const c=e.target.closest('[data-cyc]');if(!c||!SSEL)return;e.stopPropagation();const ids=drawerItems(SSEL);if(!ids.length)return;const i=ids.indexOf(ST.items[SSEL]);const n=ids[(i+ +c.dataset.cyc+ids.length)%ids.length];const keep=SSEL;await setItem(keep,n);SSEL=keep;paintSel()},true);
+// 4) "what's missing" suggestions strip
+const _pi=paintInfo;paintInfo=function(){_pi();const box=$('#ssug');if(!box)return;const has=ST.items;const main=has.dress||has.set||has.top||has.skirt;if(!main){box.innerHTML='';box.classList.add('hide');return}
+ const want=[];if(has.top&&!has.skirt)want.push('skirt');if(has.skirt&&!has.top)want.push('top');['shoes','belt'].forEach(s=>{if(!has[s])want.push(s)});if(ST.head!='wig'&&!has.scarf)want.push('scarf');if(!has.jewelry)want.push('jewelry');
+ const slot=want[0];if(!slot){box.innerHTML='<span class="ok">✓ הלוק שלם</span>';box.classList.remove('hide');return}
+ const save=DRF.fam;DRF.fam='';const ids=drawerItems(slot).slice(0,6);DRF.fam=save;const n=SLOTS.find(s=>s[0]==slot)[1];
+ box.classList.remove('hide');box.innerHTML=`<span>חסר/ה ${n}? מתאימים:</span>${ids.map(id=>`<button class="sg" data-sgadd="${slot}|${id}"><img src="${img(id)||TPH}" data-th="${id}" alt=""></button>`).join('')}<button data-sslot="${slot}">עוד…</button>`};
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-sgadd]');if(!b)return;e.stopPropagation();const [s,id]=b.dataset.sgadd.split('|');await setItem(s,id)},true);
+// 5) import GPT images (PNG with transparent background) — matched by file name, e.g. T4.png
+document.addEventListener('click',e=>{if(e.target.closest('#simport')){e.stopPropagation();$('#gptfiles').click()}},true);
+document.addEventListener('change',async e=>{if(e.target.id!='gptfiles'||!e.target.files.length)return;const fs=[...e.target.files];let a=null;try{a=await claude.use('assets')}catch(_){}
+ if(!a){toast('העלאה לא זמינה כאן. שלחי לי את הקבצים בצ׳אט ואכניס אותם');return}
+ const keys=Object.keys(D),low={};keys.forEach(k=>low[k.toLowerCase()]=k);let ok=0,bad=[];
+ for(const f of fs){let stem=f.name.replace(/\.[^.]+$/,'').trim();const isBack=/[_\- ](back|גב)$/i.test(stem);stem=stem.replace(/[_\- ](back|גב)$/i,'');const id=low[stem.toLowerCase()];if(!id){bad.push(f.name);continue}
+  toast(`מעלה ${ok+1}/${fs.length}…`);try{const r=await a.upload(f);await putItem(id,isBack?{cutback:r.id}:{cutimg:r.id,fit:null});ok++}catch(_){bad.push(f.name)}}
+ toast(`נקלטו ${ok} תמונות${bad.length?` · ${bad.length} לא זוהו (שם קובץ לא תואם)`:''}`);e.target.value='';if(ST)await drawStudio()});
+// 6) in item dialog: which saved looks use this item
+const _ao4=afterOpen;afterOpen=function(id){_ao4(id);const ls=Object.values(LOOKS).filter(l=>Object.values(l.items||{}).includes(id));
+ const ed=$('#dlbody .sim');const h=`<div class="inlooks"><h4>👗 מופיע ב-${ls.length} לוקים</h4>${ls.length?ls.map(l=>`<button data-sedit="${l.id}">${esc(l.name||'לוק')}</button>`).join(' '):'<span class="m" style="padding:0">עוד לא בלוק שמור</span>'}${(IT[id]||{}).cutimg?' <small>✨ יש תמונה נקייה להלבשה</small>':''}</div>`;
+ if(ed)ed.insertAdjacentHTML('afterbegin',h);else $('#dlbody').insertAdjacentHTML('beforeend',h)};
+// 7) album: calendar view + compare two looks
+let CAL=new Date();CAL.setDate(1);const CMP2=new Set();
+const _alb=albumHTML;albumHTML=async function(){let h=await _alb();const view=SET.albumView||'av';
+ h=h.replace('<button data-av="items"',`<button data-av="cal" aria-pressed="${view=='cal'}">📅 לוח</button><button data-av="items"`);
+ h=h.replace(/<button data-sdup="([^"]+)">⧉ שכפול<\/button>/g,(m0,id)=>m0+`<button data-cmp2="${id}" aria-pressed="${CMP2.has(id)}">⚖</button>`);
+ if(view!='cal')return h;
+ const y=CAL.getFullYear(),mo=CAL.getMonth();const first=new Date(y,mo,1).getDay(),days=new Date(y,mo+1,0).getDate();const by={};
+ Object.values(LOOKS).forEach(l=>{const d=l.date||l.created;if(!d)return;const dt=new Date(d);if(dt.getFullYear()==y&&dt.getMonth()==mo)(by[dt.getDate()]=by[dt.getDate()]||[]).push(l)});
+ const head=h.slice(0,h.indexOf('<div class="alb">'));
+ let g=`<div class="calh"><button data-calm="-1">‹</button><b>${CAL.toLocaleDateString('he-IL',{month:'long',year:'numeric'})}</b><button data-calm="1">›</button></div><div class="cal">${['א','ב','ג','ד','ה','ו','ש'].map(d=>`<span class="cd">${d}</span>`).join('')}`;
+ for(let i=0;i<first;i++)g+='<span></span>';const td=new Date();
+ for(let d=1;d<=days;d++){const ls=by[d]||[];g+=`<div class="cc${td.getDate()==d&&td.getMonth()==mo&&td.getFullYear()==y?' today':''}"><i>${d}</i>${ls.map(l=>`<button data-sedit="${l.id}">${esc((l.name||'לוק').slice(0,14))}</button>`).join('')}</div>`}
+ return head+g+'</div><p class="m" style="padding:0">התאריך נקבע בשמירת הלוק. לחיצה על לוק פותחת אותו לעריכה.</p>'};
+document.addEventListener('click',async e=>{const c=e.target.closest('[data-calm]');if(c){e.stopPropagation();CAL.setMonth(CAL.getMonth()+ +c.dataset.calm);renderHub();return}
+ const k=e.target.closest('[data-cmp2]');if(k){e.stopPropagation();const id=k.dataset.cmp2;CMP2.has(id)?CMP2.delete(id):CMP2.add(id);if(CMP2.size>2)CMP2.delete([...CMP2][0]);k.setAttribute('aria-pressed',CMP2.has(id));
+  if(CMP2.size==2){const html=[];for(const lid of CMP2){const l=LOOKS[lid];const S=Object.assign(newST(),{items:l.items||{},tf:(l.studio||{}).tf||{},base:(l.studio||{}).base||{top:'orig',skirt:'orig'},bg:(l.studio||{}).bg||'studio',head:(l.studio||{}).head||'hair'});
+    for(const [s,id2] of Object.entries(S.items))if(!S.tf[s]&&D[id2])S.tf[s]=await autoTf(s,id2);const ids=lookIds(S);
+    html.push(`<div class="cmpc"><div class="mst big">${await stageInner(S)}</div><b>${esc(l.name||'')}</b><small>${ids.length} פריטים${l.rating?' · '+'★'.repeat(l.rating):''}</small></div>`)}
+   $('#cmp2body').innerHTML=html.join('');$('#cmp2').showModal();CMP2.clear()}else toast('בחרי עוד לוק אחד להשוואה')}},true);
+// 8) keyboard arrows cycle selected item
+document.addEventListener('keydown',e=>{if(!$('#studio')?.open||!SSEL||e.target.matches('input,textarea,select'))return;if(e.key=='ArrowLeft'||e.key=='ArrowRight'){e.preventDefault();$(`[data-cyc="${e.key=='ArrowLeft'?1:-1}"]`)?.click()}});
+/* ===== two avatar bases + body-fit sizing ===== */
+const BASES={long:{name:'ארוך',img:'av/avatar.webp',head:'av/avatar_head.webp',recolor:true,neck:.185,sh:[.215,.74],waist:[.37,.47],knee:.72,ankle:.93},
+ short:{name:'קצר',img:'av/avatar2.webp',head:'av/avatar2_head.webp',recolor:false,neck:.195,sh:[.222,.72],waist:[.395,.49],knee:.73,ankle:.93}};
+function fitPos(slot,id,iw,ih,mode){const B=BASES[(ST&&ST.avbase)||SET.avbase||'long'];const k=(ih/iw)*AVR;const g=(CM[id]||[])[4];
+ const place=(rowFrac,rowW,cx,bodyY,bodyW,minW,maxW)=>{let w=bodyW/Math.max(rowW,.05);w=Math.max(minW,Math.min(maxW,w));const h=w*k;const top=bodyY-rowFrac*h;return {x:(.5-(cx-.5)*w)*100,y:(top+h/2)*100,w:w*100}};
+ if(g&&(!(IT[id]||{}).cutimg||g.bbox)){
+  if(g[0]=='s'&&['dress','set','top','outer'].includes(slot))return place(g[1],g[2],g[3],B.sh[0],B.sh[1]*(slot=='outer'?1.12:1.07),.45,1.7);
+  if(g[0]=='w'&&slot=='skirt'&&mode!='full')return place(g[1],g[2],g[3],B.waist[0],B.waist[1]*1.08,.4,1.7)}
+ // fallback by body landmarks
+ const tb=(T,Bt)=>{let w=(Bt-T)/k;w=Math.min(w,1.3);return {x:50,y:(T+w*k/2)*100,w:w*100}};const at=(x,y,w)=>({x:x*100,y:y*100,w:w*100});const bot=(Bt,w)=>({x:50,y:(Bt-w*k/2)*100,w:w*100});
+ switch(slot){case 'dress':case 'set':return tb(B.neck,B.ankle);case 'skirt':return tb(B.waist[0]-.01,B.ankle);case 'top':return tb(B.neck,B.waist[0]+.13);case 'outer':return tb(B.neck-.01,B.waist[0]+.25);
+  case 'hosiery':return tb(B.waist[0]+.2,B.ankle);case 'hairacc':return at(.5,B.neck-.17,.3);case 'belt':return at(.5,B.waist[0],.6);case 'shoes':return bot(.995,.42);case 'jewelry':return at(.5,B.neck+.035,.3);case 'scarf':return {x:50,y:(-.02+.9*k/2)*100,w:90};case 'bag':return at(.86,.52,.5);default:return at(.5,.5,.5)}}
+autoTf=async function(slot,id,fresh){const base=(ST&&ST.avbase)||'long';const f=(IT[id]||{}).fit;if(f&&!fresh&&(f.b||'long')==base)return {x:f.x,y:f.y,w:f.w,r:f.r||0};
+ const s=await srcOf(slot,id);const [iw,ih]=await dims(s);const c=CM[id];return Object.assign({r:0},fitPos(slot,id,iw,ih,(IT[id]||{}).cutimg?'cloth':c&&c[2]))};
+saveFit=function(slot){if(!ST||ST.view=='back')return;const id=ST.items[slot],tf=ST.tf[slot];if(!id||!tf)return;clearTimeout(FITT[id]);FITT[id]=setTimeout(()=>putItem(id,{fit:{b:ST.avbase||'long',x:+tf.x.toFixed(2),y:+tf.y.toFixed(2),w:+tf.w.toFixed(2),r:tf.r||0}}),700)};
+document.addEventListener('click',async e=>{const b=e.target.closest('#sbase');if(!b)return;e.stopPropagation();pushH();ST.avbase=ST.avbase=='short'?'long':'short';SET.avbase=ST.avbase;saveSet();
+ for(const k of Object.keys(ST.items))ST.tf[k]=await autoTf(k,ST.items[k]);b.textContent='🧍 בסיס '+BASES[ST.avbase].name;await drawStudio();toast(ST.avbase=='short'?'בסיס קצר: שרוול קצר וחצאית עד הברך':'בסיס ארוך: שרוול ארוך וחצאית ארוכה')},true);
+const _pt=paintTop;paintTop=function(){_pt();const b=$('#sbase');if(b)b.textContent='🧍 בסיס '+BASES[ST.avbase||'long'].name};
+// geometry for uploaded clean images (computed in the browser)
+const GEOC={};
+async function jsGeo(src,skirt){if(GEOC[src])return GEOC[src];const im=await ldImg(src);if(!im)return null;const W=120,H=Math.round(120*im.height/im.width);const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');x.drawImage(im,0,0,W,H);
+ const d=x.getImageData(0,0,W,H).data;const row=y=>{let a=-1,b=-1;for(let i=0;i<W;i++)if(d[(y*W+i)*4+3]>90){if(a<0)a=i;b=i}return a<0?[0,0,0]:[b-a+1,a,b]};
+ let y0=0;while(y0<H&&!row(y0)[0])y0++;let y1=H-1;while(y1>0&&!row(y1)[0])y1--;const h=y1-y0+1;
+ let g;if(skirt){const r=row(y0+Math.round(h*.02));g=['w',(y0+Math.round(h*.02))/H,r[0]/W,(r[1]+r[2])/2/W]}else{let mx=0;for(let y=y0;y<y0+h*.45;y++)mx=Math.max(mx,row(y)[0]);let y=y0;while(y<y0+h*.45&&row(y)[0]<.7*mx)y++;const r=row(y);g=['s',y/H,r[0]/W,(r[1]+r[2])/2/W]}
+ g.bbox=[y0/H,h/H];GEOC[src]=g;return g}
+autoTf=async function(slot,id,fresh){const base=(ST&&ST.avbase)||'long';const f=(IT[id]||{}).fit;if(f&&!fresh&&(f.b||'long')==base)return {x:f.x,y:f.y,w:f.w,r:f.r||0};
+ const s=await srcOf(slot,id);const [iw,ih]=await dims(s);const c=CM[id];const it=IT[id]||{};
+ if((it.cutimg||it.img||GPTM[id])&&['dress','set','top','outer','skirt'].includes(slot)){const g=await jsGeo(s,slot=='skirt');if(g){const save=CM[id];CM[id]=[iw,ih,'cloth',(save||[])[3],g];const p=fitPos(slot,id,iw,ih,'cloth');if(save)CM[id]=save;else delete CM[id];
+   // image may have empty margins: adjust for bbox
+   return Object.assign({r:0},p)}}
+ return Object.assign({r:0},fitPos(slot,id,iw,ih,it.cutimg?'cloth':c&&c[2]))};
+
+// tap 🔍 on a closet card or builder item to enlarge
+document.addEventListener('click',e=>{const z=e.target.closest('.card .zm,.di .zm');if(!z)return;e.stopPropagation();e.preventDefault();const im=z.closest('.card,.di').querySelector('img');if(im)openZoom(im.src)},true);
+
+
+// item dialog: show the clean (GPT) front/back versions
+const _ao5=afterOpen;afterOpen=function(id){_ao5(id);const g=GPTM[id];if(!g)return;const h=`<div class="gptv"><h4>✨ תמונה נקייה להלבשה</h4><div class="strip">${g.f?`<button class="mini" data-zoom="${g.f}"><img src="${g.f}" alt=""><span>חזית</span></button>`:''}${g.b?`<button class="mini" data-zoom="${g.b}"><img src="${g.b}" alt=""><span>גב</span></button>`:''}<button class="go" data-studio="${id}">👗 למדוד על האווטאר</button></div></div>`;const el=$('#dlbody .inlooks');if(el)el.insertAdjacentHTML('beforebegin',h);else $('#dlbody').insertAdjacentHTML('beforeend',h)};
+
+/* ===== Temu photo checklist (hub tab) ===== */
+/* v69: Temu screenshot checklist (old GPT flow) hidden */
+function shootHTML(){const by={};Object.keys(D).forEach(id=>{const x=D[id];if(!['t1','t2'].includes(x.src)||!['dresses','skirts'].includes(D[id].cat))return;const k=x.src+'|'+x.order;(by[k]=by[k]||[]).push(id)});
+ const seen=new Set();let n=0,done=0;let h='';
+ for(const a of ['t1','t2']){h+=`<h3>${a=='t1'?'טמו 1 (8711309)':'טמו 2 (9285464)'}</h3>`;
+  for(const [k,ids] of Object.entries(by).filter(([k])=>k.startsWith(a)).sort((p,q)=>dnum(D[q[1][0]].date)-dnum(D[p[1][0]].date))){
+   const u=ids.filter(id=>{const s=D[id].short+'|'+D[id].color;if(seen.has(s))return false;seen.add(s);return true});if(!u.length)continue;
+   h+=`<p class="m" style="padding:0;margin:10px 0 4px"><b>הזמנה ${k.split('|')[1].slice(-6)} · ${D[u[0]].date}</b></p><div class="shg">`;
+   for(const id of u){n++;const ok=(IT[id]||{}).shot||GPTM[id];if(ok)done++;h+=`<div class="shc${ok?' ok':''}"><button class="shi" data-zoom="${img(id)||TPH}" data-zth="${id}"><img src="${img(id)||TPH}" data-th="${id}" alt=""></button><b>${id}</b><small>${D[id].cat=='dresses'?'שמלה':'חצאית'} · ${esc(D[id].color||'')}</small><button data-shot="${id}" aria-pressed="${!!ok}">${ok?'✓ צולם':'סמני צולם'}</button></div>`}
+   h+='</div>'}}
+ return `<p>לחיצה על תמונה מגדילה אותה. בטמו: ההזמנות שלי ← ההזמנה ← הבגד ← תמונה שרואים בה את כל הבגד ← צילום מסך.</p><p><b>${done} מתוך ${n} צולמו</b></p>`+h}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-shot]');if(!b)return;e.stopPropagation();const id=b.dataset.shot;await putItem(id,{shot:!(IT[id]||{}).shot});renderHub()},true);
+const _rh3=renderHub;renderHub=async function(){if($('#hub')?.open&&TAB=='shoot'){$('#htabs').innerHTML=TABS.map(([k,l])=>`<button data-tab="${k}" aria-pressed="${TAB==k}">${l}</button>`).join('');const st=$('#hbody').scrollTop;$('#hbody').innerHTML=shootHTML();$('#hbody').scrollTop=st;return}return _rh3()};

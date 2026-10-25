@@ -1,0 +1,24 @@
+const {chromium,devices}=require('playwright');const M=process.argv[2]||'phone';const O=process.argv[3];
+(async()=>{const b=await chromium.launch();const c=await b.newContext(M=='phone'?{...devices['Pixel 7'],hasTouch:true}:{viewport:{width:1280,height:850}});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.addInitScript(()=>{try{localStorage.setItem('tips77','1')}catch(_){};
+ const smp=async()=>({text:''});smp.limits=async()=>({maxPromptBytes:262144,images:{maxCount:5,maxInputBytes:1e7,mediaTypes:['image/jpeg']}});
+ smp.json=async(inp,o)=>{(window.__calls=window.__calls||[]).push({len:inp.length,imgs:(o.images||[]).length,grid:/numbered grid \(1-(\d+)/.exec(inp)?.[1]});return /numbered grid/.test(inp)?{order:[3,1],sure:true}:{what:'x',ids:['T104']}};
+ window.claude={use:async k=>k=='sample'?smp:null};
+ document.addEventListener('DOMContentLoaded',()=>{const st=document.createElement('style');st.textContent='img{max-width:100%}';document.head.appendChild(st)})});
+await p.goto('http://localhost:8765/book.html');await p.waitForTimeout(3000);
+await p.evaluate(()=>openOrders123('P0-097-00209037804151091'));await p.waitForTimeout(1000);
+await p.screenshot({path:O+M+'_order.png'});
+await p.evaluate(()=>document.querySelectorAll('[data-o3item]')[4].click());await p.waitForTimeout(1200);
+console.log('dlg open',await p.evaluate(()=>[document.querySelector('#dlg').open,document.querySelector('#ord123').open,CUR]));
+await p.evaluate(()=>{const x=document.querySelector('#dlg .dhead .dx');(x&&x.offsetParent?x:null)?x.click():document.querySelector('#dlg').close()});await p.waitForTimeout(800);
+console.log('after close',await p.evaluate(()=>[document.querySelector('#dlg').open,document.querySelector('#ord123').open,document.querySelector('#ord123 .o3it.hl')?.dataset.o3row,document.querySelector('#ord123 h3').textContent]));
+await p.screenshot({path:O+M+'_back.png'});
+await p.setInputFiles('#ord123 [data-o3cam]','/mnt/project-files/closet/p5g/T47_wrong_upload_15-01.jpg');await p.waitForTimeout(3000);
+console.log('calls',await p.evaluate(()=>window.__calls));await p.screenshot({path:O+M+'_ophoto.png'});
+await p.evaluate(()=>document.querySelector('[data-o3="back"]').click());await p.waitForTimeout(500);
+console.log('back to',await p.evaluate(()=>document.querySelector('#ord123 .o3oh b')?.textContent));
+// item link inside dlg -> orders, then close orders: dlg should not come back weirdly
+await p.evaluate(()=>{document.querySelector('#ord123').close();openItem('T11')});await p.waitForTimeout(900);
+await p.evaluate(()=>document.querySelector('#dlg .o3dl').click());await p.waitForTimeout(800);
+console.log('link',await p.evaluate(()=>[document.querySelector('#dlg').open,document.querySelector('#ord123').open,document.querySelector('#ord123 .o3it.hl')?.dataset.o3row]));
+console.log('ERR',errs,await p.evaluate(()=>JSON.stringify(window.ERRS||[]).slice(0,600)));await b.close()})();

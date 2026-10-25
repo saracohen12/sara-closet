@@ -1,0 +1,22 @@
+---
+name: wardrobe-v123-orders
+description: v123 (23/10) "📦 ההזמנות שלי" order tracker in Sara's closet: files, item fields (got/miss/lk/s), photo → Claude identifies order
+metadata:
+  type: project
+---
+v123–125 (2026-10-23, thread "מעקב משלוחים לפי הזמנות"): orders123.js + orders123.css, appended LAST in book3.py (after fix121.js / fix93.css). Sources in /mnt/project-files/closet/src_changes/v123/ (book3.py, book4_tpl.html with beforePut names lk/miss, test t123.js). Build base = src_changes/v122/work_full_v122.zip (the other thread's full work folder), not closet_source.zip.
+- Orders = D[id].order (69–71 orders: t1 14, t2 23, sh ~34). Label: Temu "קבלה N" (from D.file), Shein "הזמנה XXXX".
+- Item fields: IT.got 'y'/'n' (existing), IT.miss 1 (new, missing from parcel), IT.lk 'y'/'n' (new like/dislike), IT.s kept/ret (existing), IT.mb 1 + IT.mbr model|size|other (v124 מתלבטת, cleared when s set), IT.lk may be "m" (לא בטוחה), IT.note (existing note field). v124: closing #dlg opened from an order reopens the order (armBack); per-order camera compares only that order (grid ≤40). "לא סימנתי" icon is ⚪, ❓ = מתלבטת. v125: IT.fix+fixk[], nofit, bad, fab/fs/ft/rb (fabric, collapsed details), rsent (returned), refunded (existing); top counters are filters; filter = bottom sheet (V.sheet); rp/rs views group returns by order. Sources src_changes/v125. Unmarked = "❓ לא סימנתי" (all items start unmarked except transit orders = בדרך).
+- Photo flow uses capability sample with images:true (declared on publish together with assets, db, downloads, user). Step 1: photo + text catalog → up to 8 ids; step 2: photo + numbered grid of thumbnails → ranking.
+- Entry: #ord123b in .h9cta (home), .o3dl link in item window, search words הזמנ/משלוח/חסר in #q strip, card badge .ms123 "❌ חסר". window.openOrders123(order,id).
+Related: [[wardrobe-artifact]], [[sara-task-table-rule]].
+v126 (23/10): imgup.js addPics crashed with "reading 'pics'" when every upload failed (errors were swallowed, then IT[id].pics on undefined). Now upl() retries once and shrinks >6MB, upWhy() shows the reason. Sara's phone uploads on 23/10 morning never reached assets (none after 22/10 23:31); cause unknown (watch ERRS 'addPics …').
+v127 (other thread): fix127.js after orders123.js, IT.blt belt mark. v128 (mine): 🎀 blt row in orders item row for clothing (not belts). Coordination: whoever publishes next builds on the other's src_changes/vNNN; Artifact refuses a publish not built on the live version (read the saved copy, then republish).
+v129 (23/10): assets.upload returned store_unavailable (platform, transient). imgup.js: upl() shrinks >2.5MB to 2200px, 4 tries (0/2/5/9s, last tries 1600px); transient failures go to IndexedDB queue closet_upq (upqAdd/upqRun every 60s, on load, online, visibility), pill #upq129.
+v130: a.upload sometimes never resolves (Sara stuck on "שומרת…"); each try now withTO 45s, shrink >1.5MB to 2000px, IDB ops time out 3–4s, errors logged to db collection "uplog" (read it with ArtifactData list uplog).
+
+v132 (23/10): a new Shein order is added from app screenshots in shein/inv_all.py (I['MU9J'] + TOT). Also needed: allurls.json key [], crops in shein/app/n131 + app_imgs.json, and the order added to INTRANSIT plus NOTEO in book3.py. Sources are in src_changes/v132. Adding items changes th/<cat>.json+js, so publish them with root=build/pub plus files, or the cards stay blank (my v132 slip, fixed in 133). New items also need cutouts: copy the crops to srcimg/<id>.jpg and run cutall.py for those ids only (pip install rembg). v134 cut MU9J+15Y6.
+v135: autoCrop failed on screenshots whose product photo has a plain beige background (flat rows). Second pass counts only black/white flat rows as phone UI. Old uploads: imgs entry c:0 means uncropped.
+v139 (23/10): ORD[k].pd = Sara finished uploading photos for the order; IT.pn y/n = item needs photos (default n for kids/men/makeup/other/hosiery/hair/night). putOrd(k,obj) merges.
+v142–144 (23/10, Shabbat pass): upload queue stores bytes (Android IDB Blob became unreadable → 149 instant store_unavailable on 2 stuck photos); lost banner #lost142; Shein return date '~ (משוער)'; 320px fixes; PO-/P0- search. Log: /mnt/project-files/closet/shabbat/log_orders.md (worked 17:17–17:24 IL, ~7 min; report real times)
+v145–147 (23/10): cardEl cache in book4_tpl (img()/card() were the top cost), content-visibility on order rows, rowRefresh on marks; offline → queue at once, HEIC refused; returns lists use retRow + totals.

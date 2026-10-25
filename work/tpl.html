@@ -1,0 +1,45 @@
+<title>כפילויות בהזמנות טמו</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700&family=Assistant:wght@400;600;700&display=swap">
+<style>
+/* Layout: one column of duplicate groups, each a row of order-receipt thumbnails side by side */
+:root{--bg:#f3f1f6;--card:#ffffff;--fg:#221e2a;--muted:#6d6578;--line:#e2dde9;--accent:#7a2e5c;--a1:#2f5d8a;--a2:#8a4a2f;
+--display:"Frank Ruhl Libre",Georgia,serif;--body:"Assistant",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17141c;--card:#221e29;--fg:#ece8f1;--muted:#a59db0;--line:#352f3f;--accent:#e08cbd;--a1:#8db8e6;--a2:#e6a98d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17141c;--card:#221e29;--fg:#ece8f1;--muted:#a59db0;--line:#352f3f;--accent:#e08cbd;--a1:#8db8e6;--a2:#e6a98d;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding-block:32px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:20px}
+h1{font-family:var(--display);font-size:2.1rem;margin:0;text-wrap:balance;line-height:1.15}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+.sum{display:flex;flex-wrap:wrap;gap:10px 28px;padding:14px 18px;border-block:1px solid var(--line);font-variant-numeric:tabular-nums}
+.sum b{font-family:var(--display);font-size:1.5rem;color:var(--accent);display:block;line-height:1.1}
+.sum span{color:var(--muted);font-size:.9rem}
+.grp{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:12px}
+.grp header{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+h2{font-family:var(--display);font-size:1.25rem;margin:0}
+.var{color:var(--muted);font-size:.95rem}
+.cnt{margin-inline-start:auto;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}
+.row{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.row.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:520px){.row.c3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.it{margin:0;display:grid;gap:8px;min-width:0}
+.it img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;background:#fff;max-width:100%}
+figcaption{display:flex;flex-wrap:wrap;gap:4px 8px;font-size:.88rem;align-items:baseline}
+.acc{font-weight:700;font-size:.78rem;letter-spacing:.02em;padding:1px 8px;border-radius:99px;border:1px solid currentColor}
+.a1{color:var(--a1)}.a2{color:var(--a2)}
+.d{font-variant-numeric:tabular-nums;color:var(--muted)}
+.fn{font-weight:700;background:var(--line);padding:1px 8px;border-radius:4px;font-size:.82rem}
+.s{flex-basis:100%;color:var(--muted);overflow-wrap:anywhere;font-size:.82rem}
+.p{color:var(--muted);font-size:.8rem;font-variant-numeric:tabular-nums;flex-basis:100%}
+.real{flex-basis:100%;font-size:.9rem;font-variant-numeric:tabular-nums}.real b{font-size:1.1rem;color:var(--accent)}
+.note{margin:0;font-size:.9rem;color:var(--muted)}
+.foot{color:var(--muted);font-size:.88rem;margin:0}
+</style>
+<div class="wrap" dir="rtl" lang="he">
+<h1>כפילויות בהזמנות טמו</h1>
+<p class="lead">כל פריט שהוזמן יותר מפעם אחת באותו צבע ובאותה מידה, עם התמונה מתוך ההזמנה, החשבון, שם הקובץ, תאריך ההזמנה והמחיר.</p>
+<div class="sum"><div><b>%%GROUPS%%</b><span>פריטים שהוזמנו פעמיים או יותר</span></div><div><b>%%EXTRAS%%</b><span>עותקים מיותרים</span></div><div><b>₪%%EXTRA%%</b><span>ששילמת בפועל על העותקים המיותרים</span></div></div>
+%%CARDS%%
+<p class="foot">"שילמת בפועל" מחושב כך: הסכום שחויב בכרטיס על ההזמנה, פחות הקרדיט שהוחזר עליה, מחולק בין הפריטים לפי המחיר של כל פריט בקבלה. ההנחות של טמו והקופונים חלים על כל ההזמנה, ולכן זו הערכה מדויקת אבל לא מחיר רשמי לכל פריט. ההזמנות משיין עוד לא נכללו.</p>
+</div>
