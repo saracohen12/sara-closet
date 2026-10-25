@@ -76,8 +76,8 @@ const TOOLS=[
  ['הארון',[['👗','הארון שלי',()=>{shut();openCloset163()}],['🗃','רשימה כללית',()=>{shut();openGen161()}],['📊','פרטים נוספים (מספרים וסיכומים)',()=>{shut();tap('.h9tiles [data-h9="more"]')}],['👯','גלריית כפולים',()=>{shut();openDups89()}],['☑','בחירה מרובה',()=>{shut();tap('[data-sel83]')}],['✂','פירוק סטים',()=>{shut();openSplit85()}],['🏠','סדר בבית',hub('home')],['🎚','סינון',()=>{shut();tap('#fb')}]]],
  ['הזמנות וכסף',[['📦','ההזמנות שלי',()=>{shut();openOrders123()}],['💰','החזרות וקרדיטים',hub('money')],['📊','תובנות והוצאות',hub('insights')],['🔎','לפני הזמנה',hub('check')]]],
  ['לוקים',[['👗','בניית לוק',()=>{shut();openStudio()}],['✨','הלוקים שלי',hub('looks')],['♥','האלבום',hub('album')],['📅','לוח שבועי',hub('week')]]],
- ['אווטאר ותמונות',[['🧍‍♀️','מה חסר לאווטאר',()=>{shut();openMiss77()}],['⬆','העלאת כמה גיליונות',()=>{shut();window.openBU83?openBU83():fire('data-bu83open')}],['🔍','בדיקת כל התנוחות',()=>{shut();openQA83()}],['📋','פרומטים ל-GPT',()=>{shut();openPrompts80()}]]],
- ['פיתוח',[['📋',()=>`כל המשימות (${(window.TASKS172||[]).filter(t=>t.s=='open'||t.s=='wait').length} פתוחות)`,()=>openTasks172()],['🗺','התוכנית לפיתוח',()=>openPlan172()],['📝','דף הפרומטים ל-GPT','https://claude.ai/artifact/N7e2QR7GghzC89Cc2F153a'],['🧾','פרומטים בתוך האתר',()=>{shut();openPrompts80()}],['📜','יומן גרסאות','https://claude.ai/artifact/VKEMzizpkT8jy5QvkpEBzJ']]],
+ ['אווטאר ותמונות',[['🧍‍♀️','מה חסר לאווטאר',()=>{shut();openMiss77()}],['⬆','העלאת כמה גיליונות',()=>{shut();window.openBU83?openBU83():fire('data-bu83open')}],['🔍','בדיקת כל התנוחות',()=>{shut();openQA83()}],['📋','פרומטים ל-GPT (אווטאר 360)',()=>{shut();R360.prompts()}]]],
+ ['פיתוח',[['📋',()=>`כל המשימות (${(window.TASKS172||[]).filter(t=>t.s=='open'||t.s=='wait').length} פתוחות)`,()=>openTasks172()],['🗺','התוכנית לפיתוח',()=>openPlan172()],['📝','דף הפרומטים ל-GPT','https://claude.ai/artifact/N7e2QR7GghzC89Cc2F153a'],['🧾','פרומטים בתוך האתר',()=>{shut();R360.prompts()}],['📜','יומן גרסאות','https://claude.ai/artifact/VKEMzizpkT8jy5QvkpEBzJ']]],
  ['מערכת',[['💾','גיבוי לקובץ',()=>fire('data-bk83')],['🛠','משהו לא עובד',()=>{shut();openBug77()}],['❓','איך משתמשים',()=>{shut();tap('#helpb')}]]],
 ];
 const ACT={};
@@ -91,7 +91,7 @@ function open172(){let d=$1('#ad172');if(!d){d=document.createElement('dialog');
   ${TOOLS.map(([g,L])=>`<div class="ad172g">${g}</div><div class="ad172t">${L.map(t=>{const lab=typeof t[1]=='function'?t[1]():t[1];return typeof t[2]=='string'?`<a href="${t[2]}" target="_blank" rel="noopener"><i>${t[0]}</i>${lab}</a>`:`<button data-ad172="${reg(t[2])}"><i>${t[0]}</i>${lab}</button>`}).join('')}</div>`).join('')}
   <div class="ad172f">${ver}</div></div>`;
  if(!d.open)d.showModal();d.scrollTop=0}
-window.openAdmin172=open172;
+window.openAdmin172=open172;window.TOOLS172=TOOLS;window.WAIT172=WAIT;   // v183: the one search lists these too
 
 // ---- v173 "פיתוח": the task table (tasks.md, built into the page) and the development plan
 const st2=document.createElement('style');st2.textContent=`

@@ -1,0 +1,39 @@
+/* v182: נגישות */
+#a11yb{font:inherit;font-weight:800;font-size:.95rem;letter-spacing:-.5px;min-width:44px;min-height:44px;border-radius:999px;border:1px solid var(--z-line,var(--line,#ddd));background:var(--z-surface,var(--card,#fff));color:var(--z-ink,var(--fg,#222));cursor:pointer;padding:0 10px}
+dialog#a11y{width:min(460px,100vw);max-width:100vw;max-height:94dvh;margin:auto auto 0;padding:0;border:0;border-radius:24px 24px 0 0;background:var(--z-solid,var(--card,#fff));color:var(--z-ink,var(--fg,#222));overflow:auto;font-family:var(--z-body,inherit);box-sizing:border-box}
+@media (min-width:600px){dialog#a11y{margin:auto;border-radius:24px}}
+dialog#a11y::backdrop{background:rgba(20,12,8,.55)}
+#a11y .ay{padding:0 18px 20px}
+#a11y .ayh{position:sticky;top:0;display:flex;align-items:center;gap:10px;padding:16px 0 6px;background:inherit;z-index:1}
+#a11y h2{flex:1;margin:0;font-family:var(--z-display,inherit);font-weight:var(--z-dw,700);font-size:1.25rem}
+#a11y h3{margin:10px 0 8px;font-size:.92rem;color:var(--z-muted,var(--muted,#666))}
+#a11y .ayx{width:44px;height:44px;border-radius:50%;border:1px solid var(--z-line,#ddd);background:none;color:inherit;font-size:1rem;cursor:pointer}
+#a11y .ays{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+#a11y .ays button{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;min-height:76px;padding:8px 4px;border-radius:16px;border:1.5px solid var(--z-line,#ddd);background:var(--z-surface,#fff);color:inherit;font:inherit;cursor:pointer}
+#a11y .ays b{line-height:1}#a11y .ays span{font-size:.76rem}
+#a11y .ays button[aria-checked=true]{border-color:var(--z-acc,#b4532c);box-shadow:0 0 0 3px var(--z-acc-soft,#f3d9cc);font-weight:700}
+#a11y .ayt{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding:12px 14px;border-radius:16px;border:1px solid var(--z-line,#ddd);background:var(--z-surface,#fff);cursor:pointer}
+#a11y .ayt span{display:flex;flex-direction:column;gap:2px;min-width:0}#a11y .ayt small{color:var(--z-muted,#666);font-size:.8rem;line-height:1.35}
+#a11y .ayt input{appearance:none;-webkit-appearance:none;flex:none;width:52px;height:30px;border-radius:999px;background:var(--z-line-strong,#bbb);position:relative;cursor:pointer;transition:background .2s;margin:0}
+#a11y .ayt input::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:inset-inline-start .2s}
+#a11y .ayt input:checked{background:var(--z-acc,#b4532c)}#a11y .ayt input:checked::after{inset-inline-start:25px}
+#a11y .ayp{margin:14px 0 0;padding:12px 14px;border-radius:14px;background:var(--z-tile,#f3efe9);line-height:1.6}
+#a11y .ayb{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+#a11y .ayb button{min-height:48px;border-radius:999px;font:inherit;font-weight:700;cursor:pointer;border:1px solid var(--z-line,#ddd);background:var(--z-surface,#fff);color:inherit}
+#a11y .ayb .ayok{background:var(--z-pri,#2a1d17);color:var(--z-pri-ink,#fff);border:0}
+#a11y :focus-visible{outline:3px solid var(--z-focus,#b4532c);outline-offset:2px}
+
+/* high contrast: the same design, with full-strength text and lines and no see-through cards */
+html[data-hc]{--z-bar:var(--z-solid);--glass:var(--z-solid);--z-muted:#3d3129;--z-line:rgba(40,25,15,.45);--z-line-strong:rgba(40,25,15,.75);--z-surface:var(--z-solid);--z-ink:#120c08;--muted:#3d3129;--line:#8c7c70;--line2:#6d5d52;--fg:#120c08;--ink:#120c08}
+html[data-hc][data-d180=night]{--z-muted:#efe3d6;--z-line:rgba(255,235,210,.5);--z-line-strong:rgba(255,235,210,.8);--z-ink:#fff;--muted:#efe3d6;--line:#a8937f;--fg:#fff;--ink:#fff}
+html[data-hc][data-d180=terra]{--z-onhero:#fff}
+html[data-hc] *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;text-shadow:none!important}
+html[data-hc] a{text-decoration:underline}
+html[data-hc] :focus-visible{outline-width:4px!important;outline-offset:3px!important}
+html[data-hc] button,html[data-hc] input,html[data-hc] select,html[data-hc] textarea{border-color:var(--z-line-strong,#6d5d52)}
+
+/* no movement */
+html[data-still] *,html[data-still] *::before,html[data-still] *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+/* the bottom bar keeps its size: five labels must fit side by side on a phone */
+html:not(#x):not(#y) .bnav button{font-size:min(.74rem,12.5px)!important}
+html[data-hc] .bnav,html[data-hc] #top .h9bar{background:var(--z-solid,var(--card,#fff))!important}

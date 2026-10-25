@@ -366,14 +366,17 @@ function prompt(id){const K=KIND[kindOf(id)];const [t,how,body,len,n=1,g='cloth'
  P.push(n>1?`החזירי ${n} תמונות נפרדות, אחת לכל ${g=='jw'?'תכשיט':'חלק'}. כל תמונה היא אותו גיליון של 8 משבצות (2 שורות של 4), באותו יחס גובה-רוחב, בלי טקסט ובלי מספרים.`:'החזירי תמונה אחת: אותו גיליון של 8 משבצות (2 שורות של 4), באותו יחס גובה-רוחב, בלי טקסט ובלי מספרים.');
  return P.join('\n\n')}
 let MK=null,MKID='';
-function make(id){MKID=id;
+function mkDlg(){
  if(!MK){MK=document.createElement('dialog');MK.id='r3mk';MK.dir='rtl';MK.setAttribute('aria-labelledby','r3mkt');document.body.appendChild(MK);
   MK.addEventListener('click',async e=>{if(e.target===MK)return MK.close();const b=e.target.closest('button');if(!b)return;
    if(b.classList.contains('mkx'))return MK.close();
    if(b.dataset.mk=='photo'){try{let u=ph(MKID);if(!u||u==TPH){await thLoad(cat(MKID));u=ph(MKID)}const bl=await (await fetch(u)).blob();saveFile('item-'+MKID+'.jpg',bl)}catch(_){toast_('לא הצלחתי. אפשר צילום מסך של המוצר')}return}
    if(b.dataset.mk=='sheet'){try{const bl=await (await fetch('a8/sheet.jpg'+V)).blob();saveFile('avatar-8-angles.jpg',bl)}catch(_){toast_('לא הצלחתי לשמור')}return}
    if(b.dataset.mk=='copy'){const t=MK.querySelector('textarea');let ok=false;try{await navigator.clipboard.writeText(t.value);ok=true}catch(_){try{t.select();ok=document.execCommand('copy')}catch(__){}}
-    b.textContent=ok?'✓ הועתק – עכשיו ל-GPT':'סימנתי, להעתיק ידנית';if(!ok){MK.querySelector('details').open=true;t.select()}setTimeout(()=>b.textContent='📋 להעתיק את הפרומפט',2600)}})}
+    b.textContent=ok?'✓ הועתק – עכשיו ל-GPT':'סימנתי, להעתיק ידנית';if(!ok){const d=MK.querySelector('details');if(d)d.open=true;t.select()}setTimeout(()=>b.textContent='📋 להעתיק את הפרומפט',2600)}
+   if(b.dataset.mk=='closet'){MK.close();open();TAB='closet';CAT='all';Q='';const q=dlg.querySelector('.r3q');if(q)q.value='';paintTabs();toast_('לוחצים על בגד שכתוב עליו "עוד לא ב-360"')}})}
+ return MK}
+function make(id){MKID=id;mkDlg();
  const k=KIND[kindOf(id)];
  MK.innerHTML=`<div class="mk"><div class="mkh"><h3 id="r3mkt">"${esc(nm(id))}" על האווטאר</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
   <div class="mki"><img alt="" data-th="${id}" src="${ph(id)}"><p>לפריט הזה עוד אין גיליון 360, אז הוא עוד לא יכול להופיע על האווטאר. ככה מכינים אותו (${k[4]>1?k[4]+' תמונות חוזרות':'2 דקות'}):</p></div>
@@ -385,11 +388,33 @@ function make(id){MKID=id;
   <details><summary>לראות את הפרומפט</summary><textarea readonly rows="10">${esc(prompt(id))}</textarea></details></div>`;
  thl([id]);if(!MK.open)MK.showModal()}
 
+// every GPT prompt for the 360 avatar in one place (Sara 21:39 "איפה הפרומפטים")
+const WIGP=`מצורפות שתי תמונות.
+התמונה הראשונה: הפאה שלי מכמה כיוונים.
+התמונה השנייה: גיליון של הדמות שלי ב-8 זוויות מסביב, שתי שורות של 4 משבצות.
+
+ערכי את הגיליון השני, אל תציירי אותו מחדש. שני דבר אחד בלבד: במקום כיסוי הראש הבז׳ שימי את הפאה שלי מהתמונה הראשונה. אותו צבע, אותו אורך, אותה חלוקה ואותו נפח. כיסוי הבז׳ נעלם לגמרי. השיער יושב על הראש בגודל טבעי, לא גבוה ולא רחב מדי. בצד ובגב צרי את השיער כמו שהוא נראה באמת מהכיוון הזה.
+
+הפנים לא משתנים בכלל: אותם פנים, אותה הבעה, אותו חיוך, אותו עור. הראש באותו גודל ובאותו מקום בדיוק בכל משבצת.
+
+אל תשני שום דבר אחר: אותו גיליון, אותו סדר זוויות, אותו מיקום ואותו גודל של הדמות בכל משבצת, אותה תנוחה, אותו רקע, אותם קווים לבנים בין המשבצות. השמלה בצבע עור נשארת.
+
+החזירי תמונה אחת: אותו גיליון של 8 משבצות (2 שורות של 4), באותו יחס גובה-רוחב, בלי טקסט ובלי מספרים.`;
+function prompts(){mkDlg();MKID='';
+ MK.innerHTML=`<div class="mk"><div class="mkh"><h3 id="r3mkt">📋 פרומפטים ל-GPT</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
+  <ol class="mks">
+   <li><b>בגד מהארון:</b> בסטודיו, בלשונית "👗 הארון שלי", לוחצים על בגד שכתוב עליו "עוד לא ב-360". נפתח חלון עם תמונת הבגד, הבובה והפרומפט של הבגד הזה בדיוק.<span class="mkb"><button type="button" data-mk="closet" class="mkp">👗 לבחור בגד</button></span></li>
+   <li><b>הפאה שלי:</b> מצרפים קודם תמונה של הפאה (מכמה כיוונים), אחר כך את הבובה ב-8 זוויות, ומדביקים את הפרומפט. הכל בהודעה אחת.<span class="mkb"><button type="button" data-mk="sheet">⬇ הבובה ב-8 זוויות</button><button type="button" data-mk="copy" class="mkp">📋 להעתיק את הפרומפט</button></span>
+    <details><summary>לראות את הפרומפט</summary><textarea readonly rows="10">${esc(WIGP)}</textarea></details></li>
+   <li><b>את מה שחוזר מ-GPT</b> שולחים לי בצ׳אט, ואני מלבישה את זה על האווטאר בכל 8 הזוויות.</li>
+  </ol></div>`;
+ if(!MK.open)MK.showModal()}
+
 // ---------- open ----------
 function open(){if(!dlg)build();
  document.querySelectorAll('dialog[open]').forEach(d=>{if(d!==dlg&&d.id!='r3mk')try{d.close()}catch(_){}});
  if(!dlg.open){dlg.showModal();document.documentElement.classList.add('r3on')}paintCats();paintTabs();paintRoom();paintMiss();big.show(0);
- if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!sessionStorage.getItem('r3spun')){sessionStorage.setItem('r3spun',1);setTimeout(()=>big.play(true),400)}}
+ if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!document.documentElement.dataset.still&&!sessionStorage.getItem('r3spun')){sessionStorage.setItem('r3spun',1);setTimeout(()=>big.play(true),400)}}
 function close(){if(big)big.stop();if(dlg&&dlg.open)dlg.close();document.documentElement.classList.remove('r3on')}
 // every "בניית לוק" goes here: openStudio() = the studio as it was left; openStudio(look) = a saved look; openStudio(null,{slot:id,...}) = try one item / a suggested look
 function openWith(look,items){MISS=[];
@@ -435,6 +460,6 @@ const TODAY={state:homeState,
  onchange:f=>HOMEL.add(f),
  wear:()=>{const s=homeState();ST=Object.assign(clone(DEF),clone(s));MISS=[];keep();open();redraw()}};
 
-window.R360={open,close,make,openWith,Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
+window.R360={open,close,make,prompts,openWith,Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
  ready:()=>Object.keys(READY).filter(id=>D[id]),readyCount:()=>{const P=pool();return [P.filter(isReady).length,P.length]},nm,ph};
 })();

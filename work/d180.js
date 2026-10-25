@@ -70,6 +70,7 @@ function home(){
   st.el.addEventListener('click',()=>T.wear());
   let on=true;try{on=localStorage.getItem('h181spin')!='0'}catch(_){}
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)on=false;
+  try{if(JSON.parse(localStorage.getItem('a11y')||'{}').still)on=false}catch(_){}   // נגישות: בלי תנועה
   if(on)setTimeout(()=>st.play(),1200);else st.onplay(false);
   s.addEventListener('click',e=>{if(e.target.closest('[data-r3today]'))T.wear();if(e.target.closest('[data-r3next]')){if(T.pinned())T.unpin();else T.next()}})}
  s.addEventListener('click',e=>{if(e.target.closest('[data-r3]'))R360&&R360.open()});
