@@ -40,6 +40,10 @@ for i in range(1,9):
     al=np.zeros((H,360)); al[core]=1; al[band]=soft[band]
     for r in range(cut-8,cut):
         f=(cut-r)/9; row=lay[r]&~hang[r]; al[r][row]=np.minimum(al[r][row],f)
+    # below the neck only hair belongs to the wig: matte by darkness, so the beige dress around the ends drops out
+    Lw=wW.astype(float).mean(2); hm=np.clip((170-Lw)/55,0,1)
+    low=np.zeros((H,360),bool); low[cut:]=True
+    al[low]=np.minimum(al[low],hm[low])
     al=ndi.gaussian_filter(al,0.6)
     backA=ndi.gaussian_filter(back.astype(float),0.8)
     a1=al[...,None];b1=backA[...,None]
