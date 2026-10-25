@@ -1,0 +1,61 @@
+<title>הזמנות שיין</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700&family=Assistant:wght@400;600;700&display=swap">
+<style>
+/* Layout: order ledger — totals band, notes, then month sections with one receipt card per order */
+:root{--bg:#f3f2f4;--card:#fff;--fg:#232026;--muted:#6f6875;--line:#e2dee6;--accent:#5b2d55;--warn:#9a5a00;--warnbg:#fbefdc;--ok:#2f6b45;--okbg:#e2f1e7;
+--display:"Frank Ruhl Libre",Georgia,serif;--body:"Assistant",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161419;--card:#211e25;--fg:#ede9f0;--muted:#a69fad;--line:#35303b;--accent:#d9a2cf;--warn:#f0b866;--warnbg:#3a2c16;--ok:#8fd3a6;--okbg:#1b3324;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#161419;--card:#211e25;--fg:#ede9f0;--muted:#a69fad;--line:#35303b;--accent:#d9a2cf;--warn:#f0b866;--warnbg:#3a2c16;--ok:#8fd3a6;--okbg:#1b3324;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding-block:32px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:24px}
+h1{font-family:var(--display);font-size:clamp(2rem,6vw,2.8rem);margin:0;line-height:1.1}
+.lead{margin:0;color:var(--muted);max-width:62ch}
+.totals{display:flex;flex-wrap:wrap;gap:12px 32px;padding-block:14px;border-block:1px solid var(--line);font-variant-numeric:tabular-nums}
+.totals b{display:block;font-family:var(--display);font-size:1.6rem;line-height:1.1;color:var(--accent)}
+.totals span{color:var(--muted);font-size:.88rem}
+.notes{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.notes li{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+.cats{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}
+.cats li{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:3px 12px;font-size:.9rem;display:flex;gap:6px}
+.cats b{color:var(--accent);font-variant-numeric:tabular-nums}
+h2{font-family:var(--display);font-size:1.6rem;margin:0 0 12px;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline}
+h2 span{font-family:var(--body);font-size:.95rem;color:var(--muted);font-weight:400;font-variant-numeric:tabular-nums}
+h3{font-family:var(--display);font-size:1.2rem;margin:0}
+.list{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.ord{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px;align-content:start;min-width:0}
+.ord header{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.dt{font-weight:700}.no{color:var(--muted);font-size:.8rem;font-family:ui-monospace,monospace;direction:ltr}
+.amt{margin-inline-start:auto;font-weight:700;font-variant-numeric:tabular-nums;font-size:1.05rem}
+.flags{display:flex;gap:6px;flex-wrap:wrap}
+.flag{font-size:.75rem;font-weight:700;border-radius:4px;padding:1px 8px}
+.warn{background:var(--warnbg);color:var(--warn)}.ok{background:var(--okbg);color:var(--ok)}
+.note{margin:0;font-size:.88rem;color:var(--muted)}
+.ord ul{margin:0;padding:0;list-style:none;display:grid;gap:4px}
+.ord li{display:flex;gap:10px;align-items:center;font-size:.9rem;border-top:1px solid var(--line);padding-top:6px}
+.th{width:56px;height:75px;object-fit:cover;border-radius:6px;flex:none;background:var(--line);cursor:zoom-in}
+.tx{display:flex;gap:6px;flex-wrap:wrap;align-items:baseline;flex:1;min-width:0}
+#zoom{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:9}
+#zoom.on{display:flex}#zoom img{max-width:80vw;max-height:80vh;border-radius:10px;background:#fff}
+.nm{flex:1 1 60%;min-width:0}.cl{color:var(--muted);font-size:.82rem}
+.sz{font-size:.75rem;font-weight:700;border:1px solid var(--line);border-radius:4px;padding:0 6px;direction:ltr}
+.pr{font-weight:700;font-variant-numeric:tabular-nums;margin-inline-start:auto}
+.foot{color:var(--muted);font-size:.85rem;margin:0}
+</style>
+<div class="wrap" dir="rtl" lang="he">
+<header style="display:grid;gap:8px"><h1>הזמנות שיין</h1><p class="lead">כל ההזמנות משיין מאוגוסט עד אוקטובר 2026, כפי שהן מופיעות במיילים של "אישור הזמנה" ו"החזר כספי".</p></header>
+<div class="totals"><div><b>%%N%%</b><span>הזמנות</span></div><div><b>₪%%TOT%%</b><span>חויב בכרטיס</span></div><div><b>₪%%REF%%</b><span>החזרים</span></div><div><b>₪%%NET%%</b><span>עלות נטו</span></div><div><b>%%ITEMS%%</b><span>פריטים שמופיעים במיילים</span></div></div>
+<ul class="notes">
+<li><b>חשבוניות:</b> בחשבונית של שיין יש את כל הפריטים ואת המחיר ששולם על כל אחד. ההזמנה מ-4/10 כבר מלאה. שלחי עוד חשבוניות, ואשלים גם את שאר ההזמנות.</li>
+<li><b>מה חסר:</b> שיין לא כותבים במייל מחיר לכל פריט, ומציגים עד 6 פריטים בהזמנה. בהזמנות שמסומנות "ייתכן שחסרים פריטים" יש כנראה עוד פריטים. בהזמנה מ-3/9, לדוגמה, מייל ההחזר הראה 8 פריטים, ובאישור ההזמנה הופיעו רק 6.</li>
+<li><b>ההזמנה מ-3/9 (₪288.32) חזרה לשיין</b> ולא הגיעה אלייך, וקיבלת החזר מלא. אם עדיין רצית את השמלות והצעיפים ממנה, צריך להזמין אותם מחדש.</li>
+<li><b>מידות:</b> באוגוסט רוב הבגדים הוזמנו במידות M ו-L, ובאוקטובר במידה S. בנוסף, שמלת הערב מ-9/8 היא XS, ושמלת החולצה החומה מ-25/8 הוזמנה גם ב-S וגם ב-M.</li>
+<li><b>קרדיט בארנק שיין:</b> ב-16/8 נכנסו ₪168.19 לארנק על החזרה של הזמנה מיולי (GSH18G24R00155F). כדאי לבדוק שהשתמשת בהם.</li>
+</ul>
+<div style="display:grid;gap:8px"><h3>מה קנית (לפי המיילים)</h3><ul class="cats">%%CATS%%</ul></div>
+%%SECS%%
+<p class="foot">המספרים לקוחים מהמיילים של שיין. את המחיר לכל פריט ואת פירוט ההנחות אפשר לראות רק באפליקציה, תחת "ההזמנות שלי".</p>
+</div>
+<div id=zoom><img alt=""></div>
+<script>const z=document.getElementById('zoom');document.addEventListener('click',e=>{if(e.target.matches('img.th')){z.querySelector('img').src=e.target.src;z.classList.add('on')}else if(z.contains(e.target))z.classList.remove('on')});</script>
