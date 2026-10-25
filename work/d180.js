@@ -35,9 +35,12 @@ function home(){
  const top=document.getElementById('top'),bar=top&&top.querySelector('.h9bar');if(!bar||document.getElementById('h180'))return!!bar;
  const s=document.createElement('div');s.id='h180';s.setAttribute('role','region');s.setAttribute('aria-label','פתיחה'); // not a <section>: the closet filter treats every <section> as a category
  s.innerHTML=`<div class="z-txt"><div class="z-hi"></div><h1 class="z-t">מה לובשים <em>היום?</em></h1><div class="z-sub"></div>
-  <div class="z-cta"><button type="button" class="z-go" data-r3><span aria-hidden="true">✦</span> להתלבש · 360°</button><button type="button" class="z-2" data-h9="hub">הלוקים שלי</button></div>
   </div>
-  <div class="z-av"><div class="z-stage"></div><div class="z-cap"><span class="z-360">360°</span><span class="z-wear"></span></div></div>
+  <div class="z-lkbox"><div class="z-lk" aria-live="polite"><div class="z-lkh"><b>הלוק של היום</b><small class="z-lko"></small></div><div class="z-lki"></div>
+   <div class="z-lka"><button type="button" class="z-lkw" data-r3today>👗 ללבוש בסטודיו</button><button type="button" class="z-lkn" data-r3next>↻ הצעה אחרת</button></div></div>
+  <div class="z-cta"><button type="button" class="z-go" data-r3><span aria-hidden="true">✦</span> לסטודיו · 360°</button><button type="button" class="z-2" data-h9="hub">הלוקים שלי</button></div>
+  <button type="button" class="z-rdy" data-r3></button></div>
+  <div class="z-av"><div class="z-stage"></div><div class="z-cap"><span class="z-360">360°</span><span class="z-wear">הלוק של היום</span></div></div>
   <div class="z-chips h9cta"></div>`; // also .h9cta: the orders/returns/admin scripts put their buttons into the first .h9cta
  bar.after(s);
  const hi=top.querySelector('.h9hi'),sub=top.querySelector('.h9sub');if(hi)s.querySelector('.z-hi').appendChild(hi);if(sub)s.querySelector('.z-sub').appendChild(sub);
@@ -45,10 +48,30 @@ function home(){
  const chips=s.querySelector('.z-chips');const gather=()=>['#ord123b','#ret152b','.h9adm'].forEach((q,k)=>{const b=document.querySelector('#top '+q);if(b&&b.parentNode!==chips){b.classList.add('z-chip');b.style.order=k;chips.appendChild(b)}});
  gather();new MutationObserver(gather).observe(top,{childList:true,subtree:true});
  const tiles=top.querySelector('.h9tiles');if(tiles)s.after(tiles);
- if(window.R360){const st=R360.Stage(s.querySelector('.z-stage'),{speed:200});const cap=s.querySelector('.z-wear');
-  const upd=()=>{const w=R360.wearing();cap.textContent=w;cap.title=w};upd();setInterval(upd,4000);
-  st.el.addEventListener('click',()=>R360.open());
-  if(!matchMedia('(prefers-reduced-motion: reduce)').matches)setTimeout(()=>st.play(true),1200)}
+ // v181: the avatar here wears the look of the day, or the look she pinned in the studio (Sara 25/10 20:59, 21:17); it turns slowly, ⏸/▶ stops it on her face
+ if(window.R360){const T=R360.today;const st=R360.Stage(s.querySelector('.z-stage'),{speed:1700,state:T.state,today:1,fade:1});
+  const av=s.querySelector('.z-av');const ctl=document.createElement('div');ctl.className='z-avc';
+  ctl.innerHTML=`<button type="button" class="z-pp" aria-label="עצירת הסיבוב">⏸</button><div class="z-hds" role="radiogroup" aria-label="על הראש בדף הראשי"></div>`;av.appendChild(ctl);
+  const pp=ctl.querySelector('.z-pp'),hds=ctl.querySelector('.z-hds');
+  st.onplay=on=>{pp.textContent=on?'⏸':'▶';pp.setAttribute('aria-label',on?'עצירת הסיבוב':'להפעיל סיבוב');pp.setAttribute('aria-pressed',!on)};
+  const spin=on=>{try{localStorage.setItem('h181spin',on?'1':'0')}catch(_){}if(on)st.play();else{st.stop();st.show(0)}};
+  pp.onclick=()=>spin(!st.playing());
+  hds.innerHTML=T.heads().map(h=>`<button type="button" role="radio" data-zh="${h.k}" aria-label="${h.n}"><img alt="" src="${h.src}"><span>${h.n}</span></button>`).join('');
+  hds.onclick=e=>{const b=e.target.closest('[data-zh]');if(b)T.setHead(b.dataset.zh)};
+  const paintLk=()=>{const ids=T.ids();const n=ids.map(R360.nm);const pin=T.pinned();
+   hds.querySelectorAll('[data-zh]').forEach(b=>b.setAttribute('aria-checked',b.dataset.zh==T.head()));
+   s.querySelector('.z-lkh b').textContent=pin?'📌 הלוק שבחרת':'הלוק של היום';s.querySelector('.z-wear').textContent=pin?'הלוק שבחרת':'הלוק של היום';
+   s.querySelector('.z-lki').innerHTML=ids.map((id,i)=>`<button type="button" class="z-lkc" data-open="${id}" aria-label="${n[i].replace(/"/g,'&quot;')}"><img alt="" data-th="${id}" src="${R360.ph(id)}"></button>`).join('');
+   s.querySelector('.z-lko').textContent=n.join(' · ');
+   s.querySelector('.z-lkw').textContent=pin?'👗 לשנות בסטודיו':'👗 ללבוש בסטודיו';s.querySelector('.z-lkn').textContent=pin?'↺ להצעה של היום':'↻ הצעה אחרת';
+   try{new Set(ids.map(id=>curCat(id))).forEach(c=>thLoad(c).then(()=>thApply(TH)))}catch(_){}
+   const [r,all]=R360.readyCount();s.querySelector('.z-rdy').innerHTML=`<b>${r}</b> מתוך ${all} בגדים כבר על האווטאר · <u>להוסיף עוד</u>`};
+  paintLk();setTimeout(paintLk,2500);T.onchange(paintLk);
+  st.el.addEventListener('click',()=>T.wear());
+  let on=true;try{on=localStorage.getItem('h181spin')!='0'}catch(_){}
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)on=false;
+  if(on)setTimeout(()=>st.play(),1200);else st.onplay(false);
+  s.addEventListener('click',e=>{if(e.target.closest('[data-r3today]'))T.wear();if(e.target.closest('[data-r3next]')){if(T.pinned())T.unpin();else T.next()}})}
  s.addEventListener('click',e=>{if(e.target.closest('[data-r3]'))R360&&R360.open()});
  return true}
 function tryHome(n=0){if(!home()&&n<40)setTimeout(()=>tryHome(n+1),250)}
