@@ -57,8 +57,10 @@ function build(){dlg=document.createElement('dialog');dlg.id='gs183';dlg.dir='rt
   if(d.gf!=null){remember(Q);dlg.close();filterCloset(Q);return}
   if(d.grx!=null){try{localStorage.removeItem(RK)}catch(_){}paint()}})}
 let TL=[];
+// v186: the smart closet's "where is it / what is happening with it" (search "כביסה", "מגירה", "ארון לבן"…)
+const where185=(id,n)=>{try{const w=window.SC185?SC185.where(id):'';return n?' '+norm(w)+' ':w}catch(_){return ''}};
 function card(id){const [k,s]=status(id);const x=D[id]||{};
- return `<button type="button" class="gsi" data-gi="${id}"><span class="gsp"><img alt="" loading="lazy" data-th="${id}" src="${ph(id)}"></span><span class="gsn">${esc(nm(id))}</span><small>${esc([catName(cat(id)),x.color].filter(Boolean).join(' · '))}</small>${s?`<em class="gss ${k}">${s}</em>`:''}</button>`}
+ return `<button type="button" class="gsi" data-gi="${id}"><span class="gsp"><img alt="" loading="lazy" data-th="${id}" src="${ph(id)}"></span><span class="gsn">${esc(nm(id))}</span><small>${esc([catName(cat(id)),x.color].filter(Boolean).join(' · '))}</small>${where185(id)?`<small class="gs185">${esc(where185(id))}</small>`:''}${s?`<em class="gss ${k}">${s}</em>`:''}</button>`}
 function group(key,title,rows,n,html){if(!rows.length)return '';const lim=MORE[key]?999:n;
  return `<div class="gsg" role="group" aria-label="${esc(title)}"><h3>${title} <small>${rows.length}</small></h3><div class="gsl gsl-${key}">${rows.slice(0,lim).map(html).join('')}</div>${rows.length>lim?`<button type="button" class="gsm" data-gm="${key}">עוד ${rows.length-lim}</button>`:''}</div>`}
 function paint(){if(!dlg)return;const box=dlg.querySelector('.gsb');const q=norm(Q);
@@ -67,7 +69,7 @@ function paint(){if(!dlg)return;const box=dlg.querySelector('.gsb');const q=norm
    `<div class="gsg"><h3>אפשר לנסות</h3><div class="gschips">${SUG.map(x=>`<button type="button" data-gs="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>
    <p class="gsnote">מחפש בכל האתר: בגדים בארון, ברשימה הכללית ובהזמנות, לוקים, וכל המסכים והכלים.</p>`;return}
  const ws=words(Q),H=hay();
- const ids=Object.keys(D).filter(id=>hit(H[id],ws)).sort((a,b)=>score(b,ws,q)-score(a,ws,q));
+ const ids=Object.keys(D).filter(id=>hit(H[id]+where185(id,1),ws)).sort((a,b)=>score(b,ws,q)-score(a,ws,q));
  const live=ids.filter(id=>{const k=status(id)[0];return !k||k=='tr'}),other=ids.filter(id=>{const k=status(id)[0];return k&&k!='tr'});
  const L=looks(ws,live.slice(0,40));
  TL=tools();const T=TL.map((t,i)=>[t,i]).filter(([t])=>hit(' '+t.k+' ',ws));
