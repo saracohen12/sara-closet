@@ -42,7 +42,7 @@ Repo layout:
 - `work/` = the FULL closet source at **v179** (work_full_v122.zip + every overlay v123–v179 applied in order; version.txt=179). Verified on 25/10: it builds (793 items, 600 cuts, badge "גרסה 179"). Use it as `src/work`.
 - `closet/avatar8/` (360 avatar: cap/, dressed/ 7 items, hip/, new2/ = new cover doll + offs.json + wiglayer.py + wig_prompts.md + pages/, live_v15/, p360.js, sty.js, st/).
 - `closet/` audit_v68, avatar_360, avatar_new (5-pose sheets), p5g, plan_smart_closet, previews, prompts, shabbat, ties, v69–v83, tasks.md.
-- `docs/` = same as the docs/ files on this archive page.
+- `docs/` = same as the docs/ files on this archive page, plus `docs/conversations/` = the old chats (Sara's messages verbatim, Claude replies shortened; main thread up to 25/10 12:31).
 Copy `closet/` back to `/mnt/project-files/closet/` in the new project (tasks.md must be at /mnt/project-files/closet/tasks.md).
 Plain files on this archive page (`docs/`): tasks.md (349 rows, the full request ledger), memory/ (36 memory files), avatar8/HANDOFF_new_avatar.md, site_changelog_README.md (per-version notes v24–v122), audit_v68_*, plan_smart_closet.html. Read them with Artifact read + path.
 NOT copied (superseded): closet_source.zip / closet_site_ready.zip (the Oct-20 import) and the intermediate src_changes/vNNN folders – all already inside work/.
