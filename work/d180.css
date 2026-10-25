@@ -276,3 +276,14 @@ html[data-d180=terra] #top>#lotd77,html[data-d180=terra] #top>#wk83,html[data-d1
 html[data-d180=terra] #top h3{font-size:1.6rem!important;line-height:1.1!important;letter-spacing:-.01em}
 html[data-d180=terra] #urgent h3{font-size:1.35rem!important}
 html[data-d180=terra] .h9cat .h9im{border-radius:4px!important}
+/* v185: spin speed on the home avatar (🐢 —— 🐇) */
+#h180 .z-spd{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border-radius:999px;background:var(--z-surface);border:1px solid var(--z-line);color:var(--z-ink);box-sizing:border-box}
+#h180 .z-spd span{font-size:1rem;line-height:1}
+#h180 .z-spd input{width:110px;height:28px;margin:0;accent-color:var(--z-acc);cursor:pointer}
+#h180 .z-spd input:focus-visible{outline:3px solid var(--z-acc);outline-offset:3px;border-radius:6px}
+html[data-d180=night] #h180 .z-spd{background:#fbf6f0;color:#2a201b;border-color:rgba(233,184,134,.5)}
+html[data-d180=night] #h180 .z-spd input{accent-color:#b4532c}
+html[data-d180=terra] #h180 .z-spd{background:rgba(255,246,238,.94);color:#3a2216;border-color:transparent}
+html[data-d180=terra] #h180 .z-spd input{accent-color:#a8431f}
+/* terra on a phone: the controls (head, ⏸, speed) sit under the avatar, not over her skirt (Sara's 22:53 screenshot) */
+@media (max-width:700px){html[data-d180=terra] #h180 .z-avc{position:static;margin-top:12px}}

@@ -31,6 +31,8 @@ for i in views:
     hair=(ndi.binary_closing(hair,iterations=1)&(core|lite))|hair
     hair=ndi.binary_fill_holes(hair)&fig|hair
     head=ndi.binary_fill_holes(fig&(Y<p['cut']))
+    # v185: thin stray strands drawn away from the head (a pale arc above her forehead in the half-left back view) read as a scratch: gone
+    dk_=np.hypot(*np.mgrid[-2:3,-2:3])<=2.1;head&=ndi.binary_dilation(ndi.binary_opening(head,structure=dk_),iterations=1)
     # hair continues below the cut only if it is joined to the head
     lbh,nh=ndi.label(hair|head);keep=np.unique(lbh[head]);hb=np.isin(lbh,keep[keep>0])&hair;hb&=Y>=p['cut']
     # not over the doll's neck (the wig's shadow under the chin is not hair) unless really dark
@@ -64,14 +66,29 @@ for i in views:
     # edge pixels carry the wig's backdrop: nearest solid colour
     al=np.clip((al-.12)/.86,0,1)   # a thinner rim
     # every see-through edge pixel carries some of the wig's blue backdrop: give it the colour of the nearest solid pixel 2px inside
-    sol2=ndi.binary_erosion(al>.97,iterations=1)
-    _,(iy,ix)=ndi.distance_transform_edt(~sol2,return_indices=True);Wd=W.copy();bd=(al>0)&~sol2;Wd[bd]=W[iy[bd],ix[bd]]
+    # v185 (Sara 22:41 "בעיה בעין"): no see-through holes inside the head. In the half-left view a thin strand beside her cheek was half see-through,
+    # so the backdrop showed as white specks by the eye. Holes are made solid in the colour of the hair around them (taking the backdrop out of
+    # those pale pixels gave a black bar). The outer edge of the head is then softened a little so the thin strand does not look cut with scissors.
+    hole=ndi.binary_erosion(ndi.binary_fill_holes(al>.5),iterations=1)&(Y<p['cut'])&(al<.97)
+    hs=((core|lite)&(al>.97)).astype(np.float32);Wf=W.astype(np.float32)
+    num=np.stack([ndi.gaussian_filter(Wf[...,j]*hs,2.5) for j in range(3)],2);den=ndi.gaussian_filter(hs,2.5)[...,None]
+    HC=np.where(den>1e-3,num/np.maximum(den,1e-3),Wf).clip(0,255).astype(np.uint8)
+    Wn=W.copy();Wn[hole]=HC[hole];al[hole]=1
+    rim=(Y<p['cut'])&ndi.binary_dilation(al>.5,iterations=2)&~ndi.binary_erosion(al>.5,iterations=2);al[rim]=ndi.gaussian_filter(al,.7)[rim]
+    sol2=ndi.binary_erosion(al>.97,iterations=1);src=sol2&(L[...,0]<84)   # eye whites and teeth never colour an edge
+    # edge colour = the mean of the solid pixels around it (one nearest pixel copied a dark line 4px wide beside her cheek)
+    sf=src.astype(np.float32);Wnf=Wn.astype(np.float32)
+    num=np.stack([ndi.gaussian_filter(Wnf[...,j]*sf,1.5) for j in range(3)],2);den=ndi.gaussian_filter(sf,1.5)[...,None]
+    _,(iy,ix)=ndi.distance_transform_edt(~src,return_indices=True);E=np.where(den>.02,num/np.maximum(den,1e-3),Wnf[iy,ix]).clip(0,255).astype(np.uint8)
+    Wd=Wn.copy();bd=(al>0)&~sol2;Wd[bd]=E[bd]
+    # GPT drew a near-black line where the far hair meets her cheek: lifted halfway to the hair colour around it
+    dk=(Y<p['cut'])&(L[...,0]<14)&~ndi.binary_erosion(al>.5,iterations=4)&(al>0);Wd[dk]=((Wd[dk].astype(np.float32)+HC[dk])/2).astype(np.uint8)
     o=np.concatenate([Wd,np.clip(al*255,0,255)[...,None]],2).astype(np.uint8);o[o[...,3]==0]=0
     nm=('wb' if BEH else 'w')+str(i)
     Image.fromarray(o).save(f'out/{nm}.png')
     # the doll without her head (rows above rm, soft over 4 rows) – mask saved for the bases
     if not BEH:
-        rmv=np.clip((p['rm']-Y)/4,0,1)*ndi.binary_dilation(dfig,iterations=2)
+        rmv=np.clip((p["rm"]-Y)/4,0,1)*ndi.binary_dilation(dfig,iterations=6)   # v185: wide enough to take the cover's pale rim too (it showed past the smaller wig)
         rmv=ndi.gaussian_filter(rmv,.6)
         np.save(f'out/rm{i}.npy',rmv.astype(np.float32))
         # preview on the blue photo: inpaint the head away, then the wig

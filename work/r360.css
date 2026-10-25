@@ -18,7 +18,7 @@ dialog#r360::backdrop{background:var(--z-bg)}
 .r3s:active{cursor:grabbing}
 .r3s canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0}
 .r3s canvas.on{opacity:1}
-.r3s.slow canvas{transition:opacity .45s ease-in-out}
+.r3s.slow canvas{transition:opacity var(--r3f,.45s) ease-in-out}
 #r360 .r3ha{display:flex;gap:6px}
 #r360 .r3pin{min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--z-line);background:var(--z-surface);font-weight:600;font-size:.88rem;white-space:nowrap}
 @media (max-width:560px){#r360 .r3pin,#r360 .r3save{padding:0 12px;font-size:.84rem}#r360 .r3h{gap:8px;padding-inline:12px}}
@@ -176,3 +176,14 @@ dialog#r3cmp::backdrop,dialog#r3sh::backdrop{background:rgba(20,12,8,.55)}
 #r3sh .snote{margin:10px 0 0;font-size:.86rem;line-height:1.5}
 #r3sh .snote:empty{display:none}
 #r3cmp :focus-visible,#r3sh :focus-visible{outline:3px solid var(--z-focus,#b4532c);outline-offset:2px}
+/* v185 (Sara 22:41): "📌 לדף הראשי" – clear on the studio, on every saved look, and in the looks album; it jumps home and the avatar there glows */
+#r360 .r3pin{background:var(--z-acc,#b4532c);color:var(--z-acc-ink,#fff);border-color:transparent}
+#r360 .r3lp{display:block;width:100%;min-height:40px;margin-top:5px;padding:0 8px;border-radius:999px;border:1px solid var(--z-line);background:var(--z-surface);color:var(--z-ink);font:inherit;font-size:.8rem;font-weight:600;cursor:pointer}
+#r360 .r3lp:focus-visible,#r360 .r3pin:focus-visible{outline:3px solid var(--z-acc,#b4532c);outline-offset:2px}
+.lb .lb185{background:var(--z-acc,#b4532c)!important;color:var(--z-acc-ink,#fff)!important;font-weight:600}
+@media (prefers-reduced-motion:no-preference){
+ html:not([data-still]) #r360 .r3pin.r3nudge{animation:r3nudge 1s ease-in-out 3}
+ html:not([data-still]) #h180 .z-av.z-pin185 .r3s{animation:z185 .9s ease-in-out 2}
+}
+@keyframes r3nudge{50%{transform:scale(1.08);box-shadow:0 0 0 6px var(--z-acc-soft,rgba(180,83,44,.25))}}
+@keyframes z185{50%{box-shadow:0 0 0 6px var(--z-acc,#b4532c),0 20px 50px rgba(0,0,0,.25)}}

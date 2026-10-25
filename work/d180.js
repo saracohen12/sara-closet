@@ -51,8 +51,15 @@ function home(){
  // v181: the avatar here wears the look of the day, or the look she pinned in the studio (Sara 25/10 20:59, 21:17); it turns slowly, ⏸/▶ stops it on her face
  if(window.R360){const T=R360.today;const st=R360.Stage(s.querySelector('.z-stage'),{speed:1700,state:T.state,today:1,fade:1});
   const av=s.querySelector('.z-av');const ctl=document.createElement('div');ctl.className='z-avc';
-  ctl.innerHTML=`<button type="button" class="z-pp" aria-label="עצירת הסיבוב">⏸</button><div class="z-hds" role="radiogroup" aria-label="על הראש בדף הראשי"></div>`;av.appendChild(ctl);
+  ctl.innerHTML=`<button type="button" class="z-pp" aria-label="עצירת הסיבוב">⏸</button><div class="z-hds" role="radiogroup" aria-label="על הראש בדף הראשי"></div>
+   <label class="z-spd"><span aria-hidden="true">🐢</span><input type="range" min="1" max="7" step="1" aria-label="מהירות הסיבוב"><span aria-hidden="true">🐇</span></label>`;av.appendChild(ctl);
   const pp=ctl.querySelector('.z-pp'),hds=ctl.querySelector('.z-hds');
+  // v185 (Sara 22:41 "הסיבוב מדי לאט, אני רוצה לשלוט במהירות"): 7 speeds, a full turn from 14 seconds down to 1.6; saved on this phone; moving it starts the spin
+  const SPD=[1700,1150,800,560,390,270,200],rg=ctl.querySelector('.z-spd input');let sp=4;try{const v=+localStorage.getItem('h185spd');if(v>=1&&v<=7)sp=v}catch(_){}
+  const spTxt=v=>['הכי לאט','לאט','קצת לאט','רגיל','מהר','מהר מאוד','הכי מהר'][v-1];
+  rg.value=sp;rg.setAttribute('aria-valuetext',spTxt(sp));st.speed(SPD[sp-1]);
+  rg.addEventListener('input',()=>{const v=+rg.value;rg.setAttribute('aria-valuetext',spTxt(v));st.speed(SPD[v-1]);try{localStorage.setItem('h185spd',v)}catch(_){}if(!st.playing())spin(true)});
+  rg.addEventListener('change',()=>(window.toast||(()=>{}))('🔄 מהירות: '+spTxt(+rg.value)));
   st.onplay=on=>{pp.textContent=on?'⏸':'▶';pp.setAttribute('aria-label',on?'עצירת הסיבוב':'להפעיל סיבוב');pp.setAttribute('aria-pressed',!on)};
   const spin=on=>{try{localStorage.setItem('h181spin',on?'1':'0')}catch(_){}if(on)st.play();else{st.stop();st.show(0)}};
   pp.onclick=()=>spin(!st.playing());

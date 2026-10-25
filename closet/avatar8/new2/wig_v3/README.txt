@@ -9,3 +9,10 @@ Method (no cutting on the face any more – v2's "hair around her own face" was 
                 BEH=1 → wb1/2/8 (hair behind neck and shoulders, front views). out/cmp<i>.png = doll | on photo | on cream.
  4. live3.py  – turn.json on the layers (premultiplied); head-less doll bases: nh<i> (photo, head inpainted with the backdrop) and ch<i> (cut-out, head alpha 0).
 Site (v184): r360.js paint() uses nh/ch when head=='w' so no cap can peek out; a8/w*.webp, wb1/2/8, nh*, ch*, t_w.webp. Old v2 files in ../wig_v2/before_v184.
+v185 (25/10 23:20, Sara 22:41 "בעיה בעין" + 22:53 "הסיבובים לא שווים, לפעמים קטנה לפעמים גדולה"):
+ - holes inside the head are solid in the colour of the hair around them; edge pixels take the mean colour of the solid pixels around them (one nearest pixel
+   copied a 4px black bar beside her cheek in view 8); GPT's near-black line there lifted halfway; outer head edge softened; thin stray strands removed.
+ - ONE head size for all 8 views: total scale k*s = 0.97 of the raw sheet in every view (it was 0.90–1.15 from hand-matching the doll's own head,
+   which is removed anyway). Kept attached at the neck: anchor = neck centre at cut+3 (views 1,2,4,5,6,8), throat front for the profiles (3: left edge, 7: right edge).
+   View 4 raised 7px (its head sat 10px lower than the rest). View 7 rm 78→84 (the doll's chin stuck out under the smaller wig chin).
+ - doll head removal widened (dilation 6) so the cover's pale rim does not show past the wig. Old p3.json values: git history (v184).

@@ -24,7 +24,7 @@ const CLASH={d:['b','s'],b:['d'],s:['d']};   // a dress takes the top and the sk
 const LACE={d:149};
 const CAM=[{k:'black',n:'שחור',c:[24,24,26]},{k:'green',n:'ירוק כהה',c:[28,52,40]},{k:'navy',n:'כחול כהה',c:[30,38,66]},{k:'nude',n:'בז׳',c:[206,182,158]},{k:'white',n:'לבן',c:[242,240,234]},{k:'',n:'בלי',c:null}];
 const HEADS=[{k:'c',n:'הכיסוי הבסיסי',src:'a8/t_c.webp'},{k:'w',n:'פאה',src:'a8/t_w.webp'}];  // v184: the wig from her 8-angle sheet (25/10 22:17), whole head incl. face, on a head-less doll
-Object.entries(READY).forEach(([id,r])=>{if(r.head)HEADS.push({k:r.k[0],id})});
+Object.entries(READY).forEach(([id,r])=>{if(r.head)HEADS.push({k:r.k[0],id,src:'a8/t_'+r.k[0]+'.webp'})});   // v185: her avatar wearing it (the shop photo was often not loaded yet on the home row → an empty circle)
 const CATS=[['all','הכל'],['ready','✓ כבר על האווטאר'],['dresses','שמלות'],['tops','חולצות'],['sweaters','סוודרים'],['skirts','חצאיות'],['sets','סטים'],['outer','ז׳קטים ומעילים'],['scarves','כיסויי ראש'],['shoes','נעליים'],['belts','חגורות'],['jewelry','תכשיטים'],['bags','תיקים']];
 const CATIDS=new Set(CATS.slice(2).map(c=>c[0]));
 const DEF={on:{b:1,s:1,n:1,g:1,j:1,e:1},head:'c',tuck:0,wb:0,cam:'black',bg:''};
@@ -112,6 +112,7 @@ function Stage(host,opt={}){
  api.stop=()=>{if(tm){clearInterval(tm);tm=null;api.onplay&&api.onplay(false)}};
  api.play=(once)=>{api.stop();let n=0;tm=setInterval(()=>{api.show(cur+1);n++;if(once&&n>=8)api.stop()},opt.speed||170);api.onplay&&api.onplay(true)};
  api.playing=()=>!!tm;
+ api.speed=ms=>{opt.speed=ms;el.style.setProperty('--r3f',Math.min(450,Math.round(ms*.6))+'ms');if(tm)api.play()};   // v185: the home spin speed she chooses
  el.addEventListener('pointerdown',e=>{api.stop();sx=e.clientX;si=cur;moved=false;try{el.setPointerCapture(e.pointerId)}catch(_){}});
  el.addEventListener('pointermove',e=>{if(sx==null)return;const step=Math.max(22,el.clientWidth/9);const d=Math.round((sx-e.clientX)/step);if(d)moved=true;api.show(si+d)});
  const end=()=>{sx=null};el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
@@ -137,7 +138,7 @@ function build(){
  dlg=document.createElement('dialog');dlg.id='r360';dlg.setAttribute('aria-label','הסטודיו');dlg.setAttribute('dir','rtl');
  dlg.innerHTML=`<div class="r3w">
  <header class="r3h"><button type="button" class="r3x" aria-label="סגירה">✕</button><div class="r3tt"><small>האווטאר שלך · 360°</small><h2>הסטודיו</h2></div>
-  <div class="r3ha"><button type="button" class="r3pin" aria-label="לשים את הלוק הזה בדף הראשי">📌 לבית</button><button type="button" class="r3save" aria-label="שמירת הלוק">♡ שמירה</button></div></header>
+  <div class="r3ha"><button type="button" class="r3pin" aria-label="לשים את הלוק הזה בדף הראשי">📌 לדף הראשי</button><button type="button" class="r3save" aria-label="שמירת הלוק">♡ שמירה</button></div></header>
  <div class="r3stage" role="region" aria-label="האווטאר">
   <div class="r3fig"></div>
   <div class="r3miss" hidden></div>
@@ -172,7 +173,7 @@ function build(){
  dlg.querySelector('.r3prev').onclick=()=>{big.stop();big.show(big.view-1)};dlg.querySelector('.r3next').onclick=()=>{big.stop();big.show(big.view+1)};
  dlg.querySelector('.r3x').onclick=()=>close();dlg.addEventListener('cancel',e=>{e.preventDefault();close()});
  const hs=dlg.querySelector('.r3heads');HEADS.forEach(h=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.dataset.h=h.k;
-  b.innerHTML=`<img alt="" data-th="${h.id||''}" src="${h.id?ph(h.id):h.src+V}"><span>${esc(h.n||nm(h.id))}</span>`;b.onclick=()=>{ST.head=h.k;keep();redraw()};hs.appendChild(b)});
+  b.innerHTML=`<img alt="" src="${h.src?h.src+V:ph(h.id)}"><span>${esc(h.n||nm(h.id))}</span>`;b.onclick=()=>{ST.head=h.k;keep();redraw()};hs.appendChild(b)});
  const sw=dlg.querySelector('.r3sw');CAM.forEach(c=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.dataset.cam=c.k;b.setAttribute('aria-label',c.n);
   b.innerHTML=`<i style="background:${c.c?`rgb(${c.c})`:'linear-gradient(135deg,#e9c3a6,#c99476)'}"></i><span>${c.n}</span>`;b.onclick=()=>{ST.cam=c.k;keep();redraw()};sw.appendChild(b)});
  const bgs=dlg.querySelector('.r3bgs');bgList().forEach(b=>{const e=document.createElement('button');e.type='button';e.setAttribute('role','radio');e.dataset.bg=b.k;e.setAttribute('aria-label','רקע: '+b.n);
@@ -191,8 +192,9 @@ function build(){
   if(t.dataset.mk){make(t.dataset.mk);return}
   if(t.classList.contains('r3missx')){MISS=[];paintMiss();return}
   if(t.dataset.cmp){pickCmp(t.dataset.cmp);return}
-  if(t.dataset.look){useLook(t.dataset.look);return}
-  if(t.dataset.l3){const l=L3[t.dataset.l3];if(l){ST=Object.assign(clone(DEF),{on:Object.assign({},l.on||{}),head:l.head||'c',tuck:l.tuck?1:0,wb:l.wb?1:0,cam:l.cam==null?'black':l.cam});MISS=[];keep();redraw();paintMiss();big.show(0)}return}
+  if(t.dataset.l3pin){TODAY.pinLook(t.dataset.l3pin);return}
+  if(t.dataset.look){useLook(t.dataset.look);nudgePin();return}
+  if(t.dataset.l3){const l=L3[t.dataset.l3];if(l){ST=Object.assign(clone(DEF),{on:Object.assign({},l.on||{}),head:l.head||'c',tuck:l.tuck?1:0,wb:l.wb?1:0,cam:l.cam==null?'black':l.cam});MISS=[];keep();redraw();paintMiss();big.show(0);nudgePin()}return}
   if(t.dataset.l3x){const id=t.dataset.l3x;if(DB)DB.collection('looks360').doc(id).delete().catch(()=>{});delete L3[id];paintLooks();return}});
  paintCats();paintTabs();paintRoom();paintLooks()}
 function paintTabs(){if(!dlg)return;dlg.querySelectorAll('.r3tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t==TAB));dlg.querySelectorAll('.r3pane').forEach(p=>p.hidden=p.dataset.p!=TAB);if(TAB=='closet')paintGrid();else paintLooks()}
@@ -238,8 +240,8 @@ function paintLooks(){if(!dlg)return;const box=dlg.querySelector('.r3looks');let
  box.innerHTML=(CMP?`<button type="button" class="r3l r3now" data-cmp="now" aria-pressed="${sel('now')}"><span class="r3lm r3lnow">👗</span><span><b>מה שעליי עכשיו</b><small>${esc(wearing(ST)||'האווטאר כמו שהוא')}</small></span></button>`:'')+
   main.map(([id,l])=>{const its=Object.values(l.items).filter(x=>D[x]);const r=its.filter(isReady).length;its.slice(0,3).forEach(x=>ids.push(x));
   const pic=l.th360?`<img class="r3lb" alt="" src="${l.th360}">`:`<span class="r3lm">${its.slice(0,4).map(x=>`<img alt="" data-th="${x}" src="${ph(x)}">`).join('')}</span>`;
-  return `<button type="button" class="r3l" ${act('m:'+id,id,'data-look')}>${pic}<span><b>${esc(l.name||'לוק')}</b><small>${r} מתוך ${its.length} על האווטאר</small></span></button>`}).join('')+
-  old.map(([id,l])=>`<div class="r3lw"><button type="button" class="r3l" ${act('o:'+id,id,'data-l3')}><img class="r3lb" alt="" src="${l.th||''}"><span><b>${esc(l.name||'לוק')}</b><small>מהחדר הקודם</small></span></button>${CMP?'':`<button type="button" class="r3lx" data-l3x="${id}" aria-label="למחוק את ${esc(l.name||'הלוק')}">✕</button>`}</div>`).join('');
+  return `<div class="r3lw"><button type="button" class="r3l" ${act('m:'+id,id,'data-look')}>${pic}<span><b>${esc(l.name||'לוק')}</b><small>${r} מתוך ${its.length} על האווטאר</small></span></button>${CMP||!r?'':pinB('m:'+id,l.name)}</div>`}).join('')+
+  old.map(([id,l])=>`<div class="r3lw"><button type="button" class="r3l" ${act('o:'+id,id,'data-l3')}><img class="r3lb" alt="" src="${l.th||''}"><span><b>${esc(l.name||'לוק')}</b><small>מהחדר הקודם</small></span></button>${CMP?'':`<button type="button" class="r3lx" data-l3x="${id}" aria-label="למחוק את ${esc(l.name||'הלוק')}">✕</button>`+pinB('o:'+id,l.name)}</div>`).join('');
  thl(ids)}
 // ---------- compare 2 looks side by side, turning together (v182) ----------
 function lookOf(k){let LK={};try{LK=LOOKS||{}}catch(_){}
@@ -445,6 +447,15 @@ function lotd(fresh){const d=new Date().toISOString().slice(0,10),o=occNow();let
 let HOME=(()=>{try{return Object.assign({head:'c',pin:null},JSON.parse(localStorage.getItem('r3home')||'{}'))}catch(_){return {head:'c',pin:null}}})();
 function saveHome(){try{localStorage.setItem('r3home',JSON.stringify(HOME))}catch(_){}if(DB)DB.collection('r360').doc('home').set(clone(HOME)).catch(()=>{});STAGES.forEach(s=>s.today&&s.draw());HOMEL.forEach(f=>{try{f()}catch(_){}})}
 const HOMEL=new Set();
+// v185 (Sara 22:41 "אם בחרתי לוק אני רוצה שיופיע במסך הראשי, אין לי כפתור"): "📌 לדף הראשי" on the studio, on every saved look and in the looks album –
+// it puts the look on the home avatar and jumps there, so she sees it happen
+function pinGo(s,name){HOME.pin=clone(s);HOME.head=s.head||'c';saveHome();close();
+ document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(_){}});
+ const hb=document.querySelector('.bnav [data-bn="home"]');if(hb)hb.click();else window.scrollTo({top:0,behavior:'smooth'});
+ const av=document.querySelector('#h180 .z-av');if(av){av.classList.remove('z-pin185');void av.offsetWidth;av.classList.add('z-pin185');setTimeout(()=>av.classList.remove('z-pin185'),2600)}
+ toast_(name?`📌 "${name}" בדף הראשי`:'📌 הלוק הזה בדף הראשי')}
+const pinB=(k,n)=>`<button type="button" class="r3lp" data-l3pin="${esc(k)}" aria-label="לשים את ${esc(n||'הלוק')} בדף הראשי">📌 לדף הראשי</button>`;
+function nudgePin(){const b=dlg&&dlg.querySelector('.r3pin');if(!b)return;b.classList.remove('r3nudge');void b.offsetWidth;b.classList.add('r3nudge');setTimeout(()=>b.classList.remove('r3nudge'),3200)}
 (async()=>{try{const db=await window.claude?.use?.('db');if(!db)return;const d=await db.collection('r360').doc('home').get();const v=d&&d.exists&&d.data&&d.data();
  if(v&&!localStorage.getItem('r3home')){HOME=Object.assign({head:'c',pin:null},v);STAGES.forEach(s=>s.today&&s.draw());HOMEL.forEach(f=>{try{f()}catch(_){}})}}catch(_){}})();
 let LOTD=null;const lotdIds=()=>{if(!LOTD)LOTD=lotd();return LOTD.ids.filter(id=>!READY[id].head)};
@@ -453,13 +464,23 @@ function homeState(){const head=HOME.head||'c';
  return stateFrom(lotdIds(),{head,cam:ST.cam,wb:ST.wb,bg:ST.bg})}
 const TODAY={state:homeState,
  ids:()=>{const s=homeState();return wornIds(s).filter(id=>!READY[id].head)},
- pinned:()=>!!HOME.pin,heads:()=>HEADS.map(h=>({k:h.k,n:h.n||nm(h.id),src:h.id?ph(h.id):h.src+V})),head:()=>HOME.head||'c',
+ pinned:()=>!!HOME.pin,heads:()=>HEADS.map(h=>({k:h.k,n:h.n||nm(h.id).split(' ').slice(0,2).join(' '),src:h.src?h.src+V:ph(h.id)})),head:()=>HOME.head||'c',
  setHead:k=>{HOME.head=k;saveHome()},
- pin:()=>{HOME.pin=clone(ST);HOME.head=ST.head;saveHome();toast_('📌 הלוק הזה בדף הראשי')},
+ pin:()=>pinGo(ST),
+ pinLook:k=>{const o=lookOf(k);if(!o)return;if(!wornIds(o.s).length)return toast_('אין עוד בגד מהלוק הזה על האווטאר 360');pinGo(o.s,o.name)},
+ pinIds:(ids,name)=>{ids=ids.filter(id=>D[id]);if(!ids.some(isReady))return toast_('אין עוד בגד מהלוק הזה על האווטאר 360');pinGo(stateFrom(ids.filter(isReady),{head:HOME.head||'c',cam:ST.cam,bg:ST.bg}),name)},
  unpin:()=>{HOME.pin=null;saveHome()},
  next:()=>{HOME.pin=null;LOTD=lotd(true);saveHome();return TODAY.ids()},
  onchange:f=>HOMEL.add(f),
  wear:()=>{const s=homeState();ST=Object.assign(clone(DEF),clone(s));MISS=[];keep();open();redraw()}};
+
+// the looks album and the suggested looks ("הלוקים שלי") get the same "📌 לדף הראשי"
+try{if(typeof lookHTML=='function'){const _lh=lookHTML;lookHTML=function(L,idx,saved){const h=_lh.apply(this,arguments);
+ return h.replace('<div class="lb">',`<div class="lb"><button type="button" class="lb185" ${saved?`data-pin185="${esc(saved.id)}"`:`data-pin185g="${idx}"`}>📌 לדף הראשי</button>`)}}}catch(e){(window.ERRS=window.ERRS||[]).push('v185 hub pin: '+e.message)}
+try{if(typeof albumHTML=='function'){const _al=albumHTML;albumHTML=async function(){const h=await _al.apply(this,arguments);
+ return String(h).replace(/<div class="lb"><button data-sedit="([^"]+)">/g,(m0,id)=>`<div class="lb"><button type="button" class="lb185" data-pin185="${id}">📌 לדף הראשי</button><button data-sedit="${id}">`)}}}catch(e){(window.ERRS=window.ERRS||[]).push('v185 album pin: '+e.message)}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-pin185],[data-pin185g]');if(!b)return;e.preventDefault();e.stopPropagation();
+ if(b.dataset.pin185!=null)TODAY.pinLook('m:'+b.dataset.pin185);else{let L=null;try{L=GEN[+b.dataset.pin185g]}catch(_){}if(L)TODAY.pinIds(Object.values(L),'הלוק')}},true);
 
 window.R360={open,close,make,prompts,openWith,Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
  ready:()=>Object.keys(READY).filter(id=>D[id]),readyCount:()=>{const P=pool();return [P.filter(isReady).length,P.length]},nm,ph};
