@@ -16,12 +16,23 @@ const SETS=[['hair','💇','תסרוקות','תסרוקת','התסרוקת'],['t
 const SET=k=>SETS.find(s=>s[0]==k)||SETS[0];
 const KIND={hair:'hair',tie:'tie',mk:'makeup'};
 let DB=null,LIST=[],TAB='hair',PROC=null,ED='',NAME={hair:'',tie:'',mk:''},NUM='',DESC='';
+// v206 (Sara 13:33 "אם יש דגם שאני לא אוהבת תן לי אפשרות להסיר אותו ... גם בתסרוקות ובאיפורים"): 🗑 on every card hides it – a preset by its key,
+// her own upload by 'id:'+id – here and in the studio; db 'stylehide'/'all' {k:[…]}; "↩ מה שהסרתי" brings it back. Nothing is deleted.
+let HID=new Set(),SHOWH=false;
+const hidK=(pr,x)=>pr?pr.k:'id:'+x.id;
+const gone=x=>HID.has('id:'+x.id)||!!(x.p&&HID.has(x.p))||(!x.p&&HID.size>0&&presets(x.set).some(pr=>pr.n==x.n&&HID.has(pr.k)));
 const R=()=>window.R360;
-function push(){try{R()&&R().styles(LIST)}catch(e){ERR('reg',e)}}
+function push(){try{R()&&R().styles(LIST.filter(x=>!gone(x)))}catch(e){ERR('reg',e)}}
 (async()=>{try{const db=await window.claude?.use?.('db');if(!db)return;DB=db;
  db.collection('styles').onSnapshot(sn=>{const L=[];sn.docs.forEach(d=>{const v=d.data();if(v&&v.set&&Array.isArray(v.L))L.push(Object.assign({},v,{id:d.id}))});
   L.sort((a,b)=>(a.t||0)-(b.t||0));LIST=L;push();paint()},e=>ERR('snap',e))}catch(e){ERR('db',e)}})();
 const mine=set=>LIST.filter(x=>x.set==set);
+const seen=set=>mine(set).filter(x=>!gone(x));
+(async()=>{try{const db=await window.claude?.use?.('db');if(!db)return;db.collection('stylehide').onSnapshot(sn=>{const d=sn.docs.find(y=>y.id=='all'),v=d&&d.data();
+  HID=new Set(v&&Array.isArray(v.k)?v.k:[]);push();paint()},e=>ERR('hsnap',e))}catch(e){ERR('hdb',e)}})();
+async function hide(k,on){if(!k)return;const was=new Set(HID);if(on)HID.add(k);else HID.delete(k);push();paint();
+ try{if(!DB)throw new Error('db');await DB.collection('stylehide').doc('all').set({k:[...HID],t:Date.now()})}catch(e){ERR('hide',e);HID=was;push();paint();toast_('✗ '+ERRT.x);return false}
+ return true}
 const key=x=>{try{return R().styKey(x)}catch(_){return ''}};
 
 // ---------- the library ----------
@@ -33,12 +44,14 @@ let DL=null,VW=null,ADD=false,MKG={};
 const LIBC=[176,124,138];   // the ties in the library: one soft colour for all (on a cover they take the cover's colour)
 (async()=>{try{const db=await window.claude?.use?.('db');if(!db)return;db.collection('stylegrid').onSnapshot(sn=>{const g={};sn.docs.forEach(d=>{const v=d.data();if(v&&v.src)g[d.id]=v.src});MKG=g;paint()},e=>ERR('gsnap',e))}catch(e){ERR('gdb',e)}})();
 function presets(set){const p=P();if(!p)return [];
- if(set=='tie')return p.TIES.map(([n,d],i)=>({k:'t'+i,no:i+1,n,d}));
+ if(set=='tie')return p.TIES.map(([n,d,he],i)=>({k:'w'+i,no:i+1,n,d,he}));   // v206: her new 20 – new keys, so the ties she already made from the old list stay her own
  if(set=='hair')return (p.HAIRS||[]).map(([n,d],i)=>({k:'h'+i,no:i+1,n,d}));
  return p.MKC.flatMap(([c,t,L])=>L.map((x,i)=>({k:'m:'+c+':'+i,no:i+1,n:x.split(':')[0].trim(),sub:x.split(':').slice(1).join(':').trim(),c})))}
 const preOf=(set,k)=>presets(set).find(x=>x.k==k);
 function doneOf(set,pr){const L=mine(set);return L.find(x=>x.p==pr.k)||L.find(x=>!x.p&&x.n==pr.n)||null}
-const extras=set=>{const used=new Set(presets(set).map(pr=>(doneOf(set,pr)||{}).id).filter(Boolean));return mine(set).filter(x=>!used.has(x.id))};
+const extras=set=>{const used=new Set(presets(set).map(pr=>(doneOf(set,pr)||{}).id).filter(Boolean));return mine(set).filter(x=>!used.has(x.id)&&!gone(x))};
+const shown=set=>presets(set).filter(pr=>!HID.has(pr.k));
+const oldTie=x=>x&&x.set=='tie'&&/^t\d+$/.test(x.p||'');   // made from the first tie list (before 26/10 13:33)
 function el(){if(DL)return DL;DL=document.createElement('dialog');DL.id='sty199';DL.dir='rtl';DL.setAttribute('aria-labelledby','sty199t');document.body.appendChild(DL);
  DL.addEventListener('click',click);DL.addEventListener('input',e=>{const t=e.target;
   if(t.classList.contains('syname')){NAME[TAB]=t.value;fill()}else if(t.classList.contains('sydesc')){DESC=t.value;fill()}else if(t.classList.contains('synum')){NUM=t.value.replace(/\D/g,'').slice(0,2);fill()}});
@@ -47,7 +60,7 @@ function el(){if(DL)return DL;DL=document.createElement('dialog');DL.id='sty199'
  DL.addEventListener('cancel',e=>{e.preventDefault();DL.close()});return DL}
 function open(tab){if(tab&&SETS.some(s=>s[0]==tab))TAB=tab;el();ED='';ADD=false;paint();if(!DL.open)DL.showModal();DL.scrollTop=0}
 const prompt=set=>{const p=P();if(!p)return '';const n=NAME[set].trim();return set=='hair'?p.hair(n):set=='tie'?p.tie(n):p.faceW?p.faceW(n,DESC.trim()):p.face(NUM)};   // v205: a new makeup from her words, only the doll
-function prompt2(set,pr){const p=P();if(!p||!pr)return '';return set=='tie'?p.tieW(pr.n,pr.d):set=='hair'?p.hairW(pr.n,pr.d):p.faceW?p.faceW(pr.n,pr.sub):p.face(pr.no)}   // v205: makeup from the words, only the doll attached
+function prompt2(set,pr){const p=P();if(!p||!pr)return '';return set=='tie'?p.tieW(pr.n,pr.d,pr.he):set=='hair'?p.hairW(pr.n,pr.d):p.faceW?p.faceW(pr.n,pr.sub):p.face(pr.no)}   // v205: makeup from the words, only the doll attached
 function fill(){if(!DL)return;DL.querySelectorAll('textarea[data-syp]').forEach(t=>t.value=prompt(t.dataset.syp))}
 function status(){if(!PROC)return '';if(PROC.err)return `<p class="syst no" role="alert">✗ ${es(PROC.err)}</p>`;
  return `<p class="syst" aria-live="polite">✂ ${PROC.n0?es(PROC.n0)+': ':''}${PROC.v<9?`גוזרת ומתאימה לבובה… זווית ${PROC.v} מתוך 8`:'שומרת…'}${PROC.n>1?` · תמונה ${PROC.i} מתוך ${PROC.n}`:''}</p>`}
@@ -60,13 +73,20 @@ function card(set,pr,x){const k=pr?pr.k:x.id,b=busy()&&PROC.k==k,title=x?x.n:pr.
   :`<span class="sycim none${set!='mk'?' tall':''}"><img alt="" data-sycb="${set}" src=""><i>עוד אין תמונה</i></span>`;
  const btn=b?'<span class="sycw">✂ גוזרת…</span>':x?`<button type="button" class="mkp" data-sywear="${es(x.id)}">👗 ללבוש</button>`
   :`<button type="button" data-syp2="${es(pr.k)}">📋 פרומפט</button><button type="button" class="mkp" data-syup2="${es(pr.k)}"${busy()?' disabled':''}>📤 להעלות</button>`;
- return `<div class="syc${x?' up':''}${b?' busy':''}">${pic}<b class="sycn">${pr?pr.no+'. ':''}${es(title)}</b>${pr&&pr.sub?`<small class="sycs">${es(pr.sub)}</small>`:''}<span class="sycb">${btn}</span></div>`}
+ const sub=pr&&pr.sub?pr.sub:!pr&&oldTie(x)?'מהרשימה הקודמת':'',hk=hidK(pr,x);
+ const howT=pr&&pr.he?`<details class="sycd"><summary>איך קושרים</summary><p>${es(pr.he)}</p></details>`:'';
+ return `<div class="syc${x?' up':''}${b?' busy':''}">${pic}<button type="button" class="syrm" data-syrm="${es(hk)}" aria-label="להסיר מהרשימה: ${es(title)}" title="להסיר"${b?' disabled':''}>🗑</button><b class="sycn">${pr?pr.no+'. ':''}${es(title)}</b>${sub?`<small class="sycs">${es(sub)}</small>`:''}${howT}<span class="sycb">${btn}</span></div>`}
+// v206: what she removed, to bring back
+function hiddenList(set){const L=[];presets(set).forEach(pr=>{if(HID.has(pr.k))L.push({k:pr.k,n:(pr.no?pr.no+'. ':'')+pr.n,pic:!!doneOf(set,pr)})});
+ mine(set).forEach(x=>{if(HID.has('id:'+x.id)&&!(x.p&&HID.has(x.p)))L.push({k:'id:'+x.id,n:x.n,pic:true})});return L}
+function hiddenHTML(set){const L=hiddenList(set);if(!L.length)return '';
+ return `<div class="syhid"><button type="button" class="syhidb" data-syhid aria-expanded="${SHOWH}">↩ מה שהסרתי <small>${L.length}</small></button>${SHOWH?`<ul>${L.map(h=>`<li><span>${es(h.n)}${h.pic?' <small>· יש תמונה</small>':''}</span><button type="button" data-syback="${es(h.k)}">↩ להחזיר</button></li>`).join('')}</ul>`:''}</div>`}
 const addCard=set=>{const one=SET(set)[3];return `<button type="button" class="syc sycadd" data-syadd aria-expanded="${ADD}"><span class="sycim"><b aria-hidden="true">＋</b></span><b class="sycn">להוסיף ${one}</b><small class="sycs">${set=='mk'?'לפי מה שתכתבי':'לפי תמונה שלך'}</small></button>`};
 function how(set){const sheet='<button type="button" data-sydl="sheet">⬇ הבובה ב-8 זוויות</button>';
- if(set=='tie')return `<div class="syhow"><p><b>בכל קשירה:</b> 📋 מעתיקים, ב-GPT בשיחה חדשה מצרפים את הבובה ומדביקים, ואת מה שחזר 📤 מעלים באותה משבצת. מיד רואים אותה עלייך.</p><span class="mkb">${sheet}</span></div>`;
- if(set=='hair')return `<div class="syhow"><p><b>בכל תסרוקת:</b> 📋 מעתיקים, ב-GPT בשיחה חדשה מצרפים את הפאה שלך ואת הבובה ומדביקים, ואת מה שחזר 📤 מעלים באותה משבצת.</p><span class="mkb">${sheet}<button type="button" data-sydl="wig">⬇ הפאה שלי</button></span></div>`;
+ if(set=='tie')return `<div class="syhow"><p><b>בכל קשירה:</b> 📋 מעתיקים, ב-GPT בשיחה חדשה מצרפים את הבובה ומדביקים, ואת מה שחזר 📤 מעלים באותה משבצת. מיד רואים אותה עלייך.</p><p><small>🗑 על דגם שלא אהבת – מסיר אותו מהרשימה. אפשר להחזיר ב"↩ מה שהסרתי" למטה.</small></p><span class="mkb">${sheet}</span></div>`;
+ if(set=='hair')return `<div class="syhow"><p><b>בכל תסרוקת:</b> 📋 מעתיקים, ב-GPT בשיחה חדשה מצרפים את הפאה שלך ואת הבובה ומדביקים, ואת מה שחזר 📤 מעלים באותה משבצת.</p><p><small>🗑 על דגם שלא אהבת – מסיר אותו מהרשימה. אפשר להחזיר ב"↩ מה שהסרתי" למטה.</small></p><span class="mkb">${sheet}<button type="button" data-sydl="wig">⬇ הפאה שלי</button></span></div>`;
  return `<div class="syhow"><p><b>בכל איפור:</b> 📋 מעתיקים, ב-GPT בשיחה חדשה מצרפים רק את הבובה ומדביקים. GPT יוצר את האיפור לפי התיאור. את מה שחזר 📤 מעלים באותה משבצת.</p>
-  <p><small>רשות: רוצה לראות קודם כמה איפורים על הפנים שלך? בכל קבוצה "📋 פרומפט לרשת" עם תמונה שלך מקדימה, ואת הרשת שחזרה 📷 מעלים.</small></p><span class="mkb">${sheet}</span></div>`}
+  <p><small>רשות: רוצה לראות קודם כמה איפורים על הפנים שלך? בכל קבוצה "📋 פרומפט לרשת" עם תמונה שלך מקדימה, ואת הרשת שחזרה 📷 מעלים.</small></p><p><small>🗑 על דגם שלא אהבת – מסיר אותו מהרשימה. אפשר להחזיר ב"↩ מה שהסרתי" למטה.</small></p><span class="mkb">${sheet}</span></div>`}
 function addPanel(set){const [,,,one]=SET(set);const nm=`<label class="syl">שם <input class="syname" value="${es(NAME[set])}" maxlength="40" placeholder="${set=='hair'?'למשל: גלים פתוחים':set=='tie'?'למשל: טורבן גבוה':'למשל: שבת אלגנטית'}"></label>`;
  const pr=`<details><summary>לראות את הפרומפט</summary><textarea readonly rows="9" data-syp="${set}">${es(prompt(set))}</textarea></details>`;
  const att=set=='hair'?'התמונה של התסרוקת, הפאה שלך והבובה':set=='tie'?'התמונה של הקשירה, ואחריה הבובה':'רק הבובה';
@@ -82,16 +102,16 @@ function turn(b,loop){const img=b&&b.querySelector('img[data-syf]');if(!img)retu
   b._t=setInterval(()=>{if(!img.isConnected){clearInterval(b._t);b._t=null;return}i=(i+1)%8;n++;img.src=F[i];if(!loop&&n>=8)stopRot(b,F)},loop?190:150)})}
 function grid(set,list){return `<div class="syg2">${list.join('')}</div>`}
 function body(set){const ex=extras(set).map(x=>card(set,null,x));
- if(set!='mk')return grid(set,[...presets(set).map(pr=>card(set,pr,doneOf(set,pr))),...ex,addCard(set)])+(set=='tie'?'<p class="sytip">הקשירות כאן בצבע אחד לדוגמה. על כיסוי היא נצבעת בצבע של הכיסוי.</p>':'');
- const p=P();if(!p)return '';const all=presets('mk');
- return p.MKC.map(([c,t,L])=>`<section class="sycat"><h4>${es(t)} <small>${L.length}</small></h4>
+ if(set!='mk')return grid(set,[...shown(set).map(pr=>card(set,pr,doneOf(set,pr))),...ex,addCard(set)])+(set=='tie'?'<p class="sytip">הקשירות כאן בצבע אחד לדוגמה. על כיסוי היא נצבעת בצבע של הכיסוי.</p>':'')+hiddenHTML(set);
+ const p=P();if(!p)return '';const all=shown('mk');
+ return p.MKC.map(([c,t,L])=>`<section class="sycat"><h4>${es(t)} <small>${all.filter(pr=>pr.c==c).length}</small></h4>
   <span class="mkb"><button type="button" data-sylook="${c}">📋 פרומפט לרשת</button><button type="button" data-sygrid="${c}"${busy()?' disabled':''}>📷 ${MKG[c]?'להחליף את הרשת':'להעלות את הרשת'}</button></span>
-  ${grid(set,all.filter(pr=>pr.c==c).map(pr=>card(set,pr,doneOf(set,pr))))}</section>`).join('')+(ex.length?`<section class="sycat"><h4>שלי</h4>${grid(set,ex)}</section>`:'')+grid(set,[addCard(set)])}
-function paint(){if(!DL)return;const set=TAB,y=DL.scrollTop;
+  ${grid(set,all.filter(pr=>pr.c==c).map(pr=>card(set,pr,doneOf(set,pr))))}</section>`).join('')+(ex.length?`<section class="sycat"><h4>שלי</h4>${grid(set,ex)}</section>`:'')+grid(set,[addCard(set)])+hiddenHTML(set)}
+function paint(){if(!DL)return;const set=TAB,y=DL.scrollTop,tt=DL.querySelector('#toast');   // v206: the toast (moved into the open dialog) survives a repaint, with its "ביטול"
  DL.innerHTML=`<div class="mk sy"><div class="mkh"><h3 id="sty199t">🎨 תסרוקות, קשירות ואיפור</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
-  <div class="syt" role="tablist" aria-label="סוג">${SETS.map(([k,i,n])=>`<button type="button" role="tab" data-sytab="${k}" aria-selected="${k==set}">${i} ${n}${mine(k).length?` <small>${mine(k).length}</small>`:''}</button>`).join('')}</div>
+  <div class="syt" role="tablist" aria-label="סוג">${SETS.map(([k,i,n])=>`<button type="button" role="tab" data-sytab="${k}" aria-selected="${k==set}">${i} ${n}${seen(k).length?` <small>${seen(k).length}</small>`:''}</button>`).join('')}</div>
   ${status()}${how(set)}${body(set)}${ADD?addPanel(set):''}</div>`;
- DL.scrollTop=y;pics(DL)}
+ if(tt)DL.appendChild(tt);DL.scrollTop=y;pics(DL)}
 function pics(root){const r=R();if(!r||!r.styCard)return;
  root.querySelectorAll('img[data-syc]').forEach(i=>{const k=i.dataset.syc;if(!k)return;const x=LIST.find(y=>key(y)==k);r.styCard(k,{rgb:x&&x.set=='tie'?LIBC:null}).then(u=>{if(u)i.src=u})});
  root.querySelectorAll('img[data-sycb]').forEach(i=>r.styCard('',{set:i.dataset.sycb,one:i.dataset.sycb!='mk'}).then(u=>{if(u)i.src=u}));
@@ -171,8 +191,11 @@ async function del(id){const x=LIST.find(y=>y.id==id);if(!x||!DB)return;const ke
 
 function click(e){if(e.target===DL)return DL.close();const b=e.target.closest('button');if(!b||!DL.contains(b))return;const d=b.dataset;
  if(b.classList.contains('mkx'))return DL.close();
- if(d.sytab){TAB=d.sytab;ED='';ADD=false;PROC=PROC&&PROC.err?null:PROC;paint();DL.scrollTop=0;const t=DL.querySelector(`[data-sytab="${TAB}"]`);if(t)t.focus();return}
+ if(d.sytab){TAB=d.sytab;ED='';ADD=false;SHOWH=false;PROC=PROC&&PROC.err?null:PROC;paint();DL.scrollTop=0;const t=DL.querySelector(`[data-sytab="${TAB}"]`);if(t)t.focus();return}
  if(d.sywear)return wear(d.sywear);
+ if(d.syrm){const k=d.syrm;if(busy()&&PROC.k==k)return;return hide(k,true).then(ok=>{if(ok)toast_('✓ הוסר מהרשימה',()=>hide(k,false))})}
+ if(d.syback){const k=d.syback;return hide(k,false).then(ok=>{if(ok){if(!hiddenList(TAB).length)SHOWH=false;paint();toast_('✓ חזר לרשימה')}})}
+ if(d.syhid!=null){SHOWH=!SHOWH;paint();return}
  if(d.syview)return view(d.syview);
  if(d.syrot!=null){if(still()){const c=b.closest('.syc'),v=c&&c.querySelector('[data-syview]');if(v)view(v.dataset.syview);return}if(!b._t||e.pointerType!='mouse')turn(b,false);return}
  if(d.syadd!=null){ADD=!ADD;paint();if(ADD){const a=DL.querySelector('#syaddp');if(a){a.scrollIntoView({block:'start',behavior:'smooth'});const i=a.querySelector('.syname');if(i)setTimeout(()=>i.focus({preventScroll:true}),350)}}return}
