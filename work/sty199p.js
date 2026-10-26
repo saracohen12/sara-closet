@@ -136,7 +136,40 @@ function face(num){const n=+num>0?+num:0;return `מצורפות שתי תמונ�
 אל תשני שום דבר אחר: אותו גיליון, אותו סדר זוויות, אותו מיקום ואותו גודל של הדמות בכל משבצת, אותה תנוחה, אותו רקע, אותם קווים לבנים בין המשבצות. כיסוי הראש הבז׳ והשמלה בצבע עור נשארים בדיוק אותו דבר.
 
 החזירי תמונה אחת: אותו גיליון של 8 משבצות (2 שורות של 4), באותו יחס גובה-רוחב, בלי טקסט ובלי מספרים.`}
-const P={hair,tie,tieW,exact,TIES,look,face,MKC};
+// v204 (Sara 11:38 "וככה תעשה לי גם באיפור וגם בתסרוקת"): 20 hairstyles for her wig, like her 20 ties – a card each in the library.
+// Only the wig (for the colour) and the doll are attached, no picture of the hairstyle is needed.
+const HAIRS=[
+ ["פזור חלק ומבריק","Hairstyle Details: Worn fully down, sleek and straight with a glossy finish, a soft center part, ends falling smoothly over the shoulders and down the back."],
+ ["פזור עם שביל צד","Hairstyle Details: Worn down and straight with a deep side part; the front section is swept across the forehead and tucked softly behind one ear."],
+ ["גלים רכים","Hairstyle Details: Worn down with soft, loose, natural waves starting from mid-length, light movement, a soft center part."],
+ ["גלי הוליווד","Hairstyle Details: Glamorous, shiny, uniform S-shaped waves brushed into one smooth wave pattern, a deep side part, volume swept to one side."],
+ ["תלתלים גדולים","Hairstyle Details: Worn down with big, bouncy, defined curls from the cheekbones to the ends, full volume all around."],
+ ["פן נפוח","Hairstyle Details: A classic blow-dry: smooth with lifted volume at the crown and ends turned softly inward and outward, full and bouncy."],
+ ["גלי חוף","Hairstyle Details: Worn down with relaxed, textured, slightly undone beach waves, matte finish, a casual side part."],
+ ["מאחורי האוזניים","Hairstyle Details: Straight and sleek, both sides tucked neatly behind the ears, the length falling straight down the back."],
+ ["חצי אסוף","Hairstyle Details: The top section is gathered at the crown and secured, the rest of the hair falls down straight over the back."],
+ ["חצי אסוף בצמות","Hairstyle Details: Two thin braids from the temples meet and join at the back of the head; the rest of the hair falls down in soft waves."],
+ ["קוקו גבוה","Hairstyle Details: A sleek, high ponytail at the crown, smooth sides with no bumps, the tail falling long and straight down the back."],
+ ["קוקו נמוך","Hairstyle Details: A smooth, low ponytail at the nape with a center part, the tail falling straight down the back."],
+ ["קוקו צד","Hairstyle Details: A low ponytail gathered at the side of the nape and brought forward to rest over one shoulder."],
+ ["צמה צרפתית","Hairstyle Details: A neat French braid starting at the crown and running down the center of the back of the head, finished long down the back."],
+ ["צמת צד רכה","Hairstyle Details: A loose, soft three-strand braid gathered to one side and resting forward over one shoulder, a few soft strands framing the face."],
+ ["צמת דג","Hairstyle Details: A fishtail braid down the back, finely woven, slightly loosened for fullness."],
+ ["בון נמוך אלגנטי","Hairstyle Details: A smooth, elegant low chignon at the nape, a soft side part, the sides swept back neatly."],
+ ["בון גבוה מבולגן","Hairstyle Details: A loose, messy high bun on top of the head with a few soft strands around the face and nape."],
+ ["אסוף שבת","Hairstyle Details: A soft low twisted updo at the nape with gentle volume at the crown and two loose face-framing strands."],
+ ["אסוף חתונה","Hairstyle Details: An elaborate, festive bridal updo of soft pinned curls gathered at the back of the head, smooth front with gentle volume."]];
+function hairW(n,det){return `מצורפות שתי תמונות.
+התמונה הראשונה: הפאה שלי. ממנה לוקחים את צבע השיער, הגוונים, האורך והמרקם.
+התמונה השנייה: גיליון של הדמות שלי ב-8 זוויות מסביב, שתי שורות של 4 משבצות.
+
+ערכי את הגיליון השני, אל תציירי אותו מחדש. שני דבר אחד בלבד: במקום כיסוי הראש הבז׳ שימי שיער מהפאה שלי בתסרוקת${q(n)}:
+${det}
+
+צבע השיער כמו בפאה שלי. כיסוי הבז׳ נעלם לגמרי. אותה תסרוקת בדיוק בכל 8 הזוויות. בצד ובגב צרי את השיער כמו שהוא נראה באמת מהכיוון הזה.
+
+${KEEP}`}
+const P={hair,hairW,HAIRS,tie,tieW,exact,TIES,look,face,MKC,GRID};
 if(typeof window!='undefined')window.STYP=P;
 if(typeof module!='undefined')module.exports=P;
 })();

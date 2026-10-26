@@ -65,6 +65,7 @@ function home(){
   pp.onclick=()=>spin(!st.playing());
   hds.innerHTML=T.heads().map(h=>`<button type="button" role="radio" data-zh="${h.k}" aria-label="${h.n}"><img alt="" src="${h.src}"><span>${h.n}</span></button>`).join('');
   hds.onclick=e=>{const b=e.target.closest('[data-zh]');if(b)T.setHead(b.dataset.zh)};
+  if(T.coverThumb)T.coverThumb().then(u=>{const i=u&&hds.querySelector('[data-zh="c"] img');if(i)i.src=u}).catch(()=>{});   // v204: the cover = her tie in neutral grey
   const paintLk=()=>{const ids=T.ids();const n=ids.map(R360.nm);const pin=T.pinned();
    hds.querySelectorAll('[data-zh]').forEach(b=>b.setAttribute('aria-checked',b.dataset.zh==T.head()));
    s.querySelector('.z-lkh b').textContent=pin?'📌 הלוק שבחרת':'הלוק של היום';s.querySelector('.z-wear').textContent=pin?'הלוק שבחרת':'הלוק של היום';

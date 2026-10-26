@@ -14,7 +14,7 @@ dialog#r360::backdrop{background:var(--z-bg)}
 
 #r360 .r3stage{display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 16px 6px}
 #r360 .r3fig{width:min(76vw,340px);position:relative}
-.r3s{position:relative;width:100%;aspect-ratio:360/541;border-radius:999px 999px var(--z-r) var(--z-r);overflow:hidden;background:#c9d6e6;box-shadow:var(--z-shadow-lg);touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none;outline-offset:4px}
+.r3s{position:relative;width:100%;aspect-ratio:360/637;border-radius:999px 999px var(--z-r) var(--z-r);overflow:hidden;background:#c9d6e6;box-shadow:var(--z-shadow-lg);touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none;outline-offset:4px}
 .r3s:active{cursor:grabbing}
 .r3s canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0}
 .r3s canvas.on{opacity:1}
@@ -124,7 +124,7 @@ dialog#r3mk::backdrop{background:rgba(20,12,8,.5)}
  #r360 .r3w{grid-template-columns:minmax(0,1fr) 400px;grid-template-rows:auto 1fr;max-width:1320px;margin:0 auto}
  #r360 .r3h{grid-column:1/-1}
  #r360 .r3stage{grid-column:1;padding:20px 24px;justify-content:center;position:sticky;top:64px;height:calc(100dvh - 64px);box-sizing:border-box}
- #r360 .r3fig{width:auto;height:min(calc(100dvh - 210px),900px);aspect-ratio:360/541}
+ #r360 .r3fig{width:auto;height:min(calc(100dvh - 210px),900px);aspect-ratio:360/637}
  #r360 .r3fig .r3s{height:100%;width:auto}
  #r360 .r3side{grid-column:2;padding:20px 16px 24px 24px;max-width:none}
 }
@@ -187,3 +187,5 @@ dialog#r3cmp::backdrop,dialog#r3sh::backdrop{background:rgba(20,12,8,.55)}
 }
 @keyframes r3nudge{50%{transform:scale(1.08);box-shadow:0 0 0 6px var(--z-acc-soft,rgba(180,83,44,.25))}}
 @keyframes z185{50%{box-shadow:0 0 0 6px var(--z-acc,#b4532c),0 20px 50px rgba(0,0,0,.25)}}
+/* v204 (Sara 11:46 "מסביב לכחול יהיה לי מסגרת לבנה"): a white frame around the arch, on every stage */
+.r3s{box-shadow:0 0 0 7px #fff,0 0 0 8px rgba(60,40,30,.10),var(--z-shadow-lg)}
