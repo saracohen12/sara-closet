@@ -1,0 +1,15 @@
+/* v188: the card dot = the new 360 avatar only. white = pictures uploaded for it, white with a green centre = ready on it, no dot = nothing yet.
+   :not(#n188) lifts these over every older dot rule (ui, look68_73, fix85 – all !important) */
+html:not(#n188) body .avd.avd-no{display:none!important}
+html:not(#n188) body .avd.avd-fix,html:not(#n188) body .avd.avd-ok{width:16px!important;height:16px!important;border-radius:50%!important;border:0!important;background:#fff!important;box-shadow:0 0 0 1.5px rgba(60,40,30,.55),0 1px 4px rgba(0,0,0,.35)!important}
+html:not(#n188) body .avd.avd-ok{background:radial-gradient(circle,#1f9d55 0 46%,#fff 50%)!important}
+html:not(#n188) body .erow.avrow{display:none!important}
+/* item window: status, what she uploaded, upload + prompt */
+.it77p.b188 .up{color:#6b4a12;border-color:#e3c98f;background:#fdf6e6}
+.u188{display:flex;flex-wrap:wrap;gap:6px}
+.u188 span{position:relative;display:block}
+.u188 img{width:64px;height:64px;object-fit:cover;display:block;border:1px solid var(--line,#ddd);border-radius:10px;background:#f4f1ee}
+.u188 button{position:absolute;inset-block-start:-6px;inset-inline-end:-6px;width:24px;height:24px;border-radius:50%;border:1px solid var(--line,#ddd);background:#fff;color:#7a2b2b;font:inherit;font-size:.75rem;line-height:1;cursor:pointer;padding:0}
+.it77u.s188{border-color:var(--line,#ddd)}
+#r3mk [data-mkst188]{display:block;margin-top:4px;color:#2f6b3a;font-weight:600}
+#r3mk [data-mkst188]:empty{display:none}

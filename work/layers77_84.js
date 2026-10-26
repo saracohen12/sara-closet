@@ -70,8 +70,8 @@ setTimeout(homeRefresh,1200);setTimeout(homeRefresh,4000);
 // ---------- 3. item window: try on + pose status
 {const _ao=window.afterOpen;window.afterOpen=function(id){try{if(_ao)_ao.apply(this,arguments)}catch(_){}try{itemBar(id)}catch(err){(window.ERRS=window.ERRS||[]).push('v77item '+err.message)}}}
 function itemBar(id){const body=$('#dlbody');if(!body||!D[id])return;body.querySelector('.it77')?.remove();const s=slotOf(id);if(s=='extra'||s=='kid')return;
- let st='';if(usesPoses(id)){const n=P77.filter(([k])=>poseHas(id,k)).length;st=`<div class="it77p" aria-label="מוכן לאווטאר">${P77.map(([k,l])=>`<span class="${poseHas(id,k)?'ok':'no'}">${poseHas(id,k)?'✓':'✗'} ${l}</span>`).join('')}</div>${n<5?`<button class="it77u" data-m77up="${id}">${n?'להשלים':'להעלות'} תמונות לאווטאר</button>`:''}`}
- else st=`<div class="it77p"><span class="${avReady(id)?'ok':'no'}">${avReady(id)?'✓ מוכן על הדמות':'✗ עוד אין תמונה לאווטאר'}</span></div>${avReady(id)?'':`<button class="it77u" data-m77up="${id}">להעלות תמונה לאווטאר</button>`}`;
+ // v188: only the new 360 avatar (av188.js); the 5-pose upload is no longer offered
+ let st='';try{st=window.bar188?bar188(id):''}catch(_){}
  const bar=document.createElement('div');bar.className='it77';bar.innerHTML=`<button class="go it77t" data-studio="${id}">לנסות עליי</button>${st}`;
  const h3=body.querySelector('h3');const after=body.querySelector('.edtop')||(h3&&h3.nextElementSibling&&h3.nextElementSibling.classList.contains('full')?h3.nextElementSibling:h3);
  if(after)after.after(bar);else body.prepend(bar)}

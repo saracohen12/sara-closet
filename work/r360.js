@@ -223,7 +223,7 @@ function paintGrid(){if(!dlg||TAB!='closet')return;dlg.querySelectorAll('.r3cats
  const r=ids.filter(isReady).length,worn=wornIds(ST);
  dlg.querySelector('.r3hint').textContent=ids.length?(CAT=='ready'?'לוחצים כדי ללבוש או להוריד.':`${r?`${r} כבר על האווטאר (מסומנים 360°), לוחצים כדי ללבוש. `:''}לשאר צריך גיליון 360 – לוחצים ואני מסבירה איך.`):'לא מצאתי פריטים.';
  const sh=ids.slice(0,SHOWN);
- dlg.querySelector('.r3grid').innerHTML=sh.map(id=>{const ok=isReady(id);return `<button type="button" class="r3c${ok?' ok':''}" data-it="${id}"${ok?` aria-pressed="${worn.includes(id)}"`:''}><span class="r3ph"><img alt="" loading="lazy" data-th="${id}" src="${ph(id)}"></span><span class="r3n">${esc(nm(id))}</span><span class="r3b">${ok?'360°':'עוד לא ב-360'}</span></button>`}).join('');
+ dlg.querySelector('.r3grid').innerHTML=sh.map(id=>{const ok=isReady(id);return `<button type="button" class="r3c${ok?' ok':''}" data-it="${id}"${ok?` aria-pressed="${worn.includes(id)}"`:''}><span class="r3ph"><img alt="" loading="lazy" data-th="${id}" src="${ph(id)}"></span><span class="r3n">${esc(nm(id))}</span><span class="r3b">${ok?'360°':(window.st188&&st188(id)=='fix')?'⏳ הועלה, מחכה':'עוד לא ב-360'}</span></button>`}).join('');
  const mb=dlg.querySelector('.r3moreb');mb.hidden=ids.length<=SHOWN;mb.textContent=`להראות עוד (${ids.length-SHOWN})`;thl(sh)}
 function paintMiss(){if(!dlg)return;const m=dlg.querySelector('.r3miss');m.hidden=!MISS.length;if(!MISS.length){m.innerHTML='';return}
  m.innerHTML=`<p>עוד ${MISS.length==1?'פריט אחד':MISS.length+' פריטים'} מהלוק בלי 360:</p><div>${MISS.map(id=>`<button type="button" data-mk="${id}" aria-label="${esc(nm(id))}: איך להכין"><img alt="" data-th="${id}" src="${ph(id)}"></button>`).join('')}</div><button type="button" class="r3missx" aria-label="סגירה">✕</button>`;thl(MISS)}
@@ -386,7 +386,7 @@ function make(id){MKID=id;mkDlg();
   <ol class="mks">
    <li><b>שומרים 2 תמונות</b><span class="mkb"><button type="button" data-mk="photo">⬇ תמונת הפריט</button><button type="button" data-mk="sheet">⬇ הבובה ב-8 זוויות</button></span><small>אם יש תמונה יותר טובה של המוצר מהאתר, עדיף אותה.</small></li>
    <li><b>ב-GPT, בשיחה חדשה:</b> מצרפים את שתי התמונות (קודם הפריט, אחר כך הבובה), מדביקים את הפרומפט ושולחים. הכל בהודעה אחת.<span class="mkb"><button type="button" data-mk="copy" class="mkp">📋 להעתיק את הפרומפט</button></span></li>
-   <li><b>את מה שחוזר</b> שולחים לי בצ׳אט, ואני מלבישה את זה על האווטאר בכל 8 הזוויות.</li>
+   <li><b>את מה שחוזר</b> מעלים כאן, ואני מלבישה את זה על האווטאר בכל 8 הזוויות.<span class="mkb"><button type="button" data-up188="${id}" class="mkp">📤 להעלות את מה שחזר מ-GPT</button></span><small data-mkst188="${id}">${window.mkst188?mkst188(id):''}</small></li>
   </ol>
   <details><summary>לראות את הפרומפט</summary><textarea readonly rows="10">${esc(prompt(id))}</textarea></details></div>`;
  thl([id]);if(!MK.open)MK.showModal()}
