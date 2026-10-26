@@ -242,3 +242,16 @@
 .rt177r .bt button{font:inherit;font-size:.8rem;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer}
 .rt177r .bt button[aria-pressed="true"]{background:#e6f2e6;border-color:#9cc59c}
 #hub #hbody .rt177r button.ph,#hub .rt177r button.ph{border-radius:10px!important;border:0!important;padding:0!important;width:64px!important;height:84px!important;min-height:0!important}
+/* v229: avatar mark per order + avatar upload per item */
+.o3cw .o3pdc:has(+.o3adc){border-end-start-radius:0;border-end-end-radius:0}
+.o3adc{border-top:1px dashed #c9b8e0;background:#f7f3fc;color:#4a3a66}
+.o3adc .bx{border-color:#8a73b3}
+.o3adc.on{background:#e9f6eb;border-color:#9fd3a8;color:#1f5e2a}
+.o3pd.o3ad{border-color:#8a73b3;background:#f7f3fc;color:#3b2a52;margin-top:4px}
+.o3pd.o3ad.on{border:1.5px solid #3e9b4f;background:#eef8ef;color:#1f5e2a}
+.o3seg.why.o3av{background:#f3eefb;flex-wrap:wrap}
+.o3seg.why.o3av small{color:#4a3a66}
+.o3seg.why.o3av em{font-style:normal;font-size:.78rem;color:#6a5a7e;align-self:center;flex:1 1 120px;padding:0 4px}
+.o3seg.why.o3av button{color:#2a1d17}
+.o3seg.why.o3av button.go{background:#4a3a66;border-color:#4a3a66;color:#fff}
+.o3seg.why.o3av.on{background:#eef8ef}.o3seg.why.o3av.on small,.o3seg.why.o3av.on em{color:#1f5e2a}

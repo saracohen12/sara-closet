@@ -29,6 +29,13 @@ function needPic(id){const it=IT[id]||{};if(it.pn)return it.pn=='y';return !NOPI
 function nUp(id){const it=IT[id]||{};return (it.pics||[]).length+(it.img?1:0)}
 // v160: an order counts as "photos done" when she ticked ✓, or every product that needs a photo has one
 function picDone(o){const p=picSum(o);return p.done||p.has>=p.need}
+// v229 (Sara 27/10 00:13 "סימון האם יש אבטר או אין אבטר ... לחפש רק את ההזמנות שעדיין לא עשיתי להם אבטר"): an avatar mark per order,
+// like the photos one. need = clothes/shoes/bags/jewelry that stay (not cancelled, not going back); has = on the 8-angle avatar (av188 st188 'ok').
+const AVC=['dresses','tops','base','sweaters','skirts','sets','outer','scarves','shoes','belts','jewelry','bags'];
+const needAv=id=>{const it=IT[id]||{};return !it.oos&&it.s!='ret'&&AVC.includes(cat(id))};
+const avOk=id=>{try{return window.st188&&st188(id)=='ok'}catch(_){return false}};
+function avSum(o){let need=0,has=0;for(const id of o.ids)if(needAv(id)){need++;if(avOk(id))has++}return {need,has,mark:!!(ORD[o.k]||{}).ad}}
+function avDone(o){const a=avSum(o);return a.mark||a.has>=a.need}
 function picSum(o){let need=0,has=0;for(const id of o.ids)if(needPic(id)){need++;if(nUp(id))has++}return {need,has,done:!!(ORD[o.k]||{}).pd}}
 function onum(o){return o.src=='sh'||o.src=='ae'?o.k:o.k.replace(/^P0-/,'PO-')}
 function oname(o){const n=(/(\d+)\s*$/.exec(o.file)||[])[1];
@@ -72,7 +79,8 @@ function fixList(L){const ids=fixIds(L);if(!ids.length)return '<p class="o3empty
  loadThumbs(ids);return `<div class="o3all"><button data-o3fixcopy>📋 העתיקי רשימה לתופרת (${ids.length})</button></div><div class="o3items">${ids.map(itemRow).join('')}</div>`}
 const FLT=[['מה הגיע',[['','הכל'],['u','⚪ לא סימנתי'],['m','❌ חסר'],['n','⏳ בדרך'],['y','✅ הכל הגיע'],['oos','🚫 בוטל – אזל מהמלאי']]],
  ['החזרות והחלטות',[['rp','↩ להחזיר (עוד לא נשלח)'],['rs','📮 הוחזרו'],['mb','❓ מתלבטת'],['fix','🧵 לתיקון']]],
- ['תמונות',[['pnd','📸 עוד לא העליתי תמונות'],['pdd','✅ סיימתי להעלות תמונות']]]];
+ ['תמונות',[['pnd','📸 עוד לא העליתי תמונות'],['pdd','✅ סיימתי להעלות תמונות']]],
+ ['אווטאר',[['anl','🧍 עוד לא סיימתי אווטאר'],['and','✅ סיימתי אווטאר']]]];
 const fltName=()=>{if(V.flt=='fabq')return fabLbl(...V.tag.split(':'))||'בד ואיכות';for(const[,o]of FLT){const x=o.find(f=>f[0]==V.flt);if(x)return x[1]}return 'הכל'};
 const retP=id=>{const it=IT[id]||{};return it.s=='ret'&&!it.rsent};
 const retS=id=>{const it=IT[id]||{};return it.s=='ret'&&!!it.rsent};
@@ -107,19 +115,23 @@ function renderList(){const b=body(),all=orders();
  const qq=V.q.trim().toLowerCase().replace(/[-\s]/g,'').replace(/^po(?=\d)/,'p0'); // v144: Temu shows PO-…, our keys are P0-…
  const cnt={'':0,t1:0,t2:0,sh:0,ae:0};all.forEach(o=>{cnt['']++;cnt[o.src]++});
  let L=all.filter(o=>!V.acc||o.src==V.acc);
- if(V.flt&&!['fabq','rp','rs','fix'].includes(V.flt))L=L.filter(o=>{const c=osum(o);if(V.flt=='pnd'||V.flt=='pdd'){const ps=picSum(o);return V.flt=='pdd'?ps.done:!ps.done}return V.flt=='u'?c.u:V.flt=='m'?c.m:V.flt=='n'?c.n:V.flt=='mb'?c.mb:V.flt=='oos'?c.c:ostate(c)=='y'});
+ if(V.flt&&!['fabq','rp','rs','fix'].includes(V.flt))L=L.filter(o=>{const c=osum(o);if(V.flt=='pnd'||V.flt=='pdd'){const ps=picSum(o);return V.flt=='pdd'?ps.done:!ps.done}if(V.flt=='anl'||V.flt=='and')return avDone(o)==(V.flt=='and');return V.flt=='u'?c.u:V.flt=='m'?c.m:V.flt=='n'?c.n:V.flt=='mb'?c.mb:V.flt=='oos'?c.c:ostate(c)=='y'});
  if(qq){L=L.filter(o=>{if(o.k.toLowerCase().replace(/[-\s]/g,'').includes(qq)||oname(o).replace(/\s/g,'').includes(qq))return true;
   return o.ids.some(id=>(id+' '+D[id].short+' '+(D[id].full||'')+' '+((IT[id]||{}).tname||'')+' '+(D[id].color||'')).toLowerCase().replace(/[-\s]/g,'').includes(qq))})}
  if(V.pf==null){try{V.pf=localStorage.getItem('o3pf')||''}catch(_){V.pf=''}}
  const pfN={need:0,done:0};L.forEach(o=>pfN[picDone(o)?'done':'need']++);
  if(V.pf)L=L.filter(o=>picDone(o)==(V.pf=='done'));
+ if(V.af==null){try{V.af=localStorage.getItem('o3af')||''}catch(_){V.af=''}}
+ const afN={need:0,done:0};L.forEach(o=>afN[avDone(o)?'done':'need']++);
+ if(V.af)L=L.filter(o=>avDone(o)==(V.af=='done'));
+ const afRow=`<div class="o3pf o3af"><span>🧍</span>${[['','הכל'],['need',`עוד צריך אווטאר <small>${afN.need}</small>`],['done',`✅ סיימתי אווטאר <small>${afN.done}</small>`]].map(([k,n])=>`<button data-o3af="${k}" aria-pressed="${V.af==k}">${n}</button>`).join('')}</div>`;
  const pfRow=`<div class="o3pf"><span>📸</span>${[['','הכל'],['need',`עוד צריך תמונות <small>${pfN.need}</small>`],['done',`✅ כבר העליתי <small>${pfN.done}</small>`]].map(([k,n])=>`<button data-o3pf="${k}" aria-pressed="${V.pf==k}">${n}</button>`).join('')}</div>`;
  const tabs=[['','הכל'],['t1','טמו 1'],['t2','טמו 2'],['sh','שיין'],['ae','עלי']].filter(([k])=>!k||cnt[k]).map(([k,n])=>`<button data-o3acc="${k}" aria-pressed="${V.acc==k}">${n} <small>${cnt[k]}</small></button>`).join('');
  const chip=(f,cls,txt)=>`<button class="${cls}" data-o3f="${f}" aria-pressed="${V.flt==f}">${txt}</button>`;
- b.innerHTML=`<div class="o3sum">${chip('y','y',`✅ <b>${tot.y}</b> הגיעו`)}${chip('m','m',`❌ <b>${tot.m}</b> חסרים`)}${chip('n','n',`⏳ <b>${tot.n}</b> בדרך`)}${chip('u','u',`⚪ <b>${tot.u}</b> לא סימנתי`)}${chip('rp','r',`↩ <b>${rp}</b> להחזיר`)}${chip('rs','rs',`📮 <b>${rs}</b> הוחזרו`)}${oosN?chip('oos','oos',`🚫 <b>${oosN}</b> בוטלו${oosR?` · 💰 ${oosR} מחכים להחזר`:''}`):''}${chip('pnd','pnd',`📸 <b>${orders().filter(o=>!(ORD[o.k]||{}).pd).length}</b> הזמנות בלי וי תמונות`)}</div>
+ b.innerHTML=`<div class="o3sum">${chip('y','y',`✅ <b>${tot.y}</b> הגיעו`)}${chip('m','m',`❌ <b>${tot.m}</b> חסרים`)}${chip('n','n',`⏳ <b>${tot.n}</b> בדרך`)}${chip('u','u',`⚪ <b>${tot.u}</b> לא סימנתי`)}${chip('rp','r',`↩ <b>${rp}</b> להחזיר`)}${chip('rs','rs',`📮 <b>${rs}</b> הוחזרו`)}${oosN?chip('oos','oos',`🚫 <b>${oosN}</b> בוטלו${oosR?` · 💰 ${oosR} מחכים להחזר`:''}`):''}${chip('pnd','pnd',`📸 <b>${orders().filter(o=>!(ORD[o.k]||{}).pd).length}</b> הזמנות בלי וי תמונות`)}${chip('anl','anl',`🧍 <b>${orders().filter(o=>!avDone(o)).length}</b> הזמנות בלי אווטאר`)}</div>
  <label class="o3cam"><input type="file" accept="image/*" data-o3cam><span class="ic">📷</span><span><b>צילמתי מוצר שהגיע</b><small>אמצא מאיזו הזמנה הוא, ואראה לך את כל ההזמנה</small></span></label>
  <div class="o3q"><input type="search" placeholder="🔍 מספר הזמנה, שם מוצר או T123" value="${H(V.q)}" data-o3q enterkeyhint="search"></div>
- <div class="o3bar2"><button class="o3fbtn${V.flt?' on':''}" data-o3sheet="open">☰ ${H(fltName())}${V.flt?'':' ▾'}</button>${V.flt?'<button class="o3fclr" data-o3f="" aria-label="ניקוי סינון">✕</button>':''}<div class="o3tabs">${tabs}</div></div>${pfRow}
+ <div class="o3bar2"><button class="o3fbtn${V.flt?' on':''}" data-o3sheet="open">☰ ${H(fltName())}${V.flt?'':' ▾'}</button>${V.flt?'<button class="o3fclr" data-o3f="" aria-label="ניקוי סינון">✕</button>':''}<div class="o3tabs">${tabs}</div></div>${pfRow}${afRow}
  ${V.flt=='fabq'?fabList(L):V.flt=='fix'?fixList(L):V.flt=='rp'?retList(L,false):V.flt=='rs'?retList(L,true):`<div class="o3list">${L.length?L.map(ocard).join(''):'<p class="o3empty">אין הזמנות כאלה</p>'}</div>`}
  ${V.flt?'':'<p class="o3tip">טיפ: כשחבילה מגיעה – פתחי את ההזמנה ולחצי "✅ הכל הגיע", ואז סמני רק מה שחסר.</p>'}
  ${V.sheet?sheetHTML():''}`;
@@ -134,8 +146,12 @@ function ocard(o){const c=osum(o),s=ostate(c),ps=picSum(o);
  <span class="o3pics">${pics}</span>
  <span class="o3bar"><i style="width:${pct}%"></i></span>
  <span class="o3meta"><span>הגיעו <bdi>${c.y}/${c.n_}</bdi></span>${c.c?`<span>🚫 ${c.c} בוטל</span>`:''}<span>${money(c.paid)}</span>${c.lk?`<span>😍 ${c.lk}</span>`:''}${c.ret?`<span>↩ ${c.ret} להחזיר</span>`:''}${c.kept?`<span>🏠 ${c.kept}</span>`:''}${c.mb?`<span>❓ ${c.mb} מתלבטת</span>`:''}${c.fix?`<span>🧵 ${c.fix} לתיקון</span>`:''}</span>
- ${retTxt(c.rdl,c.est)}</button><button class="o3pdc${ps.done?' on':''}" data-o3pd="${H(o.k)}" aria-pressed="${ps.done}"><span class="bx">${ps.done?'✓':''}</span>${ps.done?'<b>הועלו כל התמונות</b>':'<b>סיימתי להעלות תמונות</b>'}${ps.need&&!ps.done?`<small>📸 <bdi>${ps.has}/${ps.need}</bdi></small>`:''}</button></div>`;}
+ ${retTxt(c.rdl,c.est)}</button><button class="o3pdc${ps.done?' on':''}" data-o3pd="${H(o.k)}" aria-pressed="${ps.done}"><span class="bx">${ps.done?'✓':''}</span>${ps.done?'<b>הועלו כל התמונות</b>':'<b>סיימתי להעלות תמונות</b>'}${ps.need&&!ps.done?`<small>📸 <bdi>${ps.has}/${ps.need}</bdi></small>`:''}</button>${avStrip(o)}</div>`;}
 
+function avStrip(o){const a=avSum(o),on=a.mark||a.has>=a.need;if(!a.need&&!a.mark)return '';
+ return `<button class="o3pdc o3adc${on?' on':''}" data-o3ad="${H(o.k)}" aria-pressed="${on}"><span class="bx">${on?'✓':''}</span><b>${on?'האווטאר מוכן':'סיימתי אווטאר'}</b><small>🧍 <bdi>${a.has}/${a.need}</bdi></small></button>`}
+function avRow(id){if(!needAv(id))return '';const ok=avOk(id),n=(window.up188&&up188(id))||0,e=H(id);let s='';try{s=window.mkst188?mkst188(id):''}catch(_){}
+ return `<div class="o3seg why o3av${ok?' on':''}"><small>🧍 אווטאר</small><em data-mkst188="${e}">${H(ok?'✓ על האווטאר':s||(n?'⏳ הועלתה':'עוד אין'))}</em>${ok?`<button type="button" data-up188="${e}">🔄 להחליף</button>`:`<button type="button" data-mk188="${e}">📋 פרומפט</button><button type="button" class="go" data-up188="${e}">📤 להעלות 8 זוויות</button>`}</div>`}
 function itemRow(id){const x=D[id],it=IT[id]||{},s=st(id);
  const b=(k,v,t,on)=>`<button data-o3set="${k}" data-v="${v}" data-id="${H(id)}" aria-pressed="${!!on}">${t}</button>`;
  const meta=[catName(id),x.size&&('מידה '+x.size),x.color,money(+x.paid||0)+(x.qty>1?` · ${x.qty} יח׳`:'')].filter(Boolean).map(x=>'<bdi>'+H(x)+'</bdi>').join(' · ');
@@ -148,6 +164,7 @@ function itemRow(id){const x=D[id],it=IT[id]||{},s=st(id);
  ${it.mb&&!it.s?`<div class="o3seg why"><small>למה?</small>${b('mbr','model','מחכה לדגם אחר',it.mbr=='model')}${b('mbr','size','מחכה למידה אחרת',it.mbr=='size')}${b('mbr','other','משהו אחר',it.mbr=='other')}</div>`:''}
  ${it.s=='ret'?`<div class="o3seg why rsent"><small>החזרה</small>${b('rsent','1','📮 הוחזר (נשלח)',it.rsent)}${b('refunded','1','💰 הכסף חזר',it.refunded)}</div>`:''}
  <div class="o3seg why pn${needPic(id)?' on':''}"><small>📸 תמונות</small>${b('pn','y','צריך להעלות',needPic(id))}${b('pn','n','לא צריך',!needPic(id))}<em>${nUp(id)?'📷 '+nUp(id)+' הועלו':'עוד אין'}</em></div>
+ ${avRow(id)}
  <div class="o3seg marks">${b('fix','1','🧵 דרוש תיקון',it.fix)}${b('nofit','1','📏 לא במידה',it.nofit)}${b('bad','1','⚠️ פגום / לא כמו בתמונה',it.bad)}${b('oos','1','🚫 בוטל – אזל מהמלאי',false)}</div>
  ${isClo(id)?`<div class="o3seg why blt"><small>🎀 חגורה</small>${b('blt','y','הגיע עם חגורה',it.blt=='y')}${b('blt','n','בלי',it.blt=='n')}${b('blt','u','לא יודעת',it.blt=='u')}</div>`:''}
  ${it.fix?`<div class="o3seg why fixk"><small>מה לתקן?</small>${FIXK.map(([k,n])=>b('fixk',k,n,(it.fixk||[]).includes(k))).join('')}</div>`:''}
@@ -181,11 +198,13 @@ function renderOrder(){const b=body(),o=orders().find(o=>o.k==V.ord);if(!o){V.or
  <div class="o3items">${o.ids.map(itemRow).join('')}</div>`;
  loadThumbs(o.ids);
  if(V.hl){const r=b.querySelector(`[data-o3row="${CSS.escape(V.hl)}"]`);if(r)setTimeout(()=>r.scrollIntoView({block:'center'}),60)}else b.scrollTop=0;}
+function avHead(o){const a=avSum(o);if(!a.need&&!a.mark)return '';const on=a.mark||a.has>=a.need;
+ return `<button class="o3pd o3ad${on?' on':''}" data-o3ad="${H(o.k)}" aria-pressed="${on}"><b>${on?'✅ סיימתי אווטאר להזמנה הזאת':'🧍 סיימתי אווטאר? לחצי כדי לסמן'}</b><small>מוכנים על האווטאר: <bdi>${a.has}</bdi> מתוך <bdi>${a.need}</bdi>${a.mark?' · לחיצה מבטלת':a.has>=a.need?' · כולם מוכנים':' · מעלים ליד כל מוצר למטה'}</small></button>`}
 function oheadHTML(o){const c=osum(o),ps=picSum(o);
  return `<div class="o3oh"><span class="sb2 ${o.src}">${ACC[o.src]}</span><b>${H(oname(o))}</b><small><bdi>${H(o.date||'')}</bdi> · <bdi>${o.ids.length} מוצרים</bdi> · <bdi>${money(c.paid)}</bdi></small>
   <span class="o3num"><small>מספר הזמנה ב${ACC[o.src]}:</small> <bdi>${H(onum(o))}</bdi> <button class="o3cp" data-o3copy="${H(onum(o))}">📋 העתק</button></span>${retTxt(c.rdl,c.est)}
   <div class="o3sum small"><span class="y">✅ <b>${c.y}</b></span><span class="m">❌ <b>${c.m}</b></span><span class="n">⏳ <b>${c.n}</b></span><span class="u">⚪ <b>${c.u}</b></span><span>😍 <b>${c.lk}</b></span><span>❓ <b>${c.mb}</b></span><span>↩ <b>${c.ret}</b></span></div>
-  <button class="o3pd${ps.done?' on':''}" data-o3pd="${H(o.k)}" aria-pressed="${ps.done}"><b>${ps.done?'✅ סיימתי להעלות תמונות להזמנה הזאת':'📸 סיימתי להעלות תמונות? לחצי כדי לסמן'}</b><small>צריך תמונות: <bdi>${ps.need}</bdi> מוצרים · כבר העלית ל-<bdi>${ps.has}</bdi>${ps.done?' · לחיצה מבטלת':''}</small></button>
+  <button class="o3pd${ps.done?' on':''}" data-o3pd="${H(o.k)}" aria-pressed="${ps.done}"><b>${ps.done?'✅ סיימתי להעלות תמונות להזמנה הזאת':'📸 סיימתי להעלות תמונות? לחצי כדי לסמן'}</b><small>צריך תמונות: <bdi>${ps.need}</bdi> מוצרים · כבר העלית ל-<bdi>${ps.has}</bdi>${ps.done?' · לחיצה מבטלת':''}</small></button>${avHead(o)}
   <div class="o3shop"><label class="o3cam small"><input type="file" accept="image/*" data-o3cam="${H(o.k)}"><span class="ic">📷</span><span><b>צלמי מוצר מההזמנה הזאת</b><small>אמצא איזה מהם זה ואסמן שהגיע</small></span></label>
   <button data-o3shop="${H(o.k)}">🛍 ההזמנה ב${ACC[o.src]}<small>${o.src=='sh'||o.src=='ae'?'פותח ישר את ההזמנה':'<bdi>'+ACCN[o.src]+'</bdi> · פותח ישר את ההזמנה'}</small></button></div>
   <div class="o3all"><button data-o3all="y">✅ הכל הגיע</button><button data-o3all="n">⏳ הכל עוד בדרך</button><button data-o3all="clear" class="ghost">איפוס</button></div></div>`;}
@@ -223,6 +242,7 @@ async function onClick(e){const t=e.target.closest('button,[data-o3cam],.o3sbd')
  if(t.dataset.o3=='back'){if(V.res){V.ord=V.res.ord||'';V.res=null}else V.ord='';V.hl='';render();return}
  if(t.dataset.o3acc!=null){V.acc=t.dataset.o3acc;render();return}
  if(t.dataset.o3sheet){V.sheet=t.dataset.o3sheet=='open';const y=body().scrollTop;render();body().scrollTop=y;return}
+ if(t.dataset.o3af!=null){V.af=t.dataset.o3af;try{localStorage.setItem('o3af',V.af)}catch(_){}render();return}
  if(t.dataset.o3pf!=null){V.pf=t.dataset.o3pf;try{localStorage.setItem('o3pf',V.pf)}catch(_){}render();return}
  if(t.dataset.o3f!=null){const f=t.dataset.o3f;V.flt=V.flt==f&&!V.sheet?'':f;V.sheet=false;V.tag='';render();return}
  if(t.dataset.o3sentall){const o=orders().find(o=>o.k==t.dataset.o3sentall);if(o){for(const id of o.ids.filter(retP))await putItem(id,{rsent:1});toast('סימנתי שהחבילה נשלחה 📮')}refresh();return}
@@ -236,6 +256,7 @@ async function onClick(e){const t=e.target.closest('button,[data-o3cam],.o3sbd')
  if(t.dataset.o3copy){const v=t.dataset.o3copy;let ok=false;try{await navigator.clipboard.writeText(v);ok=true}catch(_){try{const ta=document.createElement('textarea');ta.value=v;ta.style.cssText='position:fixed;opacity:0';(t.closest('dialog')||document.body).appendChild(ta);ta.select();ok=document.execCommand('copy');ta.remove()}catch(_){}}toast(ok?'✓ הועתק: '+v:'לא הצלחתי להעתיק – לחצי לחיצה ארוכה על המספר: '+v);if(ok){const o0=t.textContent;t.textContent='✓ הועתק';setTimeout(()=>t.textContent=o0,1600)}return}
  if(t.dataset.o3item){const id=t.dataset.o3item;const bk={ord:V.ord,hl:id};dlg().close();try{openItem(id);armBack(bk)}catch(err){LOG('open',err)}return}
  if(t.dataset.o3set){t.setAttribute('aria-pressed','true');await setMark(t.dataset.id,t.dataset.o3set,t.dataset.v);V.hl=t.dataset.id;rowRefresh(t.dataset.id);if(t.dataset.o3set=='oos'){try{apply()}catch(_){}toast((IT[t.dataset.id]||{}).oos?'🚫 בוטל – יצא מהארון, נשאר כאן למעקב אחרי הכסף':'↩ החזרתי לארון')}return}
+ if(t.dataset.o3ad){const k=t.dataset.o3ad,d=!(ORD[k]||{}).ad;t.disabled=true;try{await putOrd(k,{ad:d?1:0})}catch(e){LOG('ad',e)}refresh();toast(d?'✅ סומן: סיימת אווטאר להזמנה הזאת':'בוטל הסימון');return}
  if(t.dataset.o3pd){const k=t.dataset.o3pd,d=!(ORD[k]||{}).pd;t.disabled=true;try{await putOrd(k,{pd:d?1:0})}catch(e){LOG('pd',e)}refresh();toast(d?'✅ סומן: סיימת להעלות תמונות להזמנה הזאת':'בוטל הסימון');return}
  if(t.dataset.o3all){const o=orders().find(o=>o.k==V.ord);if(!o)return;
   if(t.dataset.o3all=='clear'&&!(typeof sure=='function'?sure(t,'לאפס? לחצי שוב'):true))return;
