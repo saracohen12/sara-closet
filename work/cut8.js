@@ -160,6 +160,22 @@ function layerA(d,A){const c=document.createElement('canvas');c.width=W;c.height
  for(let i=0;i<N;i++){const k=i*3,q=i*4;p[q]=d[k];p[q+1]=d[k+1];p[q+2]=d[k+2];p[q+3]=Math.round(255*Math.min(1,A[i]));if(A[i]>.3)px++}
  g.putImageData(im,0,0);c.px=px;return c}
 
+// v219 (Sara 17:43 "למה השיער באוויר ולא צמוד"): in the side views GPT's body is a little further back than the doll's, so the hair behind it floated with a gap.
+// Row by row below the neck, hair behind the doll's back moves forward until it touches her back (≤24 px, smoothed over rows)
+const BACK={2:1,6:-1},BODY=[];
+async function body(v){if(!BODY[v])BODY[v]=loadImg('a8/c'+(v+1)+'.webp'+V).then(i=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(i,0,0,W,H);
+  const p=g.getImageData(0,0,W,H).data,a=new Uint8Array(N);for(let i=0;i<N;i++)a[i]=p[i*4+3]>128?1:0;return a}).catch(e=>{BODY[v]=null;throw e});return BODY[v]}
+async function snug(c,v){const dir=BACK[v];if(!dir)return c;let A;try{A=await body(v)}catch(_){return c}
+ const g=c.getContext('2d',{willReadFrequently:true}),im=g.getImageData(0,0,W,H),p=im.data,r0=NK[v]+10,eb=new Int32Array(H).fill(-1),gp=new Float32Array(H).fill(NaN);
+ for(let r=r0;r<H;r++){let e=-1;for(let x=0;x<W;x++)if(A[r*W+x]){if(dir>0||e<0)e=x;if(dir<0)break}if(e<0)continue;eb[r]=e;
+  for(let k=1;k<=60;k++){const x=e+dir*k;if(x<0||x>=W)break;if(p[(r*W+x)*4+3]>128){gp[r]=Math.min(24,k-1);break}}}
+ const o=new Uint8ClampedArray(p);let moved=0;
+ for(let r=r0;r<H;r++){if(eb[r]<0)continue;let t=0,n=0;for(let y=r-5;y<=r+5;y++)if(y>=r0&&y<H&&!isNaN(gp[y])){t+=gp[y];n++}if(!n)continue;
+  const sh=Math.round(t/n*Math.min(1,(r-r0)/8));if(sh<1)continue;moved++;
+  for(let k=1;k<W;k++){const x=eb[r]+dir*k;if(x<0||x>=W)break;const q=(r*W+x)*4;for(let z=0;z<4;z++)o[q+z]=0}
+  for(let k=1;k<W;k++){const x=eb[r]+dir*k,y=x+dir*sh;if(x<0||x>=W)break;if(y<0||y>=W)continue;const q=(r*W+x)*4,s=(r*W+y)*4;for(let z=0;z<4;z++)o[q+z]=p[s+z]}}
+ if(moved){im.data.set(o);g.putImageData(im,0,0)}return c}
+
 // how each kind of item is cut (KIND keys in r360.js)
 const MODE={cover:{mode:'head'},scarf:{mode:'head'},necklace:{mode:'small',rows:[.1,.55],one:1},earrings:{mode:'small',rows:[.03,.2]},bracelet:{mode:'small',low:1},
  belt:{rows:[.28,.62],nohem:1},shoes:{rows:[.8,1],nohem:1},hair:{mode:'whole'},tie:{mode:'whole',fab:1},tiex:{mode:'whole'},makeup:{mode:'face'}};
@@ -168,10 +184,10 @@ const tick=()=>new Promise(r=>setTimeout(r,0));
 async function run(src,kind,onStep){const img=await toImg(src);const S=sheetData(img);if(!S)throw Object.assign(new Error('shape'),{code:'shape',w:img.naturalWidth,h:img.naturalHeight});
  const o=MODE[kind]||{},views=[],shifts=[],fab=[],lum=[];
  for(let v=0;v<8;v++){onStep&&onStep(v);await tick();const b=await base(v);const s=shift(S,v,b,o.mode=='head'||o.mode=='whole');shifts.push(s);const d=panel(S,v,s[0],s[1]);
-  if(o.mode=='whole'){const [m,f,l]=maskWhole(b,d,v,o.fab,kind=='tiex');views.push(turn(layerA(d,m.A),v));if(f){fab.push(turn(layer(d,f),v));lum.push(...l)}}
+  if(o.mode=='whole'){const [m,f,l]=maskWhole(b,d,v,o.fab,kind=='tiex');views.push(kind=='hair'?await snug(turn(layerA(d,m.A),v),v):turn(layerA(d,m.A),v));if(f){fab.push(turn(layer(d,f),v));lum.push(...l)}}
   else if(o.mode=='face')views.push(turn(layerA(d,maskFace(b,d,v)),v));
   else views.push(turn(layer(d,mask(b,d,o)),v))}
  lum.sort((x,y)=>x-y);
  return {views,shifts,px:views.map(c=>c.px),fab:fab.length?fab:null,lum:lum.length?Math.round(lum[lum.length>>1]):0}}
-window.cut8={run,MODE,W,H,CV:2,CVW:5};   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
+window.cut8={run,MODE,W,H,CV:2,CVW:6};   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
 })();
