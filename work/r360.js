@@ -175,7 +175,7 @@ async function fitV(hk,v,raw){const k=hk+'|'+v+'|'+(DYN[hk+(v+1)]||'')+(raw?'|ra
 // only the makeup is carried over: (doll with makeup − doll) inside the face oval, softened, moved onto that head's face by the fit
 function mkDelta(mk,v){const k=mk+'|'+v+'|'+(DYN[mk+(v+1)]||'');if(FMK[k])return FMK[k];const e=FCV[v];
  return FMK[k]=(async()=>{const base=Object.assign(clone(DEF),{on:{},bg:'',head:'c',rawc:1,mk:'',tc:null}),D=document.createElement('canvas'),F=document.createElement('canvas');
-  if(!await paint(D,v,base)||!await paint(F,v,Object.assign({},base,{mk})))return null;
+  if(!await paint(D,v,base)||!await paint(F,v,Object.assign({},base,{mk,mkraw:1})))return null;   // mkraw: the makeup layer as GPT drew it (else it would wait for itself)
   const cx=e[0],cy=e[1]+2,rx=Math.max(5,e[2]-2),ry=Math.max(5,e[3]-2),x0=cx-rx,y0=cy-ry,w=2*rx+1,h=2*ry+1;
   const a=D.getContext('2d',{willReadFrequently:true}).getImageData(x0,y0,w,h).data,b=F.getContext('2d',{willReadFrequently:true}).getImageData(x0,y0,w,h).data;
   let d=new Float32Array(w*h*3);for(let y=0;y<h;y++)for(let x=0;x<w;x++){const q=((x-rx)/rx)**2+((y-ry)/ry)**2;if(q>1)continue;const m=q<.55?1:(1-q)/.45,i=y*w+x;for(let z=0;z<3;z++)d[i*3+z]=(b[i*4+z]-a[i*4+z])*m}
@@ -199,7 +199,7 @@ function headT(hk){if(!(hk=='w'||/^yh/.test(hk||'')&&STY[hk]))return Promise.res
  return HT[k]=(async()=>{const T=[];for(let v=0;v<8;v++){const f=[0,1,7].includes(v)?await fitV(hk,v,true):null,e=FCV[v];
    T.push(f&&f[4]>=.6&&Math.abs(f[0])<=8&&Math.abs(f[1])<=8?{cx:e[0],cy:e[1]-2,dx:f[0],dy:f[1],s:1,t:f[3]}:null)}return T})()}
 function drawHead(c,m,T){c.save();c.translate(T.cx,T.cy);c.scale(1/T.s,1/T.s);c.rotate(-T.t*Math.PI/180);c.translate(-(T.cx+T.dx),-(T.cy+T.dy));c.drawImage(m,0,0);c.restore()}
-async function mkFit(c,v,hk,mk,pt){const e=FCV[v];if(!e||![0,1,7].includes(v)||!DYN[mk+(v+1)])return;try{const [f,M]=await Promise.all([fitV(hk,v),mkDelta(mk,v)]);if(!f||!M||f[4]<.6)return;   // the face toward her: front and half-turns
+async function mkFit(c,v,hk,mk,pt,ident){const e=FCV[v];if(!e||![0,1,7].includes(v)||!DYN[mk+(v+1)])return;try{const [f,M]=await Promise.all([ident?[0,0,1,0,1]:fitV(hk,v),mkDelta(mk,v)]);if(!f||!M||f[4]<.6)return;   // the face toward her: front and half-turns
  const [dx,dy,sc,t]=f,cx=e[0],cy=e[1]-2,co=Math.cos(t*Math.PI/180),si=Math.sin(t*Math.PI/180),R=Math.ceil(Math.max(M.w,M.h)*sc*.8)+8,X0=Math.max(0,Math.round(cx+dx-R)),Y0=Math.max(0,Math.round(cy+dy-R)),W2=Math.min(c.canvas.width-X0,2*R),H2=Math.min(c.canvas.height-(pt||0)-Y0,2*R);
  const id=c.getImageData(X0,Y0+(pt||0),W2,H2),p=id.data,P=new Uint8ClampedArray(p);
  const fwd=(sx,sy)=>{const a=(sx+M.x0-cx)*sc,b=(sy+M.y0-cy)*sc;return [cx+dx+co*a-si*b-X0,cy+dy+si*a+co*b-Y0]},   // a doll pixel of the delta → this canvas
@@ -254,7 +254,8 @@ function layersFor(v,s){const on=s.on||{},L=[];const x=k=>({s:'x'+k+(v+1)});cons
  const st=STY[s.head],z=st&&'z'+s.head.slice(1)+(v+1);
  const head=s.head=='w'?[{s:(s.wb&&WB[v]?'wb':'w')+(v+1),hd:1}]:st?[DYN[s.head+(v+1)]&&{s:s.head+(v+1),hd:1},st.set=='tie'&&DYN[z]&&{s:z,t:s.tc||GREY,ref:st.lum}].filter(Boolean):(s.head&&s.head!='c')?[x(s.head)]:[];
  // v199 makeup: over a whole head (tie, hairstyle) right after it; with a cover under everything (a cover item is drawn over it). Her first wig is another drawing of the face: no makeup on it
- const mk=s.mk&&STY[s.mk]&&DYN[s.mk+(v+1)]?{s:s.mk+(v+1)}:null;if(mk){if(st||s.head=='w')L.fit=s.mk;else L.unshift(mk)}   // v216: on a whole head paint() fits it (mkFit)
+ const mk=s.mk&&STY[s.mk]&&DYN[s.mk+(v+1)]?{s:s.mk+(v+1)}:null;if(mk){if(st||whole(s.head))L.fit=s.mk;else if([0,1,7].includes(v)&&!s.mkraw){L.fit=s.mk;L.fitId=1}else L.unshift(mk)}   // v226 (Sara 19:23 "רושם איפור 5 דקות, בבובה לא רואים"): a head-cover item made from a whole-head sheet (tiex) brings its own face – the makeup is fitted on it too;
+   // on her own face (cover, scarf items) the front and half-turns get the same delta in place (fitId), so faint makeup is strengthened there as well   // v216: on a whole head paint() fits it (mkFit)
  const ears=of('ears').map(x);
  if(BACK[v]||s.head=='w'||(st&&st.set=='hair'))L.push(...ears,...head);else L.push(...head,...ears);
  return L}
@@ -336,7 +337,7 @@ async function paint(cv,v,s,pad){s=headOf(s);const bg=s.bg||'';const hw=whole(s.
   const g=c.createRadialGradient(FX[v],FY+3,2,FX[v],FY+3,52);g.addColorStop(0,'rgba(40,28,20,.30)');g.addColorStop(1,'rgba(40,28,20,0)');c.save();c.translate(FX[v],FY+3);c.scale(1,.16);c.translate(-FX[v],-FY-3);c.fillStyle=g;c.fillRect(FX[v]-60,FY-60,120,126);c.restore()}
  c.drawImage(base,0,0);if(E){for(let i=0;i<8;i++){c.globalAlpha=(i+1)/8;c.drawImage(E,0,0,2,1,0,BH-8+i,BW,1)}c.globalAlpha=1}
  const HTv=!s.rawHead&&hw?((await headT(s.head))||[])[v]:null;
- ms.forEach((m,i)=>{if(!m)return;const l=L[i],im=l.t?tinted(m,l.t,l.ref):m;if(l.hd&&HTv)drawHead(c,im,HTv);else c.drawImage(im,0,0)});if(L.fit)await mkFit(c,v,s.head,L.fit,pt);if(pt||pb)c.restore();
+ ms.forEach((m,i)=>{if(!m)return;const l=L[i],im=l.t?tinted(m,l.t,l.ref):m;if(l.hd&&HTv)drawHead(c,im,HTv);else c.drawImage(im,0,0)});if(L.fit)await mkFit(c,v,s.head,L.fit,pt,L.fitId);if(pt||pb)c.restore();
  if(cv._pg!==my)return true;if(cv.width!=BW||cv.height!=BH+pt+pb){cv.width=BW;cv.height=BH+pt+pb}const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);g.drawImage(oc,0,0);return true}
 function wornIds(s){const ids=[];if(s.head&&KEYOF[s.head])ids.push(KEYOF[s.head]);if(/^yt/.test(s.head||'')&&s.tf){const t=KEYOF[s.tf]||(D[s.tf]?s.tf:'');if(t&&!ids.includes(t))ids.push(t)}Object.keys(s.on||{}).forEach(k=>{const id=KEYOF[k];if(s.on[k]&&id&&!ids.includes(id))ids.push(id)});return ids}
 function wearing(s){const a=wornIds(s).map(nm);if(s.head=='w')a.unshift('הפאה');const n=k=>STY[k]&&STY[k].n;if(n(s.head))a.unshift(n(s.head));if(n(s.mk))a.push('איפור: '+n(s.mk));return a.join(' · ')}
