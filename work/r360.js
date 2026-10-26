@@ -215,7 +215,9 @@ function paintRoom(){if(!dlg)return;
  const ids=wornIds(ST);const wv=dlg.querySelector('.r3worn');
  const chips=ids.map(id=>`<button type="button" class="r3wc" data-off="${id}" aria-label="להוריד: ${esc(nm(id))}"><img alt="" data-th="${id}" src="${ph(id)}"><span>${esc(nm(id))}</span><b aria-hidden="true">✕</b></button>`);
  if(ST.head=='w')chips.unshift(`<button type="button" class="r3wc" data-off="w" aria-label="להוריד: הפאה"><img alt="" src="a8/t_w.webp${V}"><span>הפאה שלי</span><b aria-hidden="true">✕</b></button>`);
- wv.innerHTML=chips.join('')||'<p class="r3note">עוד לא לבשת כלום. בוחרים למטה מהארון.</p>';thl(ids);
+ // v197: an item she cut herself can be replaced or deleted right here (Sara 08:29 "גם אם לחצתי מדוד עלי שיהיה לי אפשרות למחוק ולהחליף")
+ const fx=ids.filter(id=>READY[id]&&READY[id].dyn&&window.acts197).map(id=>`<div class="r3fx"><span>${esc(nm(id).split(' ').slice(0,3).join(' '))}</span>${acts197(id)}</div>`).join('');
+ wv.innerHTML=(chips.join('')||'<p class="r3note">עוד לא לבשת כלום. בוחרים למטה מהארון.</p>')+fx;thl(ids);
  dlg.querySelector('.r3cnt').textContent=ids.length?`${ids.length} פריטים`:'';
  const t=dlg.querySelector('.r3tk');t.hidden=!(ST.on.b&&ST.on.s);t.querySelector('input').checked=!!ST.tuck;
  const w=dlg.querySelector('.r3wb');w.hidden=ST.head!='w';w.querySelector('input').checked=!!ST.wb;

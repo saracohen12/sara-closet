@@ -49,7 +49,13 @@ function line(id){const p=PROC[id];
  if(ups(id).length)return '<span class="up">⏳ הועלתה תמונה של 8 זוויות, עוד רגע היא על האווטאר</span>';
  return s=='fix'?'<span class="up">⚪ כבר העלית תמונות לבגד הזה · עוד לא על האווטאר החדש</span>':'<span class="no">✗ עוד לא על האווטאר החדש</span>'}
 // the bar at the top of the item window: one line, a tap goes down to the avatar part
-window.bar188=function(id){return `<button type="button" class="it77p b188" data-go190="${es(id)}">${line(id)}<b aria-hidden="true">⬇</b></button>`};
+window.bar188=function(id){const go=`<button type="button" class="it77p b188" data-go190="${es(id)}">${line(id)}<b aria-hidden="true">⬇</b></button>`;
+ return go+(mine(id)?acts(id):'')};
+// v197 (Sara 08:29 "עלתה לאוויר של המוצר תמונה לא נכונה, אני לא מצליחה למחוק/לשנות... גם אם לחצתי מדוד עלי שיהיה לי אפשרות למחוק ולהחליף"):
+// replace / delete right under "לנסות עליי", in the avatar box and in the studio
+const mine=id=>ups(id).length>0||parts(id).length>0;
+const acts=id=>`<span class="b188x"><button type="button" data-up188="${es(id)}">🔄 להחליף את התמונה</button><button type="button" data-off190="${es(id)}">🗑 למחוק מהאווטאר</button></span>`;
+window.acts197=id=>mine(id)?acts(id):'';
 function box(id){const p=PROC[id],u=ups(id),ok=ready(id),dyn=(()=>{try{return R360.dyn(id)}catch(_){return false}})();let kind='';try{kind=R360.kind(id)}catch(_){}
  const twin=kind=='set'||kind=='jwset',P=parts(id),half=twin&&P.length==1;
  const th=u.length?`<div class="u188">${u.map((x,i)=>`<span><a href="/_blob/${es(x.a)}" target="_blank" rel="noopener"><img alt="תמונה ${i+1} שהעלית לאווטאר" src="/_blob/${es(x.a)}" loading="lazy"></a><button type="button" data-del188="${es(id)}" data-i="${i}" aria-label="למחוק את התמונה">✕</button></span>`).join('')}</div>`:'';
@@ -59,7 +65,7 @@ function box(id){const p=PROC[id],u=ups(id),ok=ready(id),dyn=(()=>{try{return R3
  const pics=`<button type="button" data-pk102open="${es(id)}">🖼 התמונות של הבגד · להוריד ל-GPT</button>`;
  // v191 (Sara 07:31 "אני לא רואה שזה גזור... לגזור אותה לשמונה חתיכות, לשמונה הכיוונים"): the 8 pieces, each on the doll
  try{const T=ok&&R360.tiles(id),NM=R360.names;if(T)cuts=`<p class="a8h">✂ גזרתי ל-8 זוויות:</p><div class="a8g">${T.map((ls,v)=>`<button type="button" class="a8t" data-see190="${es(id)}" data-v="${v}" aria-label="${es(NM[v])}"><span>${ls.map(u=>`<img alt="" src="${es(u)}" loading="lazy">`).join('')}</span><small>${es(NM[v])}</small></button>`).join('')}</div>`}catch(e){ERR('tiles',e)}
- if(ok&&!half)body=`<div class="a8b"><button type="button" class="go" data-see190="${es(id)}">👀 לראות על האווטאר</button>${dyn?`<button type="button" data-up188="${es(id)}">🔄 להעלות תמונה חדשה</button><button type="button" data-off190="${es(id)}">🗑 להוריד מהאווטאר</button>`:''}${pics}</div>`;
+ if(ok&&!half)body=`<div class="a8b"><button type="button" class="go" data-see190="${es(id)}">👀 לראות על האווטאר</button>${dyn?`<button type="button" data-up188="${es(id)}">🔄 להעלות תמונה חדשה</button><button type="button" data-off190="${es(id)}">🗑 למחוק מהאווטאר</button>`:''}${pics}</div>`;
  else body=`<ol class="a8s">
   <li><b>הפרומפט ל-GPT:</b> שומרים את תמונת הבגד ואת הבובה ב-8 זוויות, ושולחים ל-GPT עם הפרומפט, הכל בהודעה אחת.<button type="button" data-mk188="${es(id)}">📋 הפרומפט ל-GPT</button>${pics}</li>
   <li><b>מעלים את מה שחזר:</b> תמונה אחת עם 8 הזוויות${twin?(half?` – עכשיו של ${kind=='set'?'החלק התחתון':'העגילים'}`:` (${kind=='set'?'קודם החלק העליון, אחר כך התחתון':'קודם השרשרת, אחר כך העגילים'})`):''}. האתר גוזר אותה ל-8, מתאים בדיוק לבובה ומכניס את הבגד לסטודיו.<button type="button" class="go" data-up188="${es(id)}"${busy?' disabled':''}>📤 להעלות תמונה של 8 זוויות</button></li></ol>`;
@@ -116,8 +122,9 @@ async function cut(id,src,ua,t,at){if(PROC[id]&&PROC[id].v)return;if(!window.cut
   toast_(half?`✓ ${KN[kind]||'החלק הראשון'} על האווטאר. עכשיו מעלים את התמונה של החלק השני`:`✓ ${KN[kind]||'הבגד'} על האווטאר החדש`,half?null:()=>see(id))}
  catch(e){PROC[id]={err:e&&e.code||'x'};DONE.add(id);ERR('cut',e);log('cut8_fail',{id,kind,code:String(e&&(e.code||e.message)||e).slice(0,60)});rebox(id);toast_('✗ '+(ERRT[PROC[id].err]||ERRT.x))}}
 function see(id,v){try{R360.openWith(null,{a:id});if(v>0)setTimeout(()=>{try{R360.show(v)}catch(_){}},700)}catch(e){ERR('see',e)}}
-async function off(id){const old=it(id).a8;if(!old)return;await putItem(id,{a8:''});try{R360.sync()}catch(_){}rebox(id);repaint(id);avNow(id);
- toast_('הבגד ירד מהאווטאר',async()=>{await putItem(id,{a8:old});try{R360.sync()}catch(_){}rebox(id);repaint(id)})}
+async function off(id){const o={a8:it(id).a8||'',a8up:it(id).a8up||''};if(!o.a8&&!o.a8up)return;DONE.add(id);delete PROC[id];
+ await putItem(id,{a8:'',a8up:''});try{R360.sync()}catch(_){}rebox(id);repaint(id);avNow(id);log('a8_off',{id});
+ toast_('✓ נמחק מהאווטאר. אפשר להעלות תמונה חדשה',async()=>{await putItem(id,o);try{R360.sync()}catch(_){}rebox(id);repaint(id);avNow(id)})}
 
 // a picture that was uploaded but not cut yet (on another phone, before v190, or the page was closed in the middle) is cut when the site opens
 const DONE=new Set();let SOON=null;
@@ -130,7 +137,7 @@ function soon(){if(SOON)return;SOON=setTimeout(async()=>{SOON=null;if(BUSY)retur
 setTimeout(soon,4000);
 
 // its own toasts say what was saved, so no generic "נשמר: a8up"
-{const _bp=beforePut;beforePut=function(id,patch){if(patch&&Object.keys(patch).length==1&&('a8up' in patch||'a8' in patch))return;return _bp.apply(this,arguments)}}
+{const _bp=beforePut;beforePut=function(id,patch){const k=patch&&Object.keys(patch);if(k&&k.length&&k.every(x=>x=='a8up'||x=='a8'))return;return _bp.apply(this,arguments)}}
 
 // every old "upload for the avatar" button (5 poses) now leads to the new avatar
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-up188],[data-mk188],[data-del188],[data-m77up],[data-go190],[data-see190],[data-off190]');if(!t)return;

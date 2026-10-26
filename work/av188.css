@@ -38,3 +38,11 @@ html.d73 #dlbody .a8box{border:1px solid var(--line)!important;border-radius:0!i
 .a8t span img{position:absolute;inset:0;width:100%!important;height:100%!important;max-width:none!important;background:none!important;border:0!important;border-radius:0!important;object-fit:contain;display:block}
 .a8t small{font-size:.7rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 @media (min-width:700px){.a8g{grid-template-columns:repeat(8,minmax(0,1fr))}}
+/* v197: replace / delete the avatar picture – under "לנסות עליי", and in the studio */
+.b188x{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;width:100%}
+.b188x button{font:inherit;font-size:.82rem;font-weight:600;padding:7px 12px;border-radius:999px;border:1px solid rgba(0,0,0,.14);background:#fff;color:#2a1d17;cursor:pointer;min-height:36px}
+.b188x button[data-off190]{color:#9b2c1c;border-color:#e8c4bb}
+.b188x button.armed{background:#9b2c1c;color:#fff}
+#r360 .r3fx{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;border-radius:14px;background:rgba(255,255,255,.6);font-size:.82rem}
+#r360 .r3fx>span:first-child{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+#r360 .r3fx .b188x{margin:0;width:auto}
