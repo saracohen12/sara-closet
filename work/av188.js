@@ -154,13 +154,43 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
 // האבטאר עם הבגד לבוש עליי, שאני אראה אותו במוצר, לא סתם את התמונה"). The shop photos stay as the next pictures.
 const AVU={},MK={};
 const avKey=id=>{try{const t=R360.tiles(id);return t?t[0].join('|')+(R360.wig()?'#w':'#c'):''}catch(_){return ''}};
+const MKR={};
+// v230 (Sara 00:25 "שהתמונה עם האבטר תסתובב לבד ... בהתחלה הברירת מחדל זה מסתובב לאט ... מזיזה את הלחצן, זה יזוז יותר מהר ... אפשרות לעצור"):
+// the "עליי" picture is the 8 angles – the front first (shown at once), then the other 7; it turns by itself, slowly, with ⏸/▶ and a 🐢–🐇 slider under it
+const AVFREE=a=>{if(a)(a.F||[a.u]).forEach(u=>{try{if(u)URL.revokeObjectURL(u)}catch(_){}})};
+const jpgOf=c=>c?new Promise(r=>c.toBlob(r,'image/jpeg',.9)):null;
 function avMake(id,k){if(MK[id]==k)return;MK[id]=k;
- R360.still(id,0).then(c=>c?new Promise(r=>c.toBlob(r,'image/jpeg',.92)):null).then(b=>{if(MK[id]!=k)return;delete MK[id];if(!b){AVU[id]={k,u:''};return}   // a layer did not load: keep the shop photo first
-  if(AVU[id]&&AVU[id].u)URL.revokeObjectURL(AVU[id].u);AVU[id]={k,u:URL.createObjectURL(b)};
-  if(typeof CUR=='undefined'||CUR!=id)return;if(GI[id])GI[id]++;   // she already moved to another picture: stay on it
-  const im=document.querySelector('#dlbody img.main');if(im&&!GI[id])im.src=AVU[id].u;try{paintGal(id)}catch(_){}})
+ (async()=>{const b=await jpgOf(await R360.still(id,0));if(MK[id]!=k)return;
+  if(!b){delete MK[id];AVU[id]={k,u:''};const n=MKR[id]=(MKR[id]||0)+1;if(n<=3)setTimeout(()=>{const a=AVU[id];if(a&&a.k==k&&!a.u){delete AVU[id];try{paintGal(id)}catch(_){}}},5000*n);return}   // a layer did not load: keep the shop photo first, try again a little later (v230)
+  AVFREE(AVU[id]);const a=AVU[id]={k,u:URL.createObjectURL(b),F:[]};a.F.push(a.u);
+  if(typeof CUR!='undefined'&&CUR==id){if(GI[id])GI[id]++;   // she already moved to another picture: stay on it
+   const im=document.querySelector('#dlbody img.main');if(im&&!GI[id])im.src=a.u;try{paintGal(id)}catch(_){}}
+  for(let v=1;v<8;v++){let c=null;for(let t=0;t<3&&!c;t++){if(t)await new Promise(z=>setTimeout(z,2500*t));if(MK[id]!=k||AVU[id]!==a)return;c=await jpgOf(await R360.still(id,v))}
+   if(MK[id]!=k||AVU[id]!==a)return;if(!c)break;a.F.push(URL.createObjectURL(c))}
+  delete MK[id];if(a.F.length==8&&typeof CUR!='undefined'&&CUR==id)avBar(id)})()
  .catch(e=>{delete MK[id];ERR('still',e)})}
+const SPD=[1700,1150,800,560,390,270,200],SPT=['הכי לאט','לאט','קצת לאט','רגיל','מהר','מהר מאוד','הכי מהר'];   // the same 7 speeds as the home avatar
+let SP=2;try{const v=+localStorage.getItem('av230spd');if(v>=1&&v<=7)SP=v}catch(_){}
+const SPIN={id:'',f:0,tm:null,on:true};
+const still_=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(_){return false}};
+const spinOk=id=>{const w=document.querySelector('#dlbody .mwrap'),a=AVU[id],d=document.getElementById('dlg');return !!(d&&d.open&&w&&w.querySelector('img.main')&&typeof CUR!='undefined'&&CUR==id&&a&&a.u&&a.F&&a.F.length==8&&!(GI[id]||0)&&w.classList.contains('avv')&&!(typeof PREV!='undefined'&&PREV[id]))};
+function spinStop(){if(SPIN.tm){clearInterval(SPIN.tm);SPIN.tm=null}}
+function spinGo(){spinStop();SPIN.tm=setInterval(()=>{const id=SPIN.id;if(!spinOk(id)){spinStop();avPP();return}
+  SPIN.f=(SPIN.f+1)%8;document.querySelector('#dlbody .mwrap img.main').src=AVU[id].F[SPIN.f]},SPD[SP-1])}
+function avPP(){const b=document.querySelector('#dlbody .av230 .av230pp');if(!b)return;const on=!!SPIN.tm;b.textContent=on?'⏸':'▶';b.setAttribute('aria-label',on?'עצירת הסיבוב':'להפעיל סיבוב');b.setAttribute('aria-pressed',String(!on))}
+function avBar(id){let b=document.querySelector('#dlbody .av230');
+ if(!spinOk(id)){spinStop();if(b)b.hidden=true;return}
+ if(!b){const w=document.querySelector('#dlbody .mwrap');b=document.createElement('div');b.className='av230';b.setAttribute('role','group');b.setAttribute('aria-label','הסיבוב של התמונה עליי');
+  b.innerHTML=`<button type="button" class="av230pp"></button><label class="av230s"><span aria-hidden="true">🐢</span><input type="range" min="1" max="7" step="1" aria-label="מהירות הסיבוב"><span aria-hidden="true">🐇</span></label>`;w.after(b);
+  const rg=b.querySelector('input');
+  rg.addEventListener('input',()=>{SP=+rg.value;rg.setAttribute('aria-valuetext',SPT[SP-1]);try{localStorage.setItem('av230spd',SP)}catch(_){}SPIN.on=true;if(spinOk(SPIN.id))spinGo();avPP()});
+  b.querySelector('.av230pp').onclick=()=>{SPIN.on=!SPIN.tm;if(SPIN.on&&spinOk(SPIN.id))spinGo();else spinStop();avPP()};
+  SPIN.on=!still_()}   // a new window: it starts turning
+ if(SPIN.id!=id){SPIN.id=id;SPIN.f=0;SPIN.on=!still_()}
+ const rg=b.querySelector('input');rg.value=SP;rg.setAttribute('aria-valuetext',SPT[SP-1]);b.hidden=false;
+ if(SPIN.on){if(!SPIN.tm)spinGo()}else spinStop();avPP()}
 function avNow(id){try{if(typeof CUR!='undefined'&&CUR==id)paintGal(id)}catch(_){}}
+if(typeof paintGal=='function'){const _pg=paintGal;paintGal=function(id){const r=_pg.apply(this,arguments);try{avBar(id)}catch(e){ERR('spin',e)}return r}}
 if(typeof galList=='function'){const _gl=galList;galList=function(id){const L=_gl.apply(this,arguments);
  try{if(!window.R360||!R360.isReady(id))return L;const k=avKey(id),a=AVU[id];if(a&&a.k==k)return a.u?[{u:a.u,n:'עליי',av:1},...L]:L;if(k)avMake(id,k)}catch(e){ERR('gal',e)}return L}}
 })();

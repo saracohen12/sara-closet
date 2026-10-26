@@ -46,3 +46,11 @@ html.d73 #dlbody .a8box{border:1px solid var(--line)!important;border-radius:0!i
 #r360 .r3fx{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;border-radius:14px;background:rgba(255,255,255,.6);font-size:.82rem}
 #r360 .r3fx>span:first-child{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 #r360 .r3fx .b188x{margin:0;width:auto}
+/* v230: the "עליי" picture turns by itself – ⏸/▶ and the speed, right under it */
+.av230{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px auto 0;flex-wrap:wrap}
+.av230[hidden]{display:none!important}
+.av230 .av230pp{font:inherit;font-size:1.05rem;min-width:44px;min-height:44px;border-radius:999px;border:1px solid rgba(0,0,0,.14);background:#fff;color:#2a1d17;cursor:pointer}
+.av230 .av230s{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border-radius:999px;background:#fff;border:1px solid rgba(0,0,0,.14);color:#2a1d17;box-sizing:border-box}
+.av230 .av230s span{font-size:1rem;line-height:1}
+.av230 .av230s input{width:130px;height:28px;margin:0;accent-color:#a8431f;cursor:pointer}
+.av230 button:focus-visible,.av230 input:focus-visible{outline:3px solid #a8431f;outline-offset:3px}

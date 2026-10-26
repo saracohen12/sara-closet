@@ -236,7 +236,14 @@ function frames8(ck,s){if(FRM[ck])return Promise.resolve(FRM[ck]);if(FRQ.has(ck)
 
 // ---------- images ----------
 const IMG={},TINT={};
-function im(src){if(!IMG[src]){IMG[src]=new Promise(r=>{const i=new Image();i.decoding='async';i.onload=()=>r(i);i.onerror=()=>r(null);i.src=DYN[src]||('a8/'+src+'.webp'+V)})}return IMG[src]}
+// v230 (Sara 00:19 "לפעמים הראש חתוך, לפעמים אני רק עם הבגד גוף ולפעמים לבושה כשזה מסתובב"): on the phone a picture sometimes fails to load, and a failed
+// picture was kept as failed for good – that layer never came back (the bare doll, a head-less doll). Now at most 6 load at once, each is tried 3 times,
+// a failure is forgotten (the next paint tries again), and a stage that missed a layer paints itself again a moment later
+const IMQ=[];let IMN=0;
+function imPump(){while(IMN<6&&IMQ.length){const [u,r]=IMQ.shift();IMN++;const i=new Image();i.decoding='async';const done=x=>{IMN--;r(x);imPump()};i.onload=()=>done(i);i.onerror=()=>done(null);i.src=u}}
+const imLoad=u=>new Promise(r=>{IMQ.push([u,r]);imPump()});
+function im(src){if(!IMG[src])IMG[src]=(async()=>{for(let n=0;n<3;n++){if(n)await new Promise(z=>setTimeout(z,500*n*n));const i=await imLoad(DYN[src]||('a8/'+src+'.webp'+V));if(i)return i}
+  delete IMG[src];(window.ERRS=window.ERRS||[]).push('v230 img: '+src);return null})();return IMG[src]}
 // a base shirt under lace: the arm's own light and shade, in the shirt's colour
 function tinted(m,rgb,ref){const key=m.src+'|'+rgb;if(TINT[key])return TINT[key];
  const c=document.createElement('canvas');c.width=m.naturalWidth;c.height=m.naturalHeight;const x=c.getContext('2d');x.drawImage(m,0,0);
@@ -330,13 +337,14 @@ const PT=50,PB=46;
 const FP=new WeakMap();
 function floorPad(b){let t=FP.get(b);if(t)return t;t=document.createElement('canvas');t.width=2;t.height=1;const x=t.getContext('2d'),W=b.naturalWidth,H=b.naturalHeight,w=Math.round(W*.28);
  x.imageSmoothingQuality='high';x.drawImage(b,0,H-9,w,4,0,0,1,1);x.drawImage(b,W-w,H-9,w,4,1,0,1,1);FP.set(b,t);return t}
-async function paint(cv,v,s,pad){s=headOf(s);const bg=s.bg||'';const hw=whole(s.head)?'h':'';   // v184: with the wig the doll's own head is taken away (nh/ch), the wig layer brings the whole head
- let base=await im((bg?'c':'n')+hw+(v+1));if(!base&&hw)base=await im((bg?'c':'n')+(v+1));if(!base&&bg)base=await im('n'+(v+1));if(!base)return false;
+function again(cv,v,s,pad,my){clearTimeout(cv._rtT);const n=cv._rt=(cv._rt||0)+1;if(n<=5)cv._rtT=setTimeout(()=>{if(cv._pg===my)paint(cv,v,s,pad)},1200*n)}   // v230
+async function paint(cv,v,s,pad){s=headOf(s);const bg=s.bg||'';const hw=whole(s.head)?'h':'';const my=cv._pg=(cv._pg||0)+1;   // v184: with the wig the doll's own head is taken away (nh/ch), the wig layer brings the whole head
+ let base=await im((bg?'c':'n')+hw+(v+1));if(!base&&hw)base=await im((bg?'c':'n')+(v+1));if(!base&&bg)base=await im('n'+(v+1));if(!base){if(pad)again(cv,v,s,pad,my);return false}
  const L=layersFor(v,s);const [ms,bc]=await Promise.all([Promise.all(L.map(l=>im(l.s))),bg?bgCanvas(bg):null]);
  const pt=pad?PT:0,pb=pad?PB:0,BW=base.naturalWidth,BH=base.naturalHeight;
  // v223 (Sara 19:04 "הדמות יורדת מטושטשת"): since v216 paint() waits (head fit, makeup) in the middle of drawing; two paints of the same canvas at once
  // (the home avatar redraws when her styles and home look arrive) stacked their moves – the doll slid down and doubled. Now each paint draws aside and the newest one is copied in at the end
- const my=cv._pg=(cv._pg||0)+1,oc=document.createElement('canvas');oc.width=BW;oc.height=BH+pt+pb;const c=oc.getContext('2d',{willReadFrequently:true});
+ const oc=document.createElement('canvas');oc.width=BW;oc.height=BH+pt+pb;const c=oc.getContext('2d',{willReadFrequently:true});
  const E=pb&&!bg?floorPad(base):null;
  if(pt||pb){if(!bg){c.drawImage(base,0,0,BW,2,0,0,BW,pt+1);if(E)c.drawImage(E,0,0,2,1,0,pt+BH-8,BW,pb+8)}c.save();c.translate(0,pt)}
  if(bg){if(bc)c.drawImage(bc,FX[v]-210,FY-615);else{c.fillStyle='#f6efe6';c.fillRect(0,-pt,oc.width,oc.height)}
@@ -344,7 +352,8 @@ async function paint(cv,v,s,pad){s=headOf(s);const bg=s.bg||'';const hw=whole(s.
  c.drawImage(base,0,0);if(E){for(let i=0;i<8;i++){c.globalAlpha=(i+1)/8;c.drawImage(E,0,0,2,1,0,BH-8+i,BW,1)}c.globalAlpha=1}
  const HTv=!s.rawHead&&hw?((await headT(s.head))||[])[v]:null;
  ms.forEach((m,i)=>{if(!m)return;const l=L[i],im=l.t?tinted(m,l.t,l.ref):m;if(l.hd&&HTv)drawHead(c,im,HTv);else c.drawImage(im,0,0)});if(L.fit)await mkFit(c,v,s.head,L.fit,pt,L.fitId);if(pt||pb)c.restore();
- if(cv._pg!==my)return true;if(cv.width!=BW||cv.height!=BH+pt+pb){cv.width=BW;cv.height=BH+pt+pb}const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);g.drawImage(oc,0,0);return true}
+ const miss=ms.some(m=>!m);if(cv._pg!==my)return !miss;if(cv.width!=BW||cv.height!=BH+pt+pb){cv.width=BW;cv.height=BH+pt+pb}const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);g.drawImage(oc,0,0);
+ if(pad){if(miss)again(cv,v,s,pad,my);else cv._rt=0}return !miss}   // a layer missing: not kept as a finished picture (frames, thumbs), the stage tries again
 function wornIds(s){const ids=[];if(s.head&&KEYOF[s.head])ids.push(KEYOF[s.head]);if(/^yt/.test(s.head||'')&&s.tf){const t=KEYOF[s.tf]||(D[s.tf]?s.tf:'');if(t&&!ids.includes(t))ids.push(t)}Object.keys(s.on||{}).forEach(k=>{const id=KEYOF[k];if(s.on[k]&&id&&!ids.includes(id))ids.push(id)});return ids}
 function wearing(s){const a=wornIds(s).map(nm);if(s.head=='w')a.unshift('הפאה');const n=k=>STY[k]&&STY[k].n;if(n(s.head))a.unshift(n(s.head));if(n(s.mk))a.push('איפור: '+n(s.mk));return a.join(' · ')}
 
