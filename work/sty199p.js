@@ -175,7 +175,25 @@ Maintain 100% face identity: eyes, nose, lips, facial structure, skin texture, e
 אל תשני שום דבר אחר: אותו גיליון, אותו סדר זוויות, אותו מיקום ואותו גודל של הדמות בכל משבצת, אותה תנוחה, אותו רקע, אותם קווים לבנים בין המשבצות. כיסוי הראש הבז׳ והשמלה בצבע עור נשארים בדיוק אותו דבר.
 
 החזירי תמונה אחת: אותו גיליון של 8 משבצות (2 שורות של 4), באותו יחס גובה-רוחב, בלי טקסט ובלי מספרים.`}
-const P={hair,hairW,HAIRS,HAIRG,tie,tieW,exact,TIES,look,face,faceW,MKC,GRID};
+// v214 (Sara 16:00 "האיכות של התמונה על הפנים ... שיעשה לי תמונת תקריב אחת שנכניס כאן, כי במצב הזה לא ניתן לראות שום דבר זה מפוקסל"):
+// on the 8-angle sheet her face is about 50 px wide, and no prompt makes GPT's picture bigger – a close-up makes the face fill it. Best in the same GPT chat, right after the sheet.
+function faceCU(n,det){return `מצורפות שתי תמונות:
+1. הגיליון של הדמות שלי ב-8 זוויות עם האיפור${q(n)} – התמונה שחזרה ממך. אם זו אותה שיחה, אפשר לא לצרף אותו שוב.
+2. הפאה שלי.
+
+צרי תמונה אחת לרוחב (יחס 3:2, למשל 1536 על 1024): תקריב גדול וחד של הפנים שלי, עם אותו איפור בדיוק כמו בגיליון. שני דיוקנאות זה לצד זה, באותו גודל:
+- בחצי הימני: אני עם כיסוי הראש מהגיליון.
+- בחצי השמאלי: אני עם הפאה שלי מהתמונה השנייה (אותו צבע, אותו אורך, אותם גלים).
+
+בכל חצי רואים מהקודקוד עד הכתפיים, מבט ישר למצלמה, והפנים ממלאים את רוב הגובה. חדות גבוהה: רואים בבירור את העיניים, הריסים, הגבות, הצללית, הסומק והשפתיים, עם מרקם עור אמיתי.
+${det?`\nהאיפור: ${det}\n`:''}
+${MKDEEP}
+
+הפנים לא משתנים בכלל: אותם תווי פנים, אותן עיניים, אותו אף, אותן שפתיים, אותו עור (בלי החלקה ובלי פילטר), אותה הבעה ואותו חיוך.
+Maintain 100% face identity: eyes, nose, lips, facial structure, skin texture, expression. Photorealistic, sharp focus, high detail.
+
+רקע תכלת בהיר וחלק, אור יום רך. בלי טקסט ובלי מספרים.`}
+const P={hair,hairW,HAIRS,HAIRG,tie,tieW,exact,TIES,look,face,faceW,faceCU,MKC,GRID};
 if(typeof window!='undefined')window.STYP=P;
 if(typeof module!='undefined')module.exports=P;
 })();

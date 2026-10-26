@@ -134,8 +134,9 @@ function maskWhole(b,d,v,fab,keepBlue){const bs=gauss(b,3,1.2),ds=gauss(d,3,1.2)
   const h=new Uint8Array(N);for(let i=nk*W;i<N;i++)h[i]=f[i]&&!m[i]?1:0;const [HL,hn]=label(h),sz=new Int32Array(hn+1);for(let i=0;i<N;i++)if(HL[i])sz[HL[i]]++;
   for(let i=0;i<N;i++)if(HL[i]&&sz[HL[i]]<450)m[i]=1}   // below it a closed hole is a missed bit of hair (at the nape the doll is dark too); a gap between strands is open
  // the neck: below the doll's head line GPT's neck fades into the doll's own neck (unless hair covers it), so no line shows where they meet
- const A=Float32Array.from(m);for(let r=nk-3;r<nk;r++)for(let c=0;c<W;c++){const i=r*W+c;if(A[i]&&diff[i]<40)A[i]*=(nk-r)/4}
- m.A=gauss(A,1,.8);
+ // v214 (Sara 15:57 "עדיין יש חורים, אני רואה בשתי תמונות חורים"): only her skin fades there – at the back hair covers the nape (dark like the doll's), and fading it left a see-through line
+ const A=Float32Array.from(m);for(let r=nk-3;r<nk;r++)for(let c=0;c<W;c++){const i=r*W+c,k=i*3;if(A[i]&&diff[i]<40&&d[k]*.299+d[k+1]*.587+d[k+2]*.114>150)A[i]*=(nk-r)/4}
+ {const G=gauss(A,1,.8),core=erode(m,3);for(let r=0;r<H;r++)if(r<nk-3||r>=nk)for(let c=0;c<W;c++){const i=r*W+c;if(core[i])G[i]=1}m.A=G}   // inside the hair (3 px from its edge) nothing is see-through
  if(!fab)return [m];
  // the fabric: changed from the doll and grey (skin, lips and her front hair are not grey)
  let f=new Uint8Array(N);const lum=[];
@@ -165,5 +166,5 @@ async function run(src,kind,onStep){const img=await toImg(src);const S=sheetData
   else views.push(turn(layer(d,mask(b,d,o)),v))}
  lum.sort((x,y)=>x-y);
  return {views,shifts,px:views.map(c=>c.px),fab:fab.length?fab:null,lum:lum.length?Math.round(lum[lum.length>>1]):0}}
-window.cut8={run,MODE,W,H,CV:2,CVW:3};   // CVW: hairstyles and ties cut before v213 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
+window.cut8={run,MODE,W,H,CV:2,CVW:4};   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
 })();

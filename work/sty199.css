@@ -228,3 +228,13 @@ dialog#sty199.w213,dialog#sty204v.w213{width:min(900px,100vw)}
 #sty204v .syfv{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px}
 #sty204v .syfv .syfc small{font-size:.85rem}
 @media (max-width:560px){#sty199 .sycim.fc2,#sty204v .syfv{grid-template-columns:1fr}}
+/* v214 (Sara 16:00 "שיעשה לי תמונת תקריב אחת שנכניס כאן"): her sharp close-up from GPT on the makeup card and in its window */
+#sty199 .sycim.cu{aspect-ratio:3/2;background:#d9e2ee}
+#sty199 .sycim.cu img{object-position:50% 30%}
+#sty199 .sycim.cu .sy8{top:12px;bottom:auto;inset-inline-start:auto;inset-inline-end:8px;pointer-events:none}
+#sty199 .sycu{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:2px 0}
+#sty199 .sycu small{flex-basis:100%;font-size:.78rem;font-weight:600;color:var(--z-muted,#6b5d55)}
+#sty199 .sycu button{flex:1;min-width:0;font:inherit;font-size:.8rem;min-height:40px;padding:0 10px;border-radius:999px;border:1px solid var(--z-line,#ddd);background:var(--z-surface,#f6f2ee);color:var(--z-ink,#2a1d17);cursor:pointer;white-space:nowrap}
+#sty199 .sycu button:disabled{opacity:.45;cursor:default}
+#sty204v .sycuv{border-radius:14px;overflow:hidden;background:#d9e2ee}
+#sty204v .sycuv img{width:100%;display:block;max-width:none}
