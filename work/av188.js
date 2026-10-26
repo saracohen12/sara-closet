@@ -55,11 +55,13 @@ function box(id){const p=PROC[id],u=ups(id),ok=ready(id),dyn=(()=>{try{return R3
  const th=u.length?`<div class="u188">${u.map((x,i)=>`<span><a href="/_blob/${es(x.a)}" target="_blank" rel="noopener"><img alt="תמונה ${i+1} שהעלית לאווטאר" src="/_blob/${es(x.a)}" loading="lazy"></a><button type="button" data-del188="${es(id)}" data-i="${i}" aria-label="למחוק את התמונה">✕</button></span>`).join('')}</div>`:'';
  const busy=p&&p.v;
  let body,cuts='';
+ // v196 (Sara 08:20 "אני רוצה להוריד את התמונות ... ולשים אותן ב-GPT ... דרך הטלפון אני לא רואה איפה התמונות"): all the item's photos (shop, hers, the old avatar) to save for GPT
+ const pics=`<button type="button" data-pk102open="${es(id)}">🖼 התמונות של הבגד · להוריד ל-GPT</button>`;
  // v191 (Sara 07:31 "אני לא רואה שזה גזור... לגזור אותה לשמונה חתיכות, לשמונה הכיוונים"): the 8 pieces, each on the doll
  try{const T=ok&&R360.tiles(id),NM=R360.names;if(T)cuts=`<p class="a8h">✂ גזרתי ל-8 זוויות:</p><div class="a8g">${T.map((ls,v)=>`<button type="button" class="a8t" data-see190="${es(id)}" data-v="${v}" aria-label="${es(NM[v])}"><span>${ls.map(u=>`<img alt="" src="${es(u)}" loading="lazy">`).join('')}</span><small>${es(NM[v])}</small></button>`).join('')}</div>`}catch(e){ERR('tiles',e)}
- if(ok&&!half)body=`<div class="a8b"><button type="button" class="go" data-see190="${es(id)}">👀 לראות על האווטאר</button>${dyn?`<button type="button" data-up188="${es(id)}">🔄 להעלות תמונה חדשה</button><button type="button" data-off190="${es(id)}">🗑 להוריד מהאווטאר</button>`:''}</div>`;
+ if(ok&&!half)body=`<div class="a8b"><button type="button" class="go" data-see190="${es(id)}">👀 לראות על האווטאר</button>${dyn?`<button type="button" data-up188="${es(id)}">🔄 להעלות תמונה חדשה</button><button type="button" data-off190="${es(id)}">🗑 להוריד מהאווטאר</button>`:''}${pics}</div>`;
  else body=`<ol class="a8s">
-  <li><b>הפרומפט ל-GPT:</b> שומרים את תמונת הבגד ואת הבובה ב-8 זוויות, ושולחים ל-GPT עם הפרומפט, הכל בהודעה אחת.<button type="button" data-mk188="${es(id)}">📋 הפרומפט ל-GPT</button></li>
+  <li><b>הפרומפט ל-GPT:</b> שומרים את תמונת הבגד ואת הבובה ב-8 זוויות, ושולחים ל-GPT עם הפרומפט, הכל בהודעה אחת.<button type="button" data-mk188="${es(id)}">📋 הפרומפט ל-GPT</button>${pics}</li>
   <li><b>מעלים את מה שחזר:</b> תמונה אחת עם 8 הזוויות${twin?(half?` – עכשיו של ${kind=='set'?'החלק התחתון':'העגילים'}`:` (${kind=='set'?'קודם החלק העליון, אחר כך התחתון':'קודם השרשרת, אחר כך העגילים'})`):''}. האתר גוזר אותה ל-8, מתאים בדיוק לבובה ומכניס את הבגד לסטודיו.<button type="button" class="go" data-up188="${es(id)}"${busy?' disabled':''}>📤 להעלות תמונה של 8 זוויות</button></li></ol>`;
  return `<summary>🧍 האווטאר החדש · 8 זוויות</summary><p class="a8st">${line(id)}</p>${cuts}${body}${u.length?'<p class="a8h">התמונה שהעלית מ-GPT:</p>':''}${th}`}
 function paintSt(id){document.querySelectorAll(`[data-go190="${CSS.escape(id)}"]`).forEach(b=>b.innerHTML=line(id)+'<b aria-hidden="true">⬇</b>');
@@ -144,12 +146,12 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
 const AVU={},MK={};
 const avKey=id=>{try{const t=R360.tiles(id);return t?t[0].join('|')+(R360.wig()?'#w':'#c'):''}catch(_){return ''}};
 function avMake(id,k){if(MK[id]==k)return;MK[id]=k;
- R360.still(id,0).then(c=>{if(!c)throw new Error('paint');return new Promise(r=>c.toBlob(r,'image/jpeg',.92))}).then(b=>{if(MK[id]!=k||!b)return;delete MK[id];
-  if(AVU[id])URL.revokeObjectURL(AVU[id].u);AVU[id]={k,u:URL.createObjectURL(b)};
+ R360.still(id,0).then(c=>c?new Promise(r=>c.toBlob(r,'image/jpeg',.92)):null).then(b=>{if(MK[id]!=k)return;delete MK[id];if(!b){AVU[id]={k,u:''};return}   // a layer did not load: keep the shop photo first
+  if(AVU[id]&&AVU[id].u)URL.revokeObjectURL(AVU[id].u);AVU[id]={k,u:URL.createObjectURL(b)};
   if(typeof CUR=='undefined'||CUR!=id)return;if(GI[id])GI[id]++;   // she already moved to another picture: stay on it
   const im=document.querySelector('#dlbody img.main');if(im&&!GI[id])im.src=AVU[id].u;try{paintGal(id)}catch(_){}})
  .catch(e=>{delete MK[id];ERR('still',e)})}
 function avNow(id){try{if(typeof CUR!='undefined'&&CUR==id)paintGal(id)}catch(_){}}
 if(typeof galList=='function'){const _gl=galList;galList=function(id){const L=_gl.apply(this,arguments);
- try{if(!window.R360||!R360.isReady(id))return L;const k=avKey(id),a=AVU[id];if(a&&a.k==k)return [{u:a.u,n:'עליי',av:1},...L];if(k)avMake(id,k)}catch(e){ERR('gal',e)}return L}}
+ try{if(!window.R360||!R360.isReady(id))return L;const k=avKey(id),a=AVU[id];if(a&&a.k==k)return a.u?[{u:a.u,n:'עליי',av:1},...L]:L;if(k)avMake(id,k)}catch(e){ERR('gal',e)}return L}}
 })();

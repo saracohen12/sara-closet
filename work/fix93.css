@@ -69,7 +69,7 @@
 #zoomd .zn102{position:absolute;bottom:58px;left:50%;transform:translateX(-50%);z-index:5;background:rgba(0,0,0,.55);color:#fff;font-weight:700;font-size:14px;padding:5px 12px;border-radius:99px;white-space:nowrap;max-width:80vw;overflow:hidden;text-overflow:ellipsis}
 #zoomd .zn102:empty{display:none}
 #zoomd .zb .za102{width:auto!important;padding:0 12px;border-radius:99px;font-size:.9rem;font-weight:700}
-.pk102b{display:block;margin:8px auto 0;padding:9px 16px;border-radius:99px;border:1px solid rgba(0,0,0,.12);background:#fff;font-weight:700;font-size:14px;cursor:pointer}
+.pk102b{display:block;margin:8px auto 0;padding:9px 16px;border-radius:99px;border:1px solid rgba(0,0,0,.12);background:#fff;color:#2a1d17;font-weight:700;font-size:14px;cursor:pointer}   /* v196: no colour = the phone's dark-mode button text (white on white, Sara 26/10 08:19) */
 #pk102{width:min(760px,96vw);max-height:92vh;overflow-y:auto;padding:0 14px 0}
 #pk102 .pk102h{margin:4px 2px 8px;font-size:13px;opacity:.75}
 #pk102 .pk102a{display:flex;align-items:center;gap:10px;margin-bottom:8px}#pk102 .pk102a button{padding:7px 14px;border-radius:99px;border:1px solid rgba(0,0,0,.15);background:#fff;font-weight:700}#pk102 .pk102a span{font-size:13px;opacity:.75}
