@@ -37,7 +37,7 @@ setTimeout(()=>{labels();repaintAll()},300);setTimeout(repaintAll,3000);
 
 // ---------- what the item window says ----------
 const PROC={};   // id → {v: 1-8 cutting, 9 saving} while the site prepares it, {err} when it could not
-const KN={dress:'השמלה',top:'החולצה',base:'החולצה',sweater:'הסוודר',skirt:'החצאית',pants:'המכנסיים',vest:'האפודה',jacket:'הז׳קט',coat:'המעיל',cover:'הכיסוי',scarf:'המטפחת',
+const KN={dress:'השמלה',top:'החולצה',base:'החולצה',sweater:'הסוודר',skirt:'החצאית',pants:'המכנסיים',vest:'האפודה',jacket:'הז׳קט',coat:'המעיל',cover:'הכיסוי',scarf:'המטפחת',tiex:'המטפחת בקשירה',
  necklace:'השרשרת',earrings:'העגילים',bracelet:'הצמיד',belt:'החגורה',shoes:'הנעליים',bag:'התיק'};
 const ERRT={shape:'התמונה לא בצורה של הגיליון (2 שורות של 4 משבצות). צריך להעלות את התמונה המלאה שחזרה מ-GPT, בלי לחתוך אותה',
  empty:'לא מצאתי בגד חדש על הבובה. האם זו התמונה ש-GPT החזיר עם הבגד?',assets:'שמירת תמונות לא זמינה כאן. לפתוח את האתר ב-Chrome ולנסות שוב',
@@ -45,7 +45,8 @@ const ERRT={shape:'התמונה לא בצורה של הגיליון (2 שורו�
 function line(id,short){const p=PROC[id];   // short: the bar under "לנסות עליי" (v198, less words on the phone)
  if(p&&p.v)return `<span class="up">✂ ${p.v<9?`גוזרת ומתאימה לבובה… זווית ${p.v} מתוך 8`:'שומרת את הבגד על האווטאר…'}</span>`;
  if(p&&p.err)return `<span class="no">✗ ${es(ERRT[p.err]||ERRT.x)}</span>`;
- const s=st(id);if(s=='ok')return short?'<span class="ok">✓ על האווטאר החדש</span>':'<span class="ok">✓ על האווטאר החדש. אפשר לבחור אותו בסטודיו ובלוקים</span>';
+ const s=st(id);if(short&&s!='ok'){try{if(R360.coverTie&&R360.coverTie(id))return '<span class="ok">🧕 על האווטאר עם קשירה</span>'}catch(_){}}   // v202: a cover is worn with one of her ties
+ if(s=='ok')return short?'<span class="ok">✓ על האווטאר החדש</span>':'<span class="ok">✓ על האווטאר החדש. אפשר לבחור אותו בסטודיו ובלוקים</span>';
  if(ups(id).length)return short?'<span class="up">⏳ עוד רגע על האווטאר</span>':'<span class="up">⏳ הועלתה תמונה של 8 זוויות, עוד רגע היא על האווטאר</span>';
  return s=='fix'?'<span class="up">⚪ כבר העלית תמונות לבגד הזה · עוד לא על האווטאר החדש</span>':'<span class="no">✗ עוד לא על האווטאר החדש</span>'}
 // the bar at the top of the item window: one line, a tap goes down to the avatar part
@@ -86,7 +87,7 @@ const mkst=id=>{const p=PROC[id];if(p&&(p.v||p.err))return line(id).replace(/<[^
 window.mkst188=mkst;
 
 // ---------- upload, then cut on the site ----------
-let FI=null,FID='';
+let FI=null,FID='';const WH=new Set();
 function picker(id){FID=id;if(!FI){FI=document.createElement('input');FI.type='file';FI.accept='image/*';FI.multiple=true;FI.hidden=true;document.body.appendChild(FI);FI.addEventListener('change',()=>{const fs=[...FI.files];FI.value='';if(fs.length)up(FID,fs)})}FI.click()}
 let BUSY=false;
 async function up(id,fs){if(BUSY){toast_('רגע, עוד שומרת');return}BUSY=true;let a=null;try{a=await claude.use('assets')}catch(_){}
@@ -99,7 +100,7 @@ async function up(id,fs){if(BUSY){toast_('רגע, עוד שומרת');return}BUS
 async function del(id,i){const old=ups(id);const x=old[i];if(!x)return;const nu=old.filter((_,k)=>k!=i);await putItem(id,{a8up:nu.length?nu:''});rebox(id);repaint(id);
  toast_('התמונה הוסרה',async()=>{await putItem(id,{a8up:[...ups(id).slice(0,i),x,...ups(id).slice(i)]});rebox(id);repaint(id)})}
 
-const SLOT={dress:'body',top:'top',base:'top',sweater:'outer',skirt:'bottom',pants:'bottom',vest:'outer',jacket:'outer',coat:'outer',cover:'head',scarf:'head',
+const SLOT={tiex:'head',dress:'body',top:'top',base:'top',sweater:'outer',skirt:'bottom',pants:'bottom',vest:'outer',jacket:'outer',coat:'outer',cover:'head',scarf:'head',
  necklace:'neck',earrings:'ears',bracelet:'wrist',belt:'belt',shoes:'shoes',bag:'bag'};
 const TWIN={set:['top','skirt'],jwset:['necklace','earrings']};
 const blobOf=c=>new Promise(r=>c.toBlob(b=>{if(b&&b.type=='image/webp')return r(b);c.toBlob(r,'image/png')},'image/webp',.92));
@@ -108,6 +109,7 @@ async function put1(a,b){let last;for(const w of [0,1500,4000]){if(w)await new P
 // at: the index of a part that is cut again (v192: older cuts did not follow the turned doll)
 async function cut(id,src,ua,t,at){if(PROC[id]&&PROC[id].v)return;if(!window.cut8)return;
  let kind='dress';try{kind=R360.kind(id)}catch(_){}let P=parts(id);const re=at!=null&&!!P[at];
+ if(!re&&WH.has(id)){kind='tiex';WH.delete(id)}   // v202: her exact scarf tied by the tie prompt – the whole head, like the ties
  if(re)kind=P[at].k;else if(TWIN[kind]){const w=TWIN[kind];if(P.length>=w.length)P=[];kind=w[P.length]}else P=[];
  PROC[id]={v:1};rebox(id);const t0=Date.now();log('cut8_start',{id,kind});
  try{const r=await cut8.run(src,kind,v=>{PROC[id]={v:v+1};paintSt(id)});
@@ -141,7 +143,7 @@ setTimeout(soon,4000);
 
 // every old "upload for the avatar" button (5 poses) now leads to the new avatar
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-up188],[data-mk188],[data-del188],[data-m77up],[data-go190],[data-see190],[data-off190]');if(!t)return;
- if(t.dataset.up188){e.preventDefault();e.stopPropagation();picker(t.dataset.up188);return}
+ if(t.dataset.up188){e.preventDefault();e.stopPropagation();if(t.dataset.w)WH.add(t.dataset.up188);else WH.delete(t.dataset.up188);picker(t.dataset.up188);return}
  if(t.dataset.del188){e.preventDefault();e.stopPropagation();del(t.dataset.del188,+t.dataset.i).catch(er=>ERR('del',er));return}
  if(t.dataset.go190){e.preventDefault();e.stopPropagation();const b=document.querySelector(`#dlbody [data-a8box="${CSS.escape(t.dataset.go190)}"]`);if(b){b.open=true;b.scrollIntoView({behavior:'smooth',block:'center'})}return}
  if(t.dataset.see190){e.preventDefault();e.stopPropagation();see(t.dataset.see190,+(t.dataset.v||0));return}

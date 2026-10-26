@@ -138,7 +138,7 @@ function layerA(d,A){const c=document.createElement('canvas');c.width=W;c.height
 
 // how each kind of item is cut (KIND keys in r360.js)
 const MODE={cover:{mode:'head'},scarf:{mode:'head'},necklace:{mode:'small',rows:[.1,.55],one:1},earrings:{mode:'small',rows:[.03,.2]},bracelet:{mode:'small',low:1},
- belt:{rows:[.28,.62],nohem:1},shoes:{rows:[.8,1],nohem:1},hair:{mode:'whole'},tie:{mode:'whole',fab:1},makeup:{mode:'face'}};
+ belt:{rows:[.28,.62],nohem:1},shoes:{rows:[.8,1],nohem:1},hair:{mode:'whole'},tie:{mode:'whole',fab:1},tiex:{mode:'whole'},makeup:{mode:'face'}};
 const tick=()=>new Promise(r=>setTimeout(r,0));
 // src: a File/Blob or a url · kind: KIND key · onStep(i): progress → {views:[canvas×8], shifts, px}
 async function run(src,kind,onStep){const img=await toImg(src);const S=sheetData(img);if(!S)throw Object.assign(new Error('shape'),{code:'shape',w:img.naturalWidth,h:img.naturalHeight});

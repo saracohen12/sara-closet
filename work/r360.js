@@ -49,12 +49,13 @@ const occNow=()=>{try{const o=window.occToday83&&occToday83();if(o)return o[0]}c
 const isReady=id=>!!READY[id];
 // ---------- v190: items the site cut itself from her 8-angle GPT picture (IT[id].a8 = [{s:slot, L:[8 asset ids], …}], see cut8.js + av188.js) ----------
 const DYN={},STATIC=new Set(Object.keys(READY));let DSIG='';
+const WHK=new Set();   // v202: an item cut whole (her exact scarf in a tie, kind 'tiex'): drawn on the head-less doll like a tie
 function sync(){const a8={};try{Object.entries(IT||{}).forEach(([id,v])=>{if(v&&Array.isArray(v.a8)&&!STATIC.has(id)&&D[id])a8[id]=v.a8.filter(p=>p&&p.s&&Array.isArray(p.L)&&p.L.length==8)})}catch(_){}
  const sig=JSON.stringify(a8);if(sig==DSIG)return false;DSIG=sig;
  Object.keys(READY).forEach(id=>{if(!READY[id].dyn)return;READY[id].k.forEach(k=>{delete SLOT[k];delete KEYOF[k];for(let v=1;v<=8;v++){delete DYN['x'+k+v];delete IMG['x'+k+v]}});delete READY[id]});
  for(let i=HEADS.length-1;i>=0;i--)if(HEADS[i].dyn)HEADS.splice(i,1);
  Object.entries(a8).forEach(([id,ps])=>{if(!ps.length)return;const ks=[];let head=0;
-  ps.forEach((p,j)=>{const k='u'+id.replace(/[^A-Za-z0-9]/g,'')+(j?'p'+j:'');ks.push(k);KEYOF[k]=id;if(p.s=='head')head=1;else SLOT[k]=p.s;p.L.forEach((a,v)=>DYN['x'+k+(v+1)]='/_blob/'+a)});
+  ps.forEach((p,j)=>{const k='u'+id.replace(/[^A-Za-z0-9]/g,'')+(j?'p'+j:'');ks.push(k);KEYOF[k]=id;if(p.s=='head')head=1;else SLOT[k]=p.s;if(p.k=='tiex')WHK.add(k);else WHK.delete(k);p.L.forEach((a,v)=>DYN['x'+k+(v+1)]='/_blob/'+a)});
   READY[id]={k:head?ks.slice(0,1):ks,head,dyn:1};if(head)HEADS.push({k:ks[0],id,src:DYN['x'+ks[0]+'1'],dyn:1})});
  Object.keys(ST.on||{}).forEach(k=>{if(/^u/.test(k)&&!KEYOF[k])delete ST.on[k]});if(/^u/.test(ST.head||'')&&!KEYOF[ST.head])ST.head='c';   // items taken off the avatar
  return true}
@@ -65,7 +66,7 @@ function resync(){try{if(sync()){paintHeads();redraw()}}catch(e){(window.ERRS=wi
 // Sara 26/10 09:24 "יש לי כיסוי, אני רוצה לבחור איזה סוג של קשירה ... פאה אחת עם 30 סוגים שונים של תסרוקות"
 const STY={},STH={},STYSET={hair:'h',tie:'t',mk:'m'};
 const styKey=s=>s&&STYSET[s.set]&&s.id?'y'+STYSET[s.set]+String(s.id).replace(/[^A-Za-z0-9]/g,''):'';
-const whole=h=>h=='w'||(/^y[ht]/.test(h||'')&&!!STY[h]);   // the whole head (face too) is a layer: draw it on the head-less doll
+const whole=h=>h=='w'||WHK.has(h)||(/^y[ht]/.test(h||'')&&!!STY[h]);   // the whole head (face too) is a layer: draw it on the head-less doll
 const BEIGE=[222,200,184];   // the basic cover
 function styles(list){Object.keys(STY).forEach(k=>{const z='z'+k.slice(1);for(let v=1;v<=8;v++){delete DYN[k+v];delete IMG[k+v];delete DYN[z+v];delete IMG[z+v]}delete STY[k];delete STH[k]});
  (list||[]).forEach(s=>{const k=styKey(s);if(!k||!Array.isArray(s.L)||s.L.length!=8)return;STY[k]={set:s.set,n:s.n||'',lum:+s.lum||128,id:s.id,t:s.t||0};
@@ -78,13 +79,36 @@ async function coverRGB(k){if(!k||k=='c')return BEIGE;const m=await im('x'+k+'1'
  const c=document.createElement('canvas');c.width=90;c.height=135;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(m,0,0,90,135);let p;try{p=g.getImageData(0,0,90,135).data}catch(_){return BEIGE}
  const R=[],G=[],B=[];for(let i=0;i<p.length;i+=4)if(p[i+3]>200){R.push(p[i]);G.push(p[i+1]);B.push(p[i+2])}if(R.length<20)return BEIGE;
  const md=a=>a.sort((x,y)=>x-y)[a.length>>1];return [md(R),md(G),md(B)]}
+// ---------- v202: any cover from her closet, worn with one of her ties in its colour (Sara 26/10 11:04: "כשאני נכנסת לכיסויים זה יפתח לי את סוגי
+// הקשירות ואז אני אבחר שעם הכיסוי הזה אני רוצה את הקשירה הזו ... אני לא רוצה לעשות מכל כיסוי 20 קשירות ... 1 מסטאר ועליו נלביש את הכיסוי") ----------
+// IT[id].tie = the tie (db 'styles' id) she picked for that cover, IT[id].tc = a colour she picked for it. ST.tf may be a closet item id.
+const isCover=id=>!!D[id]&&cat(id)=='scarves'&&!/כובע|ברט/.test(String((D[id].short||'')+' '+(D[id].full||'')));
+const itOf=id=>(typeof IT=='object'&&IT&&IT[id])||{};
+const COLW=[[/שחור|black/i,[34,32,32]],[/לבן|white/i,[246,244,239]],[/שמנת|קרם|אופ.?וויט|ivory|cream/i,[239,229,207]],[/בז|חאקי|שמפניה|beige|khaki/i,[217,196,166]],[/ניוד|nude/i,[200,161,132]],
+ [/אפור|כסף|grey|gray/i,[150,149,147]],[/נייבי|כחול כהה|navy/i,[31,44,77]],[/תכלת|sky/i,[169,195,223]],[/כחול|ג.ינס|blue/i,[52,86,150]],[/קפה|חום|brown|coffee/i,[107,74,51]],[/קאמל|זהב|חרדל|camel|gold/i,[180,135,70]],
+ [/זית|olive/i,[92,97,55]],[/ירוק|green/i,[46,110,70]],[/בורדו|יין|בורגונדי|burgundy|wine/i,[109,31,44]],[/אדום|red/i,[180,30,40]],[/ורוד עתיק|פודרה|dusty/i,[206,162,160]],[/ורוד|pink/i,[227,150,170]],
+ [/סגול|לילך|לבנדר|purple|lilac/i,[120,90,150]],[/כתום|orange/i,[220,120,50]],[/צהוב|yellow/i,[230,200,60]],[/טורקיז|turquoise/i,[40,160,160]]];
+const IRGB={};
+async function photoRGB(id){const u=ph(id);if(!u)return null;const m=await new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=u});if(!m||!m.naturalWidth)return null;
+ const c=document.createElement('canvas');c.width=60;c.height=Math.round(60*m.naturalHeight/m.naturalWidth)||60;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(m,0,0,c.width,c.height);let p;
+ try{p=g.getImageData(Math.round(c.width*.2),Math.round(c.height*.2),Math.round(c.width*.6),Math.round(c.height*.6)).data}catch(_){return null}
+ const bins={};for(let i=0;i<p.length;i+=4){const R=p[i],G=p[i+1],B=p[i+2];if(R>215&&G>215&&B>215)continue;const k=(R>>5)+','+(G>>5)+','+(B>>5);(bins[k]=bins[k]||[0,0,0,0]);const b=bins[k];b[0]++;b[1]+=R;b[2]+=G;b[3]+=B}
+ const top=Object.values(bins).sort((a,b)=>b[0]-a[0])[0];return top?[top[1]/top[0],top[2]/top[0],top[3]/top[0]].map(Math.round):null}
+async function itemRGB(id){const t=itOf(id).tc;if(Array.isArray(t)&&t.length==3)return t;if(IRGB[id])return IRGB[id];const r=READY[id];if(r&&r.head)return IRGB[id]=await coverRGB(r.k[0]);
+ const txt=String((D[id]||{}).color||'');const w=COLW.find(([re])=>re.test(txt));if(w)return IRGB[id]=w[1];return IRGB[id]=(await photoRGB(id))||BEIGE}
+const tfRGB=tf=>!tf||tf=='c'?Promise.resolve(BEIGE):D[tf]?itemRGB(tf):coverRGB(tf);
+function tieFor(id){const t=itOf(id).tie,k=t?styKey({set:'tie',id:t}):'';if(k&&STY[k])return k;let last='';try{last=localStorage.getItem('tie202')||''}catch(_){}if(last&&STY[last])return last;return styList('tie')[0]||''}
+const coverTie=id=>isCover(id)&&!!tieFor(id)&&!isReady(id);   // a cover with its own 8-angle picture wears that one first (Sara 11:09 "המטפחת המדוייקת ... בפרונט"); the ties stay in the row to switch
+function wearCover(id,k){k=k||tieFor(id);if(!k||!STY[k])return false;const r=READY[id];ST.tf=r&&r.head?r.k[0]:id;ST.head=k;ST.tc=null;try{localStorage.setItem('tie202',k)}catch(_){}
+ tfRGB(ST.tf).then(c=>{if(ST.head==k&&!ST.tc){ST.tc=c;keep();redraw()}});return true}
+const tfId=()=>ST.tf&&(KEYOF[ST.tf]||(D[ST.tf]?ST.tf:''));
 // a small picture of her head with the style (the row in the studio, the library)
 const THQ=new Map();
-function styThumb(k){if(STH[k])return Promise.resolve(STH[k]);if(THQ.has(k))return THQ.get(k);const st=STY[k];if(!st)return Promise.resolve('');
- const p=(async()=>{const s=Object.assign(clone(DEF),{on:{},bg:'',head:st.set=='mk'?(whole(ST.head)&&ST.head!='w'?ST.head:'c'):k,mk:st.set=='mk'?k:'',tc:st.set=='tie'?(ST.tc||BEIGE):null});
+function styThumb(k,rgb){const ck=rgb?k+'|'+rgb.join(','):k;if(STH[ck])return Promise.resolve(STH[ck]);if(THQ.has(ck))return THQ.get(ck);const st=STY[k];if(!st)return Promise.resolve('');
+ const p=(async()=>{const s=Object.assign(clone(DEF),{on:{},bg:'',head:st.set=='mk'?(whole(ST.head)&&ST.head!='w'?ST.head:'c'):k,mk:st.set=='mk'?k:'',tc:st.set=='tie'?(rgb||ST.tc||BEIGE):null});
   const c=document.createElement('canvas');if(!await paint(c,0,s))return '';const o=document.createElement('canvas');o.width=o.height=96;const g=o.getContext('2d');
   if(st.set=='mk')g.drawImage(c,136,22,80,80,0,0,96,96);else g.drawImage(c,96,0,160,160,0,0,96,96);
-  return STH[k]=o.toDataURL('image/jpeg',.85)})().catch(()=>'').finally(()=>THQ.delete(k));THQ.set(k,p);return p}
+  return STH[ck]=o.toDataURL('image/jpeg',.85)})().catch(()=>'').finally(()=>THQ.delete(ck));THQ.set(ck,p);return p}
 
 // ---------- images ----------
 const IMG={},TINT={};
@@ -137,7 +161,7 @@ async function paint(cv,v,s){const bg=s.bg||'';const hw=whole(s.head)?'h':'';   
  if(bg){if(bc)c.drawImage(bc,FX[v]-210,FY-615);else{c.fillStyle='#f6efe6';c.fillRect(0,0,cv.width,cv.height)}
   const g=c.createRadialGradient(FX[v],FY+3,2,FX[v],FY+3,52);g.addColorStop(0,'rgba(40,28,20,.30)');g.addColorStop(1,'rgba(40,28,20,0)');c.save();c.translate(FX[v],FY+3);c.scale(1,.16);c.translate(-FX[v],-FY-3);c.fillStyle=g;c.fillRect(FX[v]-60,FY-60,120,126);c.restore()}
  c.drawImage(base,0,0);ms.forEach((m,i)=>{if(!m)return;const l=L[i];c.drawImage(l.t?tinted(m,l.t,l.ref):m,0,0)});return true}
-function wornIds(s){const ids=[];if(s.head&&KEYOF[s.head])ids.push(KEYOF[s.head]);if(/^yt/.test(s.head||'')&&s.tf&&KEYOF[s.tf]&&!ids.includes(KEYOF[s.tf]))ids.push(KEYOF[s.tf]);Object.keys(s.on||{}).forEach(k=>{const id=KEYOF[k];if(s.on[k]&&id&&!ids.includes(id))ids.push(id)});return ids}
+function wornIds(s){const ids=[];if(s.head&&KEYOF[s.head])ids.push(KEYOF[s.head]);if(/^yt/.test(s.head||'')&&s.tf){const t=KEYOF[s.tf]||(D[s.tf]?s.tf:'');if(t&&!ids.includes(t))ids.push(t)}Object.keys(s.on||{}).forEach(k=>{const id=KEYOF[k];if(s.on[k]&&id&&!ids.includes(id))ids.push(id)});return ids}
 function wearing(s){const a=wornIds(s).map(nm);if(s.head=='w')a.unshift('הפאה');const n=k=>STY[k]&&STY[k].n;if(n(s.head))a.unshift(n(s.head));if(n(s.mk))a.push('איפור: '+n(s.mk));return a.join(' · ')}
 
 // ---------- a turning stage (big in the studio, small on the home screen) ----------
@@ -228,12 +252,15 @@ function build(){
  dlg.querySelector('.r3moreb').onclick=()=>{SHOWN+=60;paintGrid()};
  dlg.addEventListener('click',e=>{const t=e.target.closest('button');if(!t||!dlg.contains(t))return;
   if(t.dataset.cat){CAT=t.dataset.cat;SHOWN=60;paintGrid();return}
-  if(t.dataset.it){const id=t.dataset.it;if(isReady(id)){wearItem(id);keep();redraw()}else make(id);return}
-  if(t.dataset.off){const o=t.dataset.off;if(o=='w')ST.head='c';else if(o=='yh')ST.head='w';else if(o=='yt')ST.head=ST.tf&&(ST.tf=='c'||KEYOF[ST.tf])?ST.tf:'c';else if(o=='ym')ST.mk='';else takeOff(o);keep();redraw();return}
+  if(t.dataset.it){const id=t.dataset.it;if(coverTie(id)){if(/^yt/.test(ST.head)&&tfId()==id){ST.head='c';ST.tf=''}else wearCover(id);keep();redraw();return}if(isReady(id)){wearItem(id);keep();redraw()}else make(id);return}
+  if(t.dataset.off){const o=t.dataset.off;if(o=='w')ST.head='c';else if(o=='yh')ST.head='w';else if(o=='yt')ST.head=ST.tf&&(ST.tf=='c'||KEYOF[ST.tf])?ST.tf:'c';else if(o=='ym')ST.mk='';else if(o==tfId()&&/^yt/.test(ST.head)){ST.head='c';ST.tf=''}else takeOff(o);keep();redraw();return}
   if(t.dataset.syh!=null){ST.head=t.dataset.syh||'w';keep();redraw();return}
   if(t.dataset.syt!=null){const k=t.dataset.syt;if(!k){if(/^yt/.test(ST.head))ST.head=ST.tf&&(ST.tf=='c'||KEYOF[ST.tf])?ST.tf:'c'}
-   else{if(!/^yt/.test(ST.head)){ST.tf=ST.head=='w'||/^yh/.test(ST.head)?'c':ST.head;ST.tc=null}ST.head=k;if(!ST.tc){coverRGB(ST.tf).then(c=>{if(ST.head==k&&!ST.tc){ST.tc=c;keep();redraw()}})}}keep();redraw();return}
-  if(t.dataset.sytc!=null){const v=t.dataset.sytc;if(v=='cover')coverRGB(ST.tf).then(c=>{ST.tc=c;keep();redraw()});else{ST.tc=v.split(',').map(Number);keep();redraw()}return}
+   else{if(!/^yt/.test(ST.head)){ST.tf=ST.head=='w'||/^yh/.test(ST.head)?'c':ST.head;ST.tc=null}ST.head=k;try{localStorage.setItem('tie202',k)}catch(_){}if(!ST.tc){tfRGB(ST.tf).then(c=>{if(ST.head==k&&!ST.tc){ST.tc=c;keep();redraw()}})}
+   const tid=tfId();if(tid&&D[tid]&&!READY[tid]&&typeof putItem=='function')putItem(tid,{tie:STY[k].id}).catch(()=>{})}keep();redraw();return}
+  if(t.dataset.sytc!=null){const v=t.dataset.sytc,tid=tfId();if(v=='cover'){if(tid&&D[tid]){delete IRGB[tid];if(itOf(tid).tc&&typeof putItem=='function')putItem(tid,{tc:''}).catch(()=>{})}
+    setTimeout(()=>tfRGB(ST.tf).then(c=>{ST.tc=c;keep();redraw()}),50)}
+   else{ST.tc=v.split(',').map(Number);if(tid&&D[tid]&&typeof putItem=='function')putItem(tid,{tc:ST.tc}).catch(()=>{});keep();redraw()}return}   // v202: the colour stays with that cover
   if(t.dataset.sym!=null){ST.mk=t.dataset.sym;keep();redraw();return}
   if(t.dataset.styopen!=null){try{window.STY199&&STY199.open(t.dataset.styopen)}catch(_){}return}
   if(t.dataset.mk){make(t.dataset.mk);return}
@@ -253,8 +280,9 @@ function paintSty(){const box=dlg&&dlg.querySelector('.r3styr');if(!box)return;
  const H=ST.head=='w'||/^yh/.test(ST.head),hs=styList('hair'),ts=styList('tie'),ms=styList('mk');let h='';
  if(H&&hs.length)h+=`<span class="r3lbl">💇 תסרוקת</span><div class="r3heads r3sty" role="radiogroup" aria-label="תסרוקת">${chip('data-syh','','כמו שהיא',ST.head=='w','a8/t_w.webp'+V)}${hs.map(k=>chip('data-syh',k,STY[k].n,ST.head==k)).join('')}${add('hair','להוסיף תסרוקת')}</div>`;
  if(!H&&ts.length){const on=/^yt/.test(ST.head);h+=`<span class="r3lbl">🧕 קשירה</span><div class="r3heads r3sty" role="radiogroup" aria-label="קשירה">${chip('data-syt','','בלי קשירה',!on,'a8/t_c.webp'+V)}${ts.map(k=>chip('data-syt',k,STY[k].n,ST.head==k)).join('')}${add('tie','להוסיף קשירה')}</div>`;
-  if(on){const cur=(ST.tc||BEIGE).join(','),cv=ST.tf&&ST.tf!='c'&&KEYOF[ST.tf];
-   h+=`<span class="r3lbl">🎨 צבע המטפחת</span><div class="r3sw" role="radiogroup" aria-label="צבע המטפחת">${cv?`<button type="button" role="radio" aria-checked="false" data-sytc="cover"><i style="background:url('${esc(DYN['x'+ST.tf+'1']||'a8/x'+ST.tf+'1.webp'+V)}') 50% 12%/300% no-repeat"></i><span>כמו הכיסוי</span></button>`:''}${TIEC.map(([n,c])=>`<button type="button" role="radio" aria-checked="${c==cur}" data-sytc="${c}"><i style="background:rgb(${c})"></i><span>${n}</span></button>`).join('')}</div>`}}
+  if(on){const cur=(ST.tc||BEIGE).join(','),cv=ST.tf&&ST.tf!='c'&&(KEYOF[ST.tf]||D[ST.tf]);
+   const bgc=D[ST.tf]&&!KEYOF[ST.tf]?`url('${esc(ph(ST.tf))}') center/cover`:`url('${esc(DYN['x'+ST.tf+'1']||'a8/x'+ST.tf+'1.webp'+V)}') 50% 12%/300% no-repeat`;
+   h+=`<span class="r3lbl">🎨 צבע המטפחת</span><div class="r3sw" role="radiogroup" aria-label="צבע המטפחת">${cv?`<button type="button" role="radio" aria-checked="false" data-sytc="cover"><i style="background:${bgc}"></i><span>כמו הכיסוי</span></button>`:''}${TIEC.map(([n,c])=>`<button type="button" role="radio" aria-checked="${c==cur}" data-sytc="${c}"><i style="background:rgb(${c})"></i><span>${n}</span></button>`).join('')}</div>`}}
  if(ms.length)h+=`<span class="r3lbl">💄 איפור${ST.head=='w'?' <small>(עם הפאה הראשונה אין איפור. בוחרים תסרוקת)</small>':''}</span><div class="r3heads r3sty" role="radiogroup" aria-label="איפור">${chip('data-sym','','בלי',!ST.mk,'a8/t_c.webp'+V)}${ms.map(k=>chip('data-sym',k,STY[k].n,ST.mk==k)).join('')}${add('mk','להוסיף איפור')}</div>`;
  h+=`<button type="button" class="r3stb" data-styopen="${H?'hair':'tie'}">🎨 תסרוקות, קשירות ואיפור</button>`;
  if(box.dataset.h!==h){box.dataset.h=h;box.innerHTML=h}
@@ -278,7 +306,7 @@ function paintRoom(){if(!dlg)return;
  const bn=bgList().find(b=>b.k==(ST.bg||''));dlg.querySelector('.r3bgn').textContent=bn?bn.n:'';
  dlg.querySelectorAll('.r3bgs button').forEach(b=>b.setAttribute('aria-checked',b.dataset.bg==(ST.bg||'')));
  const cm=dlg.querySelector('.r3cam');cm.hidden=!Object.keys(LACE).some(k=>ST.on[k]);cm.querySelectorAll('button').forEach(b=>b.setAttribute('aria-checked',b.dataset.cam==(ST.cam==null?'black':ST.cam)));
- dlg.querySelectorAll('.r3grid [data-it]').forEach(b=>{if(isReady(b.dataset.it))b.setAttribute('aria-pressed',ids.includes(b.dataset.it))})}
+ dlg.querySelectorAll('.r3grid [data-it]').forEach(b=>{if(isReady(b.dataset.it)||coverTie(b.dataset.it))b.setAttribute('aria-pressed',ids.includes(b.dataset.it))})}
 
 // her closet, by category; items with a 360 sheet first
 function pool(){return Object.keys(D).filter(id=>{if(!CATIDS.has(cat(id)))return false;const it=(typeof IT=='object'&&IT&&IT[id])||{};if(it.gen||it.oos||it.s=='ret'||it.s=='give')return false;return true})}
@@ -291,7 +319,7 @@ function paintGrid(){if(!dlg||TAB!='closet')return;dlg.querySelectorAll('.r3cats
  const r=ids.filter(isReady).length,worn=wornIds(ST);
  dlg.querySelector('.r3hint').textContent=ids.length?(CAT=='ready'?'לוחצים כדי ללבוש או להוריד.':`${r?`${r} כבר על האווטאר (מסומנים 360°), לוחצים כדי ללבוש. `:''}לשאר צריך גיליון 360 – לוחצים ואני מסבירה איך.`):'לא מצאתי פריטים.';
  const sh=ids.slice(0,SHOWN);
- dlg.querySelector('.r3grid').innerHTML=sh.map(id=>{const ok=isReady(id);return `<button type="button" class="r3c${ok?' ok':''}" data-it="${id}"${ok?` aria-pressed="${worn.includes(id)}"`:''}><span class="r3ph"><img alt="" loading="lazy" data-th="${id}" src="${ph(id)}"></span><span class="r3n">${esc(nm(id))}</span><span class="r3b">${ok?'360°':(window.up188&&up188(id))?'⏳ הועלה, מחכה':'עוד לא ב-360'}</span></button>`}).join('');
+ dlg.querySelector('.r3grid').innerHTML=sh.map(id=>{const tw=coverTie(id),ok=isReady(id)||tw;return `<button type="button" class="r3c${ok?' ok':''}" data-it="${id}"${ok?` aria-pressed="${worn.includes(id)}"`:''}><span class="r3ph"><img alt="" loading="lazy" data-th="${id}" src="${ph(id)}"></span><span class="r3n">${esc(nm(id))}</span><span class="r3b">${tw?'🧕 עם קשירה':ok?'360°':(window.up188&&up188(id))?'⏳ הועלה, מחכה':'עוד לא ב-360'}</span></button>`}).join('');
  const mb=dlg.querySelector('.r3moreb');mb.hidden=ids.length<=SHOWN;mb.textContent=`להראות עוד (${ids.length-SHOWN})`;thl(sh)}
 function paintMiss(){if(!dlg)return;const m=dlg.querySelector('.r3miss');m.hidden=!MISS.length;if(!MISS.length){m.innerHTML='';return}
  m.innerHTML=`<p>עוד ${MISS.length==1?'פריט אחד':MISS.length+' פריטים'} מהלוק בלי 360:</p><div>${MISS.map(id=>`<button type="button" data-mk="${id}" aria-label="${esc(nm(id))}: איך להכין"><img alt="" data-th="${id}" src="${ph(id)}"></button>`).join('')}</div><button type="button" class="r3missx" aria-label="סגירה">✕</button>`;thl(MISS)}
@@ -494,7 +522,8 @@ function paintHeads(){const hs=dlg&&dlg.querySelector('.r3heads');if(!hs)return;
 function openWith(look,items){MISS=[];
  if(look&&typeof look=='object'){if(look.r360){const bg=ST.bg;ST=Object.assign(clone(DEF),clone(look.r360));if(look.r360.bg==null)ST.bg=bg;MISS=Object.values(look.items||{}).filter(x=>D[x]&&!isReady(x))}else applyIds(Object.values(look.items||{}),true)}
  else if(items&&typeof items=='object'){const ids=Object.values(items).filter(id=>typeof id=='string'&&D[id]);
-  if(ids.length==1){const id=ids[0];if(isReady(id)){const r=READY[id];if(r.head)ST.head=r.k[0];else if(!r.k.every(k=>ST.on[k]))wearItem(id)}keep();open();redraw();if(!isReady(id))make(id);else toast_('👗 '+nm(id));return}
+  if(ids.length==1){const id=ids[0];if(coverTie(id)&&wearCover(id)){keep();open();redraw();toast_('🧕 '+nm(id)+' · '+STY[ST.head].n);return}
+   if(isReady(id)){const r=READY[id];if(r.head)ST.head=r.k[0];else if(!r.k.every(k=>ST.on[k]))wearItem(id)}keep();open();redraw();if(!isReady(id))make(id);else toast_('👗 '+nm(id));return}
   applyIds(ids,true)}
  keep();open();redraw()}
 function hook(){if(typeof openStudio!='function')return setTimeout(hook,300);
@@ -561,7 +590,9 @@ window.R360={open,close,make,prompts,openWith,Stage:(host,o)=>{const s=Stage(hos
  wig:()=>ST.head=='w',
  styles,styKey,styThumb,saveFile,styName:k=>STY[k]?STY[k].n:'',
  wearStyle:k=>{const st=STY[k];if(!st)return;if(st.set=='mk')ST.mk=k;else{if(st.set=='tie'&&!/^yt/.test(ST.head)){ST.tf=ST.head=='w'||/^yh/.test(ST.head)?'c':ST.head;ST.tc=null}ST.head=k;
-  if(st.set=='tie'&&!ST.tc)coverRGB(ST.tf).then(c=>{if(ST.head==k&&!ST.tc){ST.tc=c;keep();redraw()}})}keep();open();redraw()},
+  if(st.set=='tie'&&!ST.tc)tfRGB(ST.tf).then(c=>{if(ST.head==k&&!ST.tc){ST.tc=c;keep();redraw()}})}keep();open();redraw()},
+ isCover,coverTie,tieFor,itemRGB,styList,
+ wearCover:(id,k)=>{if(!wearCover(id,k))return false;keep();open();redraw();return true},
  tiles:id=>{const r=READY[id];if(!r)return null;return NAMES.map((_,v)=>r.k.map(k=>DYN['x'+k+(v+1)]||'a8/x'+k+(v+1)+'.webp'+V))},   // v191: the 8 cut pieces, for the item window
 readyCount:()=>{const P=pool();return [P.filter(isReady).length,P.length]},nm,ph};
 })();
