@@ -109,12 +109,12 @@ async function cut(id,src,ua,t,at){if(PROC[id]&&PROC[id].v)return;if(!window.cut
   const L=[];for(const c of r.views)L.push((await put1(a,await blobOf(c))).id);
   const np={s:SLOT[kind]||'top',k:kind,L,src:ua||'',t:t||Date.now(),cv:cut8.CV||1,sh:r.shifts.some(s=>s[0]||s[1])?r.shifts:null};if(re)P[at]=np;else P.push(np);
   await putItem(id,{a8:P});delete PROC[id];DONE.add(id);
-  try{R360.sync()}catch(_){}rebox(id);repaint(id);log('cut8_ok',{id,kind,re,ms:Date.now()-t0,px:r.px.join(',')});
+  try{R360.sync()}catch(_){}rebox(id);repaint(id);avNow(id);log('cut8_ok',{id,kind,re,ms:Date.now()-t0,px:r.px.join(',')});
   if(re)return;const half=TWIN[(()=>{try{return R360.kind(id)}catch(_){return ''}})()]&&P.length==1;
   toast_(half?`✓ ${KN[kind]||'החלק הראשון'} על האווטאר. עכשיו מעלים את התמונה של החלק השני`:`✓ ${KN[kind]||'הבגד'} על האווטאר החדש`,half?null:()=>see(id))}
  catch(e){PROC[id]={err:e&&e.code||'x'};DONE.add(id);ERR('cut',e);log('cut8_fail',{id,kind,code:String(e&&(e.code||e.message)||e).slice(0,60)});rebox(id);toast_('✗ '+(ERRT[PROC[id].err]||ERRT.x))}}
 function see(id,v){try{R360.openWith(null,{a:id});if(v>0)setTimeout(()=>{try{R360.show(v)}catch(_){}},700)}catch(e){ERR('see',e)}}
-async function off(id){const old=it(id).a8;if(!old)return;await putItem(id,{a8:''});try{R360.sync()}catch(_){}rebox(id);repaint(id);
+async function off(id){const old=it(id).a8;if(!old)return;await putItem(id,{a8:''});try{R360.sync()}catch(_){}rebox(id);repaint(id);avNow(id);
  toast_('הבגד ירד מהאווטאר',async()=>{await putItem(id,{a8:old});try{R360.sync()}catch(_){}rebox(id);repaint(id)})}
 
 // a picture that was uploaded but not cut yet (on another phone, before v190, or the page was closed in the middle) is cut when the site opens
@@ -138,4 +138,18 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
  if(t.dataset.see190){e.preventDefault();e.stopPropagation();see(t.dataset.see190,+(t.dataset.v||0));return}
  if(t.dataset.off190){e.preventDefault();e.stopPropagation();if(typeof sure=='function'&&!sure(t,'בטוח? לחצי שוב'))return;off(t.dataset.off190).catch(er=>ERR('off',er));return}
  const id=t.dataset.mk188||t.dataset.m77up;if(id){e.preventDefault();e.stopImmediatePropagation();try{if(window.R360)R360.make(id)}catch(er){ERR('make',er)}}},true);
+
+// v195: once an item is on the new avatar, the first picture in its window is HER wearing it (Sara 26/10 08:10: "שבתמונה הראשית ... יופיע לי את
+// האבטאר עם הבגד לבוש עליי, שאני אראה אותו במוצר, לא סתם את התמונה"). The shop photos stay as the next pictures.
+const AVU={},MK={};
+const avKey=id=>{try{const t=R360.tiles(id);return t?t[0].join('|')+(R360.wig()?'#w':'#c'):''}catch(_){return ''}};
+function avMake(id,k){if(MK[id]==k)return;MK[id]=k;
+ R360.still(id,0).then(c=>{if(!c)throw new Error('paint');return new Promise(r=>c.toBlob(r,'image/jpeg',.92))}).then(b=>{if(MK[id]!=k||!b)return;delete MK[id];
+  if(AVU[id])URL.revokeObjectURL(AVU[id].u);AVU[id]={k,u:URL.createObjectURL(b)};
+  if(typeof CUR=='undefined'||CUR!=id)return;if(GI[id])GI[id]++;   // she already moved to another picture: stay on it
+  const im=document.querySelector('#dlbody img.main');if(im&&!GI[id])im.src=AVU[id].u;try{paintGal(id)}catch(_){}})
+ .catch(e=>{delete MK[id];ERR('still',e)})}
+function avNow(id){try{if(typeof CUR!='undefined'&&CUR==id)paintGal(id)}catch(_){}}
+if(typeof galList=='function'){const _gl=galList;galList=function(id){const L=_gl.apply(this,arguments);
+ try{if(!window.R360||!R360.isReady(id))return L;const k=avKey(id),a=AVU[id];if(a&&a.k==k)return [{u:a.u,n:'עליי',av:1},...L];if(k)avMake(id,k)}catch(e){ERR('gal',e)}return L}}
 })();
