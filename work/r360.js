@@ -179,10 +179,18 @@ function mkDelta(mk,v){const k=mk+'|'+v+'|'+(DYN[mk+(v+1)]||'');if(FMK[k])return
   const cx=e[0],cy=e[1]+2,rx=Math.max(5,e[2]-2),ry=Math.max(5,e[3]-2),x0=cx-rx,y0=cy-ry,w=2*rx+1,h=2*ry+1;
   const a=D.getContext('2d',{willReadFrequently:true}).getImageData(x0,y0,w,h).data,b=F.getContext('2d',{willReadFrequently:true}).getImageData(x0,y0,w,h).data;
   let d=new Float32Array(w*h*3);for(let y=0;y<h;y++)for(let x=0;x<w;x++){const q=((x-rx)/rx)**2+((y-ry)/ry)**2;if(q>1)continue;const m=q<.55?1:(1-q)/.45,i=y*w+x;for(let z=0;z<3;z++)d[i*3+z]=(b[i*4+z]-a[i*4+z])*m}
-  {const mu=[0,0,0];let n=0;for(let i=0;i<w*h;i++){const m=Math.abs(d[i*3])+Math.abs(d[i*3+1])+Math.abs(d[i*3+2]);if(!m)continue;n++;for(let z=0;z<3;z++)mu[z]+=d[i*3+z]}   // v218 (Sara 17:28 "צל צהוב"): GPT warms the whole face a little – that tint is taken out,
-   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const q=((x-rx)/rx)**2+((y-ry)/ry)**2;if(q>1)continue;const m=q<.55?1:(1-q)/.45,i=y*w+x;for(let z=0;z<3;z++)d[i*3+z]=(d[i*3+z]-mu[z]/Math.max(1,n)*m)*1.7}}   // and the makeup itself (lips, eyes, blush) is shown 1.7× – on the doll it is faint
-  for(let pass=0;pass<2;pass++){const o=new Float32Array(d.length);for(let y=0;y<h;y++)for(let x=0;x<w;x++)for(let z=0;z<3;z++){let t=0,n=0;for(let yy=Math.max(0,y-1);yy<=Math.min(h-1,y+1);yy++)for(let xx=Math.max(0,x-1);xx<=Math.min(w-1,x+1);xx++){t+=d[(yy*w+xx)*3+z];n++}o[(y*w+x)*3+z]=t/n}d=o}   // colour, not the lines of another drawing
-  return {x0,y0,w,h,d}})()}
+  {const mu=[0,0,0];let n=0;for(let i=0;i<w*h;i++){const m=Math.abs(d[i*3])+Math.abs(d[i*3+1])+Math.abs(d[i*3+2]);if(!m)continue;n++;for(let z=0;z<3;z++)mu[z]+=d[i*3+z]}   // v218 (Sara 17:28 "צל צהוב"): GPT warms the whole face a little – that tint is taken out
+   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const q=((x-rx)/rx)**2+((y-ry)/ry)**2;if(q>1)continue;const m=q<.55?1:(1-q)/.45,i=y*w+x;for(let z=0;z<3;z++)d[i*3+z]-=mu[z]/Math.max(1,n)*m}}
+  // v221 (Sara 18:39 "האיפור נמרח, אתה צריך יותר לדייק"): one light smoothing pass instead of two, and the 1.7× boost only for faint makeup (strong lipstick stays as drawn)
+  {const o=new Float32Array(d.length);for(let y=0;y<h;y++)for(let x=0;x<w;x++)for(let z=0;z<3;z++){let t=0,n=0;for(let yy=Math.max(0,y-1);yy<=Math.min(h-1,y+1);yy++)for(let xx=Math.max(0,x-1);xx<=Math.min(w-1,x+1);xx++){const c=yy==y&&xx==x?4:1;t+=d[(yy*w+xx)*3+z]*c;n+=c}o[(y*w+x)*3+z]=t/n}d=o}
+  const g=new Float32Array(w*h),fm=new Uint8Array(w*h);for(let i=0;i<w*h;i++){const k=i*3,mg=Math.hypot(d[k],d[k+1],d[k+2]),gn=1+.7*40/(40+mg);for(let z=0;z<3;z++)d[k+z]*=gn;g[i]=a[i*4]*.299+a[i*4+1]*.587+a[i*4+2]*.114;if(mg>18)fm[i]=1}
+  // the features the makeup changes most (lips, each eye): each is placed again on its own, a few px, onto the same feature of the head (eyes and mouth of a GPT head sit a little differently)
+  const lab=new Int32Array(w*h),FT=[];let nl=0;for(let i=0;i<w*h;i++){if(!fm[i]||lab[i])continue;const st=[i];lab[i]=++nl;let x0=w,y0=h,x1=0,y1=0,n=0;
+   while(st.length){const q=st.pop(),qx=q%w,qy=(q-qx)/w;n++;if(qx<x0)x0=qx;if(qx>x1)x1=qx;if(qy<y0)y0=qy;if(qy>y1)y1=qy;
+    for(let yy=Math.max(0,qy-2);yy<=Math.min(h-1,qy+2);yy++)for(let xx=Math.max(0,qx-2);xx<=Math.min(w-1,qx+2);xx++){const r=yy*w+xx;if(fm[r]&&!lab[r]){lab[r]=nl;st.push(r)}}}
+   if(n>=6&&(x1-x0)*(y1-y0)<w*h*.2)FT.push({x0:Math.max(0,x0-3),y0:Math.max(0,y0-3),x1:Math.min(w-1,x1+3),y1:Math.min(h-1,y1+3)})}
+  const fid=new Int16Array(w*h).fill(-1);FT.forEach((f,n)=>{for(let y=f.y0;y<=f.y1;y++)for(let x=f.x0;x<=f.x1;x++)if(fid[y*w+x]<0)fid[y*w+x]=n});
+  return {x0,y0,w,h,d,g,F:FT,fid}})()}
 // v217 (Sara 17:17 "הראש לא יושב במקום"): her wig and the hairstyles are GPT drawings of the whole head – a little smaller, turned ~6° and moved.
 // Toward her (front, half-turns) each is turned back upright and moved so its face lands on the doll's face; the size stays (one size in all views).
 // From the side and the back the face can't be found, so those stay. Ties sat right (0.98, 1°) and stay as they are.
@@ -192,11 +200,21 @@ function headT(hk){if(!(hk=='w'||/^yh/.test(hk||'')&&STY[hk]))return Promise.res
    T.push(f&&f[4]>=.6&&Math.abs(f[0])<=8&&Math.abs(f[1])<=8?{cx:e[0],cy:e[1]-2,dx:f[0],dy:f[1],s:1,t:f[3]}:null)}return T})()}
 function drawHead(c,m,T){c.save();c.translate(T.cx,T.cy);c.scale(1/T.s,1/T.s);c.rotate(-T.t*Math.PI/180);c.translate(-(T.cx+T.dx),-(T.cy+T.dy));c.drawImage(m,0,0);c.restore()}
 async function mkFit(c,v,hk,mk,pt){const e=FCV[v];if(!e||![0,1,7].includes(v)||!DYN[mk+(v+1)])return;try{const [f,M]=await Promise.all([fitV(hk,v),mkDelta(mk,v)]);if(!f||!M||f[4]<.6)return;   // the face toward her: front and half-turns
- const [dx,dy,sc,t]=f,cx=e[0],cy=e[1]-2,co=Math.cos(t*Math.PI/180),si=Math.sin(t*Math.PI/180),R=Math.ceil(Math.max(M.w,M.h)*sc*.8)+2,X0=Math.max(0,Math.round(cx+dx-R)),Y0=Math.max(0,Math.round(cy+dy-R)),W2=Math.min(c.canvas.width-X0,2*R),H2=Math.min(c.canvas.height-(pt||0)-Y0,2*R);
- const id=c.getImageData(X0,Y0+(pt||0),W2,H2),p=id.data;
- for(let y=0;y<H2;y++)for(let x=0;x<W2;x++){const ux=X0+x-(cx+dx),uy=Y0+y-(cy+dy),sx=Math.round(cx+(co*ux+si*uy)/sc)-M.x0,sy=Math.round(cy+(-si*ux+co*uy)/sc)-M.y0;if(sx<0||sy<0||sx>=M.w||sy>=M.h)continue;
-  const j=(sy*M.w+sx)*3,k=(y*W2+x)*4;if(!p[k+3])continue;for(let z=0;z<3;z++)p[k+z]=Math.max(0,Math.min(255,p[k+z]+M.d[j+z]))}
- c.putImageData(id,X0,Y0+(pt||0))}catch(err){(window.ERRS=window.ERRS||[]).push('mkFit '+(err&&err.message||err))}}
+ const [dx,dy,sc,t]=f,cx=e[0],cy=e[1]-2,co=Math.cos(t*Math.PI/180),si=Math.sin(t*Math.PI/180),R=Math.ceil(Math.max(M.w,M.h)*sc*.8)+8,X0=Math.max(0,Math.round(cx+dx-R)),Y0=Math.max(0,Math.round(cy+dy-R)),W2=Math.min(c.canvas.width-X0,2*R),H2=Math.min(c.canvas.height-(pt||0)-Y0,2*R);
+ const id=c.getImageData(X0,Y0+(pt||0),W2,H2),p=id.data,P=new Uint8ClampedArray(p);
+ const fwd=(sx,sy)=>{const a=(sx+M.x0-cx)*sc,b=(sy+M.y0-cy)*sc;return [cx+dx+co*a-si*b-X0,cy+dy+si*a+co*b-Y0]},   // a doll pixel of the delta → this canvas
+  inv=(X,Y)=>{const ux=X0+X-(cx+dx),uy=Y0+Y-(cy+dy);return [Math.round(cx+(co*ux+si*uy)/sc)-M.x0,Math.round(cy+(-si*ux+co*uy)/sc)-M.y0]},
+  lu=(x,y)=>{x=Math.round(x);y=Math.round(y);if(x<0||y<0||x>=W2||y>=H2)return NaN;const k=(y*W2+x)*4;return P[k+3]?P[k]*.299+P[k+1]*.587+P[k+2]*.114:NaN};
+ const sh=M.F.map(fe=>{let best=[0,0],bs=-2,s0=-2;for(let oy=-4;oy<=4;oy++)for(let ox=-4;ox<=4;ox++){let n=0,sa=0,sb=0,saa=0,sbb=0,sab=0;   // v221: each feature finds its own spot (±4 px)
+   for(let y=fe.y0;y<=fe.y1;y++)for(let x=fe.x0;x<=fe.x1;x++){const [X,Y]=fwd(x,y),B=lu(X+ox,Y+oy);if(isNaN(B))continue;const A=M.g[y*M.w+x];n++;sa+=A;sb+=B;saa+=A*A;sbb+=B*B;sab+=A*B}
+   if(n<12)continue;const va=saa-sa*sa/n,vb=sbb-sb*sb/n;if(va<n*30||vb<n*10)continue;const r=(sab-sa*sb/n)/Math.sqrt(va*vb)-.004*(ox*ox+oy*oy);if(!ox&&!oy)s0=r;if(r>bs){bs=r;best=[ox,oy]}}
+  return bs>.5&&bs>s0+.02?best:[0,0]});
+ const src=(x,y)=>{let [sx,sy]=inv(x,y);if(sx<0||sy<0||sx>=M.w||sy>=M.h)return -1;const fi=M.fid[sy*M.w+sx];if(fi>=0&&(sh[fi][0]||sh[fi][1])){[sx,sy]=inv(x-sh[fi][0],y-sh[fi][1]);if(sx<0||sy<0||sx>=M.w||sy>=M.h)return -1}return sy*M.w+sx};
+ // where the head differs from the doll under the makeup (her teeth where the doll has lips, skin beside a narrower mouth) the colour is laid on lighter
+ let ta=0,tb=0,tn=0;for(let y=0;y<H2;y++)for(let x=0;x<W2;x++){const k=(y*W2+x)*4;if(!P[k+3])continue;const q=src(x,y);if(q<0)continue;ta+=M.g[q];tb+=P[k]*.299+P[k+1]*.587+P[k+2]*.114;tn++}const off=tn?(tb-ta)/tn:0;
+ for(let y=0;y<H2;y++)for(let x=0;x<W2;x++){const k=(y*W2+x)*4;if(!p[k+3])continue;const q=src(x,y);if(q<0)continue;
+  const B=P[k]*.299+P[k+1]*.587+P[k+2]*.114,wt=Math.max(.3,Math.min(1,1.6-Math.abs(B-off-M.g[q])/40)),j=q*3;for(let z=0;z<3;z++)p[k+z]=Math.max(0,Math.min(255,p[k+z]+M.d[j+z]*wt))}
+ c.putImageData(id,X0,Y0+(pt||0));(window.MKS221=window.MKS221||{})[hk+'|'+mk+'|'+v]=sh}catch(err){(window.ERRS=window.ERRS||[]).push('mkFit '+(err&&err.message||err))}}
 
 // v204 (Sara 11:46 "אני אגע בתמונה ואז הבובה תסתובב"): the 8 angles one by one, head to waist, for a library card that turns
 const FRM={},FRQ=new Map();
