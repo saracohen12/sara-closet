@@ -69,6 +69,10 @@ function mask(b,d,o){const SMALL=o.mode=='small',HEAD=o.mode=='head'||SMALL,CUT=
   diff[i]=Math.sqrt(s);dbg[i]=Math.sqrt(t);bbg[i]=Math.sqrt(u)<=22?1:0;
   if(SMALL){m[i]=((diff[i]>30&&!bbg[i])||(diff[i]>16&&bbg[i]))&&!(d[k]-d[k+2]>18&&!o.warm)?1:0}
   else m[i]=diff[i]>40&&dbg[i]>22?1:0}
+ // v232 (Sara 00:33 "החולצה הלבנה לא חתך אותה טוב באתר"): a white or grey garment and the doll's light beige differ by less than 40 where the doll is lit,
+ // so those parts were left out – beige holes in the blouse. Near the garment, a pixel that is neutral (white, grey, black) where the doll is warm beige is the garment too
+ if(!SMALL&&!HEAD){const near=dilate(m,30),wm=(a,k)=>(a[k]-a[k+2])/((a[k]+a[k+1]+a[k+2])/3+1);
+  for(let i=0;i<N;i++){if(m[i]||!near[i]||dbg[i]<=22)continue;const k=i*3,wd=wm(ds,k);if(Math.abs(wd)<.08&&wm(bs,k)-wd>.09)m[i]=1}}
  for(let r=Math.floor(H*.86);r<H;r++)for(let c=0;c<W;c++){const i=r*W+c;if(dbg[i]<=48)m[i]=0}   // floor shadows near the feet are not the item
  if(!SMALL)m=dilate(erode(m,2),2);m=erode(dilate(m,SMALL?1:3),SMALL?1:3);
  for(let r=0;r<H;r++)for(let c=0;c<8;c++){m[r*W+c]=0;m[r*W+W-1-c]=0}   // the sheet's white divider lines
