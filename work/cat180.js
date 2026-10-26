@@ -149,12 +149,14 @@ function styPicker(set){SSET=set;SID='';mkP();const cur=scov()[set]||null;
  let L=[];try{L=window.STY199.list().filter(x=>x.set==set)}catch(_){}
  const key=x=>{try{return R().styKey(x)}catch(_){return ''}};
  const opt=(v,src,n,sth)=>`<button type="button" data-s211="${esc(JSON.stringify(v))}" aria-pressed="${same(v,cur)}" aria-label="${esc(n)}"><img alt="" src="${esc(src)}"${sth?` data-sth211="${esc(sth)}"`:''}><span class="t208" aria-hidden="true">${esc(n)}</span></button>`;
- const mineH=L.map(x=>{const k=key(x);return k?opt({k},'',x.n||'',k):''}).join('');
+ const mineH=L.map(x=>{const k=key(x);return k&&x.L.some(Boolean)?opt({k},'',x.n||'',k):''}).join('');
+ const cuH=L.filter(x=>x.cu).map(x=>opt({u:'/_blob/'+x.cu},'/_blob/'+x.cu,'תקריב: '+(x.n||''))).join('');   // v215: her sharp makeup close-ups
  P.innerHTML=`<div class="ph180h"><h3 id="c180t">התמונה של ${esc(STN[set]||'')}<small>לוחצים על התמונה שאת רוצה</small></h3><button type="button" class="x180" aria-label="סגירה">✕</button></div>
   <div class="a180"><button type="button" data-auto aria-pressed="${!cur}">↺ בלי בחירה (אוטומטי)</button><button type="button" class="u211">📷 תמונה מהטלפון<input type="file" accept="image/*" class="f211" aria-label="תמונה מהטלפון"></button></div>
   <p class="h211" aria-live="polite"></p>
   ${cur&&cur.u?`<h4 class="s211h">התמונה שהעלית</h4><div class="g180">${opt({u:cur.u},cur.u,'התמונה שלי')}</div>`:''}
   ${mineH?`<h4 class="s211h">${set=='tie'?'הקשירות שלך':set=='hair'?'התסרוקות שלך':'האיפורים שלך'} על האווטאר</h4><div class="g180">${mineH}</div>`:''}
+  ${cuH?`<h4 class="s211h">התקריבים החדים שלך</h4><div class="g180">${cuH}</div>`:''}
   <h4 class="s211h">האווטאר שלך</h4><div class="g180">${AVP.map(([a,n])=>opt({a},a+'?v='+(window.VER||''),n)).join('')}</div>`;
  if(!P.open)P.showModal();P.scrollTop=0;
  P.querySelectorAll('img[data-sth211]').forEach(i=>{try{R().styThumb(i.dataset.sth211).then(u=>{if(u)i.src=u})}catch(_){}})}

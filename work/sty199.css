@@ -238,3 +238,7 @@ dialog#sty199.w213,dialog#sty204v.w213{width:min(900px,100vw)}
 #sty199 .sycu button:disabled{opacity:.45;cursor:default}
 #sty204v .sycuv{border-radius:14px;overflow:hidden;background:#d9e2ee}
 #sty204v .sycuv img{width:100%;display:block;max-width:none}
+/* v215 (Sara 16:20 "תעשה לי סדר"): the makeup steps */
+#sty199 .systeps{margin:6px 0 8px;padding-inline-start:20px;display:grid;gap:8px;font-size:.88rem;line-height:1.5}
+#sty199 .systeps .mkb{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+#sty199 .sysee{margin:6px 0;padding:8px 12px;border-radius:12px;background:var(--z-solid,#fff);font-size:.86rem;line-height:1.5}
