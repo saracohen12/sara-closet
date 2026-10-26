@@ -1,0 +1,10 @@
+/* v198: a calm item window on the phone (tidy198.js) */
+#dlg .pd85h{flex-wrap:nowrap!important;gap:6px;justify-content:flex-start}
+#dlg .pd85h>b{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#dlg .pd85h button{font-size:.78rem!important;padding:5px 10px!important;min-height:34px;white-space:nowrap}
+.o3oosw:not(.on){display:none!important}
+.it77 .b188x{width:auto;margin:0;flex-wrap:nowrap}
+.it77 .b188x button{padding:6px 11px;min-height:34px;font-size:.8rem}
+.it77 .oos198{font:inherit;font-size:.85rem;font-weight:600;min-height:40px;padding:8px 14px;border:1px solid #e8c4bb;background:#fff;color:#9b2c1c;border-radius:var(--pill,999px);cursor:pointer}
+.it77 .oos198.armed{background:#9b2c1c;color:#fff}
+details.dinfo-more>details.srch9{margin:8px 0}

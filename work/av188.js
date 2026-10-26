@@ -42,19 +42,19 @@ const KN={dress:'השמלה',top:'החולצה',base:'החולצה',sweater:'ה�
 const ERRT={shape:'התמונה לא בצורה של הגיליון (2 שורות של 4 משבצות). צריך להעלות את התמונה המלאה שחזרה מ-GPT, בלי לחתוך אותה',
  empty:'לא מצאתי בגד חדש על הבובה. האם זו התמונה ש-GPT החזיר עם הבגד?',assets:'שמירת תמונות לא זמינה כאן. לפתוח את האתר ב-Chrome ולנסות שוב',
  x:'משהו השתבש בהכנה. לנסות שוב'};
-function line(id){const p=PROC[id];
+function line(id,short){const p=PROC[id];   // short: the bar under "לנסות עליי" (v198, less words on the phone)
  if(p&&p.v)return `<span class="up">✂ ${p.v<9?`גוזרת ומתאימה לבובה… זווית ${p.v} מתוך 8`:'שומרת את הבגד על האווטאר…'}</span>`;
  if(p&&p.err)return `<span class="no">✗ ${es(ERRT[p.err]||ERRT.x)}</span>`;
- const s=st(id);if(s=='ok')return '<span class="ok">✓ על האווטאר החדש. אפשר לבחור אותו בסטודיו ובלוקים</span>';
- if(ups(id).length)return '<span class="up">⏳ הועלתה תמונה של 8 זוויות, עוד רגע היא על האווטאר</span>';
+ const s=st(id);if(s=='ok')return short?'<span class="ok">✓ על האווטאר החדש</span>':'<span class="ok">✓ על האווטאר החדש. אפשר לבחור אותו בסטודיו ובלוקים</span>';
+ if(ups(id).length)return short?'<span class="up">⏳ עוד רגע על האווטאר</span>':'<span class="up">⏳ הועלתה תמונה של 8 זוויות, עוד רגע היא על האווטאר</span>';
  return s=='fix'?'<span class="up">⚪ כבר העלית תמונות לבגד הזה · עוד לא על האווטאר החדש</span>':'<span class="no">✗ עוד לא על האווטאר החדש</span>'}
 // the bar at the top of the item window: one line, a tap goes down to the avatar part
-window.bar188=function(id){const go=`<button type="button" class="it77p b188" data-go190="${es(id)}">${line(id)}<b aria-hidden="true">⬇</b></button>`;
+window.bar188=function(id){const go=`<button type="button" class="it77p b188" data-go190="${es(id)}">${line(id,1)}<b aria-hidden="true">⬇</b></button>`;
  return go+(mine(id)?acts(id):'')};
 // v197 (Sara 08:29 "עלתה לאוויר של המוצר תמונה לא נכונה, אני לא מצליחה למחוק/לשנות... גם אם לחצתי מדוד עלי שיהיה לי אפשרות למחוק ולהחליף"):
 // replace / delete right under "לנסות עליי", in the avatar box and in the studio
 const mine=id=>ups(id).length>0||parts(id).length>0;
-const acts=id=>`<span class="b188x"><button type="button" data-up188="${es(id)}">🔄 להחליף את התמונה</button><button type="button" data-off190="${es(id)}">🗑 למחוק מהאווטאר</button></span>`;
+const acts=id=>`<span class="b188x"><button type="button" data-up188="${es(id)}" aria-label="להחליף את התמונה של האווטאר">🔄 להחליף</button><button type="button" data-off190="${es(id)}" aria-label="למחוק מהאווטאר">🗑 למחוק</button></span>`;
 window.acts197=id=>mine(id)?acts(id):'';
 function box(id){const p=PROC[id],u=ups(id),ok=ready(id),dyn=(()=>{try{return R360.dyn(id)}catch(_){return false}})();let kind='';try{kind=R360.kind(id)}catch(_){}
  const twin=kind=='set'||kind=='jwset',P=parts(id),half=twin&&P.length==1;
