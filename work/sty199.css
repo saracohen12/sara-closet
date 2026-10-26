@@ -53,3 +53,9 @@ dialog#sty199::backdrop{background:rgba(20,12,8,.5)}
 #r360 .r3sty button,#r360 .r3styr .r3sw button{color:var(--z-ink,#2a1d17)}
 #r360 .r3styr .r3sw{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:2px}
 #r360 .r3styr .r3sw button{flex:none}
+#sty199 .syties{margin:8px 0}
+#sty199 .syties button{font-size:.8rem;min-height:40px;padding:0 12px;text-align:start}
+#sty199 .syties button[aria-pressed=true]{border-color:var(--z-acc,#b4532c);box-shadow:0 0 0 2px var(--z-acc-soft,#f3d9cc);font-weight:600}
+#sty199 .mks small{display:block;color:var(--z-muted,#6b5d55);font-size:.8rem;margin-top:4px}
+#sty199 .mkh,#sty199 .syt{background:var(--z-solid,#fff)}
+#sty199 .syt{top:62px;margin:0 -16px;padding:0 16px 8px}

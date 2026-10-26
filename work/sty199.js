@@ -46,10 +46,13 @@ function steps(set){const [,,,one]=SET(set);const nm=`<label class="syl">שם (�
   <li><b>שומרים 2 תמונות:</b> הבובה ב-8 זוויות והפאה שלך (בשביל הצבע).<span class="mkb"><button type="button" data-sydl="sheet">⬇ הבובה ב-8 זוויות</button><button type="button" data-sydl="wig">⬇ הפאה שלי</button></span></li>
   <li><b>ב-GPT, בהודעה אחת:</b> התמונה של התסרוקת, הפאה, הבובה, ומדביקים את הפרומפט.<span class="mkb"><button type="button" class="mkp" data-sycopy="hair">📋 להעתיק את הפרומפט</button></span>${pr}</li>${up}</ol>
   <p class="sytip">טיפ: את התסרוקת הראשונה אפשר לעשות מהפאה עצמה, כמו שהיא. ככה גם האיפור יישב עליה.</p>`;
- if(set=='tie')return `<ol class="mks"><li>${nm}</li>
-  <li><b>שומרים את הבובה</b><span class="mkb"><button type="button" data-sydl="sheet">⬇ הבובה ב-8 זוויות</button></span></li>
-  <li><b>ב-GPT, בהודעה אחת:</b> התמונה של הקשירה, הבובה, ומדביקים את הפרומפט.<span class="mkb"><button type="button" class="mkp" data-sycopy="tie">📋 להעתיק את הפרומפט</button></span>${pr}</li>${up}</ol>
-  <p class="sytip">המטפחת חוזרת אפורה. בסטודיו בוחרים כיסוי ואז קשירה, והיא נצבעת בצבע של הכיסוי. אפשר גם לבחור צבע אחר.</p>`;
+ // v200 (Sara 10:57 "תכתוב לי עכשיו 20 קשירות"): her 20 styles, one tap copies that tie's prompt (only the doll is attached) and names the upload after it
+ if(set=='tie'){const T=(P()&&P().TIES)||[],had=new Set(mine('tie').map(x=>x.n));
+  return `<ol class="mks"><li><b>שומרים את הבובה</b><span class="mkb"><button type="button" data-sydl="sheet">⬇ הבובה ב-8 זוויות</button></span></li>
+  <li><b>בוחרים קשירה:</b> לוחצים, והפרומפט שלה מועתק.<div class="sycats syties">${T.map(([n],i)=>`<button type="button" data-sytie="${i}" aria-pressed="${NAME.tie==n}">${had.has(n)?'✓ ':''}${i+1}. ${es(n)}</button>`).join('')}</div>
+   <details><summary>✍ קשירה אחרת, לפי תמונה שלי</summary>${nm}<span class="mkb"><button type="button" data-sycopy="tie">📋 פרומפט עם תמונה שלי</button></span><small>ב-GPT מצרפים קודם את התמונה של הקשירה, אחר כך את הבובה.</small>${pr}</details></li>
+  <li><b>ב-GPT, בשיחה חדשה:</b> מצרפים את הבובה, מדביקים את הפרומפט ושולחים.</li>${up}</ol>
+  <p class="sytip">המטפחת חוזרת אפורה. בסטודיו בוחרים כיסוי ואז קשירה, והיא נצבעת בצבע של הכיסוי. אפשר גם לבחור צבע אחר.</p>`}
  const p=P();const cats=p?p.MKC.map(([k,t,L])=>`<button type="button" data-sylook="${k}">📋 ${t} <small>${L.length}</small></button>`).join(''):'';
  return `<div class="sy1"><h4>שלב 1 · 50 איפורים בתקריב</h4><p>בכל הודעה ל-GPT: תמונה של הפנים שלך מקדימה, ופרומפט של סוג אחד. חוזרת רשת של איפורים עם מספרים.</p><div class="sycats">${cats}</div></div>
  <h4>שלב 2 · האיפור שאהבת, על האווטאר</h4>
@@ -120,6 +123,8 @@ function click(e){if(e.target===DL)return DL.close();const b=e.target.closest('b
  if(d.sydl)return dl(d.sydl);
  if(d.sycopy)return copy(b,prompt(d.sycopy));
  if(d.sylook){const p=P();if(p)copy(b,p.look(d.sylook));return}
+ if(d.sytie!=null){const p=P(),t=p&&p.TIES[+d.sytie];if(!t)return;NAME.tie=t[0];DL.querySelectorAll('[data-sytie]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  const i=DL.querySelector('.syname');if(i)i.value=t[0];fill();copy(b,p.tieW(t[0],t[1]));return}
  if(d.syup)return pick(d.syup)}
 window.STY199={open,list:()=>LIST.slice()};
 })();
