@@ -208,3 +208,6 @@ dialog#bg204::backdrop{background:rgba(20,12,8,.5)}
 #sty199 .syhid li small{color:var(--z-muted,#6b5d55)}
 #sty199 .syhid li button{flex:none;font:inherit;font-size:.8rem;min-height:40px;padding:0 14px;border-radius:999px;border:0;background:var(--z-pri,#2a1d17);color:var(--z-pri-ink,#fff);font-weight:600;cursor:pointer}
 @media (prefers-reduced-motion:reduce){#sty199 .sycd summary::before{transition:none}}
+/* v207: read the whole prompt */
+#sty199 .syread{display:block;width:100%;margin:2px 0 4px;font:inherit;font-size:.74rem;min-height:36px;padding:0 8px;border-radius:999px;border:1px dashed var(--z-line,#ddd);background:none;color:var(--z-ink,#2a1d17);cursor:pointer}
+#sty204v .syrd{margin-top:10px;padding:12px 14px;border-radius:14px;border:1px solid var(--z-line,#e6ddd5);background:var(--z-surface,#f6f2ee);color:var(--z-ink,#2a1d17);font-size:.86rem;line-height:1.65;white-space:pre-wrap;unicode-bidi:plaintext;text-align:start;overflow-wrap:anywhere;max-height:min(58dvh,560px);overflow:auto}

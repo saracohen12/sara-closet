@@ -45,7 +45,7 @@ const LIBC=[176,124,138];   // the ties in the library: one soft colour for all 
 (async()=>{try{const db=await window.claude?.use?.('db');if(!db)return;db.collection('stylegrid').onSnapshot(sn=>{const g={};sn.docs.forEach(d=>{const v=d.data();if(v&&v.src)g[d.id]=v.src});MKG=g;paint()},e=>ERR('gsnap',e))}catch(e){ERR('gdb',e)}})();
 function presets(set){const p=P();if(!p)return [];
  if(set=='tie')return p.TIES.map(([n,d,he],i)=>({k:'w'+i,no:i+1,n,d,he}));   // v206: her new 20 – new keys, so the ties she already made from the old list stay her own
- if(set=='hair')return (p.HAIRS||[]).map(([n,d],i)=>({k:'h'+i,no:i+1,n,d}));
+ if(set=='hair')return (p.HAIRS||[]).map(([n,d,he,sp],i)=>({k:'g'+i,no:i+1,n,d,he,sp}));   // v207: her new 30 for her wig – new keys
  return p.MKC.flatMap(([c,t,L])=>L.map((x,i)=>({k:'m:'+c+':'+i,no:i+1,n:x.split(':')[0].trim(),sub:x.split(':').slice(1).join(':').trim(),c})))}
 const preOf=(set,k)=>presets(set).find(x=>x.k==k);
 function doneOf(set,pr){const L=mine(set);return L.find(x=>x.p==pr.k)||L.find(x=>!x.p&&x.n==pr.n)||null}
@@ -60,7 +60,7 @@ function el(){if(DL)return DL;DL=document.createElement('dialog');DL.id='sty199'
  DL.addEventListener('cancel',e=>{e.preventDefault();DL.close()});return DL}
 function open(tab){if(tab&&SETS.some(s=>s[0]==tab))TAB=tab;el();ED='';ADD=false;paint();if(!DL.open)DL.showModal();DL.scrollTop=0}
 const prompt=set=>{const p=P();if(!p)return '';const n=NAME[set].trim();return set=='hair'?p.hair(n):set=='tie'?p.tie(n):p.faceW?p.faceW(n,DESC.trim()):p.face(NUM)};   // v205: a new makeup from her words, only the doll
-function prompt2(set,pr){const p=P();if(!p||!pr)return '';return set=='tie'?p.tieW(pr.n,pr.d,pr.he):set=='hair'?p.hairW(pr.n,pr.d):p.faceW?p.faceW(pr.n,pr.sub):p.face(pr.no)}   // v205: makeup from the words, only the doll attached
+function prompt2(set,pr){const p=P();if(!p||!pr)return '';return set=='tie'?p.tieW(pr.n,pr.d,pr.he):set=='hair'?p.hairW(pr.n,pr.d,pr.he,pr.sp):p.faceW?p.faceW(pr.n,pr.sub):p.face(pr.no)}   // v205: makeup from the words, only the doll attached
 function fill(){if(!DL)return;DL.querySelectorAll('textarea[data-syp]').forEach(t=>t.value=prompt(t.dataset.syp))}
 function status(){if(!PROC)return '';if(PROC.err)return `<p class="syst no" role="alert">✗ ${es(PROC.err)}</p>`;
  return `<p class="syst" aria-live="polite">✂ ${PROC.n0?es(PROC.n0)+': ':''}${PROC.v<9?`גוזרת ומתאימה לבובה… זווית ${PROC.v} מתוך 8`:'שומרת…'}${PROC.n>1?` · תמונה ${PROC.i} מתוך ${PROC.n}`:''}</p>`}
@@ -74,7 +74,8 @@ function card(set,pr,x){const k=pr?pr.k:x.id,b=busy()&&PROC.k==k,title=x?x.n:pr.
  const btn=b?'<span class="sycw">✂ גוזרת…</span>':x?`<button type="button" class="mkp" data-sywear="${es(x.id)}">👗 ללבוש</button>`
   :`<button type="button" data-syp2="${es(pr.k)}">📋 פרומפט</button><button type="button" class="mkp" data-syup2="${es(pr.k)}"${busy()?' disabled':''}>📤 להעלות</button>`;
  const sub=pr&&pr.sub?pr.sub:!pr&&oldTie(x)?'מהרשימה הקודמת':'',hk=hidK(pr,x);
- const howT=pr&&pr.he?`<details class="sycd"><summary>איך קושרים</summary><p>${es(pr.he)}</p></details>`:'';
+ // v207 (Sara 13:47 "אני רוצה גם לבדוק שהפרומט של התסרוקות ממש טובות וברורות"): every preset card can show its whole prompt
+ const howT=pr?`<details class="sycd"><summary>${set=='tie'?'איך קושרים':set=='hair'?'איך זה נראה':'הפרומפט'}</summary>${pr.he?`<p>${es(pr.he)}</p>`:''}<button type="button" class="syread" data-syread="${es(pr.k)}">📄 לקרוא את כל הפרומפט</button></details>`:'';
  return `<div class="syc${x?' up':''}${b?' busy':''}">${pic}<button type="button" class="syrm" data-syrm="${es(hk)}" aria-label="להסיר מהרשימה: ${es(title)}" title="להסיר"${b?' disabled':''}>🗑</button><b class="sycn">${pr?pr.no+'. ':''}${es(title)}</b>${sub?`<small class="sycs">${es(sub)}</small>`:''}${howT}<span class="sycb">${btn}</span></div>`}
 // v206: what she removed, to bring back
 function hiddenList(set){const L=[];presets(set).forEach(pr=>{if(HID.has(pr.k))L.push({k:pr.k,n:(pr.no?pr.no+'. ':'')+pr.n,pic:!!doneOf(set,pr)})});
@@ -102,6 +103,11 @@ function turn(b,loop){const img=b&&b.querySelector('img[data-syf]');if(!img)retu
   b._t=setInterval(()=>{if(!img.isConnected){clearInterval(b._t);b._t=null;return}i=(i+1)%8;n++;img.src=F[i];if(!loop&&n>=8)stopRot(b,F)},loop?190:150)})}
 function grid(set,list){return `<div class="syg2">${list.join('')}</div>`}
 function body(set){const ex=extras(set).map(x=>card(set,null,x));
+ // v207: her hairstyles in her 3 groups
+ const p0=P();if(set=='hair'&&p0&&p0.HAIRG){const G=p0.HAIRG,sh=shown(set);
+  return G.map(([from,t],gi)=>{const to=gi+1<G.length?G[gi+1][0]:1e9,L=sh.filter(pr=>pr.no-1>=from&&pr.no-1<to);
+   return L.length?`<section class="sycat"><h4>${es(t)} <small>${L.length}</small></h4>${grid(set,L.map(pr=>card(set,pr,doneOf(set,pr))))}</section>`:''}).join('')
+   +(ex.length?`<section class="sycat"><h4>שלי</h4>${grid(set,ex)}</section>`:'')+grid(set,[addCard(set)])+hiddenHTML(set)}
  if(set!='mk')return grid(set,[...shown(set).map(pr=>card(set,pr,doneOf(set,pr))),...ex,addCard(set)])+(set=='tie'?'<p class="sytip">הקשירות כאן בצבע אחד לדוגמה. על כיסוי היא נצבעת בצבע של הכיסוי.</p>':'')+hiddenHTML(set);
  const p=P();if(!p)return '';const all=shown('mk');
  return p.MKC.map(([c,t,L])=>`<section class="sycat"><h4>${es(t)} <small>${all.filter(pr=>pr.c==c).length}</small></h4>
@@ -125,8 +131,16 @@ function cell(k){if(CELL[k])return Promise.resolve(CELL[k]);const pr=preOf('mk',
  return GIMG[src].then(m=>{if(!m)return '';const cw=m.naturalWidth/cols,ch=m.naturalHeight/rows,ins=.06,o=document.createElement('canvas');o.width=240;o.height=Math.round(240*ch/cw);
   o.getContext('2d').drawImage(m,c*cw+cw*ins,r*ch+ch*ins,cw*(1-2*ins),ch*(1-2*ins),0,0,o.width,o.height);return CELL[k]=o.toDataURL('image/jpeg',.85)})}
 // the 8 angles of one style, its name, wear / replace / delete
-function view(id){const x=LIST.find(y=>y.id==id);if(!x)return;if(!VW){VW=document.createElement('dialog');VW.id='sty204v';VW.dir='rtl';VW.setAttribute('aria-labelledby','sty204vt');document.body.appendChild(VW);
-  VW.addEventListener('cancel',e=>{e.preventDefault();VW.close()});VW.addEventListener('click',vclick)}
+function vw(){if(!VW){VW=document.createElement('dialog');VW.id='sty204v';VW.dir='rtl';VW.setAttribute('aria-labelledby','sty204vt');document.body.appendChild(VW);
+  VW.addEventListener('cancel',e=>{e.preventDefault();VW.close()});VW.addEventListener('click',vclick)}return VW}
+// v207: the whole prompt of a preset, to read before copying
+function readP(k){const pr=preOf(TAB,k);if(!pr)return;vw();VW.dataset.id='';const [,,,,the]=SET(TAB);
+ const att=TAB=='hair'?'מצרפים: הפאה שלך (⬇ הפאה שלי) ואת הבובה (⬇ הבובה ב-8 זוויות), ומדביקים':'מצרפים: רק את הבובה (⬇ הבובה ב-8 זוויות), ומדביקים';
+ VW.innerHTML=`<div class="mk"><div class="mkh"><h3 id="sty204vt">${pr.no?pr.no+'. ':''}${es(pr.n)}</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
+  <p class="sytip">${att} – בשיחה חדשה ב-GPT. את מה שחזר 📤 מעלים כאן.</p><div class="syrd" tabindex="0" aria-label="הפרומפט של ${es(the)}">${es(prompt2(TAB,pr))}</div>
+  <span class="mkb"><button type="button" class="mkp" data-syp2="${es(k)}">📋 להעתיק</button><button type="button" data-syup2="${es(k)}"${busy()?' disabled':''}>📤 להעלות</button></span></div>`;
+ if(!VW.open)VW.showModal();VW.scrollTop=0}
+function view(id){const x=LIST.find(y=>y.id==id);if(!x)return;vw();
  VW.dataset.id=id;VW.innerHTML=`<div class="mk"><div class="mkh"><h3 id="sty204vt">${es(x.n)}</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
   <div class="sy8v"><img alt="${es(x.n)} ב-8 זוויות" src=""><span class="syld">רגע…</span></div>
   ${x.set=='tie'?'<p class="sytip">בצבע לדוגמה. על כיסוי היא בצבע של הכיסוי.</p>':''}
@@ -137,6 +151,8 @@ function view(id){const x=LIST.find(y=>y.id==id);if(!x)return;if(!VW){VW=documen
 function vclick(e){if(e.target===VW)return VW.close();const b=e.target.closest('button');if(!b)return;const d=b.dataset;
  if(b.classList.contains('mkx'))return VW.close();
  if(d.sywear){VW.close();return wear(d.sywear)}
+ if(d.syp2){const pr=preOf(TAB,d.syp2);if(pr)copy(b,prompt2(TAB,pr));return}
+ if(d.syup2){const pr=preOf(TAB,d.syup2);VW.close();if(pr)pick(TAB,'',pr);return}
  if(d.syre){VW.close();return pick(TAB,d.syre)}
  if(d.syren){const i=VW.querySelector('.syren');return rename(d.syren,i&&i.value).then(()=>{const h=VW.querySelector('h3');if(h&&i)h.textContent=i.value.trim()})}
  if(d.sydel){if(typeof sure=='function'&&!sure(b,'בטוח? לחצי שוב'))return;VW.close();return del(d.sydel)}}
@@ -144,7 +160,7 @@ function vclick(e){if(e.target===VW)return VW.close();const b=e.target.closest('
 // ---------- copy, save pictures ----------
 async function copy(b,text){let ok=false;try{await navigator.clipboard.writeText(text);ok=true}catch(_){}
  if(!ok){const t=b.closest('li,.sy1')&&b.closest('li,.sy1').querySelector('textarea');try{if(t){const d=t.closest('details');if(d)d.open=true;t.focus();t.select();ok=document.execCommand('copy')}}catch(_){}}
- if(!ok){try{const t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');t.style.cssText='position:fixed;opacity:0';(DL||document.body).appendChild(t);t.select();ok=document.execCommand('copy');t.remove()}catch(_){}}
+ if(!ok){try{const t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');t.style.cssText='position:fixed;opacity:0';(VW&&VW.open?VW:(DL||document.body)).appendChild(t);t.select();ok=document.execCommand('copy');t.remove()}catch(_){}}
  const o=b.textContent;b.textContent=ok?'✓ הועתק – עכשיו ל-GPT':'לא הצלחתי, להעתיק מ"לראות את הפרומפט"';setTimeout(()=>{if(b.isConnected)b.textContent=o},2600)}
 async function dl(what){try{const u=what=='wig'?'a8/wig_ref.jpg':'a8/sheet.jpg';const bl=await (await fetch(u+V)).blob();await R().saveFile(what=='wig'?'my-wig.jpg':'avatar-8-angles.jpg',bl)}catch(e){ERR('dl',e);toast_('לא הצלחתי לשמור')}}
 
@@ -197,6 +213,7 @@ function click(e){if(e.target===DL)return DL.close();const b=e.target.closest('b
  if(d.syback){const k=d.syback;return hide(k,false).then(ok=>{if(ok){if(!hiddenList(TAB).length)SHOWH=false;paint();toast_('✓ חזר לרשימה')}})}
  if(d.syhid!=null){SHOWH=!SHOWH;paint();return}
  if(d.syview)return view(d.syview);
+ if(d.syread)return readP(d.syread);
  if(d.syrot!=null){if(still()){const c=b.closest('.syc'),v=c&&c.querySelector('[data-syview]');if(v)view(v.dataset.syview);return}if(!b._t||e.pointerType!='mouse')turn(b,false);return}
  if(d.syadd!=null){ADD=!ADD;paint();if(ADD){const a=DL.querySelector('#syaddp');if(a){a.scrollIntoView({block:'start',behavior:'smooth'});const i=a.querySelector('.syname');if(i)setTimeout(()=>i.focus({preventScroll:true}),350)}}return}
  if(d.sydl)return dl(d.sydl);
