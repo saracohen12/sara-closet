@@ -109,17 +109,30 @@ const NK=[81,88,94,82,64,87,83,77];   // the neck row of each view on f1-8: wher
 // below the head: a pixel that only got darker or lighter but kept the doll's own colour is a shadow on her dress, not the scarf
 // (Sara's first tie, 26/10: a beige rim along the tail in the back views)
 function shade(bs,ds,k){const sb=bs[k]+bs[k+1]+bs[k+2]+1,sd=ds[k]+ds[k+1]+ds[k+2]+1;let c=0;for(let z=0;z<3;z++)c+=Math.abs(ds[k+z]/sd-bs[k+z]/sb);return c<.045}
-function maskWhole(b,d,v,fab){const bs=gauss(b,3,1.2),ds=gauss(d,3,1.2),diff=new Float32Array(N),dbg=new Float32Array(N),bgr=new Float32Array(H*3),col=[];
+// v213 (Sara 26/10 15:36, her first hairstyle "לא נגזרה טוב"): GPT's backdrop has light/dark blue patches (kept as pieces above the head),
+// and GPT's body sits a few px off the doll (thin beige strips along the arm and back in the side views). Now:
+// · a light blue pixel is backdrop (not for tiex – her own scarf may be blue) · a piece must touch the doll's head, not just be high up
+// · below the neck a pixel counts only if it differs from every doll pixel around it (5 px) – a moved body edge is not hair · small holes are filled
+function maskWhole(b,d,v,fab,keepBlue){const bs=gauss(b,3,1.2),ds=gauss(d,3,1.2),diff=new Float32Array(N),dbg=new Float32Array(N),bgr=new Float32Array(H*3),bgb=new Float32Array(H*3),col=[];
  for(let c=0;c<10;c++)col.push(c);for(let c=W-10;c<W;c++)col.push(c);
- for(let r=0;r<H;r++)for(let z=0;z<3;z++){const vs=col.map(c=>d[(r*W+c)*3+z]).sort((x,y)=>x-y);bgr[r*3+z]=(vs[9]+vs[10])/2}
- const nk=NK[v]+4,low=Math.floor(H*.8);let m=new Uint8Array(N);
+ for(let r=0;r<H;r++)for(let z=0;z<3;z++){const vs=col.map(c=>d[(r*W+c)*3+z]).sort((x,y)=>x-y);bgr[r*3+z]=(vs[9]+vs[10])/2;const vb=col.map(c=>b[(r*W+c)*3+z]).sort((x,y)=>x-y);bgb[r*3+z]=(vb[9]+vb[10])/2}
+ const nk=NK[v]+4,low=Math.floor(H*.8),RN=5;let m=new Uint8Array(N);
+ const blue=k=>{const R=d[k],G=d[k+1],B=d[k+2];return B-R>28&&B>=G-6&&R*.299+G*.587+B*.114>105};
+ const far=(r,c,k)=>{for(let y=Math.max(0,r-RN);y<=Math.min(H-1,r+RN);y++)for(let x=Math.max(0,c-RN);x<=Math.min(W-1,c+RN);x++){const j=(y*W+x)*3;let s=0;for(let z=0;z<3;z++){const a=ds[k+z]-bs[j+z];s+=a*a}if(s<1600)return false}return true};
  for(let r=0;r<low;r++)for(let c=0;c<W;c++){const i=r*W+c,k=i*3;let s=0,t=0;for(let z=0;z<3;z++){const a=ds[k+z]-bs[k+z],e=d[k+z]-bgr[r*3+z];s+=a*a;t+=e*e}
-  diff[i]=Math.sqrt(s);dbg[i]=Math.sqrt(t);m[i]=dbg[i]>22&&(r<nk||diff[i]>40&&!shade(bs,ds,k))?1:0}
+  diff[i]=Math.sqrt(s);dbg[i]=Math.sqrt(t);if(!keepBlue&&blue(k))continue;
+  m[i]=dbg[i]>22&&(r<nk||diff[i]>40&&!shade(bs,ds,k)&&far(r,c,k))?1:0}
  for(let r=0;r<H;r++)for(let c=0;c<8;c++){m[r*W+c]=0;m[r*W+W-1-c]=0}   // the sheet's white divider lines
  m=erode(dilate(m,2),2);m=dilate(erode(m,1),1);
- const [L,n]=label(m),keep=new Uint8Array(n+1);for(let i=0;i<nk*W;i++)if(L[i])keep[L[i]]=1;   // only what touches the head
+ {const o=dilate(erode(m,2),2);for(let i=(nk+10)*W;i<N;i++)m[i]=o[i]}   // lower down, a strip under 5 px wide is the edge of GPT's body, not hair
+ // the doll's own head (and a margin): a piece is kept only if it touches it
+ let hz=new Uint8Array(N);for(let r=0;r<nk;r++)for(let c=8;c<W-8;c++){const i=r*W+c,k=i*3;let t=0;for(let z=0;z<3;z++){const e=b[k+z]-bgb[r*3+z];t+=e*e}if(t>22*22)hz[i]=1}
+ hz=dilate(erode(hz,1),9);
+ const [L,n]=label(m),keep=new Uint8Array(n+1);for(let i=0;i<nk*W;i++)if(L[i]&&hz[i])keep[L[i]]=1;
  for(let i=0;i<N;i++)m[i]=keep[L[i]]?1:0;
- {const f=fillHoles(m);for(let i=0;i<nk*W;i++)m[i]=f[i]}   // holes only in the head: below it a hole between hair strands is her dress
+ {const f=fillHoles(m);for(let i=0;i<nk*W;i++)m[i]=f[i];   // holes in the head
+  const h=new Uint8Array(N);for(let i=nk*W;i<N;i++)h[i]=f[i]&&!m[i]?1:0;const [HL,hn]=label(h),sz=new Int32Array(hn+1);for(let i=0;i<N;i++)if(HL[i])sz[HL[i]]++;
+  for(let i=0;i<N;i++)if(HL[i]&&sz[HL[i]]<450)m[i]=1}   // below it a closed hole is a missed bit of hair (at the nape the doll is dark too); a gap between strands is open
  // the neck: below the doll's head line GPT's neck fades into the doll's own neck (unless hair covers it), so no line shows where they meet
  const A=Float32Array.from(m);for(let r=nk-3;r<nk;r++)for(let c=0;c<W;c++){const i=r*W+c;if(A[i]&&diff[i]<40)A[i]*=(nk-r)/4}
  m.A=gauss(A,1,.8);
@@ -147,10 +160,10 @@ const tick=()=>new Promise(r=>setTimeout(r,0));
 async function run(src,kind,onStep){const img=await toImg(src);const S=sheetData(img);if(!S)throw Object.assign(new Error('shape'),{code:'shape',w:img.naturalWidth,h:img.naturalHeight});
  const o=MODE[kind]||{},views=[],shifts=[],fab=[],lum=[];
  for(let v=0;v<8;v++){onStep&&onStep(v);await tick();const b=await base(v);const s=shift(S,v,b,o.mode=='head'||o.mode=='whole');shifts.push(s);const d=panel(S,v,s[0],s[1]);
-  if(o.mode=='whole'){const [m,f,l]=maskWhole(b,d,v,o.fab);views.push(turn(layerA(d,m.A),v));if(f){fab.push(turn(layer(d,f),v));lum.push(...l)}}
+  if(o.mode=='whole'){const [m,f,l]=maskWhole(b,d,v,o.fab,kind=='tiex');views.push(turn(layerA(d,m.A),v));if(f){fab.push(turn(layer(d,f),v));lum.push(...l)}}
   else if(o.mode=='face')views.push(turn(layerA(d,maskFace(b,d,v)),v));
   else views.push(turn(layer(d,mask(b,d,o)),v))}
  lum.sort((x,y)=>x-y);
  return {views,shifts,px:views.map(c=>c.px),fab:fab.length?fab:null,lum:lum.length?Math.round(lum[lum.length>>1]):0}}
-window.cut8={run,MODE,W,H,CV:2};   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
+window.cut8={run,MODE,W,H,CV:2,CVW:3};   // CVW: hairstyles and ties cut before v213 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
 })();

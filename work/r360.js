@@ -72,7 +72,8 @@ const styKey=s=>s&&STYSET[s.set]&&s.id?'y'+STYSET[s.set]+String(s.id).replace(/[
 const whole=h=>h=='w'||WHK.has(h)||(/^y[ht]/.test(h||'')&&!!STY[h]);   // the whole head (face too) is a layer: draw it on the head-less doll
 const BEIGE=[222,200,184];   // the doll's own cover
 const GREY=[150,150,154];    // v204 (Sara 11:46 "תשים לי איזה כיסוי יפה שבצבע אפור ניטרלי"): the basic cover is her default tie in a neutral grey
-function styles(list){Object.keys(STY).forEach(k=>{const z='z'+k.slice(1);for(let v=1;v<=8;v++){delete DYN[k+v];delete IMG[k+v];delete DYN[z+v];delete IMG[z+v]}delete STY[k];delete STH[k];for(const c in STH)if(c.startsWith(k+'|'))delete STH[c];try{for(const c in CARD)if(c.startsWith(k+'|'))delete CARD[c];for(const c in FRM)if(c.startsWith(k+'|'))delete FRM[c]}catch(_){}});
+function styles(list){try{for(const c in FRM)if(c[0]=='#')delete FRM[c];for(const c in CARD)if(c.includes('|face|'))delete CARD[c]}catch(_){}   // v213: the avatar tiles' frames and the makeup faces use her default tie / hairstyle
+ Object.keys(STY).forEach(k=>{const z='z'+k.slice(1);for(let v=1;v<=8;v++){delete DYN[k+v];delete IMG[k+v];delete DYN[z+v];delete IMG[z+v]}delete STY[k];delete STH[k];for(const c in STH)if(c.startsWith(k+'|'))delete STH[c];try{for(const c in CARD)if(c.startsWith(k+'|'))delete CARD[c];for(const c in FRM)if(c.startsWith(k+'|'))delete FRM[c]}catch(_){}});
  (list||[]).forEach(s=>{const k=styKey(s);if(!k||!Array.isArray(s.L)||s.L.length!=8)return;STY[k]={set:s.set,n:s.n||'',lum:+s.lum||128,id:s.id,t:s.t||0};
   s.L.forEach((a,v)=>{if(a)DYN[k+(v+1)]='/_blob/'+a});if(Array.isArray(s.M))s.M.forEach((a,v)=>{if(a)DYN['z'+k.slice(1)+(v+1)]='/_blob/'+a})});
  if(/^y/.test(ST.head||'')&&!STY[ST.head])ST.head=ST.tf&&(ST.tf=='c'||KEYOF[ST.tf])?ST.tf:'c';if(ST.mk&&!STY[ST.mk])ST.mk='';
@@ -131,6 +132,35 @@ function styCard(k,o){o=o||{};const st=k?STY[k]:null;if(k&&!st)return Promise.re
   for(let i=0;i<vs.length;i++){const c=document.createElement('canvas');if(!await paint(c,vs[i],s))return '';const x0=face&&vs[i]==1?sx-14:sx;
    g.drawImage(c,x0,sy,sw,sh,(i%cols)*tw,Math.floor(i/cols)*th,tw,th)}
   return CARD[ck]=out.toDataURL('image/jpeg',.86)})().catch(()=>'').finally(()=>CARDQ.delete(ck));CARDQ.set(ck,p);return p}
+
+// v213 (Sara 15:44 "אני רוצה לראות רק את הפנים שלי ... בתקריב יותר גדול", 15:45 "שתי פרצופים, פרצוף שלי עם כיסוי, ופרצוף שלי עם פאה"): one face, close up, with a makeup (k) or without (k '').
+// h 'c' = her cover (her default tie, grey); h 'h' = her wig: the hairstyle she wears in the studio, else her first one, else her first wig.
+// A tie / hairstyle / wig is a GPT drawing of the whole head: its face sits a little elsewhere (moved, turned, smaller), so the makeup layer alone would double her eyes and mouth.
+// So the doll's own face with the makeup is laid on that head's face (fitFace finds where), inside a soft oval from the brows to the chin.
+const hairHead=()=>/^yh/.test(ST.head||'')&&STY[ST.head]?ST.head:styList('hair')[0]||'w';
+const FC=[176,66,22,25],FIT=window.FIT213={};
+function lumOf(c){const d=c.getContext('2d',{willReadFrequently:true}).getImageData(0,0,c.width,c.height).data,L=new Float32Array(c.width*c.height);for(let i=0;i<L.length;i++)L[i]=.299*d[i*4]+.587*d[i*4+1]+.114*d[i*4+2];return L}
+function fitFace(D,A,W,H){const cx=176,cy=62,P=[];   // the doll's eyes, nose and mouth (D) against the head (A) → [dx,dy,scale,turn°,score]
+ for(let y=cy-24;y<=cy+24;y++)for(let x=cx-19;x<=cx+19;x++){const u=(x-cx)/19,v=(y-cy)/24;if(u*u+v*v<=1)P.push(x-cx,y-cy,D[y*W+x])}
+ const n=P.length/3,V=new Float32Array(n);let m=0;for(let i=2;i<P.length;i+=3)m+=P[i];m/=n;let sd=0;for(let i=2;i<P.length;i+=3){P[i]-=m;sd+=P[i]*P[i]}sd=Math.sqrt(sd)||1;
+ const score=(dx,dy,s,t)=>{const c=Math.cos(t*Math.PI/180)*s,si=Math.sin(t*Math.PI/180)*s;let sa=0,sb=0,sab=0;
+  for(let i=0,j=0;i<P.length;i+=3,j++){const x=Math.round(cx+dx+c*P[i]-si*P[i+1]),y=Math.round(cy+dy+si*P[i]+c*P[i+1]);const a=x<0||y<0||x>=W||y>=H?0:A[y*W+x];V[j]=a;sa+=a}
+  const ma=sa/n;for(let j=0;j<n;j++){const a=V[j]-ma;sab+=a*P[j*3+2];sb+=a*a}return sab/(sd*(Math.sqrt(sb)||1))};
+ let best=[0,0,1,0],bs=score(0,0,1,0);
+ for(let s=.9;s<=1.101;s+=.025)for(let t=-6;t<=6;t+=2)for(let dy=-10;dy<=10;dy+=2)for(let dx=-10;dx<=10;dx+=2){const r=score(dx,dy,s,t);if(r>bs){bs=r;best=[dx,dy,s,t]}}
+ const [bx,by,bS,bT]=best;
+ for(let s=bS-.02;s<=bS+.021;s+=.01)for(let t=bT-1.5;t<=bT+1.51;t+=.5)for(let dy=by-2;dy<=by+2;dy++)for(let dx=bx-2;dx<=bx+2;dx++){const r=score(dx,dy,s,t);if(r>bs){bs=r;best=[dx,dy,s,t]}}
+ return [...best,bs]}
+function styFace(k,h,o){o=o||{};if(k&&!STY[k])return Promise.resolve('');const hk=h=='h'?hairHead():defTie()||'c';
+ const ck=[k||'base:mk','face',h,hk,o.big?'big':''].join('|');if(CARD[ck])return Promise.resolve(CARD[ck]);if(CARDQ.has(ck))return CARDQ.get(ck);
+ const p=(async()=>{const cv=()=>document.createElement('canvas'),A=cv();if(!await paint(A,0,Object.assign(clone(DEF),{on:{},bg:'',head:hk,mk:'',tc:null})))return '';let c=A;
+  if(k){const D=cv(),F=cv(),doll=Object.assign(clone(DEF),{on:{},bg:'',head:'c',rawc:1,mk:'',tc:null});if(!await paint(D,0,doll)||!await paint(F,0,Object.assign({},doll,{mk:k})))return '';
+   const W=A.width,H=A.height,fk=hk+'|'+(DYN[hk+'1']||'');const f=FIT[fk]||(FIT[fk]=fitFace(lumOf(D),lumOf(A),W,H));
+   const m=cv();m.width=W;m.height=H;const mg=m.getContext('2d');mg.drawImage(F,0,0);mg.globalCompositeOperation='destination-in';
+   mg.save();mg.translate(FC[0],FC[1]);mg.scale(FC[2],FC[3]);const gr=mg.createRadialGradient(0,0,0,0,0,1);gr.addColorStop(0,'#000');gr.addColorStop(.62,'#000');gr.addColorStop(1,'rgba(0,0,0,0)');mg.fillStyle=gr;mg.fillRect(-1,-1,2,2);mg.restore();
+   c=cv();c.width=W;c.height=H;const g=c.getContext('2d');g.drawImage(A,0,0);const [dx,dy,sc,t]=f;g.save();g.translate(176+dx,62+dy);g.rotate(t*Math.PI/180);g.scale(sc,sc);g.translate(-176,-62);g.drawImage(m,0,0);g.restore();}
+  const [sx,sy,sw,sh]=[130,8,96,112],z=o.big?5:3,out=cv();out.width=sw*z;out.height=sh*z;const g=out.getContext('2d');g.imageSmoothingQuality='high';
+  g.drawImage(c,sx,sy,sw,sh,0,0,out.width,out.height);return CARD[ck]=out.toDataURL('image/jpeg',.9)})().catch(e=>{(window.ERRS=window.ERRS||[]).push('styFace '+(e&&e.message||e));return ''}).finally(()=>CARDQ.delete(ck));CARDQ.set(ck,p);return p}
 
 // v204 (Sara 11:46 "אני אגע בתמונה ואז הבובה תסתובב"): the 8 angles one by one, head to waist, for a library card that turns
 const FRM={},FRQ=new Map();
@@ -691,7 +721,7 @@ try{if(typeof albumHTML=='function'){const _al=albumHTML;albumHTML=async functio
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-pin185],[data-pin185g]');if(!b)return;e.preventDefault();e.stopPropagation();
  if(b.dataset.pin185!=null)TODAY.pinLook('m:'+b.dataset.pin185);else{let L=null;try{L=GEN[+b.dataset.pin185g]}catch(_){}if(L)TODAY.pinIds(Object.values(L),'הלוק')}},true);
 
-window.R360={open,close,make,prompts,openWith,styCard,styFrames,headFrames,Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
+window.R360={open,close,make,prompts,openWith,styCard,styFace,styFrames,headFrames,Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
  ready:()=>Object.keys(READY).filter(id=>D[id]),isReady,kind:kindOf,sync:resync,dyn:id=>!!(READY[id]&&READY[id].dyn),names:NAMES,show:v=>{if(big){big.stop();big.show(v)}},
  still:async(id,v)=>{if(!READY[id])return null;const s=stateFrom([id],{head:ST.head=='w'?'w':'c',cam:ST.cam,bg:''});
   if((await Promise.all(layersFor(v||0,s).map(l=>im(l.s)))).some(m=>!m))return null;   // a layer that did not load would show the bare doll

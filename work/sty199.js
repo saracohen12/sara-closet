@@ -25,7 +25,7 @@ const R=()=>window.R360;
 function push(){try{R()&&R().styles(LIST.filter(x=>!gone(x)))}catch(e){ERR('reg',e)}}
 (async()=>{try{const db=await window.claude?.use?.('db');if(!db)return;DB=db;
  db.collection('styles').onSnapshot(sn=>{const L=[];sn.docs.forEach(d=>{const v=d.data();if(v&&v.set&&Array.isArray(v.L))L.push(Object.assign({},v,{id:d.id}))});
-  L.sort((a,b)=>(a.t||0)-(b.t||0));LIST=L;push();paint()},e=>ERR('snap',e))}catch(e){ERR('db',e)}})();
+  L.sort((a,b)=>(a.t||0)-(b.t||0));LIST=L;push();paint();setTimeout(recut,2500)},e=>ERR('snap',e))}catch(e){ERR('db',e)}})();
 const mine=set=>LIST.filter(x=>x.set==set);
 const seen=set=>mine(set).filter(x=>!gone(x));
 (async()=>{try{const db=await window.claude?.use?.('db');if(!db)return;db.collection('stylehide').onSnapshot(sn=>{const d=sn.docs.find(y=>y.id=='all'),v=d&&d.data();
@@ -67,11 +67,15 @@ function fill(){if(!DL)return;DL.querySelectorAll('textarea[data-syp]').forEach(
 function status(){if(!PROC)return '';if(PROC.err)return `<p class="syst no" role="alert">✗ ${es(PROC.err)}</p>`;
  return `<p class="syst" aria-live="polite">✂ ${PROC.n0?es(PROC.n0)+': ':''}${PROC.v<9?`גוזרת ומתאימה לבובה… זווית ${PROC.v} מתוך 8`:'שומרת…'}${PROC.n>1?` · תמונה ${PROC.i} מתוך ${PROC.n}`:''}</p>`}
 const busy=()=>!!(PROC&&!PROC.err);
+// v213 (Sara 15:44–15:45): makeup = two faces of hers, close up – with a cover and with her wig (a hairstyle of hers)
+const faces=k=>[['c','עם כיסוי'],['h','עם פאה']].map(([h,t])=>`<span class="syfc"><img alt="${t}" data-syface="${es(k)}" data-h="${h}" src=""><small>${t}</small></span>`).join('');
 function card(set,pr,x){const k=pr?pr.k:x.id,b=busy()&&PROC.k==k,title=x?x.n:pr.n;   // her own name once she renamed it
  // v204 (Sara 11:46 "אני אגע בתמונה ואז הבובה תסתובב ... אני צריכה לפחות את זה פי 3 בגודל"): one big picture that turns – touch it (or the mouse over it); ⋯ = all 8, name, replace
  const pic=x&&set!='mk'?`<span class="sycim tall"><button type="button" class="syrot" data-syrot aria-label="לסובב את הבובה: ${es(title)}"><img alt="" data-syf="${es(key(x))}" src=""></button><span class="sy8" aria-hidden="true">🔄 נגיעה מסובבת</span><button type="button" class="symore" data-syview="${es(x.id)}" aria-label="8 הזוויות, שם, החלפה: ${es(title)}">⋯</button></span>`
+  :x&&set=='mk'?`<button type="button" class="sycim fc2" data-syview="${es(x.id)}" aria-label="לראות גדול: ${es(title)}">${faces(key(x))}<span class="sy8">🔍 להגדיל</span></button>`
   :x?`<button type="button" class="sycim" data-syview="${es(x.id)}" aria-label="לראות ב-8 זוויות: ${es(title)}"><img alt="" data-syc="${es(key(x))}" src=""><span class="sy8">👀 8 זוויות</span></button>`
   :set=='mk'&&pr&&MKG[pr.c]?`<span class="sycim cell"><img alt="" data-sycell="${es(pr.k)}" src=""></span>`
+  :set=='mk'?`<span class="sycim fc2 none">${faces('')}<i>עוד אין תמונה</i></span>`
   :`<span class="sycim none${set!='mk'?' tall':''}"><img alt="" data-sycb="${set}" src=""><i>עוד אין תמונה</i></span>`;
  const btn=b?'<span class="sycw">✂ גוזרת…</span>':x?`<button type="button" class="mkp" data-sywear="${es(x.id)}">👗 ללבוש</button>`
   :`<button type="button" data-syp2="${es(pr.k)}">📋 פרומפט</button><button type="button" class="mkp" data-syup2="${es(pr.k)}"${busy()?' disabled':''}>📤 להעלות</button>`;
@@ -103,7 +107,7 @@ function stopRot(b,F){if(b&&b._t){clearInterval(b._t);b._t=null;const i=b.queryS
 function turn(b,loop){const img=b&&b.querySelector('img[data-syf]');if(!img)return;const k=img.dataset.syf,x=LIST.find(y=>key(y)==k);if(!x||!R().styFrames)return;
  R().styFrames(k,{rgb:x.set=='tie'?LIBC:null}).then(F=>{if(F.length<8)return;if(b._t)clearInterval(b._t);b._F=F;let i=0,n=0;
   b._t=setInterval(()=>{if(!img.isConnected){clearInterval(b._t);b._t=null;return}i=(i+1)%8;n++;img.src=F[i];if(!loop&&n>=8)stopRot(b,F)},loop?190:150)})}
-function grid(set,list){return `<div class="syg2">${list.join('')}</div>`}
+function grid(set,list){return `<div class="syg2${set=='mk'?' mk2':''}">${list.join('')}</div>`}
 function body(set){const ex=extras(set).map(x=>card(set,null,x));
  // v207: her hairstyles in her 3 groups
  const p0=P();if(set=='hair'&&p0&&p0.HAIRG){const G=p0.HAIRG,sh=shown(set);
@@ -119,12 +123,13 @@ function paint(){if(!DL)return;const set=TAB,y=DL.scrollTop,tt=DL.querySelector(
  DL.innerHTML=`<div class="mk sy"><div class="mkh"><h3 id="sty199t">🎨 תסרוקות, קשירות ואיפור</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
   <div class="syt" role="tablist" aria-label="סוג">${SETS.map(([k,i,n])=>`<button type="button" role="tab" data-sytab="${k}" aria-selected="${k==set}">${i} ${n}${seen(k).length?` <small>${seen(k).length}</small>`:''}</button>`).join('')}</div>
   ${status()}${how(set)}${body(set)}${ADD?addPanel(set):''}</div>`;
- if(tt)DL.appendChild(tt);DL.scrollTop=y;pics(DL)}
+ DL.classList.toggle('w213',set=='mk');if(tt)DL.appendChild(tt);DL.scrollTop=y;pics(DL)}
 function pics(root){const r=R();if(!r||!r.styCard)return;
  root.querySelectorAll('img[data-syc]').forEach(i=>{const k=i.dataset.syc;if(!k)return;const x=LIST.find(y=>key(y)==k);r.styCard(k,{rgb:x&&x.set=='tie'?LIBC:null}).then(u=>{if(u)i.src=u})});
  root.querySelectorAll('img[data-sycb]').forEach(i=>r.styCard('',{set:i.dataset.sycb,one:i.dataset.sycb!='mk'}).then(u=>{if(u)i.src=u}));
  root.querySelectorAll('img[data-syf]').forEach(i=>{const k=i.dataset.syf;if(!k||!r.styFrames)return;const x=LIST.find(y=>key(y)==k);r.styFrames(k,{rgb:x&&x.set=='tie'?LIBC:null}).then(F=>{if(F[0])i.src=F[0]})});
- root.querySelectorAll('img[data-sycell]').forEach(i=>cell(i.dataset.sycell).then(u=>{if(u)i.src=u}))}
+ root.querySelectorAll('img[data-sycell]').forEach(i=>cell(i.dataset.sycell).then(u=>{if(u)i.src=u}));
+ root.querySelectorAll('img[data-syface]').forEach(i=>{if(!r.styFace)return;r.styFace(i.dataset.syface,i.dataset.h,{big:i.dataset.big=='1'}).then(u=>{if(u)i.src=u;else{const f=i.closest('.syfc');if(f)f.hidden=true}})})}
 // one look's square out of the category grid (rows × columns as the step-1 prompt asks), a little inside so the lines and numbers stay out
 const GIMG={},CELL={};
 function cell(k){if(CELL[k])return Promise.resolve(CELL[k]);const pr=preOf('mk',k),p=P();if(!pr||!p||!MKG[pr.c])return Promise.resolve('');const src=MKG[pr.c];
@@ -136,7 +141,7 @@ function cell(k){if(CELL[k])return Promise.resolve(CELL[k]);const pr=preOf('mk',
 function vw(){if(!VW){VW=document.createElement('dialog');VW.id='sty204v';VW.dir='rtl';VW.setAttribute('aria-labelledby','sty204vt');document.body.appendChild(VW);
   VW.addEventListener('cancel',e=>{e.preventDefault();VW.close()});VW.addEventListener('click',vclick)}return VW}
 // v207: the whole prompt of a preset, to read before copying
-function readP(k){const pr=preOf(TAB,k);if(!pr)return;vw();VW.dataset.id='';const [,,,,the]=SET(TAB);
+function readP(k){const pr=preOf(TAB,k);if(!pr)return;vw();VW.dataset.id='';VW.classList.remove('w213');const [,,,,the]=SET(TAB);
  const att=TAB=='hair'?'מצרפים: הפאה שלך (⬇ הפאה שלי) ואת הבובה (⬇ הבובה ב-8 זוויות), ומדביקים':'מצרפים: רק את הבובה (⬇ הבובה ב-8 זוויות), ומדביקים';
  VW.innerHTML=`<div class="mk"><div class="mkh"><h3 id="sty204vt">${pr.no?pr.no+'. ':''}${es(pr.n)}</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
   <p class="sytip">${att} – בשיחה חדשה ב-GPT. את מה שחזר 📤 מעלים כאן.</p><div class="syrd" tabindex="0" aria-label="הפרומפט של ${es(the)}">${es(prompt2(TAB,pr))}</div>
@@ -144,11 +149,11 @@ function readP(k){const pr=preOf(TAB,k);if(!pr)return;vw();VW.dataset.id='';cons
  if(!VW.open)VW.showModal();VW.scrollTop=0}
 function view(id){const x=LIST.find(y=>y.id==id);if(!x)return;vw();
  VW.dataset.id=id;VW.innerHTML=`<div class="mk"><div class="mkh"><h3 id="sty204vt">${es(x.n)}</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
-  <div class="sy8v"><img alt="${es(x.n)} ב-8 זוויות" src=""><span class="syld">רגע…</span></div>
+  ${x.set=='mk'?`<div class="syfv">${faces(key(x)).replace(/data-h=/g,'data-big="1" data-h=')}</div><h4>ב-8 זוויות</h4>`:''}<div class="sy8v"><img alt="${es(x.n)} ב-8 זוויות" src=""><span class="syld">רגע…</span></div>
   ${x.set=='tie'?'<p class="sytip">בצבע לדוגמה. על כיסוי היא בצבע של הכיסוי.</p>':''}
   <span class="mkb"><button type="button" class="mkp" data-sywear="${es(id)}">👗 ללבוש בסטודיו</button><button type="button" data-syre="${es(id)}">🔄 להחליף תמונה</button><button type="button" class="sydel" data-sydel="${es(id)}">🗑 למחוק</button></span>
   <label class="syl syrenl">שם <input class="syren" value="${es(x.n)}" maxlength="40"><button type="button" data-syren="${es(id)}">✓ לשמור</button></label></div>`;
- if(!VW.open)VW.showModal();const img=VW.querySelector('.sy8v img');
+ VW.classList.toggle('w213',x.set=='mk');if(x.set=='mk')pics(VW);if(!VW.open)VW.showModal();VW.scrollTop=0;const img=VW.querySelector('.sy8v img');
  try{R().styCard(key(x),{all:1,rgb:x.set=='tie'?LIBC:null}).then(u=>{if(u&&img.isConnected){img.src=u;const l=VW.querySelector('.syld');if(l)l.remove()}})}catch(e){ERR('view',e)}}
 function vclick(e){if(e.target===VW)return VW.close();const b=e.target.closest('button');if(!b)return;const d=b.dataset;
  if(b.classList.contains('mkx'))return VW.close();
@@ -178,6 +183,18 @@ const ERRT={shape:'התמונה לא בצורה של הגיליון (2 שורו�
  empty:'לא מצאתי שינוי על הבובה. זו התמונה ש-GPT החזיר?',assets:'שמירת תמונות לא זמינה כאן. לפתוח את האתר ב-Chrome ולנסות שוב',db:'השמירה לא זמינה כאן. לפתוח את האתר ב-Chrome',x:'משהו השתבש. לנסות שוב'};
 const blobOf=c=>new Promise(r=>c.toBlob(b=>{if(b&&b.type=='image/webp')return r(b);c.toBlob(r,'image/png')},'image/webp',.92));
 async function put1(a,b){let last;for(const w of [0,1500,4000]){if(w)await new Promise(r=>setTimeout(r,w));try{return await a.upload(b)}catch(e){last=e}}throw last}
+// v213 (Sara 26/10 15:36 "התמונה של השיער לא נגזרה טוב"): the whole-head cutter is better now (cut8.CVW) – a hairstyle or tie cut before
+// is cut again from her own GPT picture, once, quietly in the background; the old pictures stay in the store
+const RC=new Set();let RCB=false;
+async function recut(){if(RCB||!window.cut8||!cut8.CVW||!DB||(PROC&&!PROC.err))return;
+ const x=LIST.find(y=>(y.set=='hair'||y.set=='tie')&&y.src&&!((y.cv||0)>=cut8.CVW)&&!RC.has(y.id));if(!x)return;RC.add(x.id);RCB=true;
+ try{let a=null;try{a=await claude.use('assets')}catch(_){}if(!a)return;
+  const r=await cut8.run('/_blob/'+x.src,KIND[x.set]);if(r.px.filter(p=>p>150).length<5)throw new Error('empty');
+  const L=[];for(let v=0;v<8;v++)L.push((await put1(a,await blobOf(r.views[v]))).id);
+  const doc=Object.assign({},x,{L,cv:cut8.CVW});delete doc.id;
+  if(r.fab){const M=[];for(let v=0;v<8;v++)M.push((await put1(a,await blobOf(r.fab[v]))).id);doc.M=M;doc.lum=r.lum||doc.lum||128}
+  await DB.collection('styles').doc(x.id).set(doc);log('sty_recut',{set:x.set,id:x.id,px:r.px.join(',')})}
+ catch(e){ERR('recut',e)}finally{RCB=false;setTimeout(recut,1500)}}
 async function run(set,fs,re,pre){if(PROC&&!PROC.err){toast_('רגע, עוד גוזרת');return}if(!window.cut8)return;
  let a=null;try{a=await claude.use('assets')}catch(_){}
  if(!a||!DB){PROC={err:ERRT[a?'db':'assets']};paint();return}
@@ -190,7 +207,7 @@ async function run(set,fs,re,pre){if(PROC&&!PROC.err){toast_('רגע, עוד ג�
    let M=null;if(r.fab){M=[];for(let v=0;v<8;v++)M.push((await put1(a,await blobOf(r.fab[v]))).id)}
    const old=re&&LIST.find(x=>x.id==re);
    const n=old?old.n:(base?(fs.length>1?`${base} ${i+1}`:base):`${one} ${mine(set).length+done.length+1}`);
-   const id=old?old.id:'s'+Date.now().toString(36)+i,doc={set,n,t:old?old.t:Date.now(),src,L,cv:cut8.CV||1};if(M){doc.M=M;doc.lum=r.lum||128}const pp=pre?pre.k:old&&old.p;if(pp)doc.p=pp;
+   const id=old?old.id:'s'+Date.now().toString(36)+i,doc={set,n,t:old?old.t:Date.now(),src,L,cv:set!='mk'&&cut8.CVW||cut8.CV||1};if(M){doc.M=M;doc.lum=r.lum||128}const pp=pre?pre.k:old&&old.p;if(pp)doc.p=pp;
    await DB.collection('styles').doc(id).set(doc);
    if(!LIST.some(x=>x.id==id))LIST.push(Object.assign({},doc,{id}));else LIST=LIST.map(x=>x.id==id?Object.assign({},doc,{id}):x);
    push();done.push(id);log('sty_ok',{set,id,ms:Date.now()-t0,px:r.px.join(',')})}

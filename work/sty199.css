@@ -216,3 +216,15 @@ dialog#bg204::backdrop{background:rgba(20,12,8,.5)}
 #cl163 .sty202c .ph{background-position:50% 20%}
 .sty202c .c212h{position:absolute;bottom:5px;inset-inline-start:5px;z-index:1;font-style:normal;font-size:.68rem;line-height:1;padding:4px 7px;border-radius:999px;background:rgba(255,255,255,.92);color:#2a1d17;pointer-events:none}
 .c180on .sty202c .c212h{display:none}
+/* v213 (Sara 15:44–15:45 "תשים לי שתיים בכל שורה ... שתי פרצופים, עם כיסוי ועם פאה"): makeup – a wider window, two cards a row, two big close-up faces in each */
+dialog#sty199.w213,dialog#sty204v.w213{width:min(900px,100vw)}
+#sty199 .syg2.mk2{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#sty199 .sycim.fc2{aspect-ratio:auto;display:grid;grid-template-columns:1fr 1fr;gap:4px;background:none}
+#sty199 .syfc,#sty204v .syfc{position:relative;display:block;aspect-ratio:96/112;border-radius:10px;overflow:hidden;background:#d9e2ee}
+#sty199 .syfc[hidden],#sty204v .syfc[hidden]{display:none}
+#sty199 .sycim.fc2 .syfc img,#sty204v .syfc img{width:100%;height:100%;object-fit:cover;display:block;max-width:none}
+#sty199 .syfc small,#sty204v .syfc small{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:.72rem;line-height:1.2;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.92);color:#2a1d17}
+#sty199 .sycim.fc2 .sy8,#sty199 .sycim.fc2.none i{top:12px;bottom:auto;inset-inline-start:auto;inset-inline-end:8px;z-index:1;pointer-events:none}
+#sty204v .syfv{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px}
+#sty204v .syfv .syfc small{font-size:.85rem}
+@media (max-width:560px){#sty199 .sycim.fc2,#sty204v .syfv{grid-template-columns:1fr}}
