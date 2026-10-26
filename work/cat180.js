@@ -38,7 +38,12 @@ const st=document.createElement('style');st.textContent=`
 #c180p .f208{display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px 0}
 #c180p .g180 .b208{position:absolute;top:6px;inset-inline-start:6px;z-index:1;font-style:normal;font-size:.7rem;font-weight:700;line-height:1;padding:4px 7px;border-radius:999px;background:var(--z-acc,#b4532c);color:#fff}
 #c180p .g180 .t208{position:absolute;inset:auto 0 0 0;padding:16px 6px 5px;font-size:.7rem;line-height:1.25;color:#fff;background:linear-gradient(transparent,rgba(20,12,8,.78));text-align:start;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-#c180p .g180 button.av208 img{object-position:50% 12%;background:#d9e2ee}`;
+#c180p .g180 button.av208 img{object-position:50% 12%;background:#d9e2ee}
+#c180p .s209{padding:10px 16px 0}
+#c180p .s209 input{width:100%;box-sizing:border-box;font:inherit;font-size:16px!important;min-height:44px;padding:0 16px;border-radius:999px!important;border:1px solid var(--z-line,var(--line,#ddd))!important;background:var(--z-solid,#fff)!important;color:var(--z-ink,#2a1d17)!important}
+#c180p .s209 input::placeholder{color:var(--z-muted,#888);opacity:1}
+#c180p .s209 small{display:block;min-height:1.2em;padding:4px 6px 0;font-size:.8rem;color:var(--z-muted,#777)}
+#c180p .e209{margin:0;padding:8px 16px 24px;text-align:center;color:var(--z-muted,#777)}`;
 document.head.appendChild(st);
 
 const cov=()=>(typeof SET=='object'&&SET&&SET.catCover)||{};
@@ -92,28 +97,35 @@ setInterval(addButtons,1000);addButtons();
 function setEdit(on){EDIT=on;addButtons();if(on)(window.toast||(()=>{}))('לוחצים על קטגוריה ובוחרים לה תמונה')}
 
 // the picker
-let P=null,SID='',F208=false;
+let P=null,SID='',F208=false,Q209='';const QS={};
+// v209 (Sara 14:19 "תן לי אפשרות לעשות חיפוש ... מתוך כל התמונות של השמלות ... איזה שמלה אני רוצה"): search + the avatar filter together
+const nq=v=>typeof normQ=='function'?normQ(v):(v||'').toLowerCase();
+function flt(){if(!P)return;const w=nq(Q209.trim()).split(/\s+/).filter(Boolean);let n=0;
+ P.querySelectorAll('.g180 [data-id]').forEach(b=>{const ok=!(F208&&!b.classList.contains('av208'))&&w.every(x=>(QS[b.dataset.id]||'').includes(x));b.hidden=!ok;if(ok)n++});
+ const c=P.querySelector('.s209 small');if(c)c.textContent=w.length?(n?`נמצאו ${n}`:''):'';const e=P.querySelector('.e209');if(e)e.hidden=!!n}
 function modeHTML(){const id=cov()[SID]||'';if(!id||!ready(id))return '';const pic=((SET&&SET.catPic)||{})[SID]=='p';
  return `<div class="m208" role="group" aria-label="מה רואים בקטגוריה"><b>"${esc((D[id]&&(D[id].short||D[id].full))||'').slice(0,40)}" כבר על האווטאר שלך. מה רואים בקטגוריה?</b>
-  <button type="button" data-m208="av" aria-pressed="${!pic}">🔄 אני לובשת אותו (מסתובב בנגיעה)</button><button type="button" data-m208="p" aria-pressed="${pic}">🖼 התמונה של הבגד</button></div>`}
-function picker(sid){SID=sid;F208=false;const sec=document.getElementById(sid);if(!sec)return;
+  <button type="button" data-m208="av" aria-pressed="${!pic}">🔄 אני לובשת אותו (מסתובב)</button><button type="button" data-m208="p" aria-pressed="${pic}">🖼 התמונה של הבגד</button></div>`}
+function picker(sid){SID=sid;F208=false;Q209='';const sec=document.getElementById(sid);if(!sec)return;
  const cards=[...sec.querySelectorAll('.card')].filter(c=>{try{return !(typeof gen161=='function'&&gen161(c.dataset.id))}catch(_){return true}});
  const ids=cards.map(c=>c.dataset.id).filter(id=>D[id]),nav=ids.filter(ready).length;
+ cards.forEach(c=>{const id=c.dataset.id;if(D[id])QS[id]=nq((c.dataset.q||'')+' '+(D[id].short||''))});
  if(!P){P=document.createElement('dialog');P.id='c180p';P.dir='rtl';P.setAttribute('aria-labelledby','c180t');document.body.appendChild(P);
   P.addEventListener('click',e=>{if(e.target===P)return P.close();const t=e.target.closest('button');if(!t)return;
    if(t.classList.contains('x180'))return P.close();
    if(t.dataset.auto!==undefined)return choose(null);
    if(t.dataset.m208)return mode(t.dataset.m208);
-   if(t.dataset.f208!==undefined){F208=t.dataset.f208=='av';P.querySelectorAll('[data-f208]').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.f208=='av')==F208));
-    P.querySelectorAll('.g180 [data-id]').forEach(b=>{b.hidden=F208&&!b.classList.contains('av208')});return}
-   if(t.dataset.id)return choose(t.dataset.id)})}
+   if(t.dataset.f208!==undefined){F208=t.dataset.f208=='av';P.querySelectorAll('[data-f208]').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.f208=='av')==F208));return flt()}
+   if(t.dataset.id)return choose(t.dataset.id)});
+  P.addEventListener('input',e=>{if(e.target.id=='c209q'){Q209=e.target.value;flt()}})}
  const cur=cov()[sid]||'';
  P.innerHTML=`<div class="ph180h"><h3 id="c180t">התמונה של ${esc(nameOf(sid))}<small>לוחצים על הבגד שאת רוצה · ${ids.length} פריטים${nav?` · 🔄 = כבר על האווטאר (${nav})`:''}</small></h3><button type="button" class="x180" aria-label="סגירה">✕</button></div>
   <div class="a180"><button type="button" data-auto aria-pressed="${!cur}">↺ בלי בחירה (אוטומטי)</button></div>
   <div class="m208w">${modeHTML()}</div>
+  <div class="s209"><input id="c209q" type="search" enterkeyhint="search" autocomplete="off" placeholder="🔍 לחפש: שם, צבע, מילה" aria-label="לחפש בגד ב${esc(nameOf(sid))}"><small aria-live="polite"></small></div>
   ${nav?`<div class="f208" role="group" aria-label="סינון"><button type="button" data-f208="all" aria-pressed="true">הכל ${ids.length}</button><button type="button" data-f208="av" aria-pressed="false">🔄 על האווטאר ${nav}</button></div>`:''}
   <div class="g180" role="radiogroup" aria-label="הבגדים">${ids.map(id=>{const nm=(D[id].short||D[id].full||id).slice(0,60),a=ready(id);
-   return `<button type="button" role="radio" data-id="${id}"${a?' class="av208"':''} aria-pressed="${id==cur}" aria-checked="${id==cur}" aria-label="${esc(nm)}${a?' – על האווטאר':''}"><img data-th="${id}" src="${url(id)}" alt="" loading="lazy" onerror="this.outerHTML='<span class=n180>'+this.parentNode.getAttribute('aria-label')+'</span>'">${a?'<i class="b208" aria-hidden="true">🔄 360</i>':''}<span class="t208" aria-hidden="true">${esc(nm)}</span></button>`}).join('')}</div>`;
+   return `<button type="button" role="radio" data-id="${id}"${a?' class="av208"':''} aria-pressed="${id==cur}" aria-checked="${id==cur}" aria-label="${esc(nm)}${a?' – על האווטאר':''}"><img data-th="${id}" src="${url(id)}" alt="" loading="lazy" onerror="this.outerHTML='<span class=n180>'+this.parentNode.getAttribute('aria-label')+'</span>'">${a?'<i class="b208" aria-hidden="true">🔄 360</i>':''}<span class="t208" aria-hidden="true">${esc(nm)}</span></button>`}).join('')}</div><p class="e209" hidden>לא נמצא. נסי מילה אחרת</p>`;
  loadTh(ids);if(!P.open)P.showModal();P.scrollTop=0;
  // the items already on the avatar show HER wearing them
  P.querySelectorAll('.g180 .av208').forEach(b=>{const im=b.querySelector('img');if(im)frame(b.dataset.id,0).then(u=>{if(u&&im.isConnected){im.dataset.th='av:'+b.dataset.id;im.src=u}})});
@@ -121,7 +133,7 @@ function picker(sid){SID=sid;F208=false;const sec=document.getElementById(sid);i
 async function save(){try{if(DB)await saveDoc('settings','main',SET);else localStorage.setItem('hub_settings',JSON.stringify(SET))}catch(_){}}
 async function mode(m){if(typeof SET!='object'||!SET)return;SET.catPic=Object.assign({},SET.catPic||{});if(m=='p')SET.catPic[SID]='p';else delete SET.catPic[SID];
  P.querySelectorAll('[data-m208]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m208==m));await save();paint();
- (window.toast||(()=>{}))(m=='p'?'✓ בקטגוריה: התמונה של הבגד':'✓ בקטגוריה: את לובשת אותו – נגיעה מסובבת');setTimeout(()=>P.open&&P.close(),600)}
+ (window.toast||(()=>{}))(m=='p'?'✓ בקטגוריה: התמונה של הבגד':'✓ בקטגוריה: את לובשת אותו – מסתובב כשהעכבר עליו, ובטלפון בנגיעה');setTimeout(()=>P.open&&P.close(),600)}
 async function choose(id){if(typeof SET!='object'||!SET)return;SET.catCover=Object.assign({},SET.catCover||{});if(id)SET.catCover[SID]=id;else delete SET.catCover[SID];
  if(SET.catPic&&SET.catPic[SID]){SET.catPic=Object.assign({},SET.catPic);delete SET.catPic[SID]}   // a new pick starts on the avatar when it has one
  P.querySelectorAll('[data-id]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.id==id);b.setAttribute('aria-checked',b.dataset.id==id)});P.querySelector('[data-auto]').setAttribute('aria-pressed',!id);
@@ -134,10 +146,20 @@ async function choose(id){if(typeof SET!='object'||!SET)return;SET.catCover=Obje
  const w=P.querySelector('.m208w');if(w)w.innerHTML='';
  (window.toast||(()=>{}))(id?'✓ התמונה נשמרה':'✓ חזר לאוטומטי');setTimeout(()=>P.open&&P.close(),350)}
 
+// v209 (Sara 14:21 "כשהעכבר מגיע לשם, לבד זה יסתובב, וכשהעכבר ילך, זה יפסיק ... תמיד זה יישאר על החזית"):
+// with a mouse the doll keeps turning while the mouse is over it and goes back to the front when it leaves; a click opens the category
+let LASTPT='mouse';window.addEventListener('pointerdown',e=>{LASTPT=e.pointerType||'mouse'},true);
+const setter=a=>{const im=a.querySelector('img'),id=a.dataset.c208;return u=>{if(im){im.dataset.th='av:'+id;im.src=u}else{a.dataset.c180='av:'+id;a.style.backgroundImage=`url('${u}')`}}};
+async function hoverOn(a){if(a._h||EDIT)return;a._h=1;const id=a.dataset.c208;if(a._t){clearInterval(a._t);a._t=null}
+ const F=await Promise.all([0,1,2,3,4,5,6,7].map(v=>frame(id,v)));if(!a._h||a._t||F.some(u=>!u))return;const set=setter(a);let i=0;
+ a._t=setInterval(()=>{i=(i+1)%8;set(F[i])},still2()?450:170)}
+async function hoverOff(a){if(!a._h)return;a._h=0;if(a._t){clearInterval(a._t);a._t=null}a._v=0;const id=a.dataset.c208;if(!id)return;const u=await frame(id,0);if(u&&!a._h)setter(a)(u)}
+document.addEventListener('pointerover',e=>{if(e.pointerType=='touch')return;const a=e.target.closest&&e.target.closest('.c208av');if(a&&a.dataset.c208&&!(e.relatedTarget&&a.contains(e.relatedTarget)))hoverOn(a)});
+document.addEventListener('pointerout',e=>{if(e.pointerType=='touch')return;const a=e.target.closest&&e.target.closest('.c208av');if(a&&!(e.relatedTarget&&a.contains(e.relatedTarget)))hoverOff(a)});
 // v208: on window, so it runs before the closet window's own capture handler (fix163 would close it and jump to the category)
 window.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('.c180e,.h9cat[data-h9cat],#cl163 [data-cl163]');if(!t)return;
  if(t.classList.contains('c180e')){e.preventDefault();e.stopImmediatePropagation();return setEdit(!EDIT)}
- if(!EDIT){const a=e.target.closest('.c208av');if(a&&a.dataset.c208&&e.detail!==0){e.preventDefault();e.stopImmediatePropagation();   // v208: a touch on her avatar turns it; the name opens the category
+ if(!EDIT){const a=e.target.closest('.c208av');if(a&&a.dataset.c208&&e.detail!==0&&(e.pointerType||LASTPT)=='touch'){e.preventDefault();e.stopImmediatePropagation();   // v208: a touch on her avatar turns it; the name opens the category
    const id=a.dataset.c208,im=a.querySelector('img');spin(a,id,u=>{if(im){im.dataset.th='av:'+id;im.src=u}else a.style.backgroundImage=`url('${u}')`})}return}e.preventDefault();e.stopImmediatePropagation();
  picker(t.dataset.h9cat?t.dataset.h9cat.slice(1):t.dataset.cl163)},true);
 window.CAT180={picker,paint};

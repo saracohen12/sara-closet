@@ -46,7 +46,9 @@ const LIBC=[176,124,138];   // the ties in the library: one soft colour for all 
 function presets(set){const p=P();if(!p)return [];
  if(set=='tie')return p.TIES.map(([n,d,he],i)=>({k:'w'+i,no:i+1,n,d,he}));   // v206: her new 20 – new keys, so the ties she already made from the old list stay her own
  if(set=='hair')return (p.HAIRS||[]).map(([n,d,he,sp],i)=>({k:'g'+i,no:i+1,n,d,he,sp}));   // v207: her new 30 for her wig – new keys
- return p.MKC.flatMap(([c,t,L])=>L.map((x,i)=>({k:'m:'+c+':'+i,no:i+1,n:x.split(':')[0].trim(),sub:x.split(':').slice(1).join(':').trim(),c})))}
+ // v209 (Sara 14:17 "כמעט אין הבדלים באיפור של היום יום / הנה פרומטים מדוייקים ומתוקנים"): her 50 – [name, EN, exact prompt, Hebrew short]
+ return p.MKC.flatMap(([c,t,L])=>L.map((x,i)=>Array.isArray(x)?{k:'m:'+c+':'+i,no:i+1,n:x[0],en:x[1],d:`Makeup Style: ${x[1]}. ${x[2]}`,sub:x[3],c}
+  :{k:'m:'+c+':'+i,no:i+1,n:x.split(':')[0].trim(),sub:x.split(':').slice(1).join(':').trim(),c}))}
 const preOf=(set,k)=>presets(set).find(x=>x.k==k);
 function doneOf(set,pr){const L=mine(set);return L.find(x=>x.p==pr.k)||L.find(x=>!x.p&&x.n==pr.n)||null}
 const extras=set=>{const used=new Set(presets(set).map(pr=>(doneOf(set,pr)||{}).id).filter(Boolean));return mine(set).filter(x=>!used.has(x.id)&&!gone(x))};
@@ -60,7 +62,7 @@ function el(){if(DL)return DL;DL=document.createElement('dialog');DL.id='sty199'
  DL.addEventListener('cancel',e=>{e.preventDefault();DL.close()});return DL}
 function open(tab){if(tab&&SETS.some(s=>s[0]==tab))TAB=tab;el();ED='';ADD=false;paint();if(!DL.open)DL.showModal();DL.scrollTop=0}
 const prompt=set=>{const p=P();if(!p)return '';const n=NAME[set].trim();return set=='hair'?p.hair(n):set=='tie'?p.tie(n):p.faceW?p.faceW(n,DESC.trim()):p.face(NUM)};   // v205: a new makeup from her words, only the doll
-function prompt2(set,pr){const p=P();if(!p||!pr)return '';return set=='tie'?p.tieW(pr.n,pr.d,pr.he):set=='hair'?p.hairW(pr.n,pr.d,pr.he,pr.sp):p.faceW?p.faceW(pr.n,pr.sub):p.face(pr.no)}   // v205: makeup from the words, only the doll attached
+function prompt2(set,pr){const p=P();if(!p||!pr)return '';return set=='tie'?p.tieW(pr.n,pr.d,pr.he):set=='hair'?p.hairW(pr.n,pr.d,pr.he,pr.sp):p.faceW?p.faceW(pr.n,pr.d||pr.sub):p.face(pr.no)}   // v205: makeup from the words, only the doll attached
 function fill(){if(!DL)return;DL.querySelectorAll('textarea[data-syp]').forEach(t=>t.value=prompt(t.dataset.syp))}
 function status(){if(!PROC)return '';if(PROC.err)return `<p class="syst no" role="alert">✗ ${es(PROC.err)}</p>`;
  return `<p class="syst" aria-live="polite">✂ ${PROC.n0?es(PROC.n0)+': ':''}${PROC.v<9?`גוזרת ומתאימה לבובה… זווית ${PROC.v} מתוך 8`:'שומרת…'}${PROC.n>1?` · תמונה ${PROC.i} מתוך ${PROC.n}`:''}</p>`}
