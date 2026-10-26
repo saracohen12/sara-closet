@@ -491,7 +491,7 @@ function paintRoom(){if(!dlg)return;
  const fx=ids.filter(id=>READY[id]&&READY[id].dyn&&window.acts197).map(id=>`<div class="r3fx"><span>${esc(nm(id).split(' ').slice(0,3).join(' '))}</span>${acts197(id)}</div>`).join('');
  wv.innerHTML=(chips.join('')||'<p class="r3note">עוד לא לבשת כלום. בוחרים למטה מהארון.</p>')+fx;thl(ids);
  dlg.querySelector('.r3cnt').textContent=ids.length?`${ids.length} פריטים`:'';
- const t=dlg.querySelector('.r3tk');t.hidden=!(ST.on.b&&ST.on.s);t.querySelector('input').checked=!!ST.tuck;
+ const t=dlg.querySelector('.r3tk');const sl=x=>Object.keys(ST.on).some(k=>ST.on[k]&&SLOT[k]&&SL(k)==x);t.hidden=!(sl('top')&&sl('bottom'));   // v225 (Sara 19:22 "איפה מכניסים את החולצה"): any top with any skirt, not only the first two itemst.querySelector('input').checked=!!ST.tuck;
  const w=dlg.querySelector('.r3wb');w.hidden=ST.head!='w';w.querySelector('input').checked=!!ST.wb;
  paintSty();
  const bn=bgList().find(b=>b.k==(ST.bg||''));dlg.querySelector('.r3bgn').textContent=bn?bn.n:'';
