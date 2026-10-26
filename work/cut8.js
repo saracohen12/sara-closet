@@ -101,14 +101,53 @@ function layer(d,m){const a=gauss(Float32Array.from(m,x=>x*255),1,.8),c=document
  for(let i=0;i<N;i++){const k=i*3,q=i*4;p[q]=d[k];p[q+1]=d[k+1];p[q+2]=d[k+2];p[q+3]=Math.max(0,Math.min(255,Math.round(a[i])));if(m[i])px++}
  g.putImageData(im,0,0);c.px=px;return c}
 
+// ---------- v199: styles (sty199.js) ----------
+// hair / tie: the WHOLE head, face too – they are drawn on the head-less doll (a8/nh, ch) like her wig, so nothing of the beige cover peeks out.
+// Everything above the neck that is not backdrop, plus what hangs below it (hair on the shoulders and back, a tie's tail) and joins the head.
+// tie also gives the fabric alone (fab): GPT draws it plain medium grey, the studio paints it in the colour she picks (r360 tinted()).
+const NK=[81,88,94,82,64,87,83,77];   // the neck row of each view on f1-8: where the doll's head ends (n vs nh, turned back)
+function maskWhole(b,d,v,fab){const bs=gauss(b,3,1.2),ds=gauss(d,3,1.2),diff=new Float32Array(N),dbg=new Float32Array(N),bgr=new Float32Array(H*3),col=[];
+ for(let c=0;c<10;c++)col.push(c);for(let c=W-10;c<W;c++)col.push(c);
+ for(let r=0;r<H;r++)for(let z=0;z<3;z++){const vs=col.map(c=>d[(r*W+c)*3+z]).sort((x,y)=>x-y);bgr[r*3+z]=(vs[9]+vs[10])/2}
+ const nk=NK[v]+4,low=Math.floor(H*.8);let m=new Uint8Array(N);
+ for(let r=0;r<low;r++)for(let c=0;c<W;c++){const i=r*W+c,k=i*3;let s=0,t=0;for(let z=0;z<3;z++){const a=ds[k+z]-bs[k+z],e=d[k+z]-bgr[r*3+z];s+=a*a;t+=e*e}
+  diff[i]=Math.sqrt(s);dbg[i]=Math.sqrt(t);m[i]=dbg[i]>22&&(r<nk||diff[i]>40)?1:0}
+ for(let r=0;r<H;r++)for(let c=0;c<8;c++){m[r*W+c]=0;m[r*W+W-1-c]=0}   // the sheet's white divider lines
+ m=erode(dilate(m,2),2);m=dilate(erode(m,1),1);
+ const [L,n]=label(m),keep=new Uint8Array(n+1);for(let i=0;i<nk*W;i++)if(L[i])keep[L[i]]=1;   // only what touches the head
+ for(let i=0;i<N;i++)m[i]=keep[L[i]]?1:0;
+ {const f=fillHoles(m);for(let i=0;i<nk*W;i++)m[i]=f[i]}   // holes only in the head: below it a hole between hair strands is her dress
+ // the neck: below the doll's head line GPT's neck fades into the doll's own neck (unless hair covers it), so no line shows where they meet
+ const A=Float32Array.from(m);for(let r=nk-3;r<nk;r++)for(let c=0;c<W;c++){const i=r*W+c;if(A[i]&&diff[i]<40)A[i]*=(nk-r)/4}
+ m.A=gauss(A,1,.8);
+ if(!fab)return [m];
+ // the fabric: changed from the doll and grey (skin, lips and her front hair are not grey)
+ let f=new Uint8Array(N);const lum=[];
+ for(let i=0;i<N;i++){if(!m[i]||diff[i]<=30)continue;const k=i*3,R=d[k],G=d[k+1],B=d[k+2],mx=Math.max(R,G,B),mn=Math.min(R,G,B);if(mx>0&&(mx-mn)/mx<.2){f[i]=1;lum.push(.299*R+.587*G+.114*B)}}
+ f=erode(dilate(f,2),2);for(let i=0;i<N;i++)if(!m[i])f[i]=0;
+ return [m,f,lum]}
+// makeup: inside a loose oval around the face, only where the face changed (lipstick, eyes, blush) – pasted over any head (cover, tie, hairstyle)
+const FACE=[[176,64,25,28],[163,63,25,27],[158,65,21,28],null,null,[205,58,10,18],[197,60,17,28],[181,58,24,28]];   // [cx,cy,rx,ry] on f1-8; views 4-5 show no face
+function maskFace(b,d,v){const A=new Float32Array(N),e=FACE[v];if(!e)return A;const [cx,cy,rx,ry]=e,bs=gauss(b,3,1),ds=gauss(d,3,1);
+ for(let r=Math.max(0,cy-ry);r<=Math.min(H-1,cy+ry);r++)for(let c=Math.max(0,cx-rx);c<=Math.min(W-1,cx+rx);c++){const q=((c-cx)/rx)**2+((r-cy)/ry)**2;if(q>1)continue;
+  const i=r*W+c,k=i*3;let s=0;for(let z=0;z<3;z++){const a=ds[k+z]-bs[k+z];s+=a*a}const a=Math.min(1,Math.max(0,(Math.sqrt(s)-10)/14));A[i]=a*(q>.7?(1-q)/.3:1)}
+ return gauss(A,1,1)}
+function layerA(d,A){const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),im=g.createImageData(W,H),p=im.data;let px=0;
+ for(let i=0;i<N;i++){const k=i*3,q=i*4;p[q]=d[k];p[q+1]=d[k+1];p[q+2]=d[k+2];p[q+3]=Math.round(255*Math.min(1,A[i]));if(A[i]>.3)px++}
+ g.putImageData(im,0,0);c.px=px;return c}
+
 // how each kind of item is cut (KIND keys in r360.js)
 const MODE={cover:{mode:'head'},scarf:{mode:'head'},necklace:{mode:'small',rows:[.1,.55],one:1},earrings:{mode:'small',rows:[.03,.2]},bracelet:{mode:'small',low:1},
- belt:{rows:[.28,.62],nohem:1},shoes:{rows:[.8,1],nohem:1}};
+ belt:{rows:[.28,.62],nohem:1},shoes:{rows:[.8,1],nohem:1},hair:{mode:'whole'},tie:{mode:'whole',fab:1},makeup:{mode:'face'}};
 const tick=()=>new Promise(r=>setTimeout(r,0));
 // src: a File/Blob or a url · kind: KIND key · onStep(i): progress → {views:[canvas×8], shifts, px}
 async function run(src,kind,onStep){const img=await toImg(src);const S=sheetData(img);if(!S)throw Object.assign(new Error('shape'),{code:'shape',w:img.naturalWidth,h:img.naturalHeight});
- const o=MODE[kind]||{},views=[],shifts=[];
- for(let v=0;v<8;v++){onStep&&onStep(v);await tick();const b=await base(v);const s=shift(S,v,b,o.mode=='head');shifts.push(s);const d=panel(S,v,s[0],s[1]);views.push(turn(layer(d,mask(b,d,o)),v))}
- return {views,shifts,px:views.map(c=>c.px)}}
+ const o=MODE[kind]||{},views=[],shifts=[],fab=[],lum=[];
+ for(let v=0;v<8;v++){onStep&&onStep(v);await tick();const b=await base(v);const s=shift(S,v,b,o.mode=='head'||o.mode=='whole');shifts.push(s);const d=panel(S,v,s[0],s[1]);
+  if(o.mode=='whole'){const [m,f,l]=maskWhole(b,d,v,o.fab);views.push(turn(layerA(d,m.A),v));if(f){fab.push(turn(layer(d,f),v));lum.push(...l)}}
+  else if(o.mode=='face')views.push(turn(layerA(d,maskFace(b,d,v)),v));
+  else views.push(turn(layer(d,mask(b,d,o)),v))}
+ lum.sort((x,y)=>x-y);
+ return {views,shifts,px:views.map(c=>c.px),fab:fab.length?fab:null,lum:lum.length?Math.round(lum[lum.length>>1]):0}}
 window.cut8={run,MODE,W,H,CV:2};   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
 })();

@@ -1,0 +1,55 @@
+/* v199: the styles library (sty199.js) and its rows in the studio (r360.js paintSty) */
+dialog#sty199{width:min(560px,100vw);max-width:100vw;max-height:92dvh;margin:auto auto 0;padding:0;border:0;border-radius:24px 24px 0 0;background:var(--z-solid,#fff);color:var(--z-ink,#222);overflow:auto;font-family:var(--z-body)}
+@media (min-width:600px){dialog#sty199{margin:auto;border-radius:24px}}
+dialog#sty199::backdrop{background:rgba(20,12,8,.5)}
+#sty199 .mk{padding:0 16px 22px}
+#sty199 .mkh{position:sticky;top:0;display:flex;align-items:center;gap:10px;padding:14px 0 8px;background:inherit;z-index:2}
+#sty199 h3{flex:1;margin:0;font-size:1.08rem;line-height:1.3;font-family:var(--z-display);font-weight:var(--z-dw)}
+#sty199 h4{margin:14px 0 4px;font-size:.95rem}
+#sty199 .mkx{width:44px;height:44px;border-radius:50%;border:1px solid var(--z-line,#ddd);background:none;color:inherit;font-size:1rem;flex:none;cursor:pointer}
+#sty199 .syt{display:flex;gap:6px;position:sticky;top:64px;z-index:1;background:inherit;padding-bottom:8px}
+#sty199 .syt button{flex:1;min-width:0;font:inherit;font-size:.85rem;min-height:44px;padding:0 6px;border-radius:999px;border:1px solid var(--z-line,#ddd);background:var(--z-surface,#f6f2ee);color:var(--z-ink,#2a1d17);cursor:pointer;white-space:nowrap}
+#sty199 .syt button[aria-selected=true]{background:var(--z-pri,#2a1d17);color:var(--z-pri-ink,#fff);border-color:transparent;font-weight:600}
+#sty199 .syt small{opacity:.8}
+#sty199 .syh,#sty199 .syn,#sty199 .sytip,#sty199 .sy1 p{font-size:.86rem;line-height:1.5;color:var(--z-muted,#6b5d55);margin:8px 0}
+#sty199 .syst{margin:6px 0;padding:8px 12px;border-radius:12px;background:var(--z-surface,#f6f2ee);font-size:.88rem}
+#sty199 .syst.no{background:#fbeae6;color:#9b2c1c}
+#sty199 .syg{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px}
+#sty199 .syi{position:relative}
+#sty199 .sywear{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;padding:6px 4px;border-radius:14px;border:1.5px solid var(--z-line,#ddd);background:var(--z-solid,#fff);color:var(--z-ink,#2a1d17);font:inherit;cursor:pointer;min-height:44px}
+#sty199 .syi.on .sywear{border-color:var(--z-acc,#b4532c)}
+#sty199 .sywear img{width:64px;height:64px;border-radius:50%;object-fit:cover;background:#d9e2ee;max-width:none}
+#sty199 .sywear span{font-size:.76rem;line-height:1.2;text-align:center;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#sty199 .syed{position:absolute;top:2px;inset-inline-start:2px;width:32px;height:32px;border-radius:50%;border:1px solid var(--z-line,#ddd);background:var(--z-solid,#fff);color:var(--z-ink,#2a1d17);font-size:1rem;line-height:1;cursor:pointer;padding:0}
+#sty199 .syedit{margin:10px 0;padding:10px 12px;border:1px solid var(--z-line,#ddd);border-radius:14px}
+#sty199 .syedit label,#sty199 .syl{display:flex;align-items:center;gap:8px;font-size:.88rem;flex-wrap:wrap}
+#sty199 input{font:inherit;font-size:16px;min-height:40px;padding:0 10px;border-radius:10px;border:1px solid var(--z-line,#ccc);background:var(--z-solid,#fff);color:var(--z-ink,#222);min-width:0;flex:1}
+#sty199 .synum{flex:none;width:4.5em}
+#sty199 .syadd{margin-top:14px;border:1px solid var(--z-line,#ddd);border-radius:16px;padding:10px 12px}
+#sty199 .syadd>summary{cursor:pointer;font-weight:600;font-size:.95rem;min-height:32px;display:flex;align-items:center}
+#sty199 .mks{margin:10px 0 6px;padding-inline-start:22px;display:flex;flex-direction:column;gap:12px;font-size:.9rem;line-height:1.5}
+#sty199 .mkb{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+#sty199 .mkb button,#sty199 .sycats button{font:inherit;font-size:.86rem;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--z-line,#ddd);background:var(--z-surface,#f6f2ee);color:var(--z-ink,#2a1d17);cursor:pointer}
+#sty199 .mkb .mkp{background:var(--z-pri,#2a1d17);color:var(--z-pri-ink,#fff);border:0;font-weight:600}
+#sty199 .mkb .sydel{color:#9b2c1c;border-color:#e8c4bb;background:#fff}
+#sty199 .mkb .sydel.armed{background:#9b2c1c;color:#fff}
+#sty199 button:disabled{opacity:.5;cursor:default}
+#sty199 .sycats{display:flex;gap:6px;flex-wrap:wrap}
+#sty199 .sycats small{opacity:.7}
+#sty199 .sy1{padding:10px 12px;border-radius:16px;background:var(--z-surface,#f6f2ee)}
+#sty199 .sy1 .sycats button{background:var(--z-solid,#fff)}
+#sty199 details details{border:1px solid var(--z-line,#ddd);border-radius:12px;padding:8px 10px;margin-top:8px}
+#sty199 details details summary{cursor:pointer;font-size:.85rem}
+#sty199 textarea{width:100%;box-sizing:border-box;margin-top:8px;font:inherit;font-size:.8rem;line-height:1.5;border:0;background:var(--z-tile,#f3efe9);border-radius:10px;padding:10px;color:inherit;resize:vertical}
+#sty199 :focus-visible{outline:3px solid var(--z-focus,#b4532c);outline-offset:2px}
+/* the studio rows */
+#r360 .r3styr .r3lbl small{font-weight:400}
+#r360 .r3sty button{width:78px}
+#r360 .r3sty img{width:48px;height:48px;max-width:none}
+#r360 .r3styadd{justify-content:center;color:var(--z-ink,#2a1d17)}
+#r360 .r3styadd b{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-size:1.4rem;background:var(--z-surface,#f6f2ee)}
+#r360 .r3stb{margin-top:10px;font:inherit;font-size:.84rem;min-height:40px;padding:0 14px;border-radius:999px;border:1px dashed var(--z-line,#cbbfb5);background:none;color:var(--z-ink,#2a1d17);cursor:pointer}
+#r360 .r3styr .r3sw i{background-color:#ddd}
+#r360 .r3sty button,#r360 .r3styr .r3sw button{color:var(--z-ink,#2a1d17)}
+#r360 .r3styr .r3sw{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:2px}
+#r360 .r3styr .r3sw button{flex:none}
