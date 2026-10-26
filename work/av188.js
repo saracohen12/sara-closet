@@ -2,7 +2,9 @@
 // "כשאני מעלה עכשיו תמונות לאווטאר אני רוצה שזה רק יהיה לאווטאר החדש" · "כל מי שהעלאתי לו תמונות – נקודה לבנה,
 // ומי שגם העלאתי תמונות וגם הכנתי לו אווטאר – בתוך הנקודה הלבנה נקודה ירוקה. הרעיון שאדע שזה בוצע".
 // IT[id].a8up = [{a: asset id, t: time, n: file name}] – what she uploaded from GPT for the 360 avatar; Claude cuts it and adds the item to READY in r360.js.
-// avStat now means the 360 avatar only: 'ok' = on the 360 avatar (white dot, green centre), 'fix' = pictures uploaded, waiting (white dot), 'no' = nothing (no dot).
+// avStat: 'ok' = on the 360 avatar (white dot, green centre), 'fix' = she uploaded pictures for this item (white dot), 'no' = nothing (no dot).
+// v189 (Sara 26/10 04:39 "יש מלא שכבר העליתי להם… ואני לא רואה נקודה לבנה"): every picture she ever uploaded counts – her photos (img/imgs/pics),
+// the old 5-pose GPT garments (p5g/p5gv/p5g118) and the new avatar uploads (a8up).
 (function(){
 const ERR=(w,e)=>(window.ERRS=window.ERRS||[]).push('v188 '+w+': '+(e&&e.message||e));
 const es=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -10,16 +12,18 @@ const toast_=(m,u)=>(window.toast||(()=>{}))(m,u);
 const it=id=>(typeof IT=='object'&&IT&&IT[id])||{};
 const ups=id=>(it(id).a8up||[]).filter(u=>u&&u.a);
 let RD=null;const ready=id=>{if(!RD){try{RD=new Set(window.R360?R360.ready():[])}catch(_){RD=new Set()}}return RD.has(id)};
-const st=id=>ready(id)?'ok':ups(id).length?'fix':'no';
-window.st188=st;
+const has=v=>Array.isArray(v)?v.length>0:!!v;
+const pics=id=>{const t=it(id);return ups(id).length>0||['img','imgs','pics','p5g','p5gv','p5g118'].some(k=>has(t[k]))};
+const st=id=>ready(id)?'ok':pics(id)?'fix':'no';
+window.st188=st;window.up188=id=>ups(id).length;
 
 // ---------- the dot and every count / filter that reads it ----------
 avStat=function(id){try{return D[id]?st(id):''}catch(_){return ''}};window.avStat=avStat;
-const cnt=ids=>{const n={ok:0,fix:0};ids.forEach(id=>{const s=st(id);if(n[s]!=null)n[s]++});return n.ok+n.fix?` · אווטאר: מוכן ${n.ok} · הועלו ${n.fix}`:''};
+const cnt=ids=>{const n={ok:0,fix:0};ids.forEach(id=>{const s=st(id);if(n[s]!=null)n[s]++});return n.ok+n.fix?` · העליתי תמונות ${n.ok+n.fix} · מוכן על האווטאר ${n.ok}`:''};
 try{avCounts=cnt}catch(_){}window.avCounts=cnt;
-const TT={ok:'מוכן על האווטאר',fix:'הועלו תמונות לאווטאר, מחכה שאכין',no:''};
+const TT={ok:'מוכן על האווטאר',fix:'כבר העלית תמונות לבגד הזה',no:''};
 function dots(){document.querySelectorAll('.avd').forEach(d=>{const m=/avd-(ok|fix|no)/.exec(d.className);if(m)d.title=TT[m[1]]})}
-function labels(){const f=document.getElementById('flf');if(!f)return;const L={avok:'⚪🟢 מוכן על האווטאר',avfix:'⚪ הועלו תמונות, מחכה',avno:'בלי תמונות לאווטאר'};
+function labels(){const f=document.getElementById('flf');if(!f)return;const L={avok:'⚪🟢 מוכן על האווטאר',avfix:'⚪ העליתי תמונות',avno:'עוד לא העליתי תמונות'};
  [...f.options].forEach(o=>{if(L[o.value])o.textContent=L[o.value]})}
 function repaintAll(){try{document.querySelectorAll('.grid .card').forEach(c=>{try{paint(c.dataset.id)}catch(_){}})}catch(e){ERR('paint',e)}dots()}
 setTimeout(()=>{labels();repaintAll()},300);setTimeout(repaintAll,3000);
@@ -27,7 +31,7 @@ setTimeout(()=>{labels();repaintAll()},300);setTimeout(repaintAll,3000);
 
 // ---------- the item window: one bar for the new avatar (the old 5-pose upload is gone) ----------
 window.bar188=function(id){const s=st(id),u=ups(id);
- const line=s=='ok'?'<span class="ok">✓ מוכן על האווטאר החדש</span>':s=='fix'?`<span class="up">⏳ ${u.length==1?'הועלתה תמונה':'הועלו '+u.length+' תמונות'} לאווטאר, מחכה שאכין</span>`:'<span class="no">✗ עוד לא על האווטאר החדש</span>';
+ const line=s=='ok'?'<span class="ok">✓ מוכן על האווטאר החדש</span>':u.length?`<span class="up">⏳ ${u.length==1?'הועלתה תמונה':'הועלו '+u.length+' תמונות'} לאווטאר, מחכה שאכין</span>`:s=='fix'?'<span class="up">⚪ כבר העלית תמונות לבגד הזה · עוד לא על האווטאר החדש</span>':'<span class="no">✗ עוד לא על האווטאר החדש</span>';
  const th=u.length?`<div class="u188">${u.map((x,i)=>`<span><a href="/_blob/${es(x.a)}" target="_blank" rel="noopener"><img alt="תמונה ${i+1} לאווטאר" src="/_blob/${es(x.a)}"></a><button type="button" data-del188="${es(id)}" data-i="${i}" aria-label="למחוק את התמונה">✕</button></span>`).join('')}</div>`:'';
  return `<div class="it77p b188">${line}</div>${th}${s=='ok'?'':`<button class="it77u" data-up188="${es(id)}">📤 להעלות תמונה מ-GPT לאווטאר</button><button class="it77u s188" data-mk188="${es(id)}">📋 הפרומפט ל-GPT</button>`}`};
 function rebar(id){try{const b=document.querySelector('#dlbody .it77');if(b&&typeof itemBar=='function')itemBar(id);else if(b){const t=b.querySelector('.it77t');b.innerHTML='';if(t)b.appendChild(t);b.insertAdjacentHTML('beforeend',bar188(id))}}catch(e){ERR('rebar',e)}
