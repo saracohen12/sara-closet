@@ -30,3 +30,11 @@ html.d73 #dlbody .a8box{border:1px solid var(--line)!important;border-radius:0!i
 .a8s button:disabled{opacity:.5;cursor:default}
 .a8b{display:flex;flex-wrap:wrap;gap:8px}.a8b button{margin-top:0}
 .a8box .u188{margin-top:12px}
+/* v191: the 8 cut pieces on the doll */
+.a8h{margin:10px 0 6px;font-size:.85rem;font-weight:700;color:var(--muted)}
+.a8g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.a8t,html body .a8box button.a8t{display:flex;flex-direction:column;align-items:center;gap:2px;padding:0!important;border:0!important;border-radius:10px!important;background:none!important;box-shadow:none!important;min-height:0!important;width:auto!important;height:auto!important;font:inherit;color:inherit;cursor:zoom-in;min-width:0}
+.a8t span{position:relative;display:block;width:100%;aspect-ratio:360/541;border-radius:10px;overflow:hidden;background:#fff;border:1px solid var(--line)}   /* v192: the cut piece alone, so she sees it was cut */
+.a8t span img{position:absolute;inset:0;width:100%!important;height:100%!important;max-width:none!important;background:none!important;border:0!important;border-radius:0!important;object-fit:contain;display:block}
+.a8t small{font-size:.7rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+@media (min-width:700px){.a8g{grid-template-columns:repeat(8,minmax(0,1fr))}}

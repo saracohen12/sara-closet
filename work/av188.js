@@ -54,12 +54,14 @@ function box(id){const p=PROC[id],u=ups(id),ok=ready(id),dyn=(()=>{try{return R3
  const twin=kind=='set'||kind=='jwset',P=parts(id),half=twin&&P.length==1;
  const th=u.length?`<div class="u188">${u.map((x,i)=>`<span><a href="/_blob/${es(x.a)}" target="_blank" rel="noopener"><img alt="תמונה ${i+1} שהעלית לאווטאר" src="/_blob/${es(x.a)}" loading="lazy"></a><button type="button" data-del188="${es(id)}" data-i="${i}" aria-label="למחוק את התמונה">✕</button></span>`).join('')}</div>`:'';
  const busy=p&&p.v;
- let body;
+ let body,cuts='';
+ // v191 (Sara 07:31 "אני לא רואה שזה גזור... לגזור אותה לשמונה חתיכות, לשמונה הכיוונים"): the 8 pieces, each on the doll
+ try{const T=ok&&R360.tiles(id),NM=R360.names;if(T)cuts=`<p class="a8h">✂ גזרתי ל-8 זוויות:</p><div class="a8g">${T.map((ls,v)=>`<button type="button" class="a8t" data-see190="${es(id)}" data-v="${v}" aria-label="${es(NM[v])}"><span>${ls.map(u=>`<img alt="" src="${es(u)}" loading="lazy">`).join('')}</span><small>${es(NM[v])}</small></button>`).join('')}</div>`}catch(e){ERR('tiles',e)}
  if(ok&&!half)body=`<div class="a8b"><button type="button" class="go" data-see190="${es(id)}">👀 לראות על האווטאר</button>${dyn?`<button type="button" data-up188="${es(id)}">🔄 להעלות תמונה חדשה</button><button type="button" data-off190="${es(id)}">🗑 להוריד מהאווטאר</button>`:''}</div>`;
  else body=`<ol class="a8s">
   <li><b>הפרומפט ל-GPT:</b> שומרים את תמונת הבגד ואת הבובה ב-8 זוויות, ושולחים ל-GPT עם הפרומפט, הכל בהודעה אחת.<button type="button" data-mk188="${es(id)}">📋 הפרומפט ל-GPT</button></li>
   <li><b>מעלים את מה שחזר:</b> תמונה אחת עם 8 הזוויות${twin?(half?` – עכשיו של ${kind=='set'?'החלק התחתון':'העגילים'}`:` (${kind=='set'?'קודם החלק העליון, אחר כך התחתון':'קודם השרשרת, אחר כך העגילים'})`):''}. האתר גוזר אותה ל-8, מתאים בדיוק לבובה ומכניס את הבגד לסטודיו.<button type="button" class="go" data-up188="${es(id)}"${busy?' disabled':''}>📤 להעלות תמונה של 8 זוויות</button></li></ol>`;
- return `<summary>🧍 האווטאר החדש · 8 זוויות</summary><p class="a8st">${line(id)}</p>${body}${th}`}
+ return `<summary>🧍 האווטאר החדש · 8 זוויות</summary><p class="a8st">${line(id)}</p>${cuts}${body}${u.length?'<p class="a8h">התמונה שהעלית מ-GPT:</p>':''}${th}`}
 function paintSt(id){document.querySelectorAll(`[data-go190="${CSS.escape(id)}"]`).forEach(b=>b.innerHTML=line(id)+'<b aria-hidden="true">⬇</b>');
  document.querySelectorAll(`[data-a8box="${CSS.escape(id)}"] .a8st`).forEach(p=>p.innerHTML=line(id));
  document.querySelectorAll(`[data-mkst188="${CSS.escape(id)}"]`).forEach(m=>m.innerHTML=mkst(id))}
@@ -95,31 +97,34 @@ const TWIN={set:['top','skirt'],jwset:['necklace','earrings']};
 const blobOf=c=>new Promise(r=>c.toBlob(b=>{if(b&&b.type=='image/webp')return r(b);c.toBlob(r,'image/png')},'image/webp',.92));
 async function put1(a,b){let last;for(const w of [0,1500,4000]){if(w)await new Promise(r=>setTimeout(r,w));try{return await a.upload(b)}catch(e){last=e}}throw last}
 // src: the File she just picked, or the stored picture · ua: its asset id · t: its upload time
-async function cut(id,src,ua,t){if(PROC[id]&&PROC[id].v)return;if(!window.cut8)return;
- let kind='dress';try{kind=R360.kind(id)}catch(_){}let P=parts(id);
- if(TWIN[kind]){const w=TWIN[kind];if(P.length>=w.length)P=[];kind=w[P.length]}else P=[];
+// at: the index of a part that is cut again (v192: older cuts did not follow the turned doll)
+async function cut(id,src,ua,t,at){if(PROC[id]&&PROC[id].v)return;if(!window.cut8)return;
+ let kind='dress';try{kind=R360.kind(id)}catch(_){}let P=parts(id);const re=at!=null&&!!P[at];
+ if(re)kind=P[at].k;else if(TWIN[kind]){const w=TWIN[kind];if(P.length>=w.length)P=[];kind=w[P.length]}else P=[];
  PROC[id]={v:1};rebox(id);const t0=Date.now();log('cut8_start',{id,kind});
  try{const r=await cut8.run(src,kind,v=>{PROC[id]={v:v+1};paintSt(id)});
   if(r.px.filter(x=>x>150).length<5)throw Object.assign(new Error('empty'),{code:'empty'});
   PROC[id]={v:9};paintSt(id);
   let a=null;try{a=await claude.use('assets')}catch(_){}if(!a)throw Object.assign(new Error('assets'),{code:'assets'});
   const L=[];for(const c of r.views)L.push((await put1(a,await blobOf(c))).id);
-  P.push({s:SLOT[kind]||'top',k:kind,L,src:ua||'',t:t||Date.now(),sh:r.shifts.some(s=>s[0]||s[1])?r.shifts:null});
+  const np={s:SLOT[kind]||'top',k:kind,L,src:ua||'',t:t||Date.now(),cv:cut8.CV||1,sh:r.shifts.some(s=>s[0]||s[1])?r.shifts:null};if(re)P[at]=np;else P.push(np);
   await putItem(id,{a8:P});delete PROC[id];DONE.add(id);
-  try{R360.sync()}catch(_){}rebox(id);repaint(id);log('cut8_ok',{id,kind,ms:Date.now()-t0,px:r.px.join(',')});
-  const half=TWIN[(()=>{try{return R360.kind(id)}catch(_){return ''}})()]&&P.length==1;
+  try{R360.sync()}catch(_){}rebox(id);repaint(id);log('cut8_ok',{id,kind,re,ms:Date.now()-t0,px:r.px.join(',')});
+  if(re)return;const half=TWIN[(()=>{try{return R360.kind(id)}catch(_){return ''}})()]&&P.length==1;
   toast_(half?`✓ ${KN[kind]||'החלק הראשון'} על האווטאר. עכשיו מעלים את התמונה של החלק השני`:`✓ ${KN[kind]||'הבגד'} על האווטאר החדש`,half?null:()=>see(id))}
  catch(e){PROC[id]={err:e&&e.code||'x'};DONE.add(id);ERR('cut',e);log('cut8_fail',{id,kind,code:String(e&&(e.code||e.message)||e).slice(0,60)});rebox(id);toast_('✗ '+(ERRT[PROC[id].err]||ERRT.x))}}
-function see(id){try{R360.openWith(null,{a:id})}catch(e){ERR('see',e)}}
+function see(id,v){try{R360.openWith(null,{a:id});if(v>0)setTimeout(()=>{try{R360.show(v)}catch(_){}},700)}catch(e){ERR('see',e)}}
 async function off(id){const old=it(id).a8;if(!old)return;await putItem(id,{a8:''});try{R360.sync()}catch(_){}rebox(id);repaint(id);
  toast_('הבגד ירד מהאווטאר',async()=>{await putItem(id,{a8:old});try{R360.sync()}catch(_){}rebox(id);repaint(id)})}
 
 // a picture that was uploaded but not cut yet (on another phone, before v190, or the page was closed in the middle) is cut when the site opens
 const DONE=new Set();let SOON=null;
+const RE=new Set(),stale=id=>RE.has(id)||!window.cut8?[]:parts(id).map((p,j)=>!(p.cv>=cut8.CV)&&p.src?j:-1).filter(j=>j>=0);
 const pending=id=>{const u=ups(id);if(!u.length||DONE.has(id)||PROC[id])return null;const last=u[u.length-1],P=parts(id);
  if(P.some(p=>p.src==last.a))return null;if(ready(id)&&!(window.R360&&R360.dyn(id)))return null;return last};
 function soon(){if(SOON)return;SOON=setTimeout(async()=>{SOON=null;if(BUSY)return;
- for(const id of Object.keys(typeof IT=='object'&&IT||{})){if(!D[id])continue;const p=pending(id);if(p)await cut(id,'/_blob/'+p.a,p.a,p.t)}},2500)}
+ for(const id of Object.keys(typeof IT=='object'&&IT||{})){if(!D[id])continue;const p=pending(id);if(p)await cut(id,'/_blob/'+p.a,p.a,p.t);
+  const s=stale(id);if(s.length){RE.add(id);for(const j of s){const q=parts(id)[j];if(q&&!PROC[id])await cut(id,'/_blob/'+q.src,q.src,q.t,j)}}}},2500)}
 setTimeout(soon,4000);
 
 // its own toasts say what was saved, so no generic "נשמר: a8up"
@@ -130,7 +135,7 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
  if(t.dataset.up188){e.preventDefault();e.stopPropagation();picker(t.dataset.up188);return}
  if(t.dataset.del188){e.preventDefault();e.stopPropagation();del(t.dataset.del188,+t.dataset.i).catch(er=>ERR('del',er));return}
  if(t.dataset.go190){e.preventDefault();e.stopPropagation();const b=document.querySelector(`#dlbody [data-a8box="${CSS.escape(t.dataset.go190)}"]`);if(b){b.open=true;b.scrollIntoView({behavior:'smooth',block:'center'})}return}
- if(t.dataset.see190){e.preventDefault();e.stopPropagation();see(t.dataset.see190);return}
+ if(t.dataset.see190){e.preventDefault();e.stopPropagation();see(t.dataset.see190,+(t.dataset.v||0));return}
  if(t.dataset.off190){e.preventDefault();e.stopPropagation();if(typeof sure=='function'&&!sure(t,'בטוח? לחצי שוב'))return;off(t.dataset.off190).catch(er=>ERR('off',er));return}
  const id=t.dataset.mk188||t.dataset.m77up;if(id){e.preventDefault();e.stopImmediatePropagation();try{if(window.R360)R360.make(id)}catch(er){ERR('make',er)}}},true);
 })();

@@ -497,5 +497,7 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
  if(b.dataset.pin185!=null)TODAY.pinLook('m:'+b.dataset.pin185);else{let L=null;try{L=GEN[+b.dataset.pin185g]}catch(_){}if(L)TODAY.pinIds(Object.values(L),'הלוק')}},true);
 
 window.R360={open,close,make,prompts,openWith,Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
- ready:()=>Object.keys(READY).filter(id=>D[id]),isReady,kind:kindOf,sync:resync,dyn:id=>!!(READY[id]&&READY[id].dyn),readyCount:()=>{const P=pool();return [P.filter(isReady).length,P.length]},nm,ph};
+ ready:()=>Object.keys(READY).filter(id=>D[id]),isReady,kind:kindOf,sync:resync,dyn:id=>!!(READY[id]&&READY[id].dyn),names:NAMES,show:v=>{if(big){big.stop();big.show(v)}},
+ tiles:id=>{const r=READY[id];if(!r)return null;return NAMES.map((_,v)=>r.k.map(k=>DYN['x'+k+(v+1)]||'a8/x'+k+(v+1)+'.webp'+V))},   // v191: the 8 cut pieces, for the item window
+readyCount:()=>{const P=pool();return [P.filter(isReady).length,P.length]},nm,ph};
 })();

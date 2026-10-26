@@ -7,6 +7,10 @@
 const OFFS=[[0,0],[361,0],[724,0],[1087,0],[0,544],[361,544],[724,544],[1087,543]];
 const SH=[[-2,2],[-3,0],[-6,-2],[0,-1],[-5,1],[-4,0],[6,0],[2,2]];
 const W=360,H=541,SW=1448,SHH=1086,N=W*H;
+// v192: the doll on the site (a8/n, nh, c) was turned smooth in 25/10 19:50 (new2/turn/norm.py): every view got its own size and place
+// (same feet line, height and body axis). GPT draws on the doll BEFORE that, so each layer must get the same move, or the dress sits
+// beside the doll (Sara 26/10 07:32-07:33: the arm and the front of the body showed next to the dress). [scale, dx, dy] = new2/turn/turn.json
+const TURN=[[1,-.75,2],[1,0,0],[1.0038986,-12.2465887,-2.0584795],[.998062,-4.6414728,.0251938],[1.0258964,2.0069721,8.8964148],[1.0279441,1.6516966,7.8602796],[1.0258964,13.5483065,7.8705177],[1.0177865,-6.763834,8.928854]];
 const V='?v='+(window.VER||'');
 
 const loadImg=src=>new Promise((r,j)=>{const i=new Image();i.decoding='async';i.onload=()=>r(i);i.onerror=()=>j(new Error('img'));i.src=src});
@@ -90,6 +94,9 @@ function mask(b,d,o){const SMALL=o.mode=='small',HEAD=o.mode=='head'||SMALL,CUT=
  else if(!HEAD&&!o.nohem){let mw=0;const w=new Int32Array(H);for(let r=0;r<H;r++){let s=0;for(let c=0;c<W;c++)s+=m[r*W+c];w[r]=s;if(s>mw)mw=s}
   let last=-1;for(let r=0;r<H;r++)if(w[r]>=.35*mw)last=r;if(last>=0)for(let i=(last+2)*W;i<N;i++)m[i]=0}   // the hem: nothing of the item below the last wide row (feet, floor)
  return m}
+// the same move as cv2.warpAffine(turn.json) in norm.py (pixel centres → +.5(1-s)); the canvas keeps the alpha premultiplied, like norm.py
+function turn(c,v){const [s,dx,dy]=TURN[v],o=document.createElement('canvas');o.width=W;o.height=H;const g=o.getContext('2d');
+ g.setTransform(s,0,0,s,dx+.5*(1-s),dy+.5*(1-s));g.drawImage(c,0,0);o.px=c.px;return o}
 function layer(d,m){const a=gauss(Float32Array.from(m,x=>x*255),1,.8),c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),im=g.createImageData(W,H),p=im.data;let px=0;
  for(let i=0;i<N;i++){const k=i*3,q=i*4;p[q]=d[k];p[q+1]=d[k+1];p[q+2]=d[k+2];p[q+3]=Math.max(0,Math.min(255,Math.round(a[i])));if(m[i])px++}
  g.putImageData(im,0,0);c.px=px;return c}
@@ -101,7 +108,7 @@ const tick=()=>new Promise(r=>setTimeout(r,0));
 // src: a File/Blob or a url · kind: KIND key · onStep(i): progress → {views:[canvas×8], shifts, px}
 async function run(src,kind,onStep){const img=await toImg(src);const S=sheetData(img);if(!S)throw Object.assign(new Error('shape'),{code:'shape',w:img.naturalWidth,h:img.naturalHeight});
  const o=MODE[kind]||{},views=[],shifts=[];
- for(let v=0;v<8;v++){onStep&&onStep(v);await tick();const b=await base(v);const s=shift(S,v,b,o.mode=='head');shifts.push(s);const d=panel(S,v,s[0],s[1]);views.push(layer(d,mask(b,d,o)))}
+ for(let v=0;v<8;v++){onStep&&onStep(v);await tick();const b=await base(v);const s=shift(S,v,b,o.mode=='head');shifts.push(s);const d=panel(S,v,s[0],s[1]);views.push(turn(layer(d,mask(b,d,o)),v))}
  return {views,shifts,px:views.map(c=>c.px)}}
-window.cut8={run,MODE,W,H};
+window.cut8={run,MODE,W,H,CV:2};   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
 })();
