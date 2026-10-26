@@ -19,7 +19,8 @@ const READY={
 };
 const KEYOF={};Object.entries(READY).forEach(([id,r])=>r.k.forEach(k=>KEYOF[k]=id));
 const SLOT={d:'body',b:'top',s:'bottom',n:'shoes',g:'belt',j:'neck',e:'ears'};
-const CLASH={d:['b','s'],b:['d'],s:['d']};   // a dress takes the top and the skirt
+// a dress takes the top and the skirt (v190: by slot, so items cut on the site follow the same rule)
+const clashOf=k=>{const s=SLOT[k],w=s=='body'?['top','bottom']:(s=='top'||s=='bottom')?['body']:[];return Object.keys(SLOT).filter(o=>w.includes(SLOT[o]))};
 // see-through lace: x<k>u<view> is what shows through it (the arm as GPT drew it); with a base shirt it is tinted. value = its mean luminance
 const LACE={d:149};
 const CAM=[{k:'black',n:'שחור',c:[24,24,26]},{k:'green',n:'ירוק כהה',c:[28,52,40]},{k:'navy',n:'כחול כהה',c:[30,38,66]},{k:'nude',n:'בז׳',c:[206,182,158]},{k:'white',n:'לבן',c:[242,240,234]},{k:'',n:'בלי',c:null}];
@@ -46,10 +47,24 @@ const ph=id=>{try{return img(id)||TPH}catch(_){return ''}};
 const thl=ids=>{new Set(ids.map(cat).filter(Boolean)).forEach(c=>{try{thLoad(c).then(()=>thApply(TH)).catch(()=>{})}catch(_){}})};
 const occNow=()=>{try{const o=window.occToday83&&occToday83();if(o)return o[0]}catch(_){}return [5,6].includes(new Date().getDay())?'shab':'day'};
 const isReady=id=>!!READY[id];
+// ---------- v190: items the site cut itself from her 8-angle GPT picture (IT[id].a8 = [{s:slot, L:[8 asset ids], …}], see cut8.js + av188.js) ----------
+const DYN={},STATIC=new Set(Object.keys(READY));let DSIG='';
+function sync(){const a8={};try{Object.entries(IT||{}).forEach(([id,v])=>{if(v&&Array.isArray(v.a8)&&!STATIC.has(id)&&D[id])a8[id]=v.a8.filter(p=>p&&p.s&&Array.isArray(p.L)&&p.L.length==8)})}catch(_){}
+ const sig=JSON.stringify(a8);if(sig==DSIG)return false;DSIG=sig;
+ Object.keys(READY).forEach(id=>{if(!READY[id].dyn)return;READY[id].k.forEach(k=>{delete SLOT[k];delete KEYOF[k];for(let v=1;v<=8;v++){delete DYN['x'+k+v];delete IMG['x'+k+v]}});delete READY[id]});
+ for(let i=HEADS.length-1;i>=0;i--)if(HEADS[i].dyn)HEADS.splice(i,1);
+ Object.entries(a8).forEach(([id,ps])=>{if(!ps.length)return;const ks=[];let head=0;
+  ps.forEach((p,j)=>{const k='u'+id.replace(/[^A-Za-z0-9]/g,'')+(j?'p'+j:'');ks.push(k);KEYOF[k]=id;if(p.s=='head')head=1;else SLOT[k]=p.s;p.L.forEach((a,v)=>DYN['x'+k+(v+1)]='/_blob/'+a)});
+  READY[id]={k:head?ks.slice(0,1):ks,head,dyn:1};if(head)HEADS.push({k:ks[0],id,src:DYN['x'+ks[0]+'1'],dyn:1})});
+ Object.keys(ST.on||{}).forEach(k=>{if(/^u/.test(k)&&!KEYOF[k])delete ST.on[k]});if(/^u/.test(ST.head||'')&&!KEYOF[ST.head])ST.head='c';   // items taken off the avatar
+ return true}
+try{sync()}catch(_){}
+function resync(){try{if(sync()){paintHeads();redraw()}}catch(e){(window.ERRS=window.ERRS||[]).push('v190 sync: '+(e&&e.message||e))}}
+{const _p=window.paintAll;if(typeof _p=='function')paintAll=function(){const r=_p.apply(this,arguments);resync();return r}}
 
 // ---------- images ----------
 const IMG={},TINT={};
-function im(src){if(!IMG[src]){IMG[src]=new Promise(r=>{const i=new Image();i.decoding='async';i.onload=()=>r(i);i.onerror=()=>r(null);i.src='a8/'+src+'.webp'+V})}return IMG[src]}
+function im(src){if(!IMG[src]){IMG[src]=new Promise(r=>{const i=new Image();i.decoding='async';i.onload=()=>r(i);i.onerror=()=>r(null);i.src=DYN[src]||('a8/'+src+'.webp'+V)})}return IMG[src]}
 // a base shirt under lace: the arm's own light and shade, in the shirt's colour
 function tinted(m,rgb,ref){const key=m.src+'|'+rgb;if(TINT[key])return TINT[key];
  const c=document.createElement('canvas');c.width=m.naturalWidth;c.height=m.naturalHeight;const x=c.getContext('2d');x.drawImage(m,0,0);
@@ -58,14 +73,12 @@ function tinted(m,rgb,ref){const key=m.src+'|'+rgb;if(TINT[key])return TINT[key]
   if(k<=1){p[i]=R*k;p[i+1]=G*k;p[i+2]=B*k}else{const h=(k-1)*.6;p[i]=R+(255-R)*h;p[i+1]=G+(255-G)*h;p[i+2]=B+(255-B)*h}}
  x.putImageData(d,0,0);return TINT[key]=c}
 const camOf=k=>{const c=CAM.find(c=>c.k==(k==null?'black':k));return c?c.c:null};
-function layersFor(v,s){const on=s.on||{},L=[];const x=k=>({s:'x'+k+(v+1)});
- if(on.n)L.push(x('n'));
- Object.keys(LACE).forEach(k=>{if(on[k])L.push({s:'x'+k+'u'+(v+1),t:camOf(s.cam),ref:LACE[k]})});
- if(on.d)L.push(x('d'));
- if(s.tuck){if(on.b)L.push(x('b'));if(on.s)L.push(x('s'))}else{if(on.s)L.push(x('s'));if(on.b)L.push(x('b'))}
- if(on.g)L.push(x('g'));if(on.j)L.push(x('j'));
- const head=s.head=='w'?{s:(s.wb&&WB[v]?'wb':'w')+(v+1)}:(s.head&&s.head!='c')?x(s.head):null;
- if(BACK[v]||s.head=='w'){if(on.e)L.push(x('e'));if(head)L.push(head)}else{if(head)L.push(head);if(on.e)L.push(x('e'))}
+const ORDER=['shoes','body','bottom','top','outer','belt','wrist','bag','neck'];   // what covers what, from the floor up (tucked: the top under the skirt)
+function layersFor(v,s){const on=s.on||{},L=[];const x=k=>({s:'x'+k+(v+1)});const of=sl=>Object.keys(SLOT).filter(k=>on[k]&&SLOT[k]==sl);
+ const ord=s.tuck?ORDER.map(o=>o=='bottom'?'top':o=='top'?'bottom':o):ORDER;
+ ord.forEach(sl=>{if(sl=='body')Object.keys(LACE).forEach(k=>{if(on[k])L.push({s:'x'+k+'u'+(v+1),t:camOf(s.cam),ref:LACE[k]})});of(sl).forEach(k=>L.push(x(k)))});
+ const head=s.head=='w'?{s:(s.wb&&WB[v]?'wb':'w')+(v+1)}:(s.head&&s.head!='c')?x(s.head):null;const ears=of('ears').map(x);
+ if(BACK[v]||s.head=='w'){L.push(...ears);if(head)L.push(head)}else{if(head)L.push(head);L.push(...ears)}
  return L}
 // ---------- backgrounds (v182): the doll cut out of the blue photo backdrop (a8/c1-8.webp) stands on any background ----------
 const FX=[176,167,162,170,182,194,201,189],FY=524;   // feet centre per view, measured on c1-8
@@ -126,10 +139,10 @@ async function redraw(){for(const s of STAGES)await s.draw();paintRoom()}
 function wearItem(id){const r=READY[id];if(!r)return;
  if(r.head){ST.head=ST.head==r.k[0]?'c':r.k[0];return}
  const on=r.k.every(k=>ST.on[k]);
- r.k.forEach(k=>{if(on){ST.on[k]=0;return}ST.on[k]=1;(CLASH[k]||[]).forEach(c=>ST.on[c]=0);Object.keys(ST.on).forEach(o=>{if(o!=k&&SLOT[o]&&SLOT[o]==SLOT[k])ST.on[o]=0})})}
+ r.k.forEach(k=>{if(on){ST.on[k]=0;return}ST.on[k]=1;clashOf(k).forEach(c=>ST.on[c]=0);Object.keys(ST.on).forEach(o=>{if(o!=k&&SLOT[o]&&SLOT[o]==SLOT[k])ST.on[o]=0})})}
 function takeOff(id){const r=READY[id];if(!r)return;if(r.head){if(ST.head==r.k[0])ST.head='c';return}r.k.forEach(k=>ST.on[k]=0)}
 function stateFrom(ids,base){const s=Object.assign(clone(DEF),base||{},{on:{}});
- ids.forEach(id=>{const r=READY[id];if(!r)return;if(r.head)s.head=r.k[0];else r.k.forEach(k=>{s.on[k]=1;(CLASH[k]||[]).forEach(c=>{if(!ids.some(o=>READY[o]&&READY[o].k.includes(c)))s.on[c]=0})})});
+ ids.forEach(id=>{const r=READY[id];if(!r)return;if(r.head)s.head=r.k[0];else r.k.forEach(k=>{s.on[k]=1;clashOf(k).forEach(c=>{if(!ids.some(o=>READY[o]&&READY[o].k.includes(c)))s.on[c]=0})})});
  return s}
 
 // ---------- the studio ----------
@@ -172,8 +185,7 @@ function build(){
  pb.onclick=()=>big.playing()?big.stop():big.play();
  dlg.querySelector('.r3prev').onclick=()=>{big.stop();big.show(big.view-1)};dlg.querySelector('.r3next').onclick=()=>{big.stop();big.show(big.view+1)};
  dlg.querySelector('.r3x').onclick=()=>close();dlg.addEventListener('cancel',e=>{e.preventDefault();close()});
- const hs=dlg.querySelector('.r3heads');HEADS.forEach(h=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.dataset.h=h.k;
-  b.innerHTML=`<img alt="" src="${h.src?h.src+V:ph(h.id)}"><span>${esc(h.n||nm(h.id))}</span>`;b.onclick=()=>{ST.head=h.k;keep();redraw()};hs.appendChild(b)});
+ paintHeads();
  const sw=dlg.querySelector('.r3sw');CAM.forEach(c=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.dataset.cam=c.k;b.setAttribute('aria-label',c.n);
   b.innerHTML=`<i style="background:${c.c?`rgb(${c.c})`:'linear-gradient(135deg,#e9c3a6,#c99476)'}"></i><span>${c.n}</span>`;b.onclick=()=>{ST.cam=c.k;keep();redraw()};sw.appendChild(b)});
  const bgs=dlg.querySelector('.r3bgs');bgList().forEach(b=>{const e=document.createElement('button');e.type='button';e.setAttribute('role','radio');e.dataset.bg=b.k;e.setAttribute('aria-label','רקע: '+b.n);
@@ -386,7 +398,7 @@ function make(id){MKID=id;mkDlg();
   <ol class="mks">
    <li><b>שומרים 2 תמונות</b><span class="mkb"><button type="button" data-mk="photo">⬇ תמונת הפריט</button><button type="button" data-mk="sheet">⬇ הבובה ב-8 זוויות</button></span><small>אם יש תמונה יותר טובה של המוצר מהאתר, עדיף אותה.</small></li>
    <li><b>ב-GPT, בשיחה חדשה:</b> מצרפים את שתי התמונות (קודם הפריט, אחר כך הבובה), מדביקים את הפרומפט ושולחים. הכל בהודעה אחת.<span class="mkb"><button type="button" data-mk="copy" class="mkp">📋 להעתיק את הפרומפט</button></span></li>
-   <li><b>את מה שחוזר</b> מעלים כאן, ואני מלבישה את זה על האווטאר בכל 8 הזוויות.<span class="mkb"><button type="button" data-up188="${id}" class="mkp">📤 להעלות את מה שחזר מ-GPT</button></span><small data-mkst188="${id}">${window.mkst188?mkst188(id):''}</small></li>
+   <li><b>את התמונה שחוזרת</b> (אחת, עם 8 הזוויות) מעלים כאן. האתר גוזר אותה, מתאים בדיוק לבובה ומכניס את הבגד לסטודיו.<span class="mkb"><button type="button" data-up188="${id}" class="mkp">📤 להעלות תמונה של 8 זוויות</button></span><small data-mkst188="${id}">${window.mkst188?mkst188(id):''}</small></li>
   </ol>
   <details><summary>לראות את הפרומפט</summary><textarea readonly rows="10">${esc(prompt(id))}</textarea></details></div>`;
  thl([id]);if(!MK.open)MK.showModal()}
@@ -420,6 +432,8 @@ function open(){if(!dlg)build();
  if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!document.documentElement.dataset.still&&!sessionStorage.getItem('r3spun')){sessionStorage.setItem('r3spun',1);setTimeout(()=>big.play(true),400)}}
 function close(){if(big)big.stop();if(dlg&&dlg.open)dlg.close();document.documentElement.classList.remove('r3on')}
 // every "בניית לוק" goes here: openStudio() = the studio as it was left; openStudio(look) = a saved look; openStudio(null,{slot:id,...}) = try one item / a suggested look
+function paintHeads(){const hs=dlg&&dlg.querySelector('.r3heads');if(!hs)return;hs.innerHTML='';HEADS.forEach(h=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','radio');b.dataset.h=h.k;
+  b.innerHTML=`<img alt="" src="${h.src?h.src+(h.dyn?'':V):ph(h.id)}"><span>${esc(h.n||nm(h.id))}</span>`;b.onclick=()=>{ST.head=h.k;keep();redraw()};hs.appendChild(b)})}
 function openWith(look,items){MISS=[];
  if(look&&typeof look=='object'){if(look.r360){const bg=ST.bg;ST=Object.assign(clone(DEF),clone(look.r360));if(look.r360.bg==null)ST.bg=bg;MISS=Object.values(look.items||{}).filter(x=>D[x]&&!isReady(x))}else applyIds(Object.values(look.items||{}),true)}
  else if(items&&typeof items=='object'){const ids=Object.values(items).filter(id=>typeof id=='string'&&D[id]);
@@ -464,7 +478,7 @@ function homeState(){const head=HOME.head||'c';
  return stateFrom(lotdIds(),{head,cam:ST.cam,wb:ST.wb,bg:ST.bg})}
 const TODAY={state:homeState,
  ids:()=>{const s=homeState();return wornIds(s).filter(id=>!READY[id].head)},
- pinned:()=>!!HOME.pin,heads:()=>HEADS.map(h=>({k:h.k,n:h.n||nm(h.id).split(' ').slice(0,2).join(' '),src:h.src?h.src+V:ph(h.id)})),head:()=>HOME.head||'c',
+ pinned:()=>!!HOME.pin,heads:()=>HEADS.map(h=>({k:h.k,n:h.n||nm(h.id).split(' ').slice(0,2).join(' '),src:h.src?h.src+(h.dyn?'':V):ph(h.id)})),head:()=>HOME.head||'c',
  setHead:k=>{HOME.head=k;saveHome()},
  pin:()=>pinGo(ST),
  pinLook:k=>{const o=lookOf(k);if(!o)return;if(!wornIds(o.s).length)return toast_('אין עוד בגד מהלוק הזה על האווטאר 360');pinGo(o.s,o.name)},
@@ -483,5 +497,5 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
  if(b.dataset.pin185!=null)TODAY.pinLook('m:'+b.dataset.pin185);else{let L=null;try{L=GEN[+b.dataset.pin185g]}catch(_){}if(L)TODAY.pinIds(Object.values(L),'הלוק')}},true);
 
 window.R360={open,close,make,prompts,openWith,Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
- ready:()=>Object.keys(READY).filter(id=>D[id]),readyCount:()=>{const P=pool();return [P.filter(isReady).length,P.length]},nm,ph};
+ ready:()=>Object.keys(READY).filter(id=>D[id]),isReady,kind:kindOf,sync:resync,dyn:id=>!!(READY[id]&&READY[id].dyn),readyCount:()=>{const P=pool();return [P.filter(isReady).length,P.length]},nm,ph};
 })();

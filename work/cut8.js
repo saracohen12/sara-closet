@@ -1,0 +1,107 @@
+// ===== v190: one GPT picture with the 8 angles → 8 transparent layers that sit exactly on the doll (Sara 26/10 06:59:
+// "אני מעלה תמונה אחת של 8 ושצריך לגזור אותה ולהתאים אותה לאבטר החדש, ואז להתאים אותה בדיוק לבובה, ואז להעלות אותה ... לארון בגדים").
+// The same steps as closet/avatar8/new2/items/crop.py + layer_new.py, in the browser:
+// cut the 8 squares (offs.json + SH), line each one up with the bare doll (a8/f1-8.webp, lossless copies of new2/frames/c1-8.png),
+// keep only what differs from the doll and from the backdrop, clean it (pieces, holes, hem) → RGBA canvases.
+(function(){
+const OFFS=[[0,0],[361,0],[724,0],[1087,0],[0,544],[361,544],[724,544],[1087,543]];
+const SH=[[-2,2],[-3,0],[-6,-2],[0,-1],[-5,1],[-4,0],[6,0],[2,2]];
+const W=360,H=541,SW=1448,SHH=1086,N=W*H;
+const V='?v='+(window.VER||'');
+
+const loadImg=src=>new Promise((r,j)=>{const i=new Image();i.decoding='async';i.onload=()=>r(i);i.onerror=()=>j(new Error('img'));i.src=src});
+async function toImg(x){if(typeof x=='string')return loadImg(x);const u=URL.createObjectURL(x);try{return await loadImg(u)}finally{setTimeout(()=>URL.revokeObjectURL(u),3000)}}
+const BASE=[];
+async function base(v){if(!BASE[v]){BASE[v]=loadImg('a8/f'+(v+1)+'.webp'+V).then(i=>rgbOf(i,0,0,W,H)).catch(e=>{BASE[v]=null;throw e})}return BASE[v]}
+function rgbOf(img,x,y,w,h){const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(img,x,y,w,h,0,0,w,h);
+ const p=g.getImageData(0,0,w,h).data,o=new Float32Array(w*h*3);for(let i=0,k=0;i<p.length;i+=4,k+=3){o[k]=p[i];o[k+1]=p[i+1];o[k+2]=p[i+2]}return o}
+
+// the sheet at GPT's own size, scaled to the size of the doll's sheet (GPT sometimes returns another size, same shape)
+function sheetData(img){const w=img.naturalWidth,h=img.naturalHeight,r=(w/h)/(SW/SHH);if(r<.94||r>1.06)return null;
+ const c=document.createElement('canvas');c.width=SW;c.height=SHH;const g=c.getContext('2d',{willReadFrequently:true});g.imageSmoothingQuality='high';g.drawImage(img,0,0,SW,SHH);
+ return g.getImageData(0,0,SW,SHH).data}
+// one square: pixel (x0+dx+c, y0+dy+r), edges repeated (crop.py pads with mode='edge')
+function panel(S,v,ex,ey){const [x0,y0]=OFFS[v],[dx,dy]=SH[v],o=new Float32Array(N*3);
+ for(let r=0;r<H;r++){const sy=Math.min(SHH-1,Math.max(0,y0+dy+ey+r));for(let c=0;c<W;c++){const sx=Math.min(SW-1,Math.max(0,x0+dx+ex+c)),s=(sy*SW+sx)*4,k=(r*W+c)*3;o[k]=S[s];o[k+1]=S[s+1];o[k+2]=S[s+2]}}
+ return o}
+// GPT may move a square by a few pixels: find the shift where the part that never changes (the head for clothes, the feet for head items) matches the doll
+function shift(S,v,b,head){const r0=Math.floor(H*(head?.9:.015)),r1=Math.floor(H*(head?.99:.13));const gray=(a,k)=>a[k]*.299+a[k+1]*.587+a[k+2]*.114;
+ const [x0,y0]=OFFS[v],[dx,dy]=SH[v];let best=[0,0],bs=Infinity,s0=0;
+ for(let ey=-5;ey<=5;ey++)for(let ex=-5;ex<=5;ex++){let s=0;
+  for(let r=r0;r<r1;r+=2){const sy=Math.min(SHH-1,Math.max(0,y0+dy+ey+r));for(let c=12;c<W-12;c+=2){const sx=Math.min(SW-1,Math.max(0,x0+dx+ex+c)),q=(sy*SW+sx)*4;
+   s+=Math.abs(S[q]*.299+S[q+1]*.587+S[q+2]*.114-gray(b,(r*W+c)*3))}}
+  if(!ex&&!ey)s0=s;if(s<bs){bs=s;best=[ex,ey]}}
+ return bs<s0*.85?best:[0,0]}
+
+// ---------- small image tools (scipy.ndimage defaults: 4-neighbour cross, reflect at the borders) ----------
+function gauss(a,ch,sg){const R=Math.floor(4*sg+.5),k=new Float32Array(2*R+1);let t=0;for(let i=-R;i<=R;i++){k[i+R]=Math.exp(-i*i/(2*sg*sg));t+=k[i+R]}for(let i=0;i<k.length;i++)k[i]/=t;
+ const rf=(i,n)=>{while(i<0||i>=n)i=i<0?-i-1:2*n-i-1;return i};const tmp=new Float32Array(a.length),o=new Float32Array(a.length);
+ for(let r=0;r<H;r++)for(let c=0;c<W;c++)for(let z=0;z<ch;z++){let s=0;for(let i=-R;i<=R;i++)s+=a[(r*W+rf(c+i,W))*ch+z]*k[i+R];tmp[(r*W+c)*ch+z]=s}
+ for(let r=0;r<H;r++)for(let c=0;c<W;c++)for(let z=0;z<ch;z++){let s=0;for(let i=-R;i<=R;i++)s+=tmp[(rf(r+i,H)*W+c)*ch+z]*k[i+R];o[(r*W+c)*ch+z]=s}
+ return o}
+function erode(m,n){let a=m;for(let t=0;t<n;t++){const o=new Uint8Array(N);for(let r=0;r<H;r++)for(let c=0;c<W;c++){const i=r*W+c;
+  o[i]=a[i]&&r>0&&r<H-1&&c>0&&c<W-1&&a[i-1]&&a[i+1]&&a[i-W]&&a[i+W]?1:0}a=o}return a}
+function dilate(m,n){let a=m;for(let t=0;t<n;t++){const o=new Uint8Array(N);for(let r=0;r<H;r++)for(let c=0;c<W;c++){const i=r*W+c;
+  o[i]=a[i]||(c>0&&a[i-1])||(c<W-1&&a[i+1])||(r>0&&a[i-W])||(r<H-1&&a[i+W])?1:0}a=o}return a}
+function label(m){const L=new Int32Array(N),st=new Int32Array(N);let n=0;
+ for(let i=0;i<N;i++){if(!m[i]||L[i])continue;n++;let sp=0;st[sp++]=i;L[i]=n;
+  while(sp){const p=st[--sp],r=(p/W)|0,c=p-r*W;
+   if(c>0&&m[p-1]&&!L[p-1]){L[p-1]=n;st[sp++]=p-1}if(c<W-1&&m[p+1]&&!L[p+1]){L[p+1]=n;st[sp++]=p+1}
+   if(r>0&&m[p-W]&&!L[p-W]){L[p-W]=n;st[sp++]=p-W}if(r<H-1&&m[p+W]&&!L[p+W]){L[p+W]=n;st[sp++]=p+W}}}
+ return [L,n]}
+function fillHoles(m){const out=new Uint8Array(N),st=new Int32Array(N);let sp=0;const push=p=>{if(!m[p]&&!out[p]){out[p]=1;st[sp++]=p}};
+ for(let c=0;c<W;c++){push(c);push((H-1)*W+c)}for(let r=0;r<H;r++){push(r*W);push(r*W+W-1)}
+ while(sp){const p=st[--sp],r=(p/W)|0,c=p-r*W;if(c>0)push(p-1);if(c<W-1)push(p+1);if(r>0)push(p-W);if(r<H-1)push(p+W)}
+ const o=new Uint8Array(N);for(let i=0;i<N;i++)o[i]=out[i]?0:1;return o}
+
+// ---------- one view: what is the item (layer_new.py) ----------
+// mode: '' clothes · 'head' (scarves, covers, hats: upper part only) · 'small' (jewelry: thin pieces, holes kept) ; rows: [a,b] where the item can be ; one: a single piece
+function mask(b,d,o){const SMALL=o.mode=='small',HEAD=o.mode=='head'||SMALL,CUT=HEAD&&!o.low;const sg=SMALL?.7:1.2;   // CUT: head items and jewelry live in the upper 45%
+ const bs=gauss(b,3,sg),ds=gauss(d,3,sg),diff=new Float32Array(N),dbg=new Float32Array(N),bbg=new Uint8Array(N);
+ const bgr=new Float32Array(H*3),col=[];for(let c=0;c<10;c++)col.push(c);for(let c=W-10;c<W;c++)col.push(c);
+ for(let r=0;r<H;r++)for(let z=0;z<3;z++){const vs=col.map(c=>d[(r*W+c)*3+z]).sort((x,y)=>x-y);bgr[r*3+z]=(vs[9]+vs[10])/2}
+ let m=new Uint8Array(N);
+ for(let r=0;r<H;r++)for(let c=0;c<W;c++){const i=r*W+c,k=i*3;let s=0,t=0,u=0;for(let z=0;z<3;z++){const a=ds[k+z]-bs[k+z],e=d[k+z]-bgr[r*3+z],f=b[k+z]-bgr[r*3+z];s+=a*a;t+=e*e;u+=f*f}
+  diff[i]=Math.sqrt(s);dbg[i]=Math.sqrt(t);bbg[i]=Math.sqrt(u)<=22?1:0;
+  if(SMALL){m[i]=((diff[i]>30&&!bbg[i])||(diff[i]>16&&bbg[i]))&&!(d[k]-d[k+2]>18&&!o.warm)?1:0}
+  else m[i]=diff[i]>40&&dbg[i]>22?1:0}
+ for(let r=Math.floor(H*.86);r<H;r++)for(let c=0;c<W;c++){const i=r*W+c;if(dbg[i]<=48)m[i]=0}   // floor shadows near the feet are not the item
+ if(!SMALL)m=dilate(erode(m,2),2);m=erode(dilate(m,SMALL?1:3),SMALL?1:3);
+ for(let r=0;r<H;r++)for(let c=0;c<8;c++){m[r*W+c]=0;m[r*W+W-1-c]=0}   // the sheet's white divider lines
+ if(o.rows){const a=Math.floor(H*o.rows[0]),z=Math.floor(H*o.rows[1]);for(let r=0;r<H;r++)if(r<a||r>=z)for(let c=0;c<W;c++)m[r*W+c]=0}
+ if(CUT)for(let i=Math.floor(H*.45)*W;i<N;i++)m[i]=0;
+ const [L,n]=label(m);
+ if(n){const sz=new Float64Array(n+1),mx=new Float32Array(n+1),r0=new Int32Array(n+1).fill(H),r1=new Int32Array(n+1).fill(-1);
+  for(let i=0;i<N;i++){const l=L[i];if(!l)continue;sz[l]++;if(diff[i]>mx[l])mx[l]=diff[i];const r=(i/W)|0;if(r<r0[l])r0[l]=r;if(r>r1[l])r1[l]=r}
+  let keep=new Uint8Array(n+1);
+  if(SMALL){const strong=new Uint8Array(N);for(let i=0;i<N;i++){const l=L[i];if(l&&mx[l]>32&&sz[l]>=4)strong[i]=1}const near=dilate(strong,6);
+   for(let i=0;i<N;i++){const l=L[i];if(l&&near[i]&&sz[l]>=3)keep[l]=1}}
+  else if(HEAD){const er=erode(m,3),ec=new Float64Array(n+1);for(let i=0;i<N;i++)if(er[i])ec[L[i]]++;
+   const vals={};for(let i=0;i<N;i++){const l=L[i];if(l&&sz[l]>=40&&ec[l]>=30)(vals[l]=vals[l]||[]).push(dbg[i])}
+   for(const l in vals){const a=vals[l].sort((x,y)=>x-y),h=a.length>>1,md=a.length%2?a[h]:(a[h-1]+a[h])/2;if(md>45)keep[l]=1}}
+  else{let big=1;for(let l=2;l<=n;l++)if(sz[l]>sz[big])big=l;const M=sz[big],min=Math.max(Math.min(400,.1*M),40,.02*M);
+   for(let l=1;l<=n;l++)if(sz[l]>=min&&r0[l]>=r0[big]-5&&r1[l]<=r1[big]+5)keep[l]=1}
+  for(let i=0;i<N;i++)m[i]=keep[L[i]]?1:0;
+  if(SMALL&&o.one){let any=0;for(let i=0;i<N;i++)if(m[i]){any=1;break}
+   if(any){const [L2,n2]=label(dilate(m,8)),s2=new Float64Array(n2+1);for(let i=0;i<N;i++)if(m[i])s2[L2[i]]++;let bg=1;for(let l=2;l<=n2;l++)if(s2[l]>s2[bg])bg=l;for(let i=0;i<N;i++)if(L2[i]!=bg)m[i]=0}}}
+ else m.fill(0);
+ if(!SMALL)m=fillHoles(m);
+ if(CUT)for(let i=Math.floor(H*.45)*W;i<N;i++)m[i]=0;
+ else if(!HEAD&&!o.nohem){let mw=0;const w=new Int32Array(H);for(let r=0;r<H;r++){let s=0;for(let c=0;c<W;c++)s+=m[r*W+c];w[r]=s;if(s>mw)mw=s}
+  let last=-1;for(let r=0;r<H;r++)if(w[r]>=.35*mw)last=r;if(last>=0)for(let i=(last+2)*W;i<N;i++)m[i]=0}   // the hem: nothing of the item below the last wide row (feet, floor)
+ return m}
+function layer(d,m){const a=gauss(Float32Array.from(m,x=>x*255),1,.8),c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),im=g.createImageData(W,H),p=im.data;let px=0;
+ for(let i=0;i<N;i++){const k=i*3,q=i*4;p[q]=d[k];p[q+1]=d[k+1];p[q+2]=d[k+2];p[q+3]=Math.max(0,Math.min(255,Math.round(a[i])));if(m[i])px++}
+ g.putImageData(im,0,0);c.px=px;return c}
+
+// how each kind of item is cut (KIND keys in r360.js)
+const MODE={cover:{mode:'head'},scarf:{mode:'head'},necklace:{mode:'small',rows:[.1,.55],one:1},earrings:{mode:'small',rows:[.03,.2]},bracelet:{mode:'small',low:1},
+ belt:{rows:[.28,.62],nohem:1},shoes:{rows:[.8,1],nohem:1}};
+const tick=()=>new Promise(r=>setTimeout(r,0));
+// src: a File/Blob or a url · kind: KIND key · onStep(i): progress → {views:[canvas×8], shifts, px}
+async function run(src,kind,onStep){const img=await toImg(src);const S=sheetData(img);if(!S)throw Object.assign(new Error('shape'),{code:'shape',w:img.naturalWidth,h:img.naturalHeight});
+ const o=MODE[kind]||{},views=[],shifts=[];
+ for(let v=0;v<8;v++){onStep&&onStep(v);await tick();const b=await base(v);const s=shift(S,v,b,o.mode=='head');shifts.push(s);const d=panel(S,v,s[0],s[1]);views.push(layer(d,mask(b,d,o)))}
+ return {views,shifts,px:views.map(c=>c.px)}}
+window.cut8={run,MODE,W,H};
+})();

@@ -5,7 +5,7 @@ html:not(#n188) body .avd.avd-fix,html:not(#n188) body .avd.avd-ok{width:16px!im
 html:not(#n188) body .avd.avd-ok{background:radial-gradient(circle,#1f9d55 0 46%,#fff 50%)!important}
 html:not(#n188) body .erow.avrow{display:none!important}
 /* item window: status, what she uploaded, upload + prompt */
-.it77p.b188 .up{color:#6b4a12;border-color:#e3c98f;background:#fdf6e6}
+.it77p.b188 .up,.a8st .up{color:#6b4a12;border-color:#e3c98f;background:#fdf6e6}
 .u188{display:flex;flex-wrap:wrap;gap:6px}
 .u188 span{position:relative;display:block}
 .u188 img{width:64px;height:64px;object-fit:cover;display:block;border:1px solid var(--line,#ddd);border-radius:10px;background:#f4f1ee}
@@ -13,3 +13,20 @@ html:not(#n188) body .erow.avrow{display:none!important}
 .it77u.s188{border-color:var(--line,#ddd)}
 #r3mk [data-mkst188]{display:block;margin-top:4px;color:#2f6b3a;font-weight:600}
 #r3mk [data-mkst188]:empty{display:none}
+/* v190: the item window's avatar part = the 8-angle avatar only. The 5-pose boxes (garment, jewelry, ties) belong to the old avatar, which no screen shows any more */
+html:not(#n188) body .p5gbox,html:not(#n188) body .jwbox,html:not(#n188) body .tiesbox{display:none!important}
+button.it77p.b188{font:inherit;color:inherit;border:0;background:none;padding:0;margin:0;cursor:pointer;display:flex;align-items:center;gap:6px;text-align:start;max-width:100%}
+button.it77p.b188 span{white-space:normal}button.it77p.b188 b{color:var(--muted);font-size:.8rem}
+.a8box{border:0;background:var(--chip);border-radius:16px;padding:10px 12px;min-width:0;max-width:100%}
+#dlbody .a8box{background:var(--card)!important;border-radius:18px;box-shadow:var(--shadow)}
+html.d73 #dlbody .a8box{border:1px solid var(--line)!important;border-radius:0!important;box-shadow:none!important}
+.a8box summary{font-weight:700;padding:8px 2px;cursor:pointer}
+.a8st{margin:4px 0 10px}
+.a8st span{display:inline-block;font-size:.86rem;line-height:1.4;padding:5px 10px;border-radius:var(--pill,99px);border:1px solid var(--line)}
+.a8st .ok{color:#2f6b3a;border-color:#9cc3a3;background:#eef6ef}.a8st .no{color:#9b2c2c;border-color:#e2b4b4;background:#fbefef}
+.a8s{margin:0;padding-inline-start:22px;display:grid;gap:12px}.a8s li{line-height:1.55}
+.a8s button,.a8b button{display:block;margin-top:6px;font:inherit;font-weight:700;font-size:.9rem;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:var(--pill,99px);padding:9px 14px;cursor:pointer;min-height:42px;max-width:100%}
+.a8s button.go,.a8b button.go{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.a8s button:disabled{opacity:.5;cursor:default}
+.a8b{display:flex;flex-wrap:wrap;gap:8px}.a8b button{margin-top:0}
+.a8box .u188{margin-top:12px}
