@@ -327,15 +327,17 @@ async function paint(cv,v,s,pad){s=headOf(s);const bg=s.bg||'';const hw=whole(s.
  let base=await im((bg?'c':'n')+hw+(v+1));if(!base&&hw)base=await im((bg?'c':'n')+(v+1));if(!base&&bg)base=await im('n'+(v+1));if(!base)return false;
  const L=layersFor(v,s);const [ms,bc]=await Promise.all([Promise.all(L.map(l=>im(l.s))),bg?bgCanvas(bg):null]);
  const pt=pad?PT:0,pb=pad?PB:0,BW=base.naturalWidth,BH=base.naturalHeight;
- const c=cv.getContext('2d');if(cv.width!=BW||cv.height!=BH+pt+pb){cv.width=BW;cv.height=BH+pt+pb}
- c.clearRect(0,0,cv.width,cv.height);
+ // v223 (Sara 19:04 "הדמות יורדת מטושטשת"): since v216 paint() waits (head fit, makeup) in the middle of drawing; two paints of the same canvas at once
+ // (the home avatar redraws when her styles and home look arrive) stacked their moves – the doll slid down and doubled. Now each paint draws aside and the newest one is copied in at the end
+ const my=cv._pg=(cv._pg||0)+1,oc=document.createElement('canvas');oc.width=BW;oc.height=BH+pt+pb;const c=oc.getContext('2d',{willReadFrequently:true});
  const E=pb&&!bg?floorPad(base):null;
  if(pt||pb){if(!bg){c.drawImage(base,0,0,BW,2,0,0,BW,pt+1);if(E)c.drawImage(E,0,0,2,1,0,pt+BH-8,BW,pb+8)}c.save();c.translate(0,pt)}
- if(bg){if(bc)c.drawImage(bc,FX[v]-210,FY-615);else{c.fillStyle='#f6efe6';c.fillRect(0,-pt,cv.width,cv.height)}
+ if(bg){if(bc)c.drawImage(bc,FX[v]-210,FY-615);else{c.fillStyle='#f6efe6';c.fillRect(0,-pt,oc.width,oc.height)}
   const g=c.createRadialGradient(FX[v],FY+3,2,FX[v],FY+3,52);g.addColorStop(0,'rgba(40,28,20,.30)');g.addColorStop(1,'rgba(40,28,20,0)');c.save();c.translate(FX[v],FY+3);c.scale(1,.16);c.translate(-FX[v],-FY-3);c.fillStyle=g;c.fillRect(FX[v]-60,FY-60,120,126);c.restore()}
  c.drawImage(base,0,0);if(E){for(let i=0;i<8;i++){c.globalAlpha=(i+1)/8;c.drawImage(E,0,0,2,1,0,BH-8+i,BW,1)}c.globalAlpha=1}
  const HTv=!s.rawHead&&hw?((await headT(s.head))||[])[v]:null;
- ms.forEach((m,i)=>{if(!m)return;const l=L[i],im=l.t?tinted(m,l.t,l.ref):m;if(l.hd&&HTv)drawHead(c,im,HTv);else c.drawImage(im,0,0)});if(L.fit)await mkFit(c,v,s.head,L.fit,pt);if(pt||pb)c.restore();return true}
+ ms.forEach((m,i)=>{if(!m)return;const l=L[i],im=l.t?tinted(m,l.t,l.ref):m;if(l.hd&&HTv)drawHead(c,im,HTv);else c.drawImage(im,0,0)});if(L.fit)await mkFit(c,v,s.head,L.fit,pt);if(pt||pb)c.restore();
+ if(cv._pg!==my)return true;if(cv.width!=BW||cv.height!=BH+pt+pb){cv.width=BW;cv.height=BH+pt+pb}const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);g.drawImage(oc,0,0);return true}
 function wornIds(s){const ids=[];if(s.head&&KEYOF[s.head])ids.push(KEYOF[s.head]);if(/^yt/.test(s.head||'')&&s.tf){const t=KEYOF[s.tf]||(D[s.tf]?s.tf:'');if(t&&!ids.includes(t))ids.push(t)}Object.keys(s.on||{}).forEach(k=>{const id=KEYOF[k];if(s.on[k]&&id&&!ids.includes(id))ids.push(id)});return ids}
 function wearing(s){const a=wornIds(s).map(nm);if(s.head=='w')a.unshift('הפאה');const n=k=>STY[k]&&STY[k].n;if(n(s.head))a.unshift(n(s.head));if(n(s.mk))a.push('איפור: '+n(s.mk));return a.join(' · ')}
 
