@@ -108,7 +108,9 @@ function layer(d,m){const a=gauss(Float32Array.from(m,x=>x*255),1,.8),c=document
 const NK=[81,88,94,82,64,87,83,77];   // the neck row of each view on f1-8: where the doll's head ends (n vs nh, turned back)
 // below the head: a pixel that only got darker or lighter but kept the doll's own colour is a shadow on her dress, not the scarf
 // (Sara's first tie, 26/10: a beige rim along the tail in the back views)
-function shade(bs,ds,k){const sb=bs[k]+bs[k+1]+bs[k+2]+1,sd=ds[k]+ds[k+1]+ds[k+2]+1;let c=0;for(let z=0;z<3;z++)c+=Math.abs(ds[k+z]/sd-bs[k+z]/sb);return c<.045}
+function shade(bs,ds,k){const sb=bs[k]+bs[k+1]+bs[k+2]+1,sd=ds[k]+ds[k+1]+ds[k+2]+1;let c=0;for(let z=0;z<3;z++)c+=Math.abs(ds[k+z]/sd-bs[k+z]/sb);
+ // v224 (Sara 19:09 "הכיסוי לא חתוך טוב"): a grey scarf tail over her beige arm passed as a shadow of the arm (warm greys) and was cut into pieces – a shadow keeps the colour's strength, grey has none
+ const sat=(a)=>{const mx=Math.max(a[k],a[k+1],a[k+2]),mn=Math.min(a[k],a[k+1],a[k+2]);return mx>0?(mx-mn)/mx:0};return c<.045&&sat(ds)>sat(bs)*.6}
 // v213 (Sara 26/10 15:36, her first hairstyle "לא נגזרה טוב"): GPT's backdrop has light/dark blue patches (kept as pieces above the head),
 // and GPT's body sits a few px off the doll (thin beige strips along the arm and back in the side views). Now:
 // · a light blue pixel is backdrop (not for tiex – her own scarf may be blue) · a piece must touch the doll's head, not just be high up
@@ -118,13 +120,16 @@ function maskWhole(b,d,v,fab,keepBlue){const bs=gauss(b,3,1.2),ds=gauss(d,3,1.2)
  for(let r=0;r<H;r++)for(let z=0;z<3;z++){const vs=col.map(c=>d[(r*W+c)*3+z]).sort((x,y)=>x-y);bgr[r*3+z]=(vs[9]+vs[10])/2;const vb=col.map(c=>b[(r*W+c)*3+z]).sort((x,y)=>x-y);bgb[r*3+z]=(vb[9]+vb[10])/2}
  const nk=NK[v]+4,low=Math.floor(H*.8),RN=5;let m=new Uint8Array(N);
  const blue=k=>{const R=d[k],G=d[k+1],B=d[k+2];return B-R>28&&B>=G-6&&R*.299+G*.587+B*.114>105};
+ const grey=k=>{const mx=Math.max(d[k],d[k+1],d[k+2]),mn=Math.min(d[k],d[k+1],d[k+2]);return mx>0&&(mx-mn)/mx<.1};   // v224: a grey scarf near her arm's dark crease is not GPT's body moved (that is skin-coloured)
  const far=(r,c,k)=>{for(let y=Math.max(0,r-RN);y<=Math.min(H-1,r+RN);y++)for(let x=Math.max(0,c-RN);x<=Math.min(W-1,c+RN);x++){const j=(y*W+x)*3;let s=0;for(let z=0;z<3;z++){const a=ds[k+z]-bs[j+z];s+=a*a}if(s<1600)return false}return true};
  for(let r=0;r<low;r++)for(let c=0;c<W;c++){const i=r*W+c,k=i*3;let s=0,t=0;for(let z=0;z<3;z++){const a=ds[k+z]-bs[k+z],e=d[k+z]-bgr[r*3+z];s+=a*a;t+=e*e}
   diff[i]=Math.sqrt(s);dbg[i]=Math.sqrt(t);if(!keepBlue&&blue(k))continue;
-  m[i]=dbg[i]>22&&(r<nk||diff[i]>40&&!shade(bs,ds,k)&&far(r,c,k))?1:0}
+  m[i]=dbg[i]>22&&(r<nk||diff[i]>40&&!shade(bs,ds,k)&&(grey(k)||far(r,c,k)))?1:0}
+ if(window.CUT8D)CUT8D.raw=Uint8Array.from(m);
  for(let r=0;r<H;r++)for(let c=0;c<8;c++){m[r*W+c]=0;m[r*W+W-1-c]=0}   // the sheet's white divider lines
  m=erode(dilate(m,2),2);m=dilate(erode(m,1),1);
  {const o=dilate(erode(m,2),2);for(let i=(nk+10)*W;i<N;i++)m[i]=o[i]}   // lower down, a strip under 5 px wide is the edge of GPT's body, not hair
+ if(window.CUT8D)CUT8D.morph=Uint8Array.from(m);
  // the doll's own head (and a margin): a piece is kept only if it touches it
  let hz=new Uint8Array(N);for(let r=0;r<nk;r++)for(let c=8;c<W-8;c++){const i=r*W+c,k=i*3;let t=0;for(let z=0;z<3;z++){const e=b[k+z]-bgb[r*3+z];t+=e*e}if(t>22*22)hz[i]=1}
  hz=dilate(erode(hz,1),9);
@@ -195,5 +200,10 @@ async function run(src,kind,onStep){const img=await toImg(src);const S=sheetData
   else views.push(turn(layer(d,mask(b,d,o)),v))}
  lum.sort((x,y)=>x-y);
  return {views,shifts,px:views.map(c=>c.px),fab:fab.length?fab:null,lum:lum.length?Math.round(lum[lum.length>>1]):0}}
-window.cut8={run,MODE,W,H,CV:2,CVW:7};   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
+// test helper: the panel, the doll and the masks of one view of a sheet (window.cut8dbg(url,v))
+window.cut8dbg=async(src,v)=>{const img=await toImg(src),S=sheetData(img),b=await base(v),s=shift(S,v,b,true),d=panel(S,v,s[0],s[1]);window.CUT8D={};const [m]=maskWhole(b,d,v,1,false);
+ const im=a=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),x=g.createImageData(W,H);for(let i=0;i<N;i++){const on=a.length==N?a[i]:0;x.data[i*4]=on?255:0;x.data[i*4+1]=on?255:0;x.data[i*4+2]=on?255:0;x.data[i*4+3]=255}g.putImageData(x,0,0);return c.toDataURL()};
+ const rgb=a=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),x=g.createImageData(W,H);for(let i=0;i<N;i++){x.data[i*4]=a[i*3];x.data[i*4+1]=a[i*3+1];x.data[i*4+2]=a[i*3+2];x.data[i*4+3]=255}g.putImageData(x,0,0);return c.toDataURL()};
+ return {d:rgb(d),b:rgb(b),raw:im(CUT8D.raw),morph:im(CUT8D.morph),fin:im(m)}};
+window.cut8={run,MODE,W,H,CV:2,CVW:8};   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
 })();

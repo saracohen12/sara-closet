@@ -203,3 +203,6 @@ dialog#r3cmp::backdrop,dialog#r3sh::backdrop{background:rgba(20,12,8,.55)}
 #r360 .r3see[hidden]{display:none}
 #r360 .r3lbl.r3fh{margin:2px 0;font-size:.92rem;color:var(--z-ink,inherit)}
 #r360 .r3lbl.r3fh[aria-expanded=true]{margin-bottom:8px}
+/* v224 (Sara 19:11 "אני לא מגיעה לכל הכפתורים של הביגוד"): the category row scrolled sideways, which a mouse can't do – it wraps now */
+#r360 .r3cats{flex-wrap:wrap;overflow:visible}
+#r360 .r3cats button{min-height:36px;padding:0 12px}
