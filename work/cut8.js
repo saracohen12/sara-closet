@@ -136,6 +136,13 @@ function maskWhole(b,d,v,fab,keepBlue){const bs=gauss(b,3,1.2),ds=gauss(d,3,1.2)
  // the neck: below the doll's head line GPT's neck fades into the doll's own neck (unless hair covers it), so no line shows where they meet
  // v214 (Sara 15:57 "עדיין יש חורים, אני רואה בשתי תמונות חורים"): only her skin fades there – at the back hair covers the nape (dark like the doll's), and fading it left a see-through line
  const A=Float32Array.from(m);for(let r=nk-3;r<nk;r++)for(let c=0;c<W;c++){const i=r*W+c,k=i*3;if(A[i]&&diff[i]<40&&d[k]*.299+d[k+1]*.587+d[k+2]*.114>150)A[i]*=(nk-r)/4}
+ // v218 (Sara 17:28 "צל צהוב, לא גזור טוב"): below the neck the hair's edge kept a beige rim of GPT's body/top. An edge pixel (3 px) lighter than the hair inside it (6 px around) fades out
+ {const cr=erode(m,3),Y=new Float64Array((W+1)*(H+1)),C=new Float64Array((W+1)*(H+1)),lu=i=>d[i*3]*.299+d[i*3+1]*.587+d[i*3+2]*.114;
+  for(let r=0;r<H;r++)for(let c=0;c<W;c++){const i=r*W+c,j=(r+1)*(W+1)+c+1;Y[j]=Y[j-1]+Y[j-W-1]-Y[j-W-2]+(cr[i]?lu(i):0);C[j]=C[j-1]+C[j-W-1]-C[j-W-2]+(cr[i]?1:0)}
+  const bx=(T,r0,c0,r1,c1)=>T[(r1+1)*(W+1)+c1+1]-T[r0*(W+1)+c1+1]-T[(r1+1)*(W+1)+c0]+T[r0*(W+1)+c0];
+  for(let r=nk;r<H;r++)for(let c=0;c<W;c++){const i=r*W+c;if(!m[i]||cr[i])continue;const r0=Math.max(0,r-6),r1=Math.min(H-1,r+6),c0=Math.max(0,c-6),c1=Math.min(W-1,c+6),n=bx(C,r0,c0,r1,c1);if(n<6)continue;
+   const x=lu(i)-bx(Y,r0,c0,r1,c1)/n;if(x>12)A[i]*=Math.max(0,1-(x-12)/22)}
+ }
  {const G=gauss(A,1,.8),core=erode(m,3);for(let r=0;r<H;r++)if(r<nk-3||r>=nk)for(let c=0;c<W;c++){const i=r*W+c;if(core[i])G[i]=1}m.A=G}   // inside the hair (3 px from its edge) nothing is see-through
  if(!fab)return [m];
  // the fabric: changed from the doll and grey (skin, lips and her front hair are not grey)
@@ -166,5 +173,5 @@ async function run(src,kind,onStep){const img=await toImg(src);const S=sheetData
   else views.push(turn(layer(d,mask(b,d,o)),v))}
  lum.sort((x,y)=>x-y);
  return {views,shifts,px:views.map(c=>c.px),fab:fab.length?fab:null,lum:lum.length?Math.round(lum[lum.length>>1]):0}}
-window.cut8={run,MODE,W,H,CV:2,CVW:4};   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
+window.cut8={run,MODE,W,H,CV:2,CVW:5};   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
 })();

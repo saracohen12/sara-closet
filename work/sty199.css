@@ -242,3 +242,8 @@ dialog#sty199.w213,dialog#sty204v.w213{width:min(900px,100vw)}
 #sty199 .systeps{margin:6px 0 8px;padding-inline-start:20px;display:grid;gap:8px;font-size:.88rem;line-height:1.5}
 #sty199 .systeps .mkb{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 #sty199 .sysee{margin:6px 0;padding:8px 12px;border-radius:12px;background:var(--z-solid,#fff);font-size:.86rem;line-height:1.5}
+/* v218 (Sara 17:31 "תגדילי את הקוביה של האיפור ... בתקריב, התמונה הטובה"): makeup tiles in the studio, two in a row, a big square picture */
+#r360 .r3heads.r3sty.r3mk{flex-wrap:wrap;overflow:visible}
+#r360 .r3heads.r3sty.r3mk button{flex:1 1 calc(50% - 8px);width:auto;max-width:none;padding:6px}
+#r360 .r3heads.r3sty.r3mk img{width:100%;height:auto;aspect-ratio:1;border-radius:calc(var(--z-r) - 8px);object-fit:cover;object-position:50% 25%}
+#r360 .r3heads.r3sty.r3mk .r3styadd b{width:100%;height:auto;aspect-ratio:1;border-radius:calc(var(--z-r) - 8px)}

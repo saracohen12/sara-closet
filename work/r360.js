@@ -74,7 +74,7 @@ const BEIGE=[222,200,184];   // the doll's own cover
 const GREY=[150,150,154];    // v204 (Sara 11:46 "תשים לי איזה כיסוי יפה שבצבע אפור ניטרלי"): the basic cover is her default tie in a neutral grey
 function styles(list){try{for(const c in FRM)if(c[0]=='#')delete FRM[c];for(const c in CARD)if(c.includes('|face|'))delete CARD[c]}catch(_){}   // v213: the avatar tiles' frames and the makeup faces use her default tie / hairstyle
  Object.keys(STY).forEach(k=>{const z='z'+k.slice(1);for(let v=1;v<=8;v++){delete DYN[k+v];delete IMG[k+v];delete DYN[z+v];delete IMG[z+v]}delete STY[k];delete STH[k];for(const c in STH)if(c.startsWith(k+'|'))delete STH[c];try{for(const c in CARD)if(c.startsWith(k+'|'))delete CARD[c];for(const c in FRM)if(c.startsWith(k+'|'))delete FRM[c]}catch(_){}});
- (list||[]).forEach(s=>{const k=styKey(s);if(!k||!Array.isArray(s.L)||s.L.length!=8)return;STY[k]={set:s.set,n:s.n||'',lum:+s.lum||128,id:s.id,t:s.t||0};
+ (list||[]).forEach(s=>{const k=styKey(s);if(!k||!Array.isArray(s.L)||s.L.length!=8)return;STY[k]={set:s.set,n:s.n||'',lum:+s.lum||128,id:s.id,t:s.t||0,cu:s.cu||''};
   s.L.forEach((a,v)=>{if(a)DYN[k+(v+1)]='/_blob/'+a});if(Array.isArray(s.M))s.M.forEach((a,v)=>{if(a)DYN['z'+k.slice(1)+(v+1)]='/_blob/'+a})});
  if(/^y/.test(ST.head||'')&&!STY[ST.head])ST.head=ST.tf&&(ST.tf=='c'||KEYOF[ST.tf])?ST.tf:'c';if(ST.mk&&!STY[ST.mk])ST.mk='';
  try{paintHeads();redraw()}catch(_){}
@@ -114,10 +114,17 @@ function wearCover(id,k){k=k||tieFor(id);if(!k||!STY[k])return false;const r=REA
 const tfId=()=>ST.tf&&(KEYOF[ST.tf]||(D[ST.tf]?ST.tf:''));
 // a small picture of her head with the style (the row in the studio, the library)
 const THQ=new Map();let SCALL=false;
+// v218 (Sara 17:28 / 17:31 "לא רואים את האיפור בתמונה הקטנה ... בתקריב עם האיפור, התמונה הטובה"): a makeup with her GPT close-up shows the close-up (her wig, left);
+// without one, her cover doll with the makeup as GPT drew it (a hairstyle head only gets it fitted and blurred), a bigger picture
+function cuThumb(id){return new Promise((ok,no)=>{const im=new Image();im.onload=()=>{const W=im.naturalWidth,H=im.naturalHeight,sd=Math.min(W/2,H),q=sd*.86,o=document.createElement('canvas');o.width=o.height=320;
+  o.getContext('2d').drawImage(im,(W/2-q)/2,Math.max(0,(H-sd)/2),q,q,0,0,320,320);ok(o.toDataURL('image/jpeg',.88))};im.onerror=no;im.src='/_blob/'+id})}
 function styThumb(k,rgb){const ck=rgb?k+'|'+rgb.join(','):k;if(STH[ck])return Promise.resolve(STH[ck]);if(THQ.has(ck))return THQ.get(ck);const st=STY[k];if(!st)return Promise.resolve('');
- const p=(async()=>{const s=Object.assign(clone(DEF),{on:{},bg:'',head:st.set=='mk'?(whole(ST.head)&&ST.head!='w'?ST.head:'c'):k,mk:st.set=='mk'?k:'',tc:st.set=='tie'?(rgb||ST.tc||GREY):null});
+ const p=(async()=>{if(st.set=='mk'&&st.cu){try{return STH[ck]=await cuThumb(st.cu)}catch(_){}}
+  if(st.set=='mk'){const s=Object.assign(clone(DEF),{on:{},bg:'',head:'c',mk:k,tc:null}),c=document.createElement('canvas');if(!await paint(c,0,s))return '';
+   const o=document.createElement('canvas');o.width=o.height=200;const g=o.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(c,134,18,84,84,0,0,200,200);return STH[ck]=o.toDataURL('image/jpeg',.9)}
+const s=Object.assign(clone(DEF),{on:{},bg:'',head:k,mk:'',tc:st.set=='tie'?(rgb||ST.tc||GREY):null});
   const c=document.createElement('canvas');if(!await paint(c,0,s))return '';const o=document.createElement('canvas');o.width=o.height=96;const g=o.getContext('2d');
-  if(st.set=='mk')g.drawImage(c,136,22,80,80,0,0,96,96);else g.drawImage(c,96,0,160,160,0,0,96,96);
+  g.drawImage(c,96,0,160,160,0,0,96,96);
   return STH[ck]=o.toDataURL('image/jpeg',.85)})().catch(()=>'').finally(()=>THQ.delete(ck));THQ.set(ck,p);return p}
 
 // v204: the library cards (Sara 11:38 "לא מספיק לי את השם, אני רוצה לראות פיזית איך זה נראה"): front and back (ties, hairstyles) or the face (makeup);
@@ -172,6 +179,8 @@ function mkDelta(mk,v){const k=mk+'|'+v+'|'+(DYN[mk+(v+1)]||'');if(FMK[k])return
   const cx=e[0],cy=e[1]+2,rx=Math.max(5,e[2]-2),ry=Math.max(5,e[3]-2),x0=cx-rx,y0=cy-ry,w=2*rx+1,h=2*ry+1;
   const a=D.getContext('2d',{willReadFrequently:true}).getImageData(x0,y0,w,h).data,b=F.getContext('2d',{willReadFrequently:true}).getImageData(x0,y0,w,h).data;
   let d=new Float32Array(w*h*3);for(let y=0;y<h;y++)for(let x=0;x<w;x++){const q=((x-rx)/rx)**2+((y-ry)/ry)**2;if(q>1)continue;const m=q<.55?1:(1-q)/.45,i=y*w+x;for(let z=0;z<3;z++)d[i*3+z]=(b[i*4+z]-a[i*4+z])*m}
+  {const mu=[0,0,0];let n=0;for(let i=0;i<w*h;i++){const m=Math.abs(d[i*3])+Math.abs(d[i*3+1])+Math.abs(d[i*3+2]);if(!m)continue;n++;for(let z=0;z<3;z++)mu[z]+=d[i*3+z]}   // v218 (Sara 17:28 "צל צהוב"): GPT warms the whole face a little – that tint is taken out,
+   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const q=((x-rx)/rx)**2+((y-ry)/ry)**2;if(q>1)continue;const m=q<.55?1:(1-q)/.45,i=y*w+x;for(let z=0;z<3;z++)d[i*3+z]=(d[i*3+z]-mu[z]/Math.max(1,n)*m)*1.7}}   // and the makeup itself (lips, eyes, blush) is shown 1.7× – on the doll it is faint
   for(let pass=0;pass<2;pass++){const o=new Float32Array(d.length);for(let y=0;y<h;y++)for(let x=0;x<w;x++)for(let z=0;z<3;z++){let t=0,n=0;for(let yy=Math.max(0,y-1);yy<=Math.min(h-1,y+1);yy++)for(let xx=Math.max(0,x-1);xx<=Math.min(w-1,x+1);xx++){t+=d[(yy*w+xx)*3+z];n++}o[(y*w+x)*3+z]=t/n}d=o}   // colour, not the lines of another drawing
   return {x0,y0,w,h,d}})()}
 // v217 (Sara 17:17 "הראש לא יושב במקום"): her wig and the hairstyles are GPT drawings of the whole head – a little smaller, turned ~6° and moved.
@@ -445,7 +454,7 @@ function paintSty(){const box=dlg&&dlg.querySelector('.r3styr');if(!box)return;
    ${all>11?`<button type="button" class="r3scm" data-sytfm aria-expanded="${!!SCALL}">${SCALL?'פחות':'עוד '+(all-11)}</button>`:''}</div>`;
   const it=sel&&sel!='c'?sel:'';
   h+=it?`<button type="button" class="r3stb r3ex" data-tie202="${esc(it)}">${isReady(it)?'🎯 המטפחת הזו כבר במדויק. לשנות קשירה או להעלות שוב':'🎯 במדויק, עם ההדפס של המטפחת הזו'}</button>`:`<p class="r3note r3exn">🎯 רוצה את המטפחת בדיוק, עם ההדפס? בוחרים אותה כאן, ואז "במדויק".</p>`}
- if(ms.length)h+=`<span class="r3lbl">💄 איפור</span><div class="r3heads r3sty" role="radiogroup" aria-label="איפור">${chip('data-sym','','בלי',!ST.mk,'a8/t_c.webp'+V)}${ms.map(k=>chip('data-sym',k,STY[k].n,ST.mk==k)).join('')}${add('mk','להוסיף איפור')}</div>`;
+ if(ms.length)h+=`<span class="r3lbl">💄 איפור</span><div class="r3heads r3sty r3mk" role="radiogroup" aria-label="איפור">${chip('data-sym','','בלי',!ST.mk,'a8/t_c.webp'+V)}${ms.map(k=>chip('data-sym',k,STY[k].n,ST.mk==k)).join('')}${add('mk','להוסיף איפור')}</div>`;
  h+=`<button type="button" class="r3stb" data-styopen="${H?'hair':'tie'}">🎨 תסרוקות, קשירות ואיפור</button>`;
  if(box.dataset.h!==h){box.dataset.h=h;box.innerHTML=h;try{thl([...box.querySelectorAll('img[data-th]')].map(i=>i.dataset.th))}catch(_){}}
  box.querySelectorAll('img[data-sth]').forEach(i=>{if(!i.getAttribute('src'))styThumb(i.dataset.sth).then(u=>{if(u)document.querySelectorAll(`img[data-sth="${CSS.escape(i.dataset.sth)}"]`).forEach(x=>x.src=u)})});
