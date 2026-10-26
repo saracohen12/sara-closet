@@ -120,12 +120,12 @@ for g in G:
     for m in g:
         ID[m]['dup']=[o for o in g if o!=m]; ID[m]['dupnote']=NOTE.get(tuple(g),'')
 SRC={'t1':'טמו 1 (חשבון 8711309)','t2':'טמו 2 (חשבון 9285464)','sh':'שיין','ae':'עלי אקספרס'}
-SEC=[('dresses','שמלות'),('skirts','חצאיות'),('sets','סטים'),('pants','מכנסיים'),('tops','חולצות'),('sweaters','סוודרים'),('outer',"ז'קטים ומעילים"),('scarves','כיסויי ראש וצעיפים'),('belts','חגורות'),('jewelry','תכשיטים'),('shoes','נעליים ואביזרים'),('bags','תיקים'),('hosiery','גרביונים וגרביים'),('night','הלבשה תחתונה ולילה'),('hair','אביזרי שיער'),('makeup','איפור וטיפוח'),('girls','בנות'),('boys','בנים'),('men','גברים'),('wedding','חתונה ואירועים'),('other','בית ושונות')]
+SEC=[('dresses','שמלות'),('skirts','חצאיות'),('sets','סטים'),('pants','מכנסיים'),('tops','חולצות'),('base','חולצות בסיס'),('sweaters','סוודרים'),('outer',"ז'קטים ומעילים"),('scarves','כיסויי ראש וצעיפים'),('belts','חגורות'),('jewelry','תכשיטים'),('shoes','נעליים ואביזרים'),('bags','תיקים'),('hosiery','גרביונים וגרביים'),('night','הלבשה תחתונה ולילה'),('hair','אביזרי שיער'),('makeup','איפור וטיפוח'),('girls','בנות'),('boys','בנים'),('men','גברים'),('wedding','חתונה ואירועים'),('other','בית ושונות')]
 SOVR={'S16D0_2':'wedding','S16D0_3':'wedding','S16D0_4':'wedding','S16D0_5':'wedding','S16D0_6':'wedding','SMSCW_13':'wedding','S1A5K_0':'wedding',
  'SMSCW_4':'shoes','SMSCW_6':'shoes','SMSCW_11':'shoes','SMSCW_14':'shoes'}
 for x in items:
     if x['id'] in SOVR: x['cat']=SOVR[x['id']]
-GR=[('clo','בגדים',['dresses','skirts','sets','tops','sweaters','outer']),('acc','אביזרים',['scarves','belts','jewelry','shoes','bags','hosiery','hair']),('nig','לילה',['night']),('kid','ילדים',['girls','boys']),('more','עוד',['men','makeup','wedding','other'])]
+GR=[('clo','בגדים',['dresses','skirts','sets','tops','base','sweaters','outer']),('acc','אביזרים',['scarves','belts','jewelry','shoes','bags','hosiery','hair']),('nig','לילה',['night']),('kid','ילדים',['girls','boys']),('more','עוד',['men','makeup','wedding','other'])]
 G2={c:g for g,_,cs in GR for c in cs}
 groups=collections.defaultdict(list)
 for x in items: groups[x['cat']].append(x)
@@ -156,7 +156,7 @@ def simkey(x):
     return ' '.join(w)
 
 import datetime as _dt
-CLO={'dresses','skirts','sets','tops','sweaters','outer','scarves','night'}
+CLO={'dresses','skirts','sets','tops','base','sweaters','outer','scarves','night'}
 def tags(x):
     t=(x['short']+' '+x.get('full','')).lower(); c=x['cat']; r=set()
     if c not in CLO and c not in ('shoes','bags','belts','jewelry'): return [],[]
@@ -191,9 +191,10 @@ def retdays(x):
 INTRANSIT={'P0-097-03584171136631005','GSH199249001100','P0-097-18076072617591091','GSH19X248000VSY','GSH19X24N00NM5K','GSH19624C00MEX3','GSH19T24900MS2G','GSH19Q24600NN8H','GSH19424S001CNR','GSH19C246001BGU','GSH19R24700MU9J','GSH19924N00MU5B','GSH19924N002QB0','GSH19924N00NB85','GSH199241001VHG','GSH1992410000HR','GSH199241002CRC'}
 def money(v): return f'₪{v:,.2f}'
 nav=[];secs=[];meta={};opts=[]
+ALWAYS={'base'}   # v210 (Sara 14:24): her new category, there even before she moves shirts into it
 for k,label in SEC:
     its=groups.get(k,[])
-    if not its: continue
+    if not its and k not in ALWAYS: continue
     its.sort(key=lambda x:(x['src']=='sh',x['id']))
     nav.append(f'<a href="#{k}" data-g="{G2[k]}">{label}<span>{len(its)}</span></a>'); opts.append(f'<option value="{k}">{label} ({len(its)})</option>')
     cards=[]
@@ -250,7 +251,7 @@ cnt=collections.Counter()
 for x in items: cnt[x['src']]+=x['qty'] if x['src']=='sh' else 1
 tpl=open('book4_tpl.html').read()
 import gentasks;gentasks.gen()
-out=(tpl.replace('%%HUB%%',open('hub.js').read()+'\n'+open('hub2.js').read()+'\n'+open('studio.js').read()+'\n'+open('studio2.js').read()+'\n'+open('imgup.js').read()+'\n'+open('p5.js').read()+'\n'+open('looks2.js').read()+'\n'+open('studio3.js').read()+'\n'+open('ties.js').read()+'\n'+open('p5g.js').read()+'\n'+open('ui.js').read()+'\n'+open('v52.js').read()+'\n'+open('jw.js').read()+'\n'+open('layers68_74.js').read()+'\n'+open('layers77_84.js').read()+'\n'+open('fix85.js').read()+'\n'+open('cut89.js').read()+'\n'+open('fix91.js').read()+'\n'+open('lay91.js').read()+'\n'+open('fix93.js').read()+'\n'+open('fix96.js').read()+'\n'+open('fix99.js').read()+'\n'+open('fix100.js').read()+'\n'+open('fix102.js').read()+'\n'+open('fix114.js').read()+open('fix120.js').read()+open('fix121.js').read()+'\n'+open('orders123.js').read()+'\n'+open('fix127.js').read()+'\n'+open('fix144.js').read()+'\n'+open('fix157.js').read()+'\n'+open('fix161.js').read()+'\n'+open('fix163.js').read()+'\n'+open('fix179.js').read()+'\n'+open('tasks172.js').read()+'\n'+open('fix172.js').read()+'\n'+open('r360.js').read()+'\n'+open('d180.js').read()+'\n'+open('cat180.js').read()+'\n'+open('a11y182.js').read()+'\n'+open('search183.js').read()+'\n'+open('col184.js').read()+'\n'+open('sc185.js').read()+'\n'+open('adv187.js').read()+'\n'+open('cut8.js').read()+'\n'+open('av188.js').read()+'\n'+open('tidy198.js').read()+'\n'+open('sty199p.js').read()+'\n'+open('sty199.js').read()+'\n'+open('tie202.js').read()).replace('%%NAV%%',''.join(nav)).replace('%%OPTS%%',''.join(opts)).replace('%%GROUPS%%','<button data-g="day">בגדי חול</button><button data-g="shab">✨ בגדי שבת</button>'+''.join(f'<button data-g="{g}">{n}</button>' for g,n,_ in GR if g!='clo')).replace('%%SECS%%','\n'.join(secs)).replace('%%DATA%%',json.dumps(meta,ensure_ascii=False,separators=(',',':')))
+out=(tpl.replace('%%HUB%%',open('hub.js').read()+'\n'+open('hub2.js').read()+'\n'+open('studio.js').read()+'\n'+open('studio2.js').read()+'\n'+open('imgup.js').read()+'\n'+open('p5.js').read()+'\n'+open('looks2.js').read()+'\n'+open('studio3.js').read()+'\n'+open('ties.js').read()+'\n'+open('p5g.js').read()+'\n'+open('ui.js').read()+'\n'+open('v52.js').read()+'\n'+open('jw.js').read()+'\n'+open('layers68_74.js').read()+'\n'+open('layers77_84.js').read()+'\n'+open('fix85.js').read()+'\n'+open('cut89.js').read()+'\n'+open('fix91.js').read()+'\n'+open('lay91.js').read()+'\n'+open('fix93.js').read()+'\n'+open('fix96.js').read()+'\n'+open('fix99.js').read()+'\n'+open('fix100.js').read()+'\n'+open('fix102.js').read()+'\n'+open('fix114.js').read()+open('fix120.js').read()+open('fix121.js').read()+'\n'+open('orders123.js').read()+'\n'+open('fix127.js').read()+'\n'+open('fix144.js').read()+'\n'+open('fix157.js').read()+'\n'+open('fix161.js').read()+'\n'+open('fix163.js').read()+'\n'+open('fix179.js').read()+'\n'+open('tasks172.js').read()+'\n'+open('fix172.js').read()+'\n'+open('r360.js').read()+'\n'+open('d180.js').read()+'\n'+open('cat180.js').read()+'\n'+open('a11y182.js').read()+'\n'+open('search183.js').read()+'\n'+open('col184.js').read()+'\n'+open('sc185.js').read()+'\n'+open('adv187.js').read()+'\n'+open('cut8.js').read()+'\n'+open('av188.js').read()+'\n'+open('tidy198.js').read()+'\n'+open('sty199p.js').read()+'\n'+open('sty199.js').read()+'\n'+open('tie202.js').read()+'\n'+open('nm209.js').read()+'\n'+open('base210.js').read()).replace('%%NAV%%',''.join(nav)).replace('%%OPTS%%',''.join(opts)).replace('%%GROUPS%%','<button data-g="day">בגדי חול</button><button data-g="shab">✨ בגדי שבת</button>'+''.join(f'<button data-g="{g}">{n}</button>' for g,n,_ in GR if g!='clo')).replace('%%SECS%%','\n'.join(secs)).replace('%%DATA%%',json.dumps(meta,ensure_ascii=False,separators=(',',':')))
    .replace('%%N%%',str(len(items))).replace('%%NT1%%',str(cnt['t1'])).replace('%%NT2%%',str(cnt['t2'])).replace('%%NSH%%',str(cnt['sh']))
    .replace('%%NDUP%%',str(sum(1 for x in items if x.get('dup') or x.get('selfdup'))))
    .replace('%%TT%%',money(tT)).replace('%%SUMM%%',summ).replace('%%DUPT%%',dupt).replace('%%SZ%%',''.join(f'<option value="{z}">{z}</option>' for z in SZS)).replace('%%COL%%',''.join(f'<button data-c="{f}">{f}</button>' for f,_ in FAM)).replace('%%TS%%',money(sum(x['paid'] for x in items if x['src']=='sh'))).replace('%%NG%%',str(len(G))))

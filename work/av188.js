@@ -77,7 +77,7 @@ function paintSt(id){document.querySelectorAll(`[data-go190="${CSS.escape(id)}"]
 function rebox(id){document.querySelectorAll(`[data-a8box="${CSS.escape(id)}"]`).forEach(b=>{const o=b.open;b.innerHTML=box(id);b.open=o});
  try{const b=document.querySelector('#dlbody .it77');if(b&&typeof itemBar=='function')itemBar(id)}catch(e){ERR('rebar',e)}paintSt(id)}
 // "תמונות ואווטאר": the old 5-pose box (p5g.js, fix85/99/102/114) gives its place to the 8-angle box
-const AVC=new Set(['dresses','tops','sweaters','skirts','sets','outer','scarves','shoes','belts','jewelry','bags']);
+const AVC=new Set(['dresses','tops','base','sweaters','skirts','sets','outer','scarves','shoes','belts','jewelry','bags']);
 {const _rr=window.renderImgRow;if(typeof _rr=='function')renderImgRow=function(id){const r=_rr.apply(this,arguments);try{
   document.querySelectorAll(`[data-imgrow="${CSS.escape(id)}"]`).forEach(el=>{let c='';try{c=curCat(id)}catch(_){c=(D[id]||{}).cat}
    const old=el.querySelector('.p5gbox');let bx=el.querySelector('.a8box');if(!old&&!AVC.has(c)){if(bx)bx.remove();return}

@@ -20,7 +20,7 @@ const ST=[['','🏠','במקום'],['עליי','👗','עליי'],['כביסה',
 const SI=Object.fromEntries(ST.map(s=>[s[0],s]));
 const stOf=id=>{const l=it(id).loc||'';return (l=='ארון'||l=='מגירה'||!SI[l])?'':l};
 const CARE=['ביד','מכונה 30°','מכונה 40°','מכונה 60°','לא למייבש','בלי מרכך','ניקוי יבש','גיהוץ חלש'];
-const WASH=new Set(['dresses','sets','skirts','tops','outer','sweaters','girls','boys','night','scarves','hosiery','men']);
+const WASH=new Set(['dresses','sets','skirts','tops','base','outer','sweaters','girls','boys','night','scarves','hosiery','men']);
 const washable=id=>WASH.has(cat(id));
 const fam=id=>{const c=document.querySelector(`.card[data-id="${CSS.escape(id)}"]`);return (c&&c.dataset.c)||((D[id]||{}).col||{}).fc||''};
 // the laundry baskets

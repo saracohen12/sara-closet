@@ -1,7 +1,7 @@
 /* ===== hub2: alerts, try-on, kids, AI stylist ===== */
 TABS.splice(1,0,['tryon','🪞 מודדת עליי']);TABS.push(['kids','👧 ילדים']);
 const SLOTPOS={scarf:[50,9,34],jewelry:[50,22,18],top:[50,32,44],dress:[50,45,58],set:[50,45,58],outer:[50,36,52],skirt:[50,62,46],belt:[50,42,30],shoes:[50,92,30],bag:[78,50,24],kid:[18,75,22],extra:[50,50,30]};
-const slotOf=id=>({dresses:'dress',skirts:'skirt',tops:'top',sets:'set',sweaters:'top',outer:'outer',scarves:'scarf',belts:'belt',shoes:'shoes',jewelry:'jewelry',bags:'bag',girls:'kid',boys:'kid'})[curCat(id)]||'extra';
+const slotOf=id=>({dresses:'dress',skirts:'skirt',tops:'top',base:'top',sets:'set',sweaters:'top',outer:'outer',scarves:'scarf',belts:'belt',shoes:'shoes',jewelry:'jewelry',bags:'bag',girls:'kid',boys:'kid'})[curCat(id)]||'extra';
 Object.keys(SLOTN).forEach(k=>SLOTN[k+'2']=SLOTN[k]);
 let TRY={layers:[],sel:-1,look:null};const CUT={};
 function meURL(){return SET.me?'/_blob/'+SET.me:(window._meLocal||'')}

@@ -22,7 +22,7 @@ const dd=t=>{const d=new Date(t);return isNaN(d)?'':d.getDate()+'/'+(d.getMonth(
 const TO=(p,ms,v)=>Promise.race([p,new Promise(r=>setTimeout(()=>r(v),ms))]);
 
 // what can go with a new item: her clothes and accessories (not kids, men, nightwear, makeup)
-const KEEP=new Set(['dresses','tops','sweaters','skirts','sets','outer','scarves','shoes','belts','jewelry','bags','hosiery']);
+const KEEP=new Set(['dresses','tops','base','sweaters','skirts','sets','outer','scarves','shoes','belts','jewelry','bags','hosiery']);
 const pool=()=>Object.keys(D).filter(id=>live(id)&&KEEP.has(cat(id)));
 const STORES=['שיין','טמו','עלי אקספרס','חנות','אחר'];
 const VD={yes:['✅','כדאי','ye187'],maybe:['🤔','אולי','mb187'],no:['✋','לא כדאי','no187']};

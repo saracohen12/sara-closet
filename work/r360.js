@@ -20,13 +20,15 @@ const READY={
 const KEYOF={};Object.entries(READY).forEach(([id,r])=>r.k.forEach(k=>KEYOF[k]=id));
 const SLOT={d:'body',b:'top',s:'bottom',n:'shoes',g:'belt',j:'neck',e:'ears'};
 // a dress takes the top and the skirt (v190: by slot, so items cut on the site follow the same rule)
-const clashOf=k=>{const s=SLOT[k],w=s=='body'?['top','bottom']:(s=='top'||s=='bottom')?['body']:[];return Object.keys(SLOT).filter(o=>w.includes(SLOT[o]))};
+// v210 (Sara 14:24 "קטגוריה חדשה, חולצת בסיס ... אבחר את החולצת בסיס מתחת לשמלה"): an item in her "חולצות בסיס" category is worn UNDER everything – with a dress too
+const SL=k=>{const s=SLOT[k],id=KEYOF[k];return s=='top'&&id&&cat(id)=='base'?'base':s};
+const clashOf=k=>{const s=SL(k),w=s=='body'?['top','bottom']:(s=='top'||s=='bottom')?['body']:[];return Object.keys(SLOT).filter(o=>w.includes(SL(o)))};
 // see-through lace: x<k>u<view> is what shows through it (the arm as GPT drew it); with a base shirt it is tinted. value = its mean luminance
 const LACE={d:149};
 const CAM=[{k:'black',n:'שחור',c:[24,24,26]},{k:'green',n:'ירוק כהה',c:[28,52,40]},{k:'navy',n:'כחול כהה',c:[30,38,66]},{k:'nude',n:'בז׳',c:[206,182,158]},{k:'white',n:'לבן',c:[242,240,234]},{k:'',n:'בלי',c:null}];
 const HEADS=[{k:'c',n:'כיסוי',src:'a8/t_c.webp'},{k:'w',n:'פאה',src:'a8/t_w.webp'}];  // v184: the wig from her 8-angle sheet (25/10 22:17), whole head incl. face, on a head-less doll
 Object.entries(READY).forEach(([id,r])=>{if(r.head)HEADS.push({k:r.k[0],id,src:'a8/t_'+r.k[0]+'.webp'})});   // v185: her avatar wearing it (the shop photo was often not loaded yet on the home row → an empty circle)
-const CATS=[['all','הכל'],['ready','✓ כבר על האווטאר'],['dresses','שמלות'],['tops','חולצות'],['sweaters','סוודרים'],['skirts','חצאיות'],['sets','סטים'],['outer','ז׳קטים ומעילים'],['scarves','כיסויי ראש'],['shoes','נעליים'],['belts','חגורות'],['jewelry','תכשיטים'],['bags','תיקים']];
+const CATS=[['all','הכל'],['ready','✓ כבר על האווטאר'],['dresses','שמלות'],['tops','חולצות'],['base','חולצות בסיס'],['sweaters','סוודרים'],['skirts','חצאיות'],['sets','סטים'],['outer','ז׳קטים ומעילים'],['scarves','כיסויי ראש'],['shoes','נעליים'],['belts','חגורות'],['jewelry','תכשיטים'],['bags','תיקים']];
 const CATIDS=new Set(CATS.slice(2).map(c=>c[0]));
 const DEF={on:{b:1,s:1,n:1,g:1,j:1,e:1},head:'c',tuck:0,wb:0,cam:'black',bg:'',mk:'',tf:'',tc:null};   // v199: mk = makeup, tf/tc = the cover a tie is made of and its colour
 const clone=o=>JSON.parse(JSON.stringify(o));
@@ -155,10 +157,11 @@ const TANKS=()=>Object.keys(D).filter(id=>/גופי|קמיסול|camisole/i.test
 function paintCam(){const sw=dlg&&dlg.querySelector('.r3cam .r3sw');if(!sw)return;const T=TANKS();
  sw.innerHTML=T.map(id=>`<button type="button" role="radio" class="r3tank" data-r3cam="i:${esc(id)}" aria-label="${esc(nm(id))}"><img alt="" data-th="${esc(id)}" src="${esc(ph(id))}"><span>${esc(nm(id).split(' ').slice(0,3).join(' '))}</span></button>`).join('')
   +CAM.map(c=>`<button type="button" role="radio" data-r3cam="${c.k}" aria-label="${c.n}"><i style="background:${c.c?`rgb(${c.c})`:'linear-gradient(135deg,#e9c3a6,#c99476)'}"></i><span>${c.n}</span></button>`).join('');thl(T)}
-const ORDER=['shoes','body','bottom','top','outer','belt','wrist','bag','neck'];   // what covers what, from the floor up (tucked: the top under the skirt)
-function layersFor(v,s){const on=s.on||{},L=[];const x=k=>({s:'x'+k+(v+1)});const of=sl=>Object.keys(SLOT).filter(k=>on[k]&&SLOT[k]==sl);
+const ORDER=['shoes','base','body','bottom','top','outer','belt','wrist','bag','neck'];   // what covers what, from the floor up (tucked: the top under the skirt)
+function layersFor(v,s){const on=s.on||{},L=[];const x=k=>({s:'x'+k+(v+1)});const of=sl=>Object.keys(SLOT).filter(k=>on[k]&&SL(k)==sl);
  const ord=s.tuck?ORDER.map(o=>o=='bottom'?'top':o=='top'?'bottom':o):ORDER;
- ord.forEach(sl=>{if(sl=='body')Object.keys(LACE).forEach(k=>{if(on[k])L.push({s:'x'+k+'u'+(v+1),t:camOf(s.cam),ref:LACE[k]})});of(sl).forEach(k=>L.push(x(k)))});
+ const bs=of('base').length;   // v210: her base shirt under a lace dress shows through the lace, instead of the plain colour
+ ord.forEach(sl=>{if(sl=='body'&&!bs)Object.keys(LACE).forEach(k=>{if(on[k])L.push({s:'x'+k+'u'+(v+1),t:camOf(s.cam),ref:LACE[k]})});of(sl).forEach(k=>L.push(x(k)))});
  const st=STY[s.head],z=st&&'z'+s.head.slice(1)+(v+1);
  const head=s.head=='w'?[{s:(s.wb&&WB[v]?'wb':'w')+(v+1)}]:st?[DYN[s.head+(v+1)]&&{s:s.head+(v+1)},st.set=='tie'&&DYN[z]&&{s:z,t:s.tc||GREY,ref:st.lum}].filter(Boolean):(s.head&&s.head!='c')?[x(s.head)]:[];
  // v199 makeup: over a whole head (tie, hairstyle) right after it; with a cover under everything (a cover item is drawn over it). Her first wig is another drawing of the face: no makeup on it
@@ -273,7 +276,7 @@ async function redraw(){for(const s of STAGES)await s.draw();paintRoom()}
 function wearItem(id){const r=READY[id];if(!r)return;
  if(r.head){ST.head=ST.head==r.k[0]?'c':r.k[0];return}
  const on=r.k.every(k=>ST.on[k]);
- r.k.forEach(k=>{if(on){ST.on[k]=0;return}ST.on[k]=1;clashOf(k).forEach(c=>ST.on[c]=0);Object.keys(ST.on).forEach(o=>{if(o!=k&&SLOT[o]&&SLOT[o]==SLOT[k])ST.on[o]=0})})}
+ r.k.forEach(k=>{if(on){ST.on[k]=0;return}ST.on[k]=1;clashOf(k).forEach(c=>ST.on[c]=0);Object.keys(ST.on).forEach(o=>{if(o!=k&&SLOT[o]&&SL(o)==SL(k))ST.on[o]=0})})}
 function takeOff(id){const r=READY[id];if(!r)return;if(r.head){if(ST.head==r.k[0])ST.head='c';return}r.k.forEach(k=>ST.on[k]=0)}
 function stateFrom(ids,base){const s=Object.assign(clone(DEF),base||{},{on:{}});
  ids.forEach(id=>{const r=READY[id];if(!r)return;if(r.head)s.head=r.k[0];else r.k.forEach(k=>{s.on[k]=1;clashOf(k).forEach(c=>{if(!ids.some(o=>READY[o]&&READY[o].k.includes(c)))s.on[c]=0})})});
@@ -401,7 +404,7 @@ function paintRoom(){if(!dlg)return;
  paintSty();
  const bn=bgList().find(b=>b.k==(ST.bg||''));dlg.querySelector('.r3bgn').textContent=bn?bn.n:'';
  dlg.querySelectorAll('.r3bgs [data-bg]').forEach(b=>b.setAttribute('aria-checked',b.dataset.bg==(ST.bg||'')));
- const cm=dlg.querySelector('.r3cam');cm.hidden=!Object.keys(LACE).some(k=>ST.on[k]);cm.querySelectorAll('button').forEach(b=>b.setAttribute('aria-checked',b.dataset.r3cam==(ST.cam==null?'black':ST.cam)));
+ const cm=dlg.querySelector('.r3cam');cm.hidden=!Object.keys(LACE).some(k=>ST.on[k])||Object.keys(SLOT).some(k=>ST.on[k]&&SL(k)=='base');cm.querySelectorAll('button').forEach(b=>b.setAttribute('aria-checked',b.dataset.r3cam==(ST.cam==null?'black':ST.cam)));
  dlg.querySelectorAll('.r3grid [data-it]').forEach(b=>{if(isReady(b.dataset.it)||coverTie(b.dataset.it))b.setAttribute('aria-pressed',ids.includes(b.dataset.it))})}
 
 // her closet, by category; items with a 360 sheet first
@@ -546,6 +549,7 @@ const KIND={dress:['שמלה','השמלה מכסה את השמלה בצבע עו
  bag:['תיק','התיק תלוי על הכתף, בגודל האמיתי שלו ביחס לגוף, בלי לשנות את תנוחת הידיים. מהגב ומהצד רואים אותו כמו במציאות.',0,0,1,'more']};
 function kindOf(id){const c=cat(id),t=(D[id]||{}).short+' '+(D[id]||{}).full;
  if(c=='dresses')return 'dress';if(c=='skirts')return /מכנס/.test(t)?'pants':'skirt';if(c=='sets')return 'set';if(c=='sweaters')return 'sweater';
+ if(c=='base')return 'base';
  if(c=='tops')return /בסיס/.test(t)?'base':/סוודר|סריג/.test(t)?'sweater':'top';
  if(c=='outer')return /מעיל/.test(t)?'coat':/וסט|אפוד/.test(t)?'vest':'jacket';
  if(c=='scarves')return /כובע|כיסוי/.test(t)&&!/מטפחת|צעיף/.test(t)?'cover':'scarf';
