@@ -106,12 +106,15 @@ function layer(d,m){const a=gauss(Float32Array.from(m,x=>x*255),1,.8),c=document
 // Everything above the neck that is not backdrop, plus what hangs below it (hair on the shoulders and back, a tie's tail) and joins the head.
 // tie also gives the fabric alone (fab): GPT draws it plain medium grey, the studio paints it in the colour she picks (r360 tinted()).
 const NK=[81,88,94,82,64,87,83,77];   // the neck row of each view on f1-8: where the doll's head ends (n vs nh, turned back)
+// below the head: a pixel that only got darker or lighter but kept the doll's own colour is a shadow on her dress, not the scarf
+// (Sara's first tie, 26/10: a beige rim along the tail in the back views)
+function shade(bs,ds,k){const sb=bs[k]+bs[k+1]+bs[k+2]+1,sd=ds[k]+ds[k+1]+ds[k+2]+1;let c=0;for(let z=0;z<3;z++)c+=Math.abs(ds[k+z]/sd-bs[k+z]/sb);return c<.045}
 function maskWhole(b,d,v,fab){const bs=gauss(b,3,1.2),ds=gauss(d,3,1.2),diff=new Float32Array(N),dbg=new Float32Array(N),bgr=new Float32Array(H*3),col=[];
  for(let c=0;c<10;c++)col.push(c);for(let c=W-10;c<W;c++)col.push(c);
  for(let r=0;r<H;r++)for(let z=0;z<3;z++){const vs=col.map(c=>d[(r*W+c)*3+z]).sort((x,y)=>x-y);bgr[r*3+z]=(vs[9]+vs[10])/2}
  const nk=NK[v]+4,low=Math.floor(H*.8);let m=new Uint8Array(N);
  for(let r=0;r<low;r++)for(let c=0;c<W;c++){const i=r*W+c,k=i*3;let s=0,t=0;for(let z=0;z<3;z++){const a=ds[k+z]-bs[k+z],e=d[k+z]-bgr[r*3+z];s+=a*a;t+=e*e}
-  diff[i]=Math.sqrt(s);dbg[i]=Math.sqrt(t);m[i]=dbg[i]>22&&(r<nk||diff[i]>40)?1:0}
+  diff[i]=Math.sqrt(s);dbg[i]=Math.sqrt(t);m[i]=dbg[i]>22&&(r<nk||diff[i]>40&&!shade(bs,ds,k))?1:0}
  for(let r=0;r<H;r++)for(let c=0;c<8;c++){m[r*W+c]=0;m[r*W+W-1-c]=0}   // the sheet's white divider lines
  m=erode(dilate(m,2),2);m=dilate(erode(m,1),1);
  const [L,n]=label(m),keep=new Uint8Array(n+1);for(let i=0;i<nk*W;i++)if(L[i])keep[L[i]]=1;   // only what touches the head
