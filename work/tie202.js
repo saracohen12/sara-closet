@@ -19,10 +19,25 @@ const SETS=[['tie','🧕','קשירות למטפחת'],['hair','💇','תסרו�
 // ---------- 1. the categories ----------
 // v211 (Sara 15:08 "אני רוצה גם לערוך את התמונות האלו"): the picture she picked for the tile (cat180.js, SET.styCover) – one of her styles, an avatar picture or a photo she uploaded
 const mine=set=>{try{return ((typeof SET=='object'&&SET&&SET.styCover)||{})[set]||null}catch(_){return null}};
-function thumbOf(set){const p=mine(set);if(p&&p.k&&list(set).some(x=>key(x)==p.k))return p.k;if(p&&(p.u||p.a))return '@'+(p.u||p.a);const x=list(set)[0];return x?key(x):''}
-function paintThumbs(root){root.querySelectorAll('[data-sty202th]').forEach(el=>{const k=el.dataset.sty202th;if(!k||el.dataset.done==k)return;el.dataset.done=k;
- if(k[0]=='@'){const u=k.slice(1);if(el.tagName=='IMG')el.src=u;else el.style.backgroundImage=`url("${u}")`;return}
- try{R().styThumb(k).then(u=>{if(!u)return;if(el.tagName=='IMG')el.src=u;else el.style.backgroundImage=`url("${u}")`})}catch(_){}})}
+// v212 (Sara 15:21 "אני רוצה שהאווטאר יעלה לי כאן 360 מעלות, יסתובב במעבר לעכבר"): '#c' / '#w' = her avatar with the cover / her wig, in 8 angles
+function thumbOf(set){const p=mine(set);if(p&&p.k&&list(set).some(x=>key(x)==p.k))return p.k;
+ if(p&&p.a){const h=/t_w\./.test(p.a)?'w':/t_c\./.test(p.a)?'c':'';return h?'#'+h:'@'+p.a}if(p&&p.u)return '@'+p.u;
+ const x=list(set)[0];return x?key(x):set=='hair'?'#w':'#c'}
+const show=(el,u)=>{if(el.tagName=='IMG')el.src=u;else el.style.backgroundImage=`url("${u}")`};
+function framesOf(k){try{const r=R();if(k[0]=='#')return r.headFrames?r.headFrames(k.slice(1)):Promise.resolve([]);return r.styFrames?r.styFrames(k):Promise.resolve([])}catch(_){return Promise.resolve([])}}
+function paintThumbs(root){root.querySelectorAll('[data-sty202th]').forEach(el=>{const k=el.dataset.sty202th;if(!k||el.dataset.done==k)return;el.dataset.done=k;el._F=null;
+ if(k[0]=='@')return show(el,k.slice(1));
+ framesOf(k).then(F=>{if(el.dataset.done!=k)return;if(F&&F.length==8&&F[0]){el._F=F;if(!el._t)show(el,F[0]);
+   const box=el.tagName=='IMG'?el.parentNode:el;if(box&&!box.querySelector('.c212h'))box.insertAdjacentHTML('beforeend','<i class="c212h" aria-hidden="true">🔄 360</i>');return}
+  if(k[0]=='#')return show(el,`a8/t_${k.slice(1)}.webp?v=${window.VER||''}`);   // the frames did not load: her avatar head, still
+  try{R().styThumb(k).then(u=>{if(u&&el.dataset.done==k)show(el,u)})}catch(_){}})})}
+// with a mouse: turns while the mouse is over it, back to the front when it leaves (like the categories, cat180)
+const still=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(_){return false}};
+function spinOn(el){if(el._t||!el._F)return;let i=0;el._t=setInterval(()=>{i=(i+1)%8;show(el,el._F[i])},still()?450:170)}
+function spinOff(el){if(el._t){clearInterval(el._t);el._t=null}if(el._F)show(el,el._F[0])}
+const tileEl=e=>{if(e.pointerType=='touch')return null;const b=e.target.closest&&e.target.closest('.sty202c');if(!b||(e.relatedTarget&&b.contains(e.relatedTarget)))return null;return b.querySelector('[data-sty202th]')};
+document.addEventListener('pointerover',e=>{const el=tileEl(e);if(el)spinOn(el)});
+document.addEventListener('pointerout',e=>{const el=tileEl(e);if(el)spinOff(el)});
 function home(){const row=document.querySelector('.h9cats');if(!row)return;let w=row.querySelector('.sty202h');
  const sig=SETS.map(([s])=>list(s).length+':'+thumbOf(s)).join('|');if(w&&w.dataset.sig==sig)return;
  const h=SETS.map(([s,i,n])=>{const k=thumbOf(s),c=list(s).length;return `<button type="button" class="h9cat sty202c" data-sty202="${s}">${k?`<span class="h9im"><img alt="" data-sty202th="${es(k)}" src=""></span>`:`<span class="h9im h9e">${i}</span>`}<b>${n}</b><small>${c||''}</small></button>`}).join('');
@@ -31,7 +46,8 @@ function home(){const row=document.querySelector('.h9cats');if(!row)return;let w
 function closet(){const d=document.getElementById('cl163');if(!d||!d.open)return;const b=d.querySelector('.cl163b');if(!b)return;let g=b.querySelector('.sty202g');
  const sig=SETS.map(([s])=>list(s).length+':'+thumbOf(s)).join('|');if(g&&g.dataset.sig==sig)return;
  const h=`<div class="cl163g">🎨 על האווטאר</div><div class="cl163t">${SETS.map(([s,i,n])=>{const k=thumbOf(s);return `<button class="cl163c sty202c" data-sty202="${s}"><i class="ph"${k?` data-sty202th="${es(k)}"`:''}>${k?'':`<span aria-hidden="true">${i}</span>`}</i><span class="n">${n} <b>${list(s).length}</b></span></button>`}).join('')}</div>`;
- if(!g){g=document.createElement('div');g.className='sty202g';const x=b.querySelector('.cl163x');if(x)x.before(g);else b.appendChild(g)}
+ if(!g){g=document.createElement('div');g.className='sty202g e71k';   // e71k: the d73 emoji tidy (layers68_74) must not hide the picture
+ const x=b.querySelector('.cl163x');if(x)x.before(g);else b.appendChild(g)}
  g.dataset.sig=sig;g.innerHTML=h;paintThumbs(g)}
 // the covers section: one line to the ties
 function covers(){const sec=document.getElementById('scarves');if(!sec)return;const h2=sec.querySelector('h2');if(!h2)return;let l=sec.querySelector('.tie202s');const n=list('tie').length;

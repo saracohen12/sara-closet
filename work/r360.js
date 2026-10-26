@@ -134,8 +134,12 @@ function styCard(k,o){o=o||{};const st=k?STY[k]:null;if(k&&!st)return Promise.re
 
 // v204 (Sara 11:46 "אני אגע בתמונה ואז הבובה תסתובב"): the 8 angles one by one, head to waist, for a library card that turns
 const FRM={},FRQ=new Map();
-function styFrames(k,o){o=o||{};const st=STY[k];if(!st)return Promise.resolve([]);const ck=k+'|'+(o.rgb?o.rgb.join(','):'');if(FRM[ck])return Promise.resolve(FRM[ck]);if(FRQ.has(ck))return FRQ.get(ck);
- const p=(async()=>{const s=Object.assign(clone(DEF),{on:{},bg:'',head:st.set=='mk'?'c':k,mk:st.set=='mk'?k:'',tc:st.set=='tie'?(o.rgb||GREY):null}),out=[];
+function styFrames(k,o){o=o||{};const st=STY[k];if(!st)return Promise.resolve([]);
+ return frames8(k+'|'+(o.rgb?o.rgb.join(','):''),Object.assign(clone(DEF),{on:{},bg:'',head:st.set=='mk'?'c':k,mk:st.set=='mk'?k:'',tc:st.set=='tie'?(o.rgb||GREY):null}))}
+// v212 (Sara 15:21 "אני רוצה שהאווטאר יעלה לי כאן 360 מעלות, יסתובב במעבר לעכבר"): the doll alone with a head (c = cover, w = her wig) – the ties/hairstyles/makeup tiles
+function headFrames(h){return frames8('#'+h,Object.assign(clone(DEF),{on:{},bg:'',head:h,mk:'',tc:null}))}
+function frames8(ck,s){if(FRM[ck])return Promise.resolve(FRM[ck]);if(FRQ.has(ck))return FRQ.get(ck);
+ const p=(async()=>{const out=[];
   for(let v=0;v<8;v++){const c=document.createElement('canvas');if(!await paint(c,v,s))return [];const f=document.createElement('canvas');f.width=176;f.height=240;f.getContext('2d').drawImage(c,70,0,220,300,0,0,176,240);out.push(f.toDataURL('image/jpeg',.84))}
   return FRM[ck]=out})().catch(()=>[]).finally(()=>FRQ.delete(ck));FRQ.set(ck,p);return p}
 
@@ -687,7 +691,7 @@ try{if(typeof albumHTML=='function'){const _al=albumHTML;albumHTML=async functio
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-pin185],[data-pin185g]');if(!b)return;e.preventDefault();e.stopPropagation();
  if(b.dataset.pin185!=null)TODAY.pinLook('m:'+b.dataset.pin185);else{let L=null;try{L=GEN[+b.dataset.pin185g]}catch(_){}if(L)TODAY.pinIds(Object.values(L),'הלוק')}},true);
 
-window.R360={open,close,make,prompts,openWith,styCard,styFrames,Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
+window.R360={open,close,make,prompts,openWith,styCard,styFrames,headFrames,Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
  ready:()=>Object.keys(READY).filter(id=>D[id]),isReady,kind:kindOf,sync:resync,dyn:id=>!!(READY[id]&&READY[id].dyn),names:NAMES,show:v=>{if(big){big.stop();big.show(v)}},
  still:async(id,v)=>{if(!READY[id])return null;const s=stateFrom([id],{head:ST.head=='w'?'w':'c',cam:ST.cam,bg:''});
   if((await Promise.all(layersFor(v||0,s).map(l=>im(l.s)))).some(m=>!m))return null;   // a layer that did not load would show the bare doll

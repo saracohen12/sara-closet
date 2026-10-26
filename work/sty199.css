@@ -209,3 +209,10 @@ dialog#bg204::backdrop{background:rgba(20,12,8,.5)}
 /* v207: read the whole prompt */
 #sty199 .syread{display:block;width:100%;margin:2px 0 4px;font:inherit;font-size:.74rem;min-height:36px;padding:0 8px;border-radius:999px;border:1px dashed var(--z-line,#ddd);background:none;color:var(--z-ink,#2a1d17);cursor:pointer}
 #sty204v .syrd{margin-top:10px;padding:12px 14px;border-radius:14px;border:1px solid var(--z-line,#e6ddd5);background:var(--z-surface,#f6f2ee);color:var(--z-ink,#2a1d17);font-size:.86rem;line-height:1.65;white-space:pre-wrap;unicode-bidi:plaintext;text-align:start;overflow-wrap:anywhere;max-height:min(58dvh,560px);overflow:auto}
+
+/* v212: the ties / hairstyles / makeup tiles show her avatar in 360 */
+.sty202c .h9im,#cl163 .sty202c .ph{position:relative}
+.sty202c .h9im img{object-fit:cover;object-position:50% 20%}
+#cl163 .sty202c .ph{background-position:50% 20%}
+.sty202c .c212h{position:absolute;bottom:5px;inset-inline-start:5px;z-index:1;font-style:normal;font-size:.68rem;line-height:1;padding:4px 7px;border-radius:999px;background:rgba(255,255,255,.92);color:#2a1d17;pointer-events:none}
+.c180on .sty202c .c212h{display:none}
