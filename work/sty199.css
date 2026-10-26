@@ -61,8 +61,6 @@ dialog#sty199::backdrop{background:rgba(20,12,8,.5)}
 #sty199 .mkh,#sty199 .syt{background:var(--z-solid,#fff)}
 #sty199 .syt{top:62px;margin:0 -16px;padding:0 16px 8px}
 /* v202: categories, a tie for every cover (tie202.js) */
-.c180on .sty202c .h9im::after,.c180on .sty202c .ph::after{display:none!important}
-.c180on .sty202c .h9im,.c180on .sty202c .ph{outline:0!important}
 .sty202c .h9im.h9e,.sty202c .ph span{font-size:1.8rem}
 #cl163 .sty202c .ph{display:grid;place-items:center;background-size:cover;background-position:center}
 .tie202s{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:4px 0 10px;padding:8px 12px;border-radius:14px;background:var(--z-surface,#f6f2ee);color:var(--z-ink,#2a1d17);font-size:.86rem}

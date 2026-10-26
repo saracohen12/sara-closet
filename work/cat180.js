@@ -5,7 +5,8 @@ const st=document.createElement('style');st.textContent=`
 .c180e{font:inherit;font-size:.85rem;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--z-line,var(--line,#ddd));background:var(--z-surface,var(--card,#fff));color:var(--z-ink,var(--fg,#222));cursor:pointer;white-space:nowrap}
 .c180e[aria-pressed=true]{background:var(--z-acc,#b4532c);border-color:var(--z-acc,#b4532c);color:var(--z-acc-ink,#fff)}
 .c180on .h9cat,.c180on [data-cl163]{position:relative}
-.c180on .h9cat .h9im::after,.c180on [data-cl163] .ph::after{content:"🖼 לבחור";position:absolute;inset:auto 8px 8px 8px;display:grid;place-items:center;min-height:30px;border-radius:999px;background:rgba(20,12,8,.62);color:#fff;font-size:.78rem;font-weight:600}
+.c180on .sty202c{position:relative}.c180on .sty202c .ph{position:relative;outline:2px dashed var(--z-acc,#b4532c);outline-offset:2px}
+.c180on .h9cat .h9im::after,.c180on [data-cl163] .ph::after,.c180on .sty202c .ph::after{content:"🖼 לבחור";position:absolute;inset:auto 8px 8px 8px;display:grid;place-items:center;min-height:30px;border-radius:999px;background:rgba(20,12,8,.62);color:#fff;font-size:.78rem;font-weight:600}
 .c180on .h9cat .h9im,.c180on [data-cl163] .ph{position:relative;outline:2px dashed var(--z-acc,#b4532c);outline-offset:2px}
 .c180mine::before{content:"♥";position:absolute;top:6px;inset-inline-start:6px;z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.9);color:var(--z-acc,#b4532c);font-size:.72rem}
 #c180p{width:min(720px,100vw);max-width:100vw;height:100dvh;max-height:100dvh;margin:0 auto;padding:0;border:0;border-radius:0;background:var(--z-solid,var(--bg,#faf7f2));color:var(--z-ink,var(--fg,#222))}
@@ -43,6 +44,10 @@ const st=document.createElement('style');st.textContent=`
 #c180p .s209 input{width:100%;box-sizing:border-box;font:inherit;font-size:16px!important;min-height:44px;padding:0 16px;border-radius:999px!important;border:1px solid var(--z-line,var(--line,#ddd))!important;background:var(--z-solid,#fff)!important;color:var(--z-ink,#2a1d17)!important}
 #c180p .s209 input::placeholder{color:var(--z-muted,#888);opacity:1}
 #c180p .s209 small{display:block;min-height:1.2em;padding:4px 6px 0;font-size:.8rem;color:var(--z-muted,#777)}
+#c180p .u211{position:relative;overflow:hidden}#c180p .u211 input{position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:200px;cursor:pointer;margin:0;padding:0;border:0}
+#c180p .h211{margin:0;padding:6px 16px 0;font-size:.85rem;color:var(--z-muted,#777)}#c180p .h211:empty{display:none}
+#c180p .s211h{margin:0;padding:14px 16px 0;font-size:.95rem}#c180p .s211h+.g180{padding-top:8px}
+#c180p .g180 [data-s211] img{object-position:50% 20%;background:#d9e2ee}
 #c180p .e209{margin:0;padding:8px 16px 24px;text-align:center;color:var(--z-muted,#777)}`;
 document.head.appendChild(st);
 
@@ -106,18 +111,21 @@ function flt(){if(!P)return;const w=nq(Q209.trim()).split(/\s+/).filter(Boolean)
 function modeHTML(){const id=cov()[SID]||'';if(!id||!ready(id))return '';const pic=((SET&&SET.catPic)||{})[SID]=='p';
  return `<div class="m208" role="group" aria-label="מה רואים בקטגוריה"><b>"${esc((D[id]&&(D[id].short||D[id].full))||'').slice(0,40)}" כבר על האווטאר שלך. מה רואים בקטגוריה?</b>
   <button type="button" data-m208="av" aria-pressed="${!pic}">🔄 אני לובשת אותו (מסתובב)</button><button type="button" data-m208="p" aria-pressed="${pic}">🖼 התמונה של הבגד</button></div>`}
-function picker(sid){SID=sid;F208=false;Q209='';const sec=document.getElementById(sid);if(!sec)return;
- const cards=[...sec.querySelectorAll('.card')].filter(c=>{try{return !(typeof gen161=='function'&&gen161(c.dataset.id))}catch(_){return true}});
- const ids=cards.map(c=>c.dataset.id).filter(id=>D[id]),nav=ids.filter(ready).length;
- cards.forEach(c=>{const id=c.dataset.id;if(D[id])QS[id]=nq((c.dataset.q||'')+' '+(D[id].short||''))});
- if(!P){P=document.createElement('dialog');P.id='c180p';P.dir='rtl';P.setAttribute('aria-labelledby','c180t');document.body.appendChild(P);
+function mkP(){if(P)return;{P=document.createElement('dialog');P.id='c180p';P.dir='rtl';P.setAttribute('aria-labelledby','c180t');document.body.appendChild(P);
   P.addEventListener('click',e=>{if(e.target===P)return P.close();const t=e.target.closest('button');if(!t)return;
    if(t.classList.contains('x180'))return P.close();
-   if(t.dataset.auto!==undefined)return choose(null);
+   if(t.dataset.auto!==undefined)return SSET?styChoose(null):choose(null);
+   if(t.dataset.s211)return styChoose(JSON.parse(t.dataset.s211));
    if(t.dataset.m208)return mode(t.dataset.m208);
    if(t.dataset.f208!==undefined){F208=t.dataset.f208=='av';P.querySelectorAll('[data-f208]').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.f208=='av')==F208));return flt()}
    if(t.dataset.id)return choose(t.dataset.id)});
-  P.addEventListener('input',e=>{if(e.target.id=='c209q'){Q209=e.target.value;flt()}})}
+  P.addEventListener('input',e=>{if(e.target.id=='c209q'){Q209=e.target.value;flt()}});
+  P.addEventListener('change',e=>{if(e.target.classList.contains('f211'))styUp(e.target)})}}
+function picker(sid){SID=sid;SSET='';F208=false;Q209='';const sec=document.getElementById(sid);if(!sec)return;
+ const cards=[...sec.querySelectorAll('.card')].filter(c=>{try{return !(typeof gen161=='function'&&gen161(c.dataset.id))}catch(_){return true}});
+ const ids=cards.map(c=>c.dataset.id).filter(id=>D[id]),nav=ids.filter(ready).length;
+ cards.forEach(c=>{const id=c.dataset.id;if(D[id])QS[id]=nq((c.dataset.q||'')+' '+(D[id].short||''))});
+ mkP();
  const cur=cov()[sid]||'';
  P.innerHTML=`<div class="ph180h"><h3 id="c180t">התמונה של ${esc(nameOf(sid))}<small>לוחצים על הבגד שאת רוצה · ${ids.length} פריטים${nav?` · 🔄 = כבר על האווטאר (${nav})`:''}</small></h3><button type="button" class="x180" aria-label="סגירה">✕</button></div>
   <div class="a180"><button type="button" data-auto aria-pressed="${!cur}">↺ בלי בחירה (אוטומטי)</button></div>
@@ -130,6 +138,36 @@ function picker(sid){SID=sid;F208=false;Q209='';const sec=document.getElementByI
  // the items already on the avatar show HER wearing them
  P.querySelectorAll('.g180 .av208').forEach(b=>{const im=b.querySelector('img');if(im)frame(b.dataset.id,0).then(u=>{if(u&&im.isConnected){im.dataset.th='av:'+b.dataset.id;im.src=u}})});
  const sel=P.querySelector('[aria-pressed=true][data-id]');if(sel)setTimeout(()=>sel.scrollIntoView({block:'center'}),50)}
+// v211 (Sara 15:08 "אני רוצה גם לערוך את התמונות האלו" – the 3 avatar tiles): one of her styles, an avatar picture, or a photo from her phone
+// SET.styCover {tie|hair|mk: {k:styleKey} | {a:'a8/…'} | {u:assetUrl}}; tie202.js paints the tiles
+let SSET='';
+const STN={tie:'קשירות למטפחת',hair:'תסרוקות לפאה',mk:'איפור על האווטאר'};
+const AVP=[['a8/t_c.webp','אני עם כיסוי'],['a8/t_w.webp','אני עם הפאה']];
+const scov=()=>(typeof SET=='object'&&SET&&SET.styCover)||{};
+const same=(a,b)=>!!a&&!!b&&(a.k||a.a||a.u)==(b.k||b.a||b.u);
+function styPicker(set){SSET=set;SID='';mkP();const cur=scov()[set]||null;
+ let L=[];try{L=window.STY199.list().filter(x=>x.set==set)}catch(_){}
+ const key=x=>{try{return R().styKey(x)}catch(_){return ''}};
+ const opt=(v,src,n,sth)=>`<button type="button" data-s211="${esc(JSON.stringify(v))}" aria-pressed="${same(v,cur)}" aria-label="${esc(n)}"><img alt="" src="${esc(src)}"${sth?` data-sth211="${esc(sth)}"`:''}><span class="t208" aria-hidden="true">${esc(n)}</span></button>`;
+ const mineH=L.map(x=>{const k=key(x);return k?opt({k},'',x.n||'',k):''}).join('');
+ P.innerHTML=`<div class="ph180h"><h3 id="c180t">התמונה של ${esc(STN[set]||'')}<small>לוחצים על התמונה שאת רוצה</small></h3><button type="button" class="x180" aria-label="סגירה">✕</button></div>
+  <div class="a180"><button type="button" data-auto aria-pressed="${!cur}">↺ בלי בחירה (אוטומטי)</button><button type="button" class="u211">📷 תמונה מהטלפון<input type="file" accept="image/*" class="f211" aria-label="תמונה מהטלפון"></button></div>
+  <p class="h211" aria-live="polite"></p>
+  ${cur&&cur.u?`<h4 class="s211h">התמונה שהעלית</h4><div class="g180">${opt({u:cur.u},cur.u,'התמונה שלי')}</div>`:''}
+  ${mineH?`<h4 class="s211h">${set=='tie'?'הקשירות שלך':set=='hair'?'התסרוקות שלך':'האיפורים שלך'} על האווטאר</h4><div class="g180">${mineH}</div>`:''}
+  <h4 class="s211h">האווטאר שלך</h4><div class="g180">${AVP.map(([a,n])=>opt({a},a+'?v='+(window.VER||''),n)).join('')}</div>`;
+ if(!P.open)P.showModal();P.scrollTop=0;
+ P.querySelectorAll('img[data-sth211]').forEach(i=>{try{R().styThumb(i.dataset.sth211).then(u=>{if(u)i.src=u})}catch(_){}})}
+async function styChoose(v){if(typeof SET!='object'||!SET||!SSET)return;SET.styCover=Object.assign({},SET.styCover||{});if(v)SET.styCover[SSET]=v;else delete SET.styCover[SSET];
+ P.querySelectorAll('[data-s211],[data-auto]').forEach(b=>b.setAttribute('aria-pressed',v?b.dataset.s211?same(JSON.parse(b.dataset.s211),v):false:b.dataset.auto!==undefined));
+ await save();(window.toast||(()=>{}))(v?'✓ התמונה נשמרה':'✓ חזר לאוטומטי');setTimeout(()=>P.open&&P.close(),400)}
+async function styUp(inp){const f=inp.files&&inp.files[0];if(!f)return;const h=P.querySelector('.h211');const say=t=>{if(h)h.textContent=t};say('שומרת את התמונה…');
+ try{let a=null;try{a=await window.claude.use('assets')}catch(_){}if(!a)throw new Error('assets');
+  let bl=f;try{const bm=await createImageBitmap(f),sc=Math.min(1,700/Math.max(bm.width,bm.height)),c=document.createElement('canvas');c.width=Math.round(bm.width*sc);c.height=Math.round(bm.height*sc);
+   c.getContext('2d').drawImage(bm,0,0,c.width,c.height);bl=await new Promise(r=>c.toBlob(b=>r(b||f),'image/webp',.86))}catch(_){}
+  const r=await a.upload(bl);const u=r.url||('/_blob/'+r.id);say('');await styChoose({u})}
+ catch(e){say(e.message=='assets'?'העלאת תמונות לא זמינה כאן. פתחי את האתר בכרום':'✗ לא הצלחתי לשמור. נסי שוב');(window.ERRS=window.ERRS||[]).push('v211 up: '+(e&&e.message))}
+ inp.value=''}
 async function save(){try{if(DB)await saveDoc('settings','main',SET);else localStorage.setItem('hub_settings',JSON.stringify(SET))}catch(_){}}
 async function mode(m){if(typeof SET!='object'||!SET)return;SET.catPic=Object.assign({},SET.catPic||{});if(m=='p')SET.catPic[SID]='p';else delete SET.catPic[SID];
  P.querySelectorAll('[data-m208]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m208==m));await save();paint();
@@ -157,7 +195,8 @@ async function hoverOff(a){if(!a._h)return;a._h=0;if(a._t){clearInterval(a._t);a
 document.addEventListener('pointerover',e=>{if(e.pointerType=='touch')return;const a=e.target.closest&&e.target.closest('.c208av');if(a&&a.dataset.c208&&!(e.relatedTarget&&a.contains(e.relatedTarget)))hoverOn(a)});
 document.addEventListener('pointerout',e=>{if(e.pointerType=='touch')return;const a=e.target.closest&&e.target.closest('.c208av');if(a&&!(e.relatedTarget&&a.contains(e.relatedTarget)))hoverOff(a)});
 // v208: on window, so it runs before the closet window's own capture handler (fix163 would close it and jump to the category)
-window.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('.c180e,.h9cat[data-h9cat],#cl163 [data-cl163]');if(!t)return;
+window.addEventListener('click',e=>{if(EDIT){const s=e.target.closest&&e.target.closest('.sty202c[data-sty202]');if(s){e.preventDefault();e.stopImmediatePropagation();return styPicker(s.dataset.sty202)}}
+ const t=e.target.closest&&e.target.closest('.c180e,.h9cat[data-h9cat],#cl163 [data-cl163]');if(!t)return;
  if(t.classList.contains('c180e')){e.preventDefault();e.stopImmediatePropagation();return setEdit(!EDIT)}
  if(!EDIT){const a=e.target.closest('.c208av');if(a&&a.dataset.c208&&e.detail!==0&&(e.pointerType||LASTPT)=='touch'){e.preventDefault();e.stopImmediatePropagation();   // v208: a touch on her avatar turns it; the name opens the category
    const id=a.dataset.c208,im=a.querySelector('img');spin(a,id,u=>{if(im){im.dataset.th='av:'+id;im.src=u}else a.style.backgroundImage=`url('${u}')`})}return}e.preventDefault();e.stopImmediatePropagation();

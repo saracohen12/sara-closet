@@ -17,8 +17,11 @@ const tieOf=id=>{const t=((typeof IT=='object'&&IT[id])||{}).tie;return t?list('
 const SETS=[['tie','🧕','קשירות למטפחת'],['hair','💇','תסרוקות לפאה'],['mk','💄','איפור על האווטאר']];
 
 // ---------- 1. the categories ----------
-function thumbOf(set){const x=list(set)[0];return x?key(x):''}
+// v211 (Sara 15:08 "אני רוצה גם לערוך את התמונות האלו"): the picture she picked for the tile (cat180.js, SET.styCover) – one of her styles, an avatar picture or a photo she uploaded
+const mine=set=>{try{return ((typeof SET=='object'&&SET&&SET.styCover)||{})[set]||null}catch(_){return null}};
+function thumbOf(set){const p=mine(set);if(p&&p.k&&list(set).some(x=>key(x)==p.k))return p.k;if(p&&(p.u||p.a))return '@'+(p.u||p.a);const x=list(set)[0];return x?key(x):''}
 function paintThumbs(root){root.querySelectorAll('[data-sty202th]').forEach(el=>{const k=el.dataset.sty202th;if(!k||el.dataset.done==k)return;el.dataset.done=k;
+ if(k[0]=='@'){const u=k.slice(1);if(el.tagName=='IMG')el.src=u;else el.style.backgroundImage=`url("${u}")`;return}
  try{R().styThumb(k).then(u=>{if(!u)return;if(el.tagName=='IMG')el.src=u;else el.style.backgroundImage=`url("${u}")`})}catch(_){}})}
 function home(){const row=document.querySelector('.h9cats');if(!row)return;let w=row.querySelector('.sty202h');
  const sig=SETS.map(([s])=>list(s).length+':'+thumbOf(s)).join('|');if(w&&w.dataset.sig==sig)return;
