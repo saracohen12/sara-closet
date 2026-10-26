@@ -94,7 +94,7 @@ async function coverRGB(k){if(!k||k=='c')return BEIGE;const m=await im('x'+k+'1'
 // ---------- v202: any cover from her closet, worn with one of her ties in its colour (Sara 26/10 11:04: "כשאני נכנסת לכיסויים זה יפתח לי את סוגי
 // הקשירות ואז אני אבחר שעם הכיסוי הזה אני רוצה את הקשירה הזו ... אני לא רוצה לעשות מכל כיסוי 20 קשירות ... 1 מסטאר ועליו נלביש את הכיסוי") ----------
 // IT[id].tie = the tie (db 'styles' id) she picked for that cover, IT[id].tc = a colour she picked for it. ST.tf may be a closet item id.
-const isCover=id=>!!D[id]&&cat(id)=='scarves'&&!/כובע|ברט/.test(String((D[id].short||'')+' '+(D[id].full||'')));
+const isCover=id=>{if(!D[id]||cat(id)!='scarves')return false;const t=String((D[id].short||'')+' '+(D[id].full||''));return !/כובע|ברט/.test(t)||/כיסוי ראש/.test(t)};   // v228: "כובע כיסוי ראש" is a cover too
 const itOf=id=>(typeof IT=='object'&&IT&&IT[id])||{};
 const COLW=[[/שחור|black/i,[34,32,32]],[/לבן|white/i,[246,244,239]],[/שמנת|קרם|אופ.?וויט|ivory|cream/i,[239,229,207]],[/בז|חאקי|שמפניה|beige|khaki/i,[217,196,166]],[/ניוד|nude/i,[200,161,132]],
  [/אפור|כסף|grey|gray/i,[150,149,147]],[/נייבי|כחול כהה|navy/i,[31,44,77]],[/תכלת|sky/i,[169,195,223]],[/כחול|ג.ינס|blue/i,[52,86,150]],[/קפה|חום|brown|coffee/i,[107,74,51]],[/קאמל|זהב|חרדל|camel|gold/i,[180,135,70]],
@@ -437,10 +437,11 @@ function build(){
   if(t.dataset.off){const o=t.dataset.off;if(o=='w')ST.head='c';else if(o=='yh')ST.head='w';else if(o=='yt')ST.head=ST.tf&&(ST.tf=='c'||KEYOF[ST.tf])?ST.tf:'c';else if(o=='ym')ST.mk='';else if(o==tfId()&&/^yt/.test(ST.head)){ST.head='c';ST.tf=''}else takeOff(o);keep();redraw();return}
   if(t.dataset.syh!=null){ST.head=t.dataset.syh||'w';keep();redraw();return}
   if(t.dataset.sytfm!=null){SCALL=!SCALL;paintSty();return}
+  if(t.dataset.t228s!=null){const [id,i]=t.dataset.t228s.split('|');if(window.tie228)tie228.set(id,+i).then(ok=>{if(ok&&READY[id]){ST.head=READY[id].k[0];ST.tf='';keep();redraw()}});return}
   if(t.dataset.sytf!=null){const id=t.dataset.sytf,k=/^yt/.test(ST.head)?ST.head:defTie();
    if(id=='c'){if(k){ST.head=k;ST.tf='c';ST.tc=GREY}else ST.head='c'}
    else if(READY[id]&&READY[id].head){ST.head=READY[id].k[0];ST.tf=''}   // her scarf with its own 8-angle picture: that one
-   else if(!wearCover(id,k||undefined)){toast_('קודם מעלים קשירה אחת');return}
+   else{ST.tf=id;keep();paintSty();try{window.tie202open&&tie202open(id)}catch(_){}return}   // v228: a scarf without its own tie is not painted – she makes it one
    keep();redraw();return}
   if(t.dataset.r3cam!=null){ST.cam=t.dataset.r3cam;keep();redraw();return}   // not data-cam: imgup.js takes that one for the camera
   if(t.dataset.bg!=null){ST.bg=t.dataset.bg;keep();redraw();return}
@@ -476,12 +477,14 @@ function paintSty(){const box=dlg&&dlg.querySelector('.r3styr');if(!box)return;
   const own=KEYOF[ST.head]&&READY[KEYOF[ST.head]]&&READY[KEYOF[ST.head]].head?KEYOF[ST.head]:'',sel=own||tfId()||(/^yt/.test(ST.head)&&(!ST.tf||ST.tf=='c')?'c':'');
   let cv=Object.keys(D).filter(id=>isCover(id)&&!itOf(id).gen&&!itOf(id).oos&&itOf(id).s!='ret'&&itOf(id).s!='give');
   cv.sort((a,b)=>(b==sel)-(a==sel)||(isReady(b)-isReady(a)));const all=cv.length,show=SCALL?cv:cv.slice(0,11);
-  h+=`<span class="r3lbl">🧕 המטפחת <small>הקשירה נצבעת בצבע של המטפחת שבוחרים</small></span><div class="r3scf" role="radiogroup" aria-label="המטפחת">
+  h+=`<span class="r3lbl">🧕 המטפחת <small>כל מטפחת עם הקשירות האמיתיות שהכנת לה</small></span><div class="r3scf" role="radiogroup" aria-label="המטפחת">
    <button type="button" role="radio" aria-checked="${sel=='c'}" data-sytf="c"><i style="background:rgb(${GREY.join(',')})"></i><span>אפור ניטרלי</span></button>
    ${show.map(id=>`<button type="button" role="radio" aria-checked="${sel==id}" data-sytf="${esc(id)}"><img alt="" loading="lazy" data-th="${esc(id)}" src="${esc(ph(id))}">${isReady(id)?'<b class="r3own" title="עם ההדפס">🎯</b>':''}<span>${esc(nm(id).split(' ').slice(0,3).join(' '))}</span></button>`).join('')}
    ${all>11?`<button type="button" class="r3scm" data-sytfm aria-expanded="${!!SCALL}">${SCALL?'פחות':'עוד '+(all-11)}</button>`:''}</div>`;
-  const it=sel&&sel!='c'?sel:'';
-  h+=it?`<button type="button" class="r3stb r3ex" data-tie202="${esc(it)}">${isReady(it)?'🎯 המטפחת הזו כבר במדויק. לשנות קשירה או להעלות שוב':'🎯 במדויק, עם ההדפס של המטפחת הזו'}</button>`:`<p class="r3note r3exn">🎯 רוצה את המטפחת בדיוק, עם ההדפס? בוחרים אותה כאן, ואז "במדויק".</p>`}
+  // v228: no painted ties – her scarf with the real ties she made for it, and a way to add one
+  const it=sel&&sel!='c'?sel:'',TX=it&&window.tie228?tie228.txs(it):[];
+  if(TX.length>1)h+=`<div class="r3heads r3sty r3tx" role="radiogroup" aria-label="הקשירות של המטפחת">${TX.map((x,i)=>{const on=READY[it]&&DYN['x'+READY[it].k[0]+'1']=='/_blob/'+x.L[0];return `<button type="button" role="radio" aria-checked="${!!on}" data-t228s="${esc(it)}|${i}"><img alt="" data-t228th="${esc(x.L[0])}" src="/_blob/${esc(x.L[0])}"><span>${esc(x.n)}</span></button>`}).join('')}</div>`;
+  h+=it?`<button type="button" class="r3stb r3ex" data-tie202="${esc(it)}">${TX.length?'🧕 הקשירות של המטפחת הזו · להוסיף עוד':'🧕 להכין למטפחת הזו קשירה אמיתית'}</button>`:`<p class="r3note r3exn">🧕 בוחרים מטפחת, ואז מכינים לה קשירות אמיתיות, עם ההדפס שלה.</p>`}
  // v227 (Sara 19:33 "תמיין את האיפורים לפי הנושאים ... יום יום אירוע וכו, כמובן שאפשר להסתיר סיווג"): her makeups in the groups of her prompts, each group folds
  if(ms.length){const G=mkGroups(ms),H=mkHid();h+=`<span class="r3lbl">💄 איפור</span><div class="r3mkg" aria-label="איפור"><div class="r3heads r3sty r3mk r3mk0" role="radiogroup" aria-label="בלי איפור">${chip('data-sym','','בלי',!ST.mk,'a8/t_c.webp'+V)}</div>
   ${G.map(([c,t,L])=>{const on=!H.has(c),sel=L.find(k=>k==ST.mk);return `<button type="button" class="r3mkh" data-mkc="${esc(c)}" aria-expanded="${on}"><b>${esc(t)}</b> <small>${L.length}</small>${!on&&sel?`<em>· ${esc(STY[sel].n)}</em>`:''}<i aria-hidden="true">${on?'הסתרה':'הצגה'}</i></button>${on?`<div class="r3heads r3sty r3mk" role="radiogroup" aria-label="${esc(t)}">${L.map(k=>chip('data-sym',k,STY[k].n,ST.mk==k)).join('')}</div>`:''}`}).join('')}
