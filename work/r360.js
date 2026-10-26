@@ -701,7 +701,23 @@ function prompts(){mkDlg();MKID='';
  if(!MK.open)MK.showModal()}
 
 // ---------- open ----------
-function open(){if(!dlg)build();
+// v222 (Sara 18:55 "שהכל יהיה לי כותרות, אני פותחת – נפתח, לוחצת – נסגר"): every group in the side (what she wears, on the head, tie, hairstyle, makeup, base top, background)
+// is a heading that opens and closes; closed shows the choice. Which are open is kept on this device
+function fold221(){const side=dlg.querySelector('.r3side');if(!side)return;let OPEN;try{OPEN=new Set(JSON.parse(localStorage.getItem('r222open')||'[]'))}catch(_){OPEN=new Set()}
+ const keyOf=l=>{const c=l.nextElementSibling;return c?(c.getAttribute('aria-label')||c.className.split(' ')[0]):''};
+ const heads=()=>[...side.querySelectorAll('.r3lbl'),...side.querySelectorAll('.r3now>h3')];
+ const apply=()=>heads().forEach(l=>{const k=l.tagName=='H3'?'worn':keyOf(l);if(!k)return;const on=OPEN.has(k),cs=l.tagName=='H3'?[side.querySelector('.r3worn')]:[];if(l.tagName!='H3')for(let c=l.nextElementSibling;c&&!c.classList.contains('r3lbl');c=c.nextElementSibling)if(!c.matches('[data-styopen]'))cs.push(c);   // up to the next heading (the 🎯 line goes with the scarf)
+  l.classList.add('r3fh');l.setAttribute('role','button');l.tabIndex=0;l.setAttribute('aria-expanded',on);cs.forEach(c=>c&&c.classList.toggle('r3fz',!on));
+  const ch=!on&&cs[0]&&cs[0].querySelector('[aria-checked=true] span');l.dataset.pick=ch?'· '+ch.textContent:''});
+ const tog=l=>{const k=l.tagName=='H3'?'worn':keyOf(l);if(!k)return;OPEN.has(k)?OPEN.delete(k):OPEN.add(k);try{localStorage.setItem('r222open',JSON.stringify([...OPEN]))}catch(_){}apply()};
+ side.addEventListener('click',e=>{const l=e.target.closest('.r3fh');if(l&&side.contains(l))tog(l)});
+ // on a phone the avatar is above the list: after a pick, a button brings her up to see it
+ let see=null,st=0;side.addEventListener('click',e=>{if(innerWidth>=900||!e.target.closest('[data-sym],[data-syh],[data-syt],[data-sytf],[data-zh]'))return;
+  if(!see){see=document.createElement('button');see.type='button';see.className='r3see';see.textContent='👀 לראות על הבובה';see.addEventListener('click',()=>{see.hidden=true;dlg.querySelector('.r3stage').scrollIntoView({behavior:'smooth',block:'start'})});dlg.appendChild(see)}
+  see.hidden=false;clearTimeout(st);st=setTimeout(()=>see.hidden=true,6000)});
+ side.addEventListener('keydown',e=>{const l=e.target.closest('.r3fh');if(l&&(e.key=='Enter'||e.key==' ')){e.preventDefault();tog(l)}});
+ let q=0;new MutationObserver(()=>{if(!q)q=requestAnimationFrame(()=>{q=0;apply()})}).observe(side,{childList:true,subtree:true});apply()}
+function open(){if(!dlg){build();fold221()}
  document.querySelectorAll('dialog[open]').forEach(d=>{if(d!==dlg&&d.id!='r3mk')try{d.close()}catch(_){}});
  if(!dlg.open){dlg.showModal();document.documentElement.classList.add('r3on')}paintCats();paintTabs();paintRoom();paintMiss();big.show(0);
  if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!document.documentElement.dataset.still&&!sessionStorage.getItem('r3spun')){sessionStorage.setItem('r3spun',1);setTimeout(()=>big.play(true),400)}}

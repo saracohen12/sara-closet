@@ -189,3 +189,17 @@ dialog#r3cmp::backdrop,dialog#r3sh::backdrop{background:rgba(20,12,8,.55)}
 @keyframes z185{50%{box-shadow:0 0 0 6px var(--z-acc,#b4532c),0 20px 50px rgba(0,0,0,.25)}}
 /* v204 (Sara 11:46 "מסביב לכחול יהיה לי מסגרת לבנה"): a white frame around the arch, on every stage */
 .r3s{box-shadow:0 0 0 7px #fff,0 0 0 8px rgba(60,40,30,.10),var(--z-shadow-lg)}
+/* v222: every group in the studio side opens and closes from its heading */
+#r360 .r3fh{cursor:pointer;display:flex;align-items:center;gap:6px;min-height:40px;user-select:none}
+#r360 .r3fh::before{content:'▸';font-size:.8em;transition:transform .15s;display:inline-block}
+#r360 .r3fh[aria-expanded=true]::before{transform:rotate(90deg)}
+#r360 .r3fh::after{content:attr(data-pick);font-weight:400;font-size:.82em;opacity:.75;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#r360 .r3fh:focus-visible{outline:3px solid var(--z-focus,#b4532c);outline-offset:2px;border-radius:6px}
+#r360 .r3fz{display:none!important}
+@media (min-width:900px){#r360 .r3w{overflow-x:clip}}   /* hidden made .r3w a scroll box that never scrolls, so the avatar didn't stay in view (sticky) */
+#r360 .r3side .r3hd,#r360 .r3side .r3bgw,#r360 .r3side .r3cam{margin-top:2px}
+#r360 .r3now>h3.r3fh{margin-bottom:0}
+#r360 .r3see{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);z-index:5;min-height:44px;padding:10px 18px;border-radius:999px;border:0;background:var(--z-acc,#b4532c);color:#fff;font:inherit;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.2)}
+#r360 .r3see[hidden]{display:none}
+#r360 .r3lbl.r3fh{margin:2px 0;font-size:.92rem;color:var(--z-ink,inherit)}
+#r360 .r3lbl.r3fh[aria-expanded=true]{margin-bottom:8px}
