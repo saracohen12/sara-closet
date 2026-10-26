@@ -247,3 +247,15 @@ dialog#sty199.w213,dialog#sty204v.w213{width:min(900px,100vw)}
 #r360 .r3heads.r3sty.r3mk button{flex:1 1 calc(50% - 8px);width:auto;max-width:none;padding:6px}
 #r360 .r3heads.r3sty.r3mk img{width:100%;height:auto;aspect-ratio:1;border-radius:calc(var(--z-r) - 8px);object-fit:cover;object-position:50% 25%}
 #r360 .r3heads.r3sty.r3mk .r3styadd b{width:100%;height:auto;aspect-ratio:1;border-radius:calc(var(--z-r) - 8px)}
+/* v227: makeup groups fold – in the styles window and in the studio */
+#sty199 .sycatb{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:6px 12px;border:1px solid var(--z-line,#ddd);border-radius:14px;background:var(--z-surface,#f6f2ee);color:inherit;font:inherit;font-size:1rem;cursor:pointer;text-align:start}
+#sty199 .sycatb small{opacity:.75;font-weight:400}
+#sty199 .sycatb i,#r360 .r3mkh i{margin-inline-start:auto;font-style:normal;font-size:.8rem;opacity:.75;white-space:nowrap}
+#sty199 .sycatb i::after,#r360 .r3mkh i::after{content:" ▾"}
+#sty199 .sycatb[aria-expanded=false] i::after,#r360 .r3mkh[aria-expanded=false] i::after{content:" ▸"}
+#sty199 .sycat.syoff{margin-top:8px}
+#r360 .r3mkg{display:flex;flex-direction:column;gap:8px}
+#r360 .r3mkh{display:flex;align-items:center;gap:6px;width:100%;min-height:44px;padding:6px 12px;border:1px solid var(--z-line);border-radius:calc(var(--z-r) - 6px);background:var(--z-surface,transparent);color:inherit;font:inherit;font-size:.92rem;cursor:pointer;text-align:start}
+#r360 .r3mkh small{opacity:.75}
+#r360 .r3mkh em{font-style:normal;font-size:.82rem;opacity:.8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#r360 .r3mkg .r3heads.r3sty.r3mk button{flex:0 1 calc(50% - 4px)}

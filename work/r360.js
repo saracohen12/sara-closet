@@ -74,12 +74,18 @@ const BEIGE=[222,200,184];   // the doll's own cover
 const GREY=[150,150,154];    // v204 (Sara 11:46 "תשים לי איזה כיסוי יפה שבצבע אפור ניטרלי"): the basic cover is her default tie in a neutral grey
 function styles(list){try{for(const c in FRM)if(c[0]=='#')delete FRM[c];for(const c in CARD)if(c.includes('|face|'))delete CARD[c]}catch(_){}   // v213: the avatar tiles' frames and the makeup faces use her default tie / hairstyle
  Object.keys(STY).forEach(k=>{const z='z'+k.slice(1);for(let v=1;v<=8;v++){delete DYN[k+v];delete IMG[k+v];delete DYN[z+v];delete IMG[z+v]}delete STY[k];delete STH[k];for(const c in STH)if(c.startsWith(k+'|'))delete STH[c];try{for(const c in CARD)if(c.startsWith(k+'|'))delete CARD[c];for(const c in FRM)if(c.startsWith(k+'|'))delete FRM[c]}catch(_){}});
- (list||[]).forEach(s=>{const k=styKey(s);if(!k||!Array.isArray(s.L)||s.L.length!=8)return;STY[k]={set:s.set,n:s.n||'',lum:+s.lum||128,id:s.id,t:s.t||0,cu:s.cu||''};
+ (list||[]).forEach(s=>{const k=styKey(s);if(!k||!Array.isArray(s.L)||s.L.length!=8)return;STY[k]={set:s.set,n:s.n||'',lum:+s.lum||128,id:s.id,t:s.t||0,cu:s.cu||'',p:s.p||''};
   s.L.forEach((a,v)=>{if(a)DYN[k+(v+1)]='/_blob/'+a});if(Array.isArray(s.M))s.M.forEach((a,v)=>{if(a)DYN['z'+k.slice(1)+(v+1)]='/_blob/'+a})});
  if(/^y/.test(ST.head||'')&&!STY[ST.head])ST.head=ST.tf&&(ST.tf=='c'||KEYOF[ST.tf])?ST.tf:'c';if(ST.mk&&!STY[ST.mk])ST.mk='';
  try{paintHeads();redraw()}catch(_){}
  coverThumb().then(u=>{if(u)document.querySelectorAll('[data-zh="c"] img').forEach(i=>i.src=u)}).catch(()=>{})}
 const styList=set=>Object.keys(STY).filter(k=>!set||STY[k].set==set).sort((a,b)=>STY[a].t-STY[b].t);
+// v227: makeup groups = the groups of her prompts (doc.p 'm:day:3', or the same name), the rest is "שלי"; hidden groups are kept on this device
+const mkHid=()=>{try{return new Set(JSON.parse(localStorage.getItem('mkc227')||'[]'))}catch(_){return new Set()}};
+function mkGroups(ms){const P=window.STYP,C=P&&P.MKC||[],by={};
+ const catOf=k=>{const x=STY[k],m=/^m:(\w+):/.exec(x.p||'');if(m&&C.some(g=>g[0]==m[1]))return m[1];const n=(x.n||'').trim();const g=n&&C.find(([,,L])=>L.some(y=>(Array.isArray(y)?y[0]:String(y).split(':')[0]).trim()==n));return g?g[0]:'own'};
+ ms.forEach(k=>{const c=catOf(k);(by[c]=by[c]||[]).push(k)});
+ return [...C.map(([c,t])=>[c,t,by[c]||[]]),['own','שלי',by.own||[]]].filter(g=>g[2].length)}
 // the colour of a cover she picked (its front layer): the tie is painted in it
 async function coverRGB(k){if(!k||k=='c')return BEIGE;const m=await im('x'+k+'1');if(!m)return BEIGE;
  const c=document.createElement('canvas');c.width=90;c.height=135;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(m,0,0,90,135);let p;try{p=g.getImageData(0,0,90,135).data}catch(_){return BEIGE}
@@ -446,6 +452,7 @@ function build(){
     setTimeout(()=>tfRGB(ST.tf).then(c=>{ST.tc=c;keep();redraw()}),50)}
    else{ST.tc=v.split(',').map(Number);if(tid&&D[tid]&&typeof putItem=='function')putItem(tid,{tc:ST.tc}).catch(()=>{});keep();redraw()}return}   // v202: the colour stays with that cover
   if(t.dataset.sym!=null){ST.mk=t.dataset.sym;keep();redraw();return}
+  if(t.dataset.mkc!=null){const c=t.dataset.mkc,H=mkHid();H.has(c)?H.delete(c):H.add(c);try{localStorage.setItem('mkc227',JSON.stringify([...H]))}catch(_){}redraw();return}
   if(t.dataset.styopen!=null){try{window.STY199&&STY199.open(t.dataset.styopen)}catch(_){}return}
   if(t.dataset.mk){make(t.dataset.mk);return}
   if(t.classList.contains('r3missx')){MISS=[];paintMiss();return}
@@ -475,7 +482,10 @@ function paintSty(){const box=dlg&&dlg.querySelector('.r3styr');if(!box)return;
    ${all>11?`<button type="button" class="r3scm" data-sytfm aria-expanded="${!!SCALL}">${SCALL?'פחות':'עוד '+(all-11)}</button>`:''}</div>`;
   const it=sel&&sel!='c'?sel:'';
   h+=it?`<button type="button" class="r3stb r3ex" data-tie202="${esc(it)}">${isReady(it)?'🎯 המטפחת הזו כבר במדויק. לשנות קשירה או להעלות שוב':'🎯 במדויק, עם ההדפס של המטפחת הזו'}</button>`:`<p class="r3note r3exn">🎯 רוצה את המטפחת בדיוק, עם ההדפס? בוחרים אותה כאן, ואז "במדויק".</p>`}
- if(ms.length)h+=`<span class="r3lbl">💄 איפור</span><div class="r3heads r3sty r3mk" role="radiogroup" aria-label="איפור">${chip('data-sym','','בלי',!ST.mk,'a8/t_c.webp'+V)}${ms.map(k=>chip('data-sym',k,STY[k].n,ST.mk==k)).join('')}${add('mk','להוסיף איפור')}</div>`;
+ // v227 (Sara 19:33 "תמיין את האיפורים לפי הנושאים ... יום יום אירוע וכו, כמובן שאפשר להסתיר סיווג"): her makeups in the groups of her prompts, each group folds
+ if(ms.length){const G=mkGroups(ms),H=mkHid();h+=`<span class="r3lbl">💄 איפור</span><div class="r3mkg" aria-label="איפור"><div class="r3heads r3sty r3mk r3mk0" role="radiogroup" aria-label="בלי איפור">${chip('data-sym','','בלי',!ST.mk,'a8/t_c.webp'+V)}</div>
+  ${G.map(([c,t,L])=>{const on=!H.has(c),sel=L.find(k=>k==ST.mk);return `<button type="button" class="r3mkh" data-mkc="${esc(c)}" aria-expanded="${on}"><b>${esc(t)}</b> <small>${L.length}</small>${!on&&sel?`<em>· ${esc(STY[sel].n)}</em>`:''}<i aria-hidden="true">${on?'הסתרה':'הצגה'}</i></button>${on?`<div class="r3heads r3sty r3mk" role="radiogroup" aria-label="${esc(t)}">${L.map(k=>chip('data-sym',k,STY[k].n,ST.mk==k)).join('')}</div>`:''}`}).join('')}
+  <div class="r3heads r3sty r3mk">${add('mk','להוסיף איפור')}</div></div>`}
  h+=`<button type="button" class="r3stb" data-styopen="${H?'hair':'tie'}">🎨 תסרוקות, קשירות ואיפור</button>`;
  if(box.dataset.h!==h){box.dataset.h=h;box.innerHTML=h;try{thl([...box.querySelectorAll('img[data-th]')].map(i=>i.dataset.th))}catch(_){}}
  box.querySelectorAll('img[data-sth]').forEach(i=>{if(!i.getAttribute('src'))styThumb(i.dataset.sth).then(u=>{if(u)document.querySelectorAll(`img[data-sth="${CSS.escape(i.dataset.sth)}"]`).forEach(x=>x.src=u)})});

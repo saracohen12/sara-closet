@@ -49,6 +49,7 @@ function presets(set){const p=P();if(!p)return [];
  // v209 (Sara 14:17 "כמעט אין הבדלים באיפור של היום יום / הנה פרומטים מדוייקים ומתוקנים"): her 50 – [name, EN, exact prompt, Hebrew short]
  return p.MKC.flatMap(([c,t,L])=>L.map((x,i)=>Array.isArray(x)?{k:'m:'+c+':'+i,no:i+1,n:x[0],en:x[1],d:`Makeup Style: ${x[1]}. ${x[2]}`,sub:x[3],c}
   :{k:'m:'+c+':'+i,no:i+1,n:x.split(':')[0].trim(),sub:x.split(':').slice(1).join(':').trim(),c}))}
+const mkHid=()=>{try{return new Set(JSON.parse(localStorage.getItem('mkc227')||'[]'))}catch(_){return new Set()}};   // v227: hidden makeup groups (shared with the studio)
 const preOf=(set,k)=>presets(set).find(x=>x.k==k);
 function doneOf(set,pr){const L=mine(set);return L.find(x=>x.p==pr.k)||L.find(x=>!x.p&&x.n==pr.n)||null}
 const extras=set=>{const used=new Set(presets(set).map(pr=>(doneOf(set,pr)||{}).id).filter(Boolean));return mine(set).filter(x=>!used.has(x.id)&&!gone(x))};
@@ -124,7 +125,8 @@ function body(set){const ex=extras(set).map(x=>card(set,null,x));
    +(ex.length?`<section class="sycat"><h4>שלי</h4>${grid(set,ex)}</section>`:'')+grid(set,[addCard(set)])+hiddenHTML(set)}
  if(set!='mk')return grid(set,[...shown(set).map(pr=>card(set,pr,doneOf(set,pr))),...ex,addCard(set)])+(set=='tie'?'<p class="sytip">הקשירות כאן בצבע אחד לדוגמה. על כיסוי היא נצבעת בצבע של הכיסוי.</p>':'')+hiddenHTML(set);
  const p=P();if(!p)return '';const all=shown('mk');
- return p.MKC.map(([c,t,L])=>`<section class="sycat"><h4>${es(t)} <small>${all.filter(pr=>pr.c==c).length}</small></h4>
+ const H=mkHid(),mineN=c=>all.filter(pr=>pr.c==c&&doneOf('mk',pr)).length;
+ return p.MKC.map(([c,t,L])=>H.has(c)?`<section class="sycat syoff"><h4><button type="button" class="sycatb" data-sycat="${c}" aria-expanded="false"><b>${es(t)}</b> <small>${all.filter(pr=>pr.c==c).length}${mineN(c)?' · '+mineN(c)+' שלך':''}</small><i aria-hidden="true">הצגה</i></button></h4></section>`:`<section class="sycat"><h4><button type="button" class="sycatb" data-sycat="${c}" aria-expanded="true"><b>${es(t)}</b> <small>${all.filter(pr=>pr.c==c).length}${mineN(c)?' · '+mineN(c)+' שלך':''}</small><i aria-hidden="true">הסתרה</i></button></h4>
   ${MKG[c]?`<span class="mkb"><button type="button" data-sylook="${c}">📋 פרומפט לרשת</button><button type="button" data-sygrid="${c}"${busy()?' disabled':''}>📷 להחליף את הרשת</button></span>`:''}
   ${grid(set,all.filter(pr=>pr.c==c).map(pr=>card(set,pr,doneOf(set,pr))))}</section>`).join('')+(ex.length?`<section class="sycat"><h4>שלי</h4>${grid(set,ex)}</section>`:'')+grid(set,[addCard(set)])+hiddenHTML(set)}
 function paint(){if(!DL)return;const set=TAB,y=DL.scrollTop,tt=DL.querySelector('#toast');   // v206: the toast (moved into the open dialog) survives a repaint, with its "ביטול"
@@ -255,6 +257,7 @@ async function del(id){const x=LIST.find(y=>y.id==id);if(!x||!DB)return;const ke
  toast_('נמחק',async()=>{try{await DB.collection('styles').doc(id).set(keep);if(!LIST.some(y=>y.id==id))LIST.push(Object.assign({},keep,{id}));LIST.sort((a,b)=>(a.t||0)-(b.t||0));push();paint()}catch(e){ERR('undo',e)}})}
 
 function click(e){if(e.target===DL)return DL.close();const b=e.target.closest('button');if(!b||!DL.contains(b))return;const d=b.dataset;
+ if(d.sycat!=null){const H=mkHid(),c=d.sycat;H.has(c)?H.delete(c):H.add(c);try{localStorage.setItem('mkc227',JSON.stringify([...H]))}catch(_){}paint();return}   // v227: a makeup group folds (the same groups fold in the studio)
  if(b.classList.contains('mkx'))return DL.close();
  if(d.sytab){TAB=d.sytab;ED='';ADD=false;SHOWH=false;PROC=PROC&&PROC.err?null:PROC;paint();DL.scrollTop=0;const t=DL.querySelector(`[data-sytab="${TAB}"]`);if(t)t.focus();return}
  if(d.sywear)return wear(d.sywear);
