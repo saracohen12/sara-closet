@@ -15,7 +15,7 @@ const P=()=>window.STYP;
 const SETS=[['hair','💇','תסרוקות','תסרוקת','התסרוקת'],['tie','🧕','קשירות','קשירה','הקשירה'],['mk','💄','איפור','איפור','האיפור']];
 const SET=k=>SETS.find(s=>s[0]==k)||SETS[0];
 const KIND={hair:'hair',tie:'tie',mk:'makeup'};
-let DB=null,LIST=[],TAB='hair',PROC=null,ED='',NAME={hair:'',tie:'',mk:''},NUM='';
+let DB=null,LIST=[],TAB='hair',PROC=null,ED='',NAME={hair:'',tie:'',mk:''},NUM='',DESC='';
 const R=()=>window.R360;
 function push(){try{R()&&R().styles(LIST)}catch(e){ERR('reg',e)}}
 (async()=>{try{const db=await window.claude?.use?.('db');if(!db)return;DB=db;
@@ -41,13 +41,13 @@ function doneOf(set,pr){const L=mine(set);return L.find(x=>x.p==pr.k)||L.find(x=
 const extras=set=>{const used=new Set(presets(set).map(pr=>(doneOf(set,pr)||{}).id).filter(Boolean));return mine(set).filter(x=>!used.has(x.id))};
 function el(){if(DL)return DL;DL=document.createElement('dialog');DL.id='sty199';DL.dir='rtl';DL.setAttribute('aria-labelledby','sty199t');document.body.appendChild(DL);
  DL.addEventListener('click',click);DL.addEventListener('input',e=>{const t=e.target;
-  if(t.classList.contains('syname')){NAME[TAB]=t.value;fill()}else if(t.classList.contains('synum')){NUM=t.value.replace(/\D/g,'').slice(0,2);fill()}});
+  if(t.classList.contains('syname')){NAME[TAB]=t.value;fill()}else if(t.classList.contains('sydesc')){DESC=t.value;fill()}else if(t.classList.contains('synum')){NUM=t.value.replace(/\D/g,'').slice(0,2);fill()}});
  DL.addEventListener('pointerover',e=>{if(e.pointerType!='mouse'||still())return;const b=e.target.closest('.syrot');if(b&&!b._t&&!(e.relatedTarget&&b.contains(e.relatedTarget)))turn(b,true)});
  DL.addEventListener('pointerout',e=>{if(e.pointerType!='mouse')return;const b=e.target.closest('.syrot');if(b&&!(e.relatedTarget&&b.contains(e.relatedTarget)))stopRot(b,b._F)});
  DL.addEventListener('cancel',e=>{e.preventDefault();DL.close()});return DL}
 function open(tab){if(tab&&SETS.some(s=>s[0]==tab))TAB=tab;el();ED='';ADD=false;paint();if(!DL.open)DL.showModal();DL.scrollTop=0}
-const prompt=set=>{const p=P();if(!p)return '';const n=NAME[set].trim();return set=='hair'?p.hair(n):set=='tie'?p.tie(n):p.face(NUM)};
-function prompt2(set,pr){const p=P();if(!p||!pr)return '';return set=='tie'?p.tieW(pr.n,pr.d):set=='hair'?p.hairW(pr.n,pr.d):p.face(pr.no)}
+const prompt=set=>{const p=P();if(!p)return '';const n=NAME[set].trim();return set=='hair'?p.hair(n):set=='tie'?p.tie(n):p.faceW?p.faceW(n,DESC.trim()):p.face(NUM)};   // v205: a new makeup from her words, only the doll
+function prompt2(set,pr){const p=P();if(!p||!pr)return '';return set=='tie'?p.tieW(pr.n,pr.d):set=='hair'?p.hairW(pr.n,pr.d):p.faceW?p.faceW(pr.n,pr.sub):p.face(pr.no)}   // v205: makeup from the words, only the doll attached
 function fill(){if(!DL)return;DL.querySelectorAll('textarea[data-syp]').forEach(t=>t.value=prompt(t.dataset.syp))}
 function status(){if(!PROC)return '';if(PROC.err)return `<p class="syst no" role="alert">✗ ${es(PROC.err)}</p>`;
  return `<p class="syst" aria-live="polite">✂ ${PROC.n0?es(PROC.n0)+': ':''}${PROC.v<9?`גוזרת ומתאימה לבובה… זווית ${PROC.v} מתוך 8`:'שומרת…'}${PROC.n>1?` · תמונה ${PROC.i} מתוך ${PROC.n}`:''}</p>`}
@@ -61,16 +61,16 @@ function card(set,pr,x){const k=pr?pr.k:x.id,b=busy()&&PROC.k==k,title=x?x.n:pr.
  const btn=b?'<span class="sycw">✂ גוזרת…</span>':x?`<button type="button" class="mkp" data-sywear="${es(x.id)}">👗 ללבוש</button>`
   :`<button type="button" data-syp2="${es(pr.k)}">📋 פרומפט</button><button type="button" class="mkp" data-syup2="${es(pr.k)}"${busy()?' disabled':''}>📤 להעלות</button>`;
  return `<div class="syc${x?' up':''}${b?' busy':''}">${pic}<b class="sycn">${pr?pr.no+'. ':''}${es(title)}</b>${pr&&pr.sub?`<small class="sycs">${es(pr.sub)}</small>`:''}<span class="sycb">${btn}</span></div>`}
-const addCard=set=>{const one=SET(set)[3];return `<button type="button" class="syc sycadd" data-syadd aria-expanded="${ADD}"><span class="sycim"><b aria-hidden="true">＋</b></span><b class="sycn">להוסיף ${one}</b><small class="sycs">לפי תמונה שלך</small></button>`};
+const addCard=set=>{const one=SET(set)[3];return `<button type="button" class="syc sycadd" data-syadd aria-expanded="${ADD}"><span class="sycim"><b aria-hidden="true">＋</b></span><b class="sycn">להוסיף ${one}</b><small class="sycs">${set=='mk'?'לפי מה שתכתבי':'לפי תמונה שלך'}</small></button>`};
 function how(set){const sheet='<button type="button" data-sydl="sheet">⬇ הבובה ב-8 זוויות</button>';
  if(set=='tie')return `<div class="syhow"><p><b>בכל קשירה:</b> 📋 מעתיקים, ב-GPT בשיחה חדשה מצרפים את הבובה ומדביקים, ואת מה שחזר 📤 מעלים באותה משבצת. מיד רואים אותה עלייך.</p><span class="mkb">${sheet}</span></div>`;
  if(set=='hair')return `<div class="syhow"><p><b>בכל תסרוקת:</b> 📋 מעתיקים, ב-GPT בשיחה חדשה מצרפים את הפאה שלך ואת הבובה ומדביקים, ואת מה שחזר 📤 מעלים באותה משבצת.</p><span class="mkb">${sheet}<button type="button" data-sydl="wig">⬇ הפאה שלי</button></span></div>`;
- return `<div class="syhow"><p><b>שלב 1:</b> בכל קבוצה 📋 פרומפט לרשת, ב-GPT עם תמונה של הפנים שלך מקדימה. את הרשת שחזרה 📷 מעלים, וכל איפור מקבל את התמונה שלו.</p>
-  <p><b>שלב 2:</b> באיפור שאהבת 📋, ב-GPT מצרפים את הרשת ואת הבובה, ואת מה שחזר 📤 מעלים באותה משבצת.</p><span class="mkb">${sheet}</span></div>`}
+ return `<div class="syhow"><p><b>בכל איפור:</b> 📋 מעתיקים, ב-GPT בשיחה חדשה מצרפים רק את הבובה ומדביקים. GPT יוצר את האיפור לפי התיאור. את מה שחזר 📤 מעלים באותה משבצת.</p>
+  <p><small>רשות: רוצה לראות קודם כמה איפורים על הפנים שלך? בכל קבוצה "📋 פרומפט לרשת" עם תמונה שלך מקדימה, ואת הרשת שחזרה 📷 מעלים.</small></p><span class="mkb">${sheet}</span></div>`}
 function addPanel(set){const [,,,one]=SET(set);const nm=`<label class="syl">שם <input class="syname" value="${es(NAME[set])}" maxlength="40" placeholder="${set=='hair'?'למשל: גלים פתוחים':set=='tie'?'למשל: טורבן גבוה':'למשל: שבת אלגנטית'}"></label>`;
  const pr=`<details><summary>לראות את הפרומפט</summary><textarea readonly rows="9" data-syp="${set}">${es(prompt(set))}</textarea></details>`;
- const att=set=='hair'?'התמונה של התסרוקת, הפאה שלך והבובה':set=='tie'?'התמונה של הקשירה, ואחריה הבובה':'התמונה של האיפור, ואחריה הבובה';
- return `<div class="syaddp" id="syaddp"><h4>➕ ${set=='mk'?'איפור חדש':one+' חדשה'}, לפי תמונה שלך</h4><ol class="mks"><li>${nm}</li>
+ const att=set=='hair'?'התמונה של התסרוקת, הפאה שלך והבובה':set=='tie'?'התמונה של הקשירה, ואחריה הבובה':'רק הבובה';
+ return `<div class="syaddp" id="syaddp"><h4>➕ ${set=='mk'?'איפור חדש, לפי מה שתכתבי':one+' חדשה, לפי תמונה שלך'}</h4><ol class="mks"><li>${nm}${set=='mk'?`<label class="syl">איך הוא נראה <textarea class="sydesc" rows="2" maxlength="300" placeholder="למשל: צללית ורודה-חומה, אייליינר דק, שפתון פטל">${es(DESC)}</textarea></label>`:''}</li>
   <li><b>שומרים</b> את הבובה${set=='hair'?' ואת הפאה':''}.<span class="mkb"><button type="button" data-sydl="sheet">⬇ הבובה ב-8 זוויות</button>${set=='hair'?'<button type="button" data-sydl="wig">⬇ הפאה שלי</button>':''}</span></li>
   <li><b>ב-GPT, בהודעה אחת:</b> ${att}, ומדביקים את הפרומפט.<span class="mkb"><button type="button" class="mkp" data-sycopy="${set}">📋 להעתיק את הפרומפט</button></span>${pr}</li>
   <li><b>מעלים את מה שחזר</b> (תמונה אחת עם 8 הזוויות).<span class="mkb"><button type="button" class="mkp" data-syup="${set}"${busy()?' disabled':''}>📤 להעלות</button></span></li></ol></div>`}

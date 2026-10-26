@@ -25,6 +25,7 @@ dialog#sty199::backdrop{background:rgba(20,12,8,.5)}
 #sty199 .syedit label,#sty199 .syl{display:flex;align-items:center;gap:8px;font-size:.88rem;flex-wrap:wrap}
 #sty199 input{font:inherit;font-size:16px;min-height:40px;padding:0 10px;border-radius:10px;border:1px solid var(--z-line,#ccc);background:var(--z-solid,#fff);color:var(--z-ink,#222);min-width:0;flex:1}
 #sty199 .synum{flex:none;width:4.5em}
+#sty199 .syl textarea.sydesc{flex:1 1 100%;box-sizing:border-box;font:inherit;font-size:16px;padding:8px 10px;border-radius:10px;border:1px solid var(--z-line,#ccc)!important;background:var(--z-solid,#fff)!important;color:var(--z-ink,#222)!important;margin-top:8px}   /* v205: the new makeup in her words */
 #sty199 .syadd{margin-top:14px;border:1px solid var(--z-line,#ddd);border-radius:16px;padding:10px 12px}
 #sty199 .syadd>summary{cursor:pointer;font-weight:600;font-size:.95rem;min-height:32px;display:flex;align-items:center}
 #sty199 .mks{margin:10px 0 6px;padding-inline-start:22px;display:flex;flex-direction:column;gap:12px;font-size:.9rem;line-height:1.5}

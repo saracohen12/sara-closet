@@ -136,29 +136,40 @@ function face(num){const n=+num>0?+num:0;return `מצורפות שתי תמונ�
 אל תשני שום דבר אחר: אותו גיליון, אותו סדר זוויות, אותו מיקום ואותו גודל של הדמות בכל משבצת, אותה תנוחה, אותו רקע, אותם קווים לבנים בין המשבצות. כיסוי הראש הבז׳ והשמלה בצבע עור נשארים בדיוק אותו דבר.
 
 החזירי תמונה אחת: אותו גיליון של 8 משבצות (2 שורות של 4), באותו יחס גובה-רוחב, בלי טקסט ובלי מספרים.`}
-// v204 (Sara 11:38 "וככה תעשה לי גם באיפור וגם בתסרוקת"): 20 hairstyles for her wig, like her 20 ties – a card each in the library.
+// v204 (Sara 11:38 "וככה תעשה לי גם באיפור וגם בתסרוקת"): hairstyles for her wig, like her 20 ties – a card each in the library.
+// v205 (Sara 26/10 12:27 "תכניס את הפרומט לתסרוקות 30 סה״כ"): HER 30 – the 20 from her hairstyle pictures (in her order) + 10 new, English details as she gave them.
 // Only the wig (for the colour) and the doll are attached, no picture of the hairstyle is needed.
 const HAIRS=[
- ["פזור חלק ומבריק","Hairstyle Details: Worn fully down, sleek and straight with a glossy finish, a soft center part, ends falling smoothly over the shoulders and down the back."],
- ["פזור עם שביל צד","Hairstyle Details: Worn down and straight with a deep side part; the front section is swept across the forehead and tucked softly behind one ear."],
- ["גלים רכים","Hairstyle Details: Worn down with soft, loose, natural waves starting from mid-length, light movement, a soft center part."],
- ["גלי הוליווד","Hairstyle Details: Glamorous, shiny, uniform S-shaped waves brushed into one smooth wave pattern, a deep side part, volume swept to one side."],
- ["תלתלים גדולים","Hairstyle Details: Worn down with big, bouncy, defined curls from the cheekbones to the ends, full volume all around."],
- ["פן נפוח","Hairstyle Details: A classic blow-dry: smooth with lifted volume at the crown and ends turned softly inward and outward, full and bouncy."],
- ["גלי חוף","Hairstyle Details: Worn down with relaxed, textured, slightly undone beach waves, matte finish, a casual side part."],
- ["מאחורי האוזניים","Hairstyle Details: Straight and sleek, both sides tucked neatly behind the ears, the length falling straight down the back."],
- ["חצי אסוף","Hairstyle Details: The top section is gathered at the crown and secured, the rest of the hair falls down straight over the back."],
- ["חצי אסוף בצמות","Hairstyle Details: Two thin braids from the temples meet and join at the back of the head; the rest of the hair falls down in soft waves."],
- ["קוקו גבוה","Hairstyle Details: A sleek, high ponytail at the crown, smooth sides with no bumps, the tail falling long and straight down the back."],
- ["קוקו נמוך","Hairstyle Details: A smooth, low ponytail at the nape with a center part, the tail falling straight down the back."],
- ["קוקו צד","Hairstyle Details: A low ponytail gathered at the side of the nape and brought forward to rest over one shoulder."],
- ["צמה צרפתית","Hairstyle Details: A neat French braid starting at the crown and running down the center of the back of the head, finished long down the back."],
- ["צמת צד רכה","Hairstyle Details: A loose, soft three-strand braid gathered to one side and resting forward over one shoulder, a few soft strands framing the face."],
- ["צמת דג","Hairstyle Details: A fishtail braid down the back, finely woven, slightly loosened for fullness."],
- ["בון נמוך אלגנטי","Hairstyle Details: A smooth, elegant low chignon at the nape, a soft side part, the sides swept back neatly."],
- ["בון גבוה מבולגן","Hairstyle Details: A loose, messy high bun on top of the head with a few soft strands around the face and nape."],
- ["אסוף שבת","Hairstyle Details: A soft low twisted updo at the nape with gentle volume at the crown and two loose face-framing strands."],
- ["אסוף חתונה","Hairstyle Details: An elaborate, festive bridal updo of soft pinned curls gathered at the back of the head, smooth front with gentle volume."]];
+ ["שביל צד קלאסי", "Hairstyle Details: Classic side-parted hairstyle with soft cascading waves. On one side, the hair flows gracefully over the shoulder and chest. On the other side, the hair is tucked neatly behind the ear (ear visible), and then drapes forward over the shoulder."],
+ ["מדורג נפחי", "Hairstyle Details: Voluminous layered cut with natural movement. Soft, bouncy layers frame the face and cascade down over both shoulders and chest with full body and texture."],
+ ["צמה צדדית רכה", "Hairstyle Details: Soft, loose side braid gathered over one shoulder. Clean hairline with a relaxed, elegant weave falling gently down the chest."],
+ ["גלים פתוחים מוקפדים", "Hairstyle Details: Polished business-ready wide blowout waves. Perfectly styled, symmetrical soft waves falling over both shoulders and chest with a glossy, neat finish."],
+ ["פזור גלי נפחי", "Hairstyle Details: Full-bodied, high-volume loose waves. Rich, luxurious hair texture flowing abundantly over both shoulders and chest."],
+ ["קארה גלי קצר", "Hairstyle Details: Chin-length short bob cut with soft, modern waves. A neat, voluminous short hairstyle framing the jawline cleanly."],
+ ["חלק מבריק וארוך", "Hairstyle Details: Ultra-sleek, long, silky straight hair. Perfectly straight, polished, and shiny hair parted down the middle, falling straight over both shoulders and chest."],
+ ["קוקו גבוה אופנתי", "Hairstyle Details: High, voluminous ponytail set on top of the head. Smooth, pulled-back front with a full ponytail cascading down, complemented by soft wispy tendrils delicately framing the face."],
+ ["קארה גלי בינוני", "Hairstyle Details: Shoulder-length medium bob with soft, relaxed waves. Gentle curves around the shoulders framing the face neatly."],
+ ["חצי אסוף גבוה / חצי קוקו", "Hairstyle Details: Half-up high ponytail style. The top half of the hair is gathered into a neat small high ponytail on the crown, while the remaining long hair flows in soft waves over the shoulders."],
+ ["אסוף קליפס קז׳ואל", "Hairstyle Details: Hair gathered at the back with a neutral claw clip in an effortless bun, leaving soft, delicate face-framing tendrils falling naturally around the face."],
+ ["חצי אסוף יומיומי עם קליפס", "Hairstyle Details: Relaxed half-up style held at the back of the head with a simple claw clip, allowing smooth, long waves to drape down over the shoulders and chest."],
+ ["שביל באמצע טבעי", "Hairstyle Details: Natural center part with effortless, relaxed loose waves. Hair drapes evenly on both sides over the shoulders and chest in a soft, understated look."],
+ ["שביל צד עמוק גלי", "Hairstyle Details: Deep side-part with dramatic, glamorous big waves swept entirely over one shoulder, while the opposite side is smooth and tucked neatly behind the ear."],
+ ["תלתלים מובנים יוקרתיים", "Hairstyle Details: Luxurious, defined, glossy curls with rich volume. Perfectly sculpted shiny spiral curls cascading elegantly over both shoulders and chest."],
+ ["גלים הוליוודיים קלאסיים", "Hairstyle Details: Classic Hollywood glam waves. Ultra-polished, vintage-inspired uniform luxury waves with a high-shine glossy finish flowing smoothly down."],
+ ["שיניון נמוך אצילי", "Hairstyle Details: Noble, sleek low chignon bun tied neatly at the nape of the neck. Clean, polished hairline, fully pulled-back, elegant, and sophisticated updo."],
+ ["אסוף אירועים גבוה", "Hairstyle Details: Intricate formal high updo for special events. Sculpted voluminous bun on top, with delicate, soft curled tendrils hanging gracefully around the sides of the face."],
+ ["גלים עשירים עם סיכת פנינה", "Hairstyle Details: Rich, open glamour waves styled with a delicate pearl hairpin accent placed gracefully on one side above the ear, hair flowing over both shoulders."],
+ ["ערב אלגנטי אסוף", "Hairstyle Details: Structured, elegant high evening updo. Smoothly gathered hair built into a polished, regal crown bun with a clean, sophisticated silhouette."],
+ ["קוקס אלגנטי לאירוע", "Hairstyle Details: Structured high event bun on top of the head. Ultra-smooth, slicked-back hairline, perfectly coiled round bun with a sophisticated, polished finish."],
+ ["קוקס נמוך עם קליפס", "Hairstyle Details: Neat low bun at the nape of the neck held securely by a simple elegant claw clip. Clean pulled-back sides with a smooth, refined profile."],
+ ["חצי קוקו מוברש", "Hairstyle Details: Sleek half-up ponytail. The upper section is pulled tight into a neat high pony at the crown, while the lower section cascades straight and smooth over the shoulders."],
+ ["קוקו גבוה מוברש", "Hairstyle Details: High, slicked-back ponytail. Fully brushed back with high shine, hair gathered tight at the top with a smooth ponytail hanging straight down."],
+ ["צמה מסודרת ומהודקת", "Hairstyle Details: Neat, tightly woven classic braid starting from the nape and falling over one shoulder. Clean hairline, perfectly smooth and polished finish with no stray hairs."],
+ ["שיער חלק סליק", "Hairstyle Details: Ultra-sleek, pin-straight hair parted neatly in the middle, falling smooth and flat over both shoulders and chest with zero volume."],
+ ["שיער מעט גלי ועדין, לא נפוח", "Hairstyle Details: Gentle, subtle soft waves with very low volume. Hair lays close to the shoulders and chest in clean, faint waves without puffiness."],
+ ["שיניון נמוך מסודר עם שביל באמצע", "Hairstyle Details: Crisp center part with hair slicked back into a tight low chignon bun at the nape of the neck. Elegant, symmetrical, and sharp business aesthetic."],
+ ["חצי אסוף מתוח לאחור", "Hairstyle Details: Sleek half-up style with top layers pulled tautly back from the face, while smooth straight-to-subtle waves drape neatly over the back and shoulders."],
+ ["קוקו נמוך עטוף בשיער", "Hairstyle Details: Low, smooth ponytail at the nape of the neck with a strand of hair wrapped seamlessly around the base to hide the hair tie. Extremely neat and professional."]];
 function hairW(n,det){return `מצורפות שתי תמונות.
 התמונה הראשונה: הפאה שלי. ממנה לוקחים את צבע השיער, הגוונים, האורך והמרקם.
 התמונה השנייה: גיליון של הדמות שלי ב-8 זוויות מסביב, שתי שורות של 4 משבצות.
@@ -169,7 +180,19 @@ ${det}
 צבע השיער כמו בפאה שלי. כיסוי הבז׳ נעלם לגמרי. אותה תסרוקת בדיוק בכל 8 הזוויות. בצד ובגב צרי את השיער כמו שהוא נראה באמת מהכיוון הזה.
 
 ${KEEP}`}
-const P={hair,hairW,HAIRS,tie,tieW,exact,TIES,look,face,MKC,GRID};
+// v205 (Sara 26/10 12:40 "רשמת לו שאני מעלה לו איפור של תמונה? אין לי, אני רוצה שיצור. אני יכולה רק להעלות את התמונה שלי"):
+// a look from the list straight onto the doll – only the doll is attached, GPT creates the makeup from the words (like the ties)
+function faceW(n,det){return `מצורפת תמונה אחת: גיליון של הדמות שלי ב-8 זוויות מסביב, שתי שורות של 4 משבצות.
+
+ערכי את הגיליון, אל תציירי אותו מחדש. שני דבר אחד בלבד: צרי על הפנים של הדמות איפור${q(n)}${det?`: ${det}`:''}.
+האיפור נראה אמיתי, כמו של מאפרת מקצועית: מרקם עור אמיתי, צבעים מדויקים, מוקפד ולא מוגזם (חוץ ממה שכתוב שהוא דרמטי). אותו איפור בדיוק בכל הזוויות. בזוויות מהצד רואים רק את הצד של הפנים. בזוויות מהגב לא רואים פנים, ושם לא משנים כלום.
+
+הפנים עצמם לא משתנים: אותו מבנה, אותה הבעה, אותו חיוך, אותו עור, אותו גודל ואותו מקום בדיוק בכל משבצת.
+
+אל תשני שום דבר אחר: אותו גיליון, אותו סדר זוויות, אותו מיקום ואותו גודל של הדמות בכל משבצת, אותה תנוחה, אותו רקע, אותם קווים לבנים בין המשבצות. כיסוי הראש הבז׳ והשמלה בצבע עור נשארים בדיוק אותו דבר.
+
+החזירי תמונה אחת: אותו גיליון של 8 משבצות (2 שורות של 4), באותו יחס גובה-רוחב, בלי טקסט ובלי מספרים.`}
+const P={hair,hairW,HAIRS,tie,tieW,exact,TIES,look,face,faceW,MKC,GRID};
 if(typeof window!='undefined')window.STYP=P;
 if(typeof module!='undefined')module.exports=P;
 })();
