@@ -140,8 +140,8 @@ function styCard(k,o){o=o||{};const st=k?STY[k]:null;if(k&&!st)return Promise.re
 const hairHead=()=>/^yh/.test(ST.head||'')&&STY[ST.head]?ST.head:styList('hair')[0]||'w';
 const FC=[176,66,22,25],FIT=window.FIT213={};
 function lumOf(c){const d=c.getContext('2d',{willReadFrequently:true}).getImageData(0,0,c.width,c.height).data,L=new Float32Array(c.width*c.height);for(let i=0;i<L.length;i++)L[i]=.299*d[i*4]+.587*d[i*4+1]+.114*d[i*4+2];return L}
-function fitFace(D,A,W,H){const cx=176,cy=62,P=[];   // the doll's eyes, nose and mouth (D) against the head (A) → [dx,dy,scale,turn°,score]
- for(let y=cy-24;y<=cy+24;y++)for(let x=cx-19;x<=cx+19;x++){const u=(x-cx)/19,v=(y-cy)/24;if(u*u+v*v<=1)P.push(x-cx,y-cy,D[y*W+x])}
+function fitFace(D,A,W,H,cx=176,cy=62,rx=19,ry=24){const P=[];   // the doll's eyes, nose and mouth (D) against the head (A) → [dx,dy,scale,turn°,score]
+ for(let y=cy-ry;y<=cy+ry;y++)for(let x=cx-rx;x<=cx+rx;x++){const u=(x-cx)/rx,v=(y-cy)/ry;if(u*u+v*v<=1)P.push(x-cx,y-cy,D[y*W+x])}
  const n=P.length/3,V=new Float32Array(n);let m=0;for(let i=2;i<P.length;i+=3)m+=P[i];m/=n;let sd=0;for(let i=2;i<P.length;i+=3){P[i]-=m;sd+=P[i]*P[i]}sd=Math.sqrt(sd)||1;
  const score=(dx,dy,s,t)=>{const c=Math.cos(t*Math.PI/180)*s,si=Math.sin(t*Math.PI/180)*s;let sa=0,sb=0,sab=0;
   for(let i=0,j=0;i<P.length;i+=3,j++){const x=Math.round(cx+dx+c*P[i]-si*P[i+1]),y=Math.round(cy+dy+si*P[i]+c*P[i+1]);const a=x<0||y<0||x>=W||y>=H?0:A[y*W+x];V[j]=a;sa+=a}
@@ -162,10 +162,25 @@ function styFace(k,h,o){o=o||{};if(k&&!STY[k])return Promise.resolve('');const h
   const [sx,sy,sw,sh]=[130,8,96,112],z=o.big?5:3,out=cv();out.width=sw*z;out.height=sh*z;const g=out.getContext('2d');g.imageSmoothingQuality='high';
   g.drawImage(c,sx,sy,sw,sh,0,0,out.width,out.height);return CARD[ck]=out.toDataURL('image/jpeg',.9)})().catch(e=>{(window.ERRS=window.ERRS||[]).push('styFace '+(e&&e.message||e));return ''}).finally(()=>CARDQ.delete(ck));CARDQ.set(ck,p);return p}
 
+// v216 (Sara 16:55 "את הפרצוף שלי עם איזה איפור שאני רוצה, אבל אני רוצה את זה עם פאה"): the same fit in every view, for every whole head (tie, hairstyle, her wig) –
+// paint() lays the doll's face with the makeup on that head's face instead of the bare makeup layer (it doubled eyes and mouth on a hairstyle; on the wig there was no makeup at all)
+const FCV=[[176,64,25,28],[163,63,25,27],[158,65,21,28],null,null,[205,58,10,18],[197,60,17,28],[181,58,24,28]],FITV={},FMK={},DLUM={};   // the face per view (cut8 FACE)
+async function fitV(hk,v){const k=hk+'|'+v+'|'+(DYN[hk+(v+1)]||'');if(FITV[k])return FITV[k];const e=FCV[v];
+ return FITV[k]=(async()=>{const A=document.createElement('canvas');if(!await paint(A,v,Object.assign(clone(DEF),{on:{},bg:'',head:hk,mk:'',tc:null})))return null;
+  if(!DLUM[v])DLUM[v]=(async()=>{const D=document.createElement('canvas');return await paint(D,v,Object.assign(clone(DEF),{on:{},bg:'',head:'c',rawc:1,mk:'',tc:null}))?lumOf(D):null})();
+  const D=await DLUM[v];if(!D)return null;return fitFace(D,lumOf(A),A.width,A.height,e[0],e[1]-2,Math.max(6,Math.round(e[2]*.78)),Math.round(e[3]*.86))})()}
+function faceMk(mk,v){const k=mk+'|'+v+'|'+(DYN[mk+(v+1)]||'');if(FMK[k])return FMK[k];const e=FCV[v];
+ return FMK[k]=(async()=>{const F=document.createElement('canvas');if(!await paint(F,v,Object.assign(clone(DEF),{on:{},bg:'',head:'c',rawc:1,mk,tc:null})))return null;
+  const g=F.getContext('2d');g.globalCompositeOperation='destination-in';g.save();g.translate(e[0],e[1]+2);g.scale(Math.max(5,e[2]-3),Math.max(5,e[3]-3));
+  const gr=g.createRadialGradient(0,0,0,0,0,1);gr.addColorStop(0,'#000');gr.addColorStop(.62,'#000');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(-1,-1,2,2);g.restore();return F})()}
+async function mkFit(c,v,hk,mk){const e=FCV[v];if(!e||![0,1,7].includes(v)||!DYN[mk+(v+1)])return;try{const [f,F]=await Promise.all([fitV(hk,v),faceMk(mk,v)]);if(!f||!F||f[4]<.6)return;   // the face toward her: front and half-turns (from the side the doll's oval brings her cover along)
+ c.save();c.translate(e[0]+f[0],e[1]-2+f[1]);c.rotate(f[3]*Math.PI/180);c.scale(f[2],f[2]);c.translate(-e[0],-(e[1]-2));c.drawImage(F,0,0);c.restore()}catch(err){(window.ERRS=window.ERRS||[]).push('mkFit '+(err&&err.message||err))}}
+
 // v204 (Sara 11:46 "אני אגע בתמונה ואז הבובה תסתובב"): the 8 angles one by one, head to waist, for a library card that turns
 const FRM={},FRQ=new Map();
 function styFrames(k,o){o=o||{};const st=STY[k];if(!st)return Promise.resolve([]);
- return frames8(k+'|'+(o.rgb?o.rgb.join(','):''),Object.assign(clone(DEF),{on:{},bg:'',head:st.set=='mk'?'c':k,mk:st.set=='mk'?k:'',tc:st.set=='tie'?(o.rgb||GREY):null}))}
+ const hk=st.set=='mk'?hairHead():k;   // v216: a makeup turns with her wig
+ return frames8(k+'|'+(o.rgb?o.rgb.join(','):'')+(st.set=='mk'?'|'+hk:''),Object.assign(clone(DEF),{on:{},bg:'',head:hk,mk:st.set=='mk'?k:'',tc:st.set=='tie'?(o.rgb||GREY):null}))}
 // v212 (Sara 15:21 "אני רוצה שהאווטאר יעלה לי כאן 360 מעלות, יסתובב במעבר לעכבר"): the doll alone with a head (c = cover, w = her wig) – the ties/hairstyles/makeup tiles
 function headFrames(h){return frames8('#'+h,Object.assign(clone(DEF),{on:{},bg:'',head:h,mk:'',tc:null}))}
 function frames8(ck,s){if(FRM[ck])return Promise.resolve(FRM[ck]);if(FRQ.has(ck))return FRQ.get(ck);
@@ -199,7 +214,7 @@ function layersFor(v,s){const on=s.on||{},L=[];const x=k=>({s:'x'+k+(v+1)});cons
  const st=STY[s.head],z=st&&'z'+s.head.slice(1)+(v+1);
  const head=s.head=='w'?[{s:(s.wb&&WB[v]?'wb':'w')+(v+1)}]:st?[DYN[s.head+(v+1)]&&{s:s.head+(v+1)},st.set=='tie'&&DYN[z]&&{s:z,t:s.tc||GREY,ref:st.lum}].filter(Boolean):(s.head&&s.head!='c')?[x(s.head)]:[];
  // v199 makeup: over a whole head (tie, hairstyle) right after it; with a cover under everything (a cover item is drawn over it). Her first wig is another drawing of the face: no makeup on it
- const mk=s.mk&&STY[s.mk]&&s.head!='w'&&DYN[s.mk+(v+1)]?{s:s.mk+(v+1)}:null;if(mk){if(st)head.push(mk);else L.unshift(mk)}
+ const mk=s.mk&&STY[s.mk]&&DYN[s.mk+(v+1)]?{s:s.mk+(v+1)}:null;if(mk){if(st||s.head=='w')L.fit=s.mk;else L.unshift(mk)}   // v216: on a whole head paint() fits it (mkFit)
  const ears=of('ears').map(x);
  if(BACK[v]||s.head=='w'||(st&&st.set=='hair'))L.push(...ears,...head);else L.push(...head,...ears);
  return L}
@@ -279,7 +294,7 @@ async function paint(cv,v,s,pad){s=headOf(s);const bg=s.bg||'';const hw=whole(s.
  if(bg){if(bc)c.drawImage(bc,FX[v]-210,FY-615);else{c.fillStyle='#f6efe6';c.fillRect(0,-pt,cv.width,cv.height)}
   const g=c.createRadialGradient(FX[v],FY+3,2,FX[v],FY+3,52);g.addColorStop(0,'rgba(40,28,20,.30)');g.addColorStop(1,'rgba(40,28,20,0)');c.save();c.translate(FX[v],FY+3);c.scale(1,.16);c.translate(-FX[v],-FY-3);c.fillStyle=g;c.fillRect(FX[v]-60,FY-60,120,126);c.restore()}
  c.drawImage(base,0,0);if(E){for(let i=0;i<8;i++){c.globalAlpha=(i+1)/8;c.drawImage(E,0,0,2,1,0,BH-8+i,BW,1)}c.globalAlpha=1}
- ms.forEach((m,i)=>{if(!m)return;const l=L[i];c.drawImage(l.t?tinted(m,l.t,l.ref):m,0,0)});if(pt||pb)c.restore();return true}
+ ms.forEach((m,i)=>{if(!m)return;const l=L[i];c.drawImage(l.t?tinted(m,l.t,l.ref):m,0,0)});if(L.fit)await mkFit(c,v,s.head,L.fit);if(pt||pb)c.restore();return true}
 function wornIds(s){const ids=[];if(s.head&&KEYOF[s.head])ids.push(KEYOF[s.head]);if(/^yt/.test(s.head||'')&&s.tf){const t=KEYOF[s.tf]||(D[s.tf]?s.tf:'');if(t&&!ids.includes(t))ids.push(t)}Object.keys(s.on||{}).forEach(k=>{const id=KEYOF[k];if(s.on[k]&&id&&!ids.includes(id))ids.push(id)});return ids}
 function wearing(s){const a=wornIds(s).map(nm);if(s.head=='w')a.unshift('הפאה');const n=k=>STY[k]&&STY[k].n;if(n(s.head))a.unshift(n(s.head));if(n(s.mk))a.push('איפור: '+n(s.mk));return a.join(' · ')}
 
@@ -416,7 +431,7 @@ function paintSty(){const box=dlg&&dlg.querySelector('.r3styr');if(!box)return;
    ${all>11?`<button type="button" class="r3scm" data-sytfm aria-expanded="${!!SCALL}">${SCALL?'פחות':'עוד '+(all-11)}</button>`:''}</div>`;
   const it=sel&&sel!='c'?sel:'';
   h+=it?`<button type="button" class="r3stb r3ex" data-tie202="${esc(it)}">${isReady(it)?'🎯 המטפחת הזו כבר במדויק. לשנות קשירה או להעלות שוב':'🎯 במדויק, עם ההדפס של המטפחת הזו'}</button>`:`<p class="r3note r3exn">🎯 רוצה את המטפחת בדיוק, עם ההדפס? בוחרים אותה כאן, ואז "במדויק".</p>`}
- if(ms.length)h+=`<span class="r3lbl">💄 איפור${ST.head=='w'?' <small>(עם הפאה הראשונה אין איפור. בוחרים תסרוקת)</small>':''}</span><div class="r3heads r3sty" role="radiogroup" aria-label="איפור">${chip('data-sym','','בלי',!ST.mk,'a8/t_c.webp'+V)}${ms.map(k=>chip('data-sym',k,STY[k].n,ST.mk==k)).join('')}${add('mk','להוסיף איפור')}</div>`;
+ if(ms.length)h+=`<span class="r3lbl">💄 איפור</span><div class="r3heads r3sty" role="radiogroup" aria-label="איפור">${chip('data-sym','','בלי',!ST.mk,'a8/t_c.webp'+V)}${ms.map(k=>chip('data-sym',k,STY[k].n,ST.mk==k)).join('')}${add('mk','להוסיף איפור')}</div>`;
  h+=`<button type="button" class="r3stb" data-styopen="${H?'hair':'tie'}">🎨 תסרוקות, קשירות ואיפור</button>`;
  if(box.dataset.h!==h){box.dataset.h=h;box.innerHTML=h;try{thl([...box.querySelectorAll('img[data-th]')].map(i=>i.dataset.th))}catch(_){}}
  box.querySelectorAll('img[data-sth]').forEach(i=>{if(!i.getAttribute('src'))styThumb(i.dataset.sth).then(u=>{if(u)document.querySelectorAll(`img[data-sth="${CSS.escape(i.dataset.sth)}"]`).forEach(x=>x.src=u)})});
