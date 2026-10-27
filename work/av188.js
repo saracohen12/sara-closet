@@ -184,7 +184,7 @@ function avMake(id,k){if(MK[id]==k)return;MK[id]=k;
   if(!b){delete MK[id];AVU[id]={k,u:''};const n=MKR[id]=(MKR[id]||0)+1;if(n<=3)setTimeout(()=>{const a=AVU[id];if(a&&a.k==k&&!a.u){delete AVU[id];try{paintGal(id)}catch(_){}}},5000*n);return}   // a layer did not load: keep the shop photo first, try again a little later (v230)
   AVFREE(AVU[id]);const a=AVU[id]={k,u:URL.createObjectURL(b),F:[]};a.F.push(a.u);
   if(typeof CUR!='undefined'&&CUR==id){if(GI[id])GI[id]++;   // she already moved to another picture: stay on it
-   const im=document.querySelector('#dlbody img.main');if(im&&!GI[id])im.src=a.u;try{paintGal(id)}catch(_){}}
+   const im=document.querySelector('#dlbody img.main'),e=galList(id)[GI[id]||0];if(im&&e&&e.u==a.u)im.src=a.u;try{paintGal(id)}catch(_){}}
   for(let v=1;v<8;v++){let c=null;for(let t=0;t<3&&!c;t++){if(t)await new Promise(z=>setTimeout(z,2500*t));if(MK[id]!=k||AVU[id]!==a)return;c=await jpgOf(await R360.still(id,v))}
    if(MK[id]!=k||AVU[id]!==a)return;if(!c)break;a.F.push(URL.createObjectURL(c))}
   delete MK[id];if(a.F.length==8&&typeof CUR!='undefined'&&CUR==id)avBar(id)})()
@@ -193,7 +193,7 @@ const SPD=[1700,1150,800,560,390,270,200],SPT=['הכי לאט','לאט','קצת 
 let SP=2;try{const v=+localStorage.getItem('av230spd');if(v>=1&&v<=7)SP=v}catch(_){}
 const SPIN={id:'',f:0,tm:null,on:true};
 const still_=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(_){return false}};
-const spinOk=id=>{const w=document.querySelector('#dlbody .mwrap'),a=AVU[id],d=document.getElementById('dlg');return !!(d&&d.open&&w&&w.querySelector('img.main')&&typeof CUR!='undefined'&&CUR==id&&a&&a.u&&a.F&&a.F.length==8&&!(GI[id]||0)&&w.classList.contains('avv')&&!(typeof PREV!='undefined'&&PREV[id]))};
+const spinOk=id=>{const w=document.querySelector('#dlbody .mwrap'),a=AVU[id],d=document.getElementById('dlg');return !!(d&&d.open&&w&&w.querySelector('img.main')&&typeof CUR!='undefined'&&CUR==id&&a&&a.u&&a.F&&a.F.length==8&&(()=>{const e=galList(id)[GI[id]||0];return !!e&&e.u==a.u})()&&w.classList.contains('avv')&&!(typeof PREV!='undefined'&&PREV[id]))};
 function spinStop(){if(SPIN.tm){clearInterval(SPIN.tm);SPIN.tm=null}}
 function spinGo(){spinStop();SPIN.tm=setInterval(()=>{const id=SPIN.id;if(!spinOk(id)){spinStop();avPP();return}
   SPIN.f=(SPIN.f+1)%8;document.querySelector('#dlbody .mwrap img.main').src=AVU[id].F[SPIN.f]},SPD[SP-1])}
