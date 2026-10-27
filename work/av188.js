@@ -57,6 +57,12 @@ window.bar188=function(id){const go=`<button type="button" class="it77p b188" da
 const mine=id=>ups(id).length>0||parts(id).length>0;
 const acts=id=>`<span class="b188x"><button type="button" data-up188="${es(id)}" aria-label="להחליף את התמונה של האווטאר">🔄 להחליף</button><button type="button" data-off190="${es(id)}" aria-label="למחוק מהאווטאר">🗑 למחוק</button></span>`;
 window.acts197=id=>mine(id)?acts(id):'';
+// v233 (Sara 27/10 07:07 "אופציה שנרשום לך אם יש משהו מיוחד כדי שתשים לב כשאתה חותך ... לבן, שקוף, שמנת ... לא יהיה חובה"):
+// a notes box next to the upload, kept on the item (IT[id].a8note) and with each cut part (n). cut8 reads the words it knows; the rest is for Claude
+const note=id=>String(it(id).a8note||'');
+const nk=t=>{let s=[];try{s=cut8.says(t)}catch(_){}return s.length?'✓ הבנתי: '+s.map(es).join(' · '):(String(t).trim()?'✓ שמרתי את ההערה. אם הגזירה לא יוצאת טוב, תכתבי לי בצ׳אט ואקרא אותה':'')};
+const noteF=id=>`<label class="a8n"><span>📝 הערות לגזירה <small>(לא חובה)</small></span><textarea data-a8note="${es(id)}" rows="2" maxlength="300" placeholder="למשל: החולצה בצבע שמנת · השרוולים שקופים">${es(note(id))}</textarea></label><small class="a8nk" data-a8nk="${es(id)}" aria-live="polite">${nk(note(id))}</small>`;
+const canRe=id=>parts(id).some(p=>p.src);
 function box(id){const p=PROC[id],u=ups(id),ok=ready(id),dyn=(()=>{try{return R360.dyn(id)}catch(_){return false}})();let kind='';try{kind=R360.kind(id)}catch(_){}
  const twin=kind=='set'||kind=='jwset',P=parts(id),half=twin&&P.length==1;
  const th=u.length?`<div class="u188">${u.map((x,i)=>`<span><a href="/_blob/${es(x.a)}" target="_blank" rel="noopener"><img alt="תמונה ${i+1} שהעלית לאווטאר" src="/_blob/${es(x.a)}" loading="lazy"></a><button type="button" data-del188="${es(id)}" data-i="${i}" aria-label="למחוק את התמונה">✕</button></span>`).join('')}</div>`:'';
@@ -66,10 +72,11 @@ function box(id){const p=PROC[id],u=ups(id),ok=ready(id),dyn=(()=>{try{return R3
  const pics=`<button type="button" data-pk102open="${es(id)}">🖼 התמונות של הבגד · להוריד ל-GPT</button>`;
  // v191 (Sara 07:31 "אני לא רואה שזה גזור... לגזור אותה לשמונה חתיכות, לשמונה הכיוונים"): the 8 pieces, each on the doll
  try{const T=ok&&R360.tiles(id),NM=R360.names;if(T)cuts=`<p class="a8h">✂ גזרתי ל-8 זוויות:</p><div class="a8g">${T.map((ls,v)=>`<button type="button" class="a8t" data-see190="${es(id)}" data-v="${v}" aria-label="${es(NM[v])}"><span>${ls.map(u=>`<img alt="" src="${es(u)}" loading="lazy">`).join('')}</span><small>${es(NM[v])}</small></button>`).join('')}</div>`}catch(e){ERR('tiles',e)}
- if(ok&&!half)body=`<div class="a8b"><button type="button" class="go" data-see190="${es(id)}">👀 לראות על האווטאר</button>${dyn?`<button type="button" data-up188="${es(id)}">🔄 להעלות תמונה חדשה</button><button type="button" data-off190="${es(id)}">🗑 למחוק מהאווטאר</button>`:''}${pics}</div>`;
+ if(ok&&!half)body=`<div class="a8b"><button type="button" class="go" data-see190="${es(id)}">👀 לראות על האווטאר</button>${dyn?`<button type="button" data-up188="${es(id)}">🔄 להעלות תמונה חדשה</button><button type="button" data-off190="${es(id)}">🗑 למחוק מהאווטאר</button>`:''}${pics}</div>`
+  +(dyn&&canRe(id)?`<details class="a8re"${note(id)?' open':''}><summary>✂ לגזור שוב עם הערות</summary>${noteF(id)}<button type="button" class="go" data-re233="${es(id)}"${busy?' disabled':''}>✂ לגזור שוב</button></details>`:'');
  else body=`<ol class="a8s">
   <li><b>הפרומפט ל-GPT:</b> שומרים את תמונת הבגד ואת הבובה ב-8 זוויות, ושולחים ל-GPT עם הפרומפט, הכל בהודעה אחת.<button type="button" data-mk188="${es(id)}">📋 הפרומפט ל-GPT</button>${pics}</li>
-  <li><b>מעלים את מה שחזר:</b> תמונה אחת עם 8 הזוויות${twin?(half?` – עכשיו של ${kind=='set'?'החלק התחתון':'העגילים'}`:` (${kind=='set'?'קודם החלק העליון, אחר כך התחתון':'קודם השרשרת, אחר כך העגילים'})`):''}. האתר גוזר אותה ל-8, מתאים בדיוק לבובה ומכניס את הבגד לסטודיו.<button type="button" class="go" data-up188="${es(id)}"${busy?' disabled':''}>📤 להעלות תמונה של 8 זוויות</button></li></ol>`;
+  <li><b>מעלים את מה שחזר:</b> תמונה אחת עם 8 הזוויות${twin?(half?` – עכשיו של ${kind=='set'?'החלק התחתון':'העגילים'}`:` (${kind=='set'?'קודם החלק העליון, אחר כך התחתון':'קודם השרשרת, אחר כך העגילים'})`):''}. האתר גוזר אותה ל-8, מתאים בדיוק לבובה ומכניס את הבגד לסטודיו.${noteF(id)}<button type="button" class="go" data-up188="${es(id)}"${busy?' disabled':''}>📤 להעלות תמונה של 8 זוויות</button></li></ol>`;
  return `<summary>🧍 האווטאר החדש · 8 זוויות</summary><p class="a8st">${line(id)}</p>${cuts}${body}${u.length?'<p class="a8h">התמונה שהעלית מ-GPT:</p>':''}${th}`}
 function paintSt(id){document.querySelectorAll(`[data-go190="${CSS.escape(id)}"]`).forEach(b=>b.innerHTML=line(id)+'<b aria-hidden="true">⬇</b>');
  document.querySelectorAll(`[data-a8box="${CSS.escape(id)}"] .a8st`).forEach(p=>p.innerHTML=line(id));
@@ -111,18 +118,25 @@ async function cut(id,src,ua,t,at){if(PROC[id]&&PROC[id].v)return;if(!window.cut
  let kind='dress';try{kind=R360.kind(id)}catch(_){}let P=parts(id);const re=at!=null&&!!P[at];
  if(!re&&WH.has(id)){kind='tiex';WH.delete(id)}   // v202: her exact scarf tied by the tie prompt – the whole head, like the ties
  if(re)kind=P[at].k;else if(TWIN[kind]){const w=TWIN[kind];if(P.length>=w.length)P=[];kind=w[P.length]}else P=[];
- PROC[id]={v:1};rebox(id);const t0=Date.now();log('cut8_start',{id,kind});
- try{const r=await cut8.run(src,kind,v=>{PROC[id]={v:v+1};paintSt(id)});
+ PROC[id]={v:1};rebox(id);const t0=Date.now(),nt=note(id).trim();log('cut8_start',{id,kind,note:nt.length});
+ try{const r=await cut8.run(src,kind,v=>{PROC[id]={v:v+1};paintSt(id)},{note:nt});
   if(r.px.filter(x=>x>150).length<5)throw Object.assign(new Error('empty'),{code:'empty'});
   PROC[id]={v:9};paintSt(id);
   let a=null;try{a=await claude.use('assets')}catch(_){}if(!a)throw Object.assign(new Error('assets'),{code:'assets'});
   const L=[];for(const c of r.views)L.push((await put1(a,await blobOf(c))).id);
-  const np={s:SLOT[kind]||'top',k:kind,L,src:ua||'',t:t||Date.now(),cv:cut8.CV||1,sh:r.shifts.some(s=>s[0]||s[1])?r.shifts:null};if(re)P[at]=np;else P.push(np);
+  const np={s:SLOT[kind]||'top',k:kind,L,src:ua||'',t:t||Date.now(),cv:cut8.CV||1,sh:r.shifts.some(s=>s[0]||s[1])?r.shifts:null,...(nt?{n:nt}:{})};if(re)P[at]=np;else P.push(np);
   await putItem(id,{a8:P});delete PROC[id];DONE.add(id);
   try{R360.sync()}catch(_){}rebox(id);repaint(id);avNow(id);log('cut8_ok',{id,kind,re,ms:Date.now()-t0,px:r.px.join(',')});
   if(re)return;const half=TWIN[(()=>{try{return R360.kind(id)}catch(_){return ''}})()]&&P.length==1;
   toast_(half?`✓ ${KN[kind]||'החלק הראשון'} על האווטאר. עכשיו מעלים את התמונה של החלק השני`:`✓ ${KN[kind]||'הבגד'} על האווטאר החדש`,half?null:()=>see(id))}
  catch(e){PROC[id]={err:e&&e.code||'x'};DONE.add(id);ERR('cut',e);log('cut8_fail',{id,kind,code:String(e&&(e.code||e.message)||e).slice(0,60)});rebox(id);toast_('✗ '+(ERRT[PROC[id].err]||ERRT.x))}}
+// v233: cut the same GPT picture again, with the notes she wrote now ("לדבר איתך מתוך הבגד ותוכל לתקן לי את הטעות")
+async function saveNote(id){const ta=document.querySelector(`[data-a8note="${CSS.escape(id)}"]`);if(!ta)return;const v=ta.value.trim().slice(0,300);
+ if(v==note(id).trim())return;try{await putItem(id,{a8note:v||''});log('a8note',{id,n:v.length})}catch(e){ERR('note',e)}}
+async function recut(id){if(PROC[id]&&PROC[id].v)return;await saveNote(id);const J=parts(id).map((p,j)=>p.src?j:-1).filter(j=>j>=0);
+ if(!J.length){toast_('לבגד הזה אין תמונה מ-GPT לגזור שוב. אפשר להעלות תמונה חדשה');return}
+ for(const j of J){const q=parts(id)[j];if(q)await cut(id,'/_blob/'+q.src,q.src,q.t,j);if(PROC[id]&&PROC[id].err)return}
+ toast_(note(id).trim()?'✓ גזרתי שוב לפי ההערות. כדאי לבדוק ב-8 הזוויות':'✓ גזרתי שוב')}
 function see(id,v){try{R360.openWith(null,{a:id});if(v>0)setTimeout(()=>{try{R360.show(v)}catch(_){}},700)}catch(e){ERR('see',e)}}
 async function off(id){const o={a8:it(id).a8||'',a8up:it(id).a8up||''};if(!o.a8&&!o.a8up)return;DONE.add(id);delete PROC[id];
  await putItem(id,{a8:'',a8up:''});try{R360.sync()}catch(_){}rebox(id);repaint(id);avNow(id);log('a8_off',{id});
@@ -139,16 +153,20 @@ function soon(){if(SOON)return;SOON=setTimeout(async()=>{SOON=null;if(BUSY)retur
 setTimeout(soon,4000);
 
 // its own toasts say what was saved, so no generic "נשמר: a8up"
-{const _bp=beforePut;beforePut=function(id,patch){const k=patch&&Object.keys(patch);if(k&&k.length&&k.every(x=>x=='a8up'||x=='a8'))return;return _bp.apply(this,arguments)}}
+{const _bp=beforePut;beforePut=function(id,patch){const k=patch&&Object.keys(patch);if(k&&k.length&&k.every(x=>x=='a8up'||x=='a8'||x=='a8note'))return;return _bp.apply(this,arguments)}}
 
 // every old "upload for the avatar" button (5 poses) now leads to the new avatar
-document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-up188],[data-mk188],[data-del188],[data-m77up],[data-go190],[data-see190],[data-off190]');if(!t)return;
- if(t.dataset.up188){e.preventDefault();e.stopPropagation();if(t.dataset.w)WH.add(t.dataset.up188);else WH.delete(t.dataset.up188);picker(t.dataset.up188);return}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-up188],[data-re233],[data-mk188],[data-del188],[data-m77up],[data-go190],[data-see190],[data-off190]');if(!t)return;
+ if(t.dataset.up188){e.preventDefault();e.stopPropagation();if(t.dataset.w)WH.add(t.dataset.up188);else WH.delete(t.dataset.up188);saveNote(t.dataset.up188);picker(t.dataset.up188);return}
+ if(t.dataset.re233){e.preventDefault();e.stopPropagation();recut(t.dataset.re233).catch(er=>ERR('recut',er));return}
  if(t.dataset.del188){e.preventDefault();e.stopPropagation();del(t.dataset.del188,+t.dataset.i).catch(er=>ERR('del',er));return}
  if(t.dataset.go190){e.preventDefault();e.stopPropagation();const b=document.querySelector(`#dlbody [data-a8box="${CSS.escape(t.dataset.go190)}"]`);if(b){b.open=true;b.scrollIntoView({behavior:'smooth',block:'center'})}return}
  if(t.dataset.see190){e.preventDefault();e.stopPropagation();see(t.dataset.see190,+(t.dataset.v||0));return}
  if(t.dataset.off190){e.preventDefault();e.stopPropagation();if(typeof sure=='function'&&!sure(t,'בטוח? לחצי שוב'))return;off(t.dataset.off190).catch(er=>ERR('off',er));return}
  const id=t.dataset.mk188||t.dataset.m77up;if(id){e.preventDefault();e.stopImmediatePropagation();try{if(window.R360)R360.make(id)}catch(er){ERR('make',er)}}},true);
+
+document.addEventListener('input',e=>{const ta=e.target.closest&&e.target.closest('[data-a8note]');if(!ta)return;const k=document.querySelector(`[data-a8nk="${CSS.escape(ta.dataset.a8note)}"]`);if(k)k.innerHTML=nk(ta.value)});
+document.addEventListener('change',e=>{const ta=e.target.closest&&e.target.closest('[data-a8note]');if(ta)saveNote(ta.dataset.a8note)});
 
 // v195: once an item is on the new avatar, the first picture in its window is HER wearing it (Sara 26/10 08:10: "שבתמונה הראשית ... יופיע לי את
 // האבטאר עם הבגד לבוש עליי, שאני אראה אותו במוצר, לא סתם את התמונה"). The shop photos stay as the next pictures.

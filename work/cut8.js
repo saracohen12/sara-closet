@@ -72,7 +72,8 @@ function mask(b,d,o){const SMALL=o.mode=='small',HEAD=o.mode=='head'||SMALL,CUT=
  // v232 (Sara 00:33 "החולצה הלבנה לא חתך אותה טוב באתר"): a white or grey garment and the doll's light beige differ by less than 40 where the doll is lit,
  // so those parts were left out – beige holes in the blouse. Near the garment, a pixel that is neutral (white, grey, black) where the doll is warm beige is the garment too
  if(!SMALL&&!HEAD){const near=dilate(m,30),wm=(a,k)=>(a[k]-a[k+2])/((a[k]+a[k+1]+a[k+2])/3+1);
-  for(let i=0;i<N;i++){if(m[i]||!near[i]||dbg[i]<=22)continue;const k=i*3,wd=wm(ds,k);if(Math.abs(wd)<.08&&wm(bs,k)-wd>.09)m[i]=1}}
+  for(let i=0;i<N;i++){if(m[i]||!near[i]||dbg[i]<=22)continue;const k=i*3,wd=wm(ds,k);if(Math.abs(wd)<.08&&wm(bs,k)-wd>.09)m[i]=1}
+  palette(m,bs,ds,diff,dbg,o)}
  for(let r=Math.floor(H*.86);r<H;r++)for(let c=0;c<W;c++){const i=r*W+c;if(dbg[i]<=48)m[i]=0}   // floor shadows near the feet are not the item
  if(!SMALL)m=dilate(erode(m,2),2);m=erode(dilate(m,SMALL?1:3),SMALL?1:3);
  for(let r=0;r<H;r++)for(let c=0;c<8;c++){m[r*W+c]=0;m[r*W+W-1-c]=0}   // the sheet's white divider lines
@@ -98,6 +99,31 @@ function mask(b,d,o){const SMALL=o.mode=='small',HEAD=o.mode=='head'||SMALL,CUT=
  else if(!HEAD&&!o.nohem){let mw=0;const w=new Int32Array(H);for(let r=0;r<H;r++){let s=0;for(let c=0;c<W;c++)s+=m[r*W+c];w[r]=s;if(s>mw)mw=s}
   let last=-1;for(let r=0;r<H;r++)if(w[r]>=.35*mw)last=r;if(last>=0)for(let i=(last+2)*W;i<N;i++)m[i]=0}   // the hem: nothing of the item below the last wide row (feet, floor)
  return m}
+// v233 (Sara 27/10 07:07, a cream blouse: "רואים את הגוף של הבובה"): cream, ivory, light beige are warm like the doll, so the v232 rule
+// missed them – beige patches and torn views. The garment's own colours are learnt from the parts that surely are the garment
+// (6 colours, Lab, lightness counts half: folds and light change it more than the colour). Near the garment, a pixel much closer
+// to those colours than to the doll under it is the garment too. Her notes make it bolder: o.light (white, cream, beige) · o.sheer
+const LIN=v=>{v/=255;return v>.04045?Math.pow((v+.055)/1.055,2.4):v/12.92},LF=t=>t>.008856?Math.cbrt(t):7.787*t+16/116;
+function lab3(a){const o=new Float32Array(a.length);for(let k=0;k<a.length;k+=3){const r=LIN(a[k]),g=LIN(a[k+1]),b=LIN(a[k+2]),y=LF(.2126*r+.7152*g+.0722*b);
+ o[k]=(116*y-16)*.5;o[k+1]=500*(LF((.4124*r+.3576*g+.1805*b)/.95047)-y);o[k+2]=200*(y-LF((.0193*r+.1192*g+.9505*b)/1.08883))}return o}
+function palette(m,bs,ds,diff,dbg,o){const conf=erode(m,2),Ld=lab3(ds),X=[];for(let i=0;i<N;i+=2)if(conf[i]&&diff[i]>48)X.push(i);
+ if(X.length<100)return;
+ const K=6,dd=(k,q)=>{const a=Ld[k]-q[0],b=Ld[k+1]-q[1],c=Ld[k+2]-q[2];return a*a+b*b+c*c};X.sort((p,q)=>Ld[p*3]-Ld[q*3]);
+ let C=[];for(let j=0;j<K;j++){const k=X[Math.floor((j+.5)*X.length/K)]*3;C.push([Ld[k],Ld[k+1],Ld[k+2]])}let cnt=[];
+ for(let t=0;t<12;t++){const S=C.map(()=>[0,0,0]);cnt=C.map(()=>0);
+  for(const i of X){const k=i*3;let bj=0,bd=Infinity;for(let j=0;j<K;j++){const e=dd(k,C[j]);if(e<bd){bd=e;bj=j}}cnt[bj]++;S[bj][0]+=Ld[k];S[bj][1]+=Ld[k+1];S[bj][2]+=Ld[k+2]}
+  for(let j=0;j<K;j++)if(cnt[j])C[j]=S[j].map(x=>x/cnt[j])}
+ C=C.filter((_,j)=>cnt[j]>Math.max(15,.03*X.length));if(!C.length)return;
+ const Lb=lab3(bs),near=dilate(m,o.sheer?40:30),minB=o.sheer?1.2:o.light?1.5:2.5,ratio=o.sheer?.6:o.light?.5:.4,add=[];
+ for(let i=0;i<N;i++){if(m[i]||!near[i]||dbg[i]<=22)continue;const k=i*3,dB=Math.sqrt(dd(k,[Lb[k],Lb[k+1],Lb[k+2]]));if(dB<=minB)continue;
+  let dG=Infinity;for(const q of C){const e=dd(k,q);if(e<dG)dG=e}if(Math.sqrt(dG)<ratio*dB)add.push(i)}
+ for(const i of add)m[i]=1}
+// her notes for the cut (v233, Sara 07:07 "שנרשום לך אם יש משהו מיוחד כדי שתשים לב כשאתה חותך ... לבן, שקוף, שמנת"): the words the site understands
+const NOTEW={light:/לבן|לבנה|שמנת|קרם|או?ף[ -]?וו?יט|שנהב|ניוד|בז['׳]|בהיר|פנינה|פודרה|white|cream|ivory|beige|nude/i,
+ sheer:/שקו?ף|שקופה|שקיפות|שיפון|תחרה|רשת|טול|אוורירי|sheer|lace|mesh|chiffon|tulle/i};
+const NOTET={light:'בגד בהיר (לבן, שמנת, בז׳): גוזרת עדין יותר ליד הבובה',sheer:'בגד שקוף: משאירה גם את מה שרואים דרכו'};
+function flags(t){t=String(t||'');const f={};for(const k in NOTEW)if(NOTEW[k].test(t))f[k]=1;return f}
+const says=t=>Object.keys(flags(t)).map(k=>NOTET[k]);
 // the same move as cv2.warpAffine(turn.json) in norm.py (pixel centres → +.5(1-s)); the canvas keeps the alpha premultiplied, like norm.py
 function turn(c,v){const [s,dx,dy]=TURN[v],o=document.createElement('canvas');o.width=W;o.height=H;const g=o.getContext('2d');
  g.setTransform(s,0,0,s,dx+.5*(1-s),dy+.5*(1-s));g.drawImage(c,0,0);o.px=c.px;return o}
@@ -195,9 +221,9 @@ async function snug(c,v){const dir=BACK[v];if(!dir)return c;let A;try{A=await bo
 const MODE={cover:{mode:'head'},scarf:{mode:'head'},necklace:{mode:'small',rows:[.1,.55],one:1},earrings:{mode:'small',rows:[.03,.2]},bracelet:{mode:'small',low:1},
  belt:{rows:[.28,.62],nohem:1},shoes:{rows:[.8,1],nohem:1},hair:{mode:'whole'},tie:{mode:'whole',fab:1},tiex:{mode:'whole'},makeup:{mode:'face'}};
 const tick=()=>new Promise(r=>setTimeout(r,0));
-// src: a File/Blob or a url · kind: KIND key · onStep(i): progress → {views:[canvas×8], shifts, px}
-async function run(src,kind,onStep){const img=await toImg(src);const S=sheetData(img);if(!S)throw Object.assign(new Error('shape'),{code:'shape',w:img.naturalWidth,h:img.naturalHeight});
- const o=MODE[kind]||{},views=[],shifts=[],fab=[],lum=[];
+// src: a File/Blob or a url · kind: KIND key · onStep(i): progress · opt.note: her notes for the cut (v233) → {views:[canvas×8], shifts, px}
+async function run(src,kind,onStep,opt){const img=await toImg(src);const S=sheetData(img);if(!S)throw Object.assign(new Error('shape'),{code:'shape',w:img.naturalWidth,h:img.naturalHeight});
+ const o=Object.assign({},MODE[kind]||{},flags(opt&&opt.note)),views=[],shifts=[],fab=[],lum=[];
  for(let v=0;v<8;v++){onStep&&onStep(v);await tick();const b=await base(v);const s=shift(S,v,b,o.mode=='head'||o.mode=='whole');shifts.push(s);const d=panel(S,v,s[0],s[1]);
   if(o.mode=='whole'){const [m,f,l]=maskWhole(b,d,v,o.fab,kind=='tiex');views.push(kind=='hair'?await snug(turn(layerA(d,m.A),v),v):turn(layerA(d,m.A),v));if(f){fab.push(turn(layer(d,f),v));lum.push(...l)}}
   else if(o.mode=='face')views.push(turn(layerA(d,maskFace(b,d,v)),v));
@@ -209,5 +235,5 @@ window.cut8dbg=async(src,v)=>{const img=await toImg(src),S=sheetData(img),b=awai
  const im=a=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),x=g.createImageData(W,H);for(let i=0;i<N;i++){const on=a.length==N?a[i]:0;x.data[i*4]=on?255:0;x.data[i*4+1]=on?255:0;x.data[i*4+2]=on?255:0;x.data[i*4+3]=255}g.putImageData(x,0,0);return c.toDataURL()};
  const rgb=a=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),x=g.createImageData(W,H);for(let i=0;i<N;i++){x.data[i*4]=a[i*3];x.data[i*4+1]=a[i*3+1];x.data[i*4+2]=a[i*3+2];x.data[i*4+3]=255}g.putImageData(x,0,0);return c.toDataURL()};
  return {d:rgb(d),b:rgb(b),raw:im(CUT8D.raw),morph:im(CUT8D.morph),fin:im(m)}};
-window.cut8={run,MODE,W,H,CV:2,CVW:8};   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
+window.cut8={run,MODE,W,H,CV:2,CVW:8,flags,says};   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
 })();
