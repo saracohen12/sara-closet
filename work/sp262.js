@@ -48,7 +48,7 @@ async function put1(a,b){let last;for(const w of [0,1500,4000,9000]){if(w)await 
 async function pack(a,L){const bms=await Promise.all(L.map(x=>x?decode(x):null));
  try{const ok=bms.filter(Boolean);const W=ok[0].width,H=ok[0].height;if(ok.some(b=>b.width!=W||b.height!=H)){ERR('size',L[0]);return null}
   const c=document.createElement('canvas');c.width=W*4;c.height=H*2;const x=c.getContext('2d');bms.forEach((b,v)=>{if(b)x.drawImage(b,(v%4)*W,(v>>2)*H)});
-  let bl=await new Promise(r=>c.toBlob(r,'image/webp',1));if(!bl||bl.type!='image/webp')bl=await new Promise(r=>c.toBlob(r,'image/png'));if(!bl)return null;
+  let bl=await new Promise(r=>c.toBlob(r,'image/webp',.98));   // v265: lossless made a ~600 KB file out of 8 files of ~7 KB; .98 gives ~63 KB with a mean change of 1.5/255 on her tie (invisible), the pixel check below still guardsif(!bl||bl.type!='image/webp')bl=await new Promise(r=>c.toBlob(r,'image/png'));if(!bl)return null;
   const up=await put1(a,bl);
   // check: the stored picture, cut back into 8, must match the 8 originals
   const back=await decode(up.id);let bad=0;
