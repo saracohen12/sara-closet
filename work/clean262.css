@@ -1,0 +1,15 @@
+/* v262 storage cleanup */
+dialog#cl262{width:min(520px,100vw);max-width:100vw;max-height:94vh;border:0;border-radius:20px;padding:0;background:var(--z-bg,#fffaf5);color:var(--z-ink,#2a1d17);box-sizing:border-box}
+dialog#cl262::backdrop{background:rgba(30,20,15,.45)}
+#cl262 .mk{padding:14px 16px 18px}
+#cl262 .mkh{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0}
+#cl262 .mkh h3{margin:0;font-size:1.05rem}
+#cl262 .mkx{width:40px;height:40px;border-radius:50%;border:1px solid var(--z-line,#ddd);background:#fff;font-size:1rem;cursor:pointer}
+#cl262 .cl262p{margin:10px 0;line-height:1.55;font-size:.95rem}
+#cl262 .mkb{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+#cl262 .mkb button{min-height:46px;padding:0 18px;border-radius:23px;border:1px solid var(--z-line,#ddd);background:#fff;color:inherit;font:inherit;cursor:pointer}
+#cl262 .mkb .mkp{background:var(--z-pri,#8a5a44);color:var(--z-pri-ink,#fff);border-color:transparent;font-weight:600}
+#cl262 progress{width:100%;height:12px}
+#cl262b{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));left:12px;right:12px;z-index:9000;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;border-radius:18px;background:#fff3e6;color:#5a2d14;border:1px solid #f0c9a4;box-shadow:0 6px 24px rgba(60,30,10,.18);font-size:.92rem;direction:rtl}
+#cl262b button,.cl262a{min-height:44px;padding:0 16px;border-radius:22px;border:0;background:#b4532a;color:#fff;font:inherit;font-weight:600;cursor:pointer}
+.cl262a{margin:6px 4px}
