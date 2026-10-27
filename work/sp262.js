@@ -45,17 +45,19 @@ async function decode(id){let last;for(const w of [0,900,2500]){if(w)await sleep
 const px=(bm,sx,sy,w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(bm,sx,sy,w,h,0,0,w,h);return x.getImageData(0,0,w,h).data};
 async function put1(a,b){let last;for(const w of [0,1500,4000,9000]){if(w)await sleep(w);try{return await a.upload(b)}catch(e){last=e;if(e&&e.code&&!/rate|unavail|network/.test(e.code))break}}throw last}
 // packs 8 files into one; returns the new list, or null (left as it was)
-async function pack(a,L){const bms=await Promise.all(L.map(x=>x?decode(x):null));
+async function pack(a,L){const st=await Promise.allSettled(L.map(x=>x?decode(x):null)),bms=st.map(r=>r.status=='fulfilled'?r.value:null);
+ if(st.some(r=>r.status=='rejected')){bms.forEach(b=>{try{b&&b.close()}catch(_){}});throw new Error('layer missing')}
  try{const ok=bms.filter(Boolean);const W=ok[0].width,H=ok[0].height;if(ok.some(b=>b.width!=W||b.height!=H)){ERR('size',L[0]);return null}
   const c=document.createElement('canvas');c.width=W*4;c.height=H*2;const x=c.getContext('2d');bms.forEach((b,v)=>{if(b)x.drawImage(b,(v%4)*W,(v>>2)*H)});
   let bl=await new Promise(r=>c.toBlob(r,'image/webp',.98));   // v265: lossless made a ~600 KB file out of 8 files of ~7 KB; .98 gives ~63 KB with a mean change of 1.5/255 on her tie (invisible), the pixel check below still guardsif(!bl||bl.type!='image/webp')bl=await new Promise(r=>c.toBlob(r,'image/png'));if(!bl)return null;
   const up=await put1(a,bl);
-  // check: the stored picture, cut back into 8, must match the 8 originals
-  const back=await decode(up.id);let bad=0;
-  try{if(back.width!=W*4||back.height!=H*2)bad=1;else for(let v=0;v<8&&!bad;v++){if(!bms[v])continue;const A=px(bms[v],0,0,W,H),B=px(back,(v%4)*W,(v>>2)*H,W,H);let d=0,n=0;
+  // check: the stored picture, cut back into 8, must match the 8 originals.
+  // v267: a sprite that fails the check (or can't be read back) is our own upload of a few seconds ago that nothing points at – it is deleted right away, never left behind
+  let back,bad=0;try{back=await decode(up.id)}catch(e){bad=2}
+  if(!bad)try{if(back.width!=W*4||back.height!=H*2)bad=1;else for(let v=0;v<8&&!bad;v++){if(!bms[v])continue;const A=px(bms[v],0,0,W,H),B=px(back,(v%4)*W,(v>>2)*H,W,H);let d=0,n=0;
     for(let i=0;i<A.length;i+=4){const al=Math.max(A[i+3],B[i+3]);if(!al)continue;n++;d+=Math.abs(A[i+3]-B[i+3])+(al>40?(Math.abs(A[i]-B[i])+Math.abs(A[i+1]-B[i+1])+Math.abs(A[i+2]-B[i+2]))/3:0)}
-    if(n&&d/n>3)bad=1}}finally{try{back.close()}catch(_){}}
-  if(bad){ERR('check',L[0]);return null}
+    if(n&&d/n>3)bad=1}}catch(e){bad=3}finally{try{back.close()}catch(_){}}
+  if(bad){ERR('check',L[0]);try{await a.delete(up.id)}catch(e){ERR('del',e)}return null}
   return L.map((y,v)=>y?up.id+'~'+v:'')}
  finally{bms.forEach(b=>{try{b&&b.close()}catch(_){}})}}
 const same=(A,B)=>Array.isArray(A)&&Array.isArray(B)&&A.length==B.length&&A.every((x,i)=>x==B[i]);
@@ -69,13 +71,19 @@ function lists(styles){const G=new Map();const add=(L,w,due)=>{if(!plain(L))retu
  const C8=window.cut8||{},dueX=p=>p.k=='tiex'&&p.src&&(p.cv||0)<(C8.CVX||0),dueS=v=>(v.set=='hair'||v.set=='tie')&&v.src&&(v.cv||0)<((v.set=='hair'&&C8.CVH)||C8.CVW||0);   // a re-cut is waiting: leave it, the re-cut writes new files anyway
  Object.keys(IT).forEach(id=>{const it=IT[id]||{};['a8','tx'].forEach(f=>(Array.isArray(it[f])?it[f]:[]).forEach(p=>p&&add(p.L,{id},dueX(p))))});
  styles.forEach(d=>{const v=d.data()||{};['L','M'].forEach(f=>add(v[f],{st:d.id},dueS(v)))});return [...G.values()].filter(g=>!g.due)}
-async function run(max){if(RUN)return;RUN=true;let n=0;try{const a=await claude.use('assets'),db=await claude.use('db');if(!a||!db||typeof IT=='undefined'||typeof putItem!='function')return;
+// v267: a group that failed is not tried again for 3 days (it used to be retried every 4 minutes, downloading its 8 files again each time)
+const FK='sp262f',fails=()=>{try{return JSON.parse(localStorage.getItem(FK)||'{}')}catch(_){return {}}},failAdd=k=>{try{const f=fails(),now=Date.now();Object.keys(f).forEach(x=>{if(now-f[x]>3*864e5)delete f[x]});f[k]=now;localStorage.setItem(FK,JSON.stringify(f))}catch(_){}};
+async function run(max){if(RUN)return;RUN=true;let n=0,tries=0;try{const a=await claude.use('assets'),db=await claude.use('db');if(!a||!db||typeof IT=='undefined'||typeof putItem!='function')return;
   const busy=()=>document.hidden||document.querySelector('dialog[open]#g250,dialog[open]#tie202,dialog[open]#fix237,dialog[open]#cl262');
   const G=lists((await db.collection('styles').get()).docs);
-  for(const g of G){if(n>=max)break;while(busy())await sleep(3000);
-   let NL=null;try{NL=await pack(a,g.L)}catch(e){ERR('pack',e)}n++;if(!NL)continue;
+  const F=fails();if(!G.some(g=>!F[sig(g.L)])){try{window.SP262.stop()}catch(_){}return}   // v267: nothing left to pack – stop the 4-minute check
+  for(const g of G){if(n>=max||tries>=max*2)break;if(F[sig(g.L)])continue;while(busy())await sleep(3000);
+   let NL=null;tries++;try{NL=await pack(a,g.L)}catch(e){ERR('pack',e)}if(!NL){failAdd(sig(g.L));continue}n++;
    const k=sig(g.L),swap=L=>Array.isArray(L)&&sig(L)==k?NL.slice():L;
-   for(const id of new Set(g.at.filter(w=>w.id).map(w=>w.id))){const it=IT[id]||{},pt={};
+   for(const id of new Set(g.at.filter(w=>w.id).map(w=>w.id))){
+    // v267: read the item fresh before writing – a tab whose live updates stopped must not write an old copy over what she changed on another device
+    try{const fr=await db.collection('items').doc(id).get();if(fr.exists)IT[id]=Object.assign({},fr.data())}catch(e){ERR('fresh',e);continue}
+    const it=IT[id]||{},pt={};
     ['a8','tx'].forEach(f=>{const cur=it[f];if(!Array.isArray(cur))return;let hit=0;const nx=cur.map(q=>q&&Array.isArray(q.L)&&sig(q.L)==k?(hit=1,Object.assign({},q,{L:NL.slice()})):q);if(hit)pt[f]=nx});
     if(Object.keys(pt).length){QUIET=1;try{await putItem(id,pt)}finally{QUIET=0}DONE++}}
    for(const sid of new Set(g.at.filter(w=>w.st).map(w=>w.st))){const ref=db.collection('styles').doc(sid),fr=await ref.get();if(!fr.exists)continue;const v=fr.data()||{},pt={};
@@ -84,5 +92,5 @@ async function run(max){if(RUN)return;RUN=true;let n=0;try{const a=await claude.
  }catch(e){ERR('run',e)}finally{RUN=false}}
 window.SP262.run=run;window.SP262.left=async()=>{const db=await claude.use('db');return db?lists((await db.collection('styles').get()).docs).length:-1};
 // 25 s after the page opens, then every 4 minutes, a few at a time (each pack takes a few seconds and runs in the background)
-setTimeout(()=>run(30),25000);setInterval(()=>run(15),4*60e3);
+setTimeout(()=>run(30),25000);const IV=setInterval(()=>run(15),4*60e3);window.SP262.stop=()=>clearInterval(IV);
 })();
