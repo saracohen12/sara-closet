@@ -336,8 +336,10 @@ function armBack(bk){const d=q('#dlg');if(!d)return;V.back=bk;
 function paintEntry(){try{
  const cta=q('.h9cta')||q('.h9hero');if(!cta)return;let e=q('#ord123b');
  if(!e){e=document.createElement('button');e.id='ord123b';e.dataset.o3go='';cta.appendChild(e)}
- let u=0,m=0;for(const id of Object.keys(D)){const s=st(id);if(s=='m')m++;else if(!s)u++}
- const h=`<span>📦</span><span><b>ההזמנות שלי</b><small>${m?`❌ ${m} חסרים · `:''}${u?`⚪ ${u} לא סימנתי`:'הכל מסומן'}</small></span>`;if(e.innerHTML!=h)e.innerHTML=h;
+ let u=0,m=0,n=0;for(const id of Object.keys(D)){const s=st(id);if(s=='m')m++;else if(s=='n')n++;else if(!s)u++}
+ // v244: she reads this button to see that new orders arrived – show how many orders, how many on the way, and today's new ones
+ const all=orders(),td=new Date(),tdk=td.getDate()+'/'+(td.getMonth()+1),nw=all.filter(o=>o.date==tdk).length;
+ const h=`<span>📦</span><span><b>ההזמנות שלי (${all.length})</b><small>${nw?`🆕 ${nw} מהיום · `:''}${n?`⏳ ${n} בדרך · `:''}${m?`❌ ${m} חסרים · `:''}${u?`⚪ ${u} לא סימנתי`:'הכל מסומן'}</small></span>`;if(e.innerHTML!=h)e.innerHTML=h;
  }catch(err){LOG('entry',err)}}
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-o3go]');if(!t)return;e.preventDefault();e.stopPropagation();
  V.back=null;const id=t.dataset.o3go;if(id&&D[id]){document.querySelectorAll('dialog[open]').forEach(d=>{if(d.id!='ord123')try{d.close()}catch(_){}});open(D[id].order,id)}else open()},true);
