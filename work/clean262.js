@@ -17,7 +17,8 @@ async function scan(){const a=await claude.use('assets'),db=await claude.use('db
  // v272: the daily backups kept the 8 old files of everything that was packed into one picture (or cut again) for a whole week, so packing freed
  // nothing. An old file in a backup that is the SAME picture under its new name (same item, same GPT sheet src+t, same angle) is renamed in the backup
  // before the delete – a restore then brings back the very same item; everything else a backup points at stays.
- const MAP=bkMap(BK),cur=new Set(used);for(const b of BK){const d=b.data||{};for(const k in d){const s=typeof d[k]=='string'?d[k]:JSON.stringify(d[k]);if(k!='items'){add(used,s);continue}(String(s).match(HEX)||[]).forEach(x=>{if(!(MAP[x]&&!cur.has(x)))used.add(x)})}}
+ let SL={};try{const sn=await db.collection('slim272').limit(1000).get();sn.docs.forEach(d=>{const v=d.data();if(v&&typeof v.n=='string'&&/^[0-9a-f]{32}$/.test(v.n))SL[d.id]=v.n})}catch(_){}   // v273: sheets stored again light
+ const MAP=bkMap(BK,SL),cur=new Set(used);for(const b of BK){const d=b.data||{};for(const k in d){const s=typeof d[k]=='string'?d[k]:JSON.stringify(d[k]);if(k!='items'){add(used,s);continue}(String(s).match(HEX)||[]).forEach(x=>{if(!(MAP[x]&&!cur.has(x)))used.add(x)})}}
  add(used,document.documentElement.innerHTML);
  try{for(let i=0;i<localStorage.length;i++)add(used,localStorage.getItem(localStorage.key(i)))}catch(_){}
  for(const g of ['IT','SET','LOOKS','PLAN','D'])try{add(used,JSON.stringify(window[g]||(typeof eval(g)!='undefined'?eval(g):null)))}catch(_){}
@@ -26,11 +27,11 @@ async function scan(){const a=await claude.use('assets'),db=await claude.use('db
  const F=bad.length?free.filter(x=>!bad.includes(x)):free;
  return {a,db,usage:L.usage,all:L.assets.length,free:F,bytes:F.reduce((s,x)=>s+(x.sizeBytes||0),0),BK,MAP,rn:rn.length-bad.length}}
 // old name -> new name, from the backups' items next to today's items
-function bkMap(BK){const M={},cur=(typeof IT=='object'&&IT)||{};
+function bkMap(BK,SL){SL=SL||{};const M=Object.assign({},SL),cur=(typeof IT=='object'&&IT)||{};
  const walk=(o,f)=>{if(!o||typeof o!='object')return;if(Array.isArray(o))return o.forEach(x=>walk(x,f));if(typeof o.src=='string'&&o.src&&Array.isArray(o.L))f(o);for(const k in o)walk(o[k],f)};
  for(const b of BK){let items=null;try{items=JSON.parse(b.data&&b.data.items||'null')}catch(_){}if(!items)continue;
   for(const id in items){const now=cur[id];if(!now)continue;const C=[];walk(now,o=>C.push(o));if(!C.length)continue;
-   walk(items[id],o=>{const c=C.find(x=>x.src==o.src&&(x.t||0)==(o.t||0)&&x.L.length==o.L.length);if(!c)return;
+   walk(items[id],o=>{const c=C.find(x=>x.src==(SL[o.src]||o.src)&&(x.t||0)==(o.t||0)&&x.L.length==o.L.length);if(!c)return;
     for(const key of ['L','M']){const A=o[key],B=c[key];if(!Array.isArray(A)||!Array.isArray(B)||A.length!=B.length)continue;
      A.forEach((x,i)=>{const y=B[i];if(typeof x=='string'&&/^[0-9a-f]{32}$/.test(x)&&typeof y=='string'&&y&&y!=x&&/^[0-9a-f]{32}(~[0-7])?$/.test(y))M[x]=y})}})}}
  return M}
