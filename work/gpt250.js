@@ -146,10 +146,17 @@ async function bZip(b){const ids=B.sel.slice(),o=b.textContent;b.disabled=true;b
 function catItems(c){return Object.keys(D).filter(k=>!k.includes('~')&&cat0(k)==c&&!it(k).gen&&!it(k).oos&&it(k).s!='ret'&&it(k).s!='give')}
 function bOpen(id){const c=cat0(id);if(!B||B.cat!=c)B={cat:c,sel:[id],step:'pick'};else{if(!B.sel.includes(id)&&B.sel.length<MAXB)B.sel.unshift(id);B.step='pick'}paintB()}
 function paintB(){const d=dlg();ID='';const c=B.cat,title=(()=>{try{return document.querySelector(`[data-sec="${c}"] h2,#${c} h2`).textContent.replace(/[\d\s]+$/,'').trim()}catch(_){return ''}})();
- if(B.step=='pick'){const ready=k=>{try{return R().isReady(k)}catch(_){return false}};const L=catItems(c).sort((a,b)=>(B.sel.includes(b)-B.sel.includes(a))||(ready(a)-ready(b)));
+ if(B.step=='pick'){
+  // v254 (Sara 18:32 "שלא אבחר משהו שכבר עשיתי לו, או משהו שאין לו בכלל תמונה"): every item shows the same 📷 / 360 lights as the closet cards,
+  // in three groups – ready to send (has her photo, no 360 yet), no photo yet, already 360 (dimmed). She can still pick any of them
+  const ready=k=>{try{const s=window.avStat?avStat(k):'';return s?s=='ok':R().isReady(k)}catch(_){return false}};
+  const hasPh=k=>{const t=it(k),h=v=>Array.isArray(v)?v.length>0:!!v;let s='';try{s=window.avStat?avStat(k):''}catch(_){}return s=='fix'||['img','imgs','pics','p5g','p5gv','p5g118','a8up'].some(q=>h(t[q]))};
+  const all=catItems(c),G=[['todo','מוכנים לעבודה – יש תמונה, עוד אין 360',all.filter(k=>hasPh(k)&&!ready(k))],['noph','עוד אין להם תמונה שלך',all.filter(k=>!hasPh(k)&&!ready(k))],['done','כבר יש להם 360 – לא צריך שוב',all.filter(ready)]];
+  const tile=k=>{const on=B.sel.includes(k),r=ready(k),ph=hasPh(k);let p='';try{p=R().ph(k)}catch(_){}
+   return `<button type="button" class="g252i${on?' on':''}${r?' done':!ph?' noph':''}" data-g252t="${es(k)}" aria-pressed="${on}" aria-label="${es(nm(k))} – ${ph?'יש תמונה':'אין תמונה'}, ${r?'יש 360':'אין 360'}"><img alt="" loading="lazy" src="${es(p)}"><span>${es(nm(k))}</span><span class="g254l" aria-hidden="true"><i class="${ph?'on':''}">📷</i><i class="${r?'on':''}">360</i></span>${on?'<b aria-hidden="true">✓</b>':''}</button>`};
   d.innerHTML=`<div class="mk"><div class="mkh"><h3 id="g250t">📦 כמה מוצרים יחד${title?' – '+es(title):''}</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
-   <p class="g250p">בוחרים עד ${MAXB} מוצרים מהקטגוריה (נבחרו ${B.sel.length}). קודם מופיעים מה שעוד לא על האווטאר.</p>
-   <div class="g252g">${L.map(k=>{const on=B.sel.includes(k);let p='';try{p=R().ph(k)}catch(_){}return `<button type="button" class="g252i${on?' on':''}" data-g252t="${es(k)}" aria-pressed="${on}"><img alt="" loading="lazy" src="${es(p)}"><span>${es(nm(k))}</span>${ready(k)?'<em>✓ על האווטאר</em>':''}${on?'<b aria-hidden="true">✓</b>':''}</button>`}).join('')}</div>
+   <p class="g250p">בוחרים עד ${MAXB} מוצרים (נבחרו ${B.sel.length}). 📷 דלוק = יש תמונה שלך · 360 דלוק = כבר על האווטאר.</p>
+   <div class="g252g">${G.filter(g=>g[2].length).map(([k,t,L])=>`<h4 class="g254h ${k}">${t} · ${L.length}</h4>${L.map(tile).join('')}`).join('')}</div>
    <div class="mkb g250bar"><button type="button" class="mkp" data-g252next${B.sel.length?'':' disabled'}>המשך עם ${B.sel.length} ←</button><button type="button" data-g252x>ביטול</button></div></div>`}
  else{const all=B.sel.flatMap(k=>outs(k));
   d.innerHTML=`<div class="mk"><div class="mkh"><h3 id="g250t">📦 ${B.sel.length} מוצרים – הכול ל-GPT</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
@@ -225,7 +232,7 @@ function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';
   if(q.g250cp!=null)return copyTxt(b,prompt(ID));
   if(q.g250up!=null)return pick(ID);
   if(q.g252!=null)return bOpen(ID);
-  if(q.g252t){const k=q.g252t,i=B.sel.indexOf(k);if(i>=0)B.sel.splice(i,1);else if(B.sel.length<MAXB)B.sel.push(k);else toast_(`עד ${MAXB} מוצרים בפעם אחת`);const y=d0(DL);paintB();d0(DL,y);return}
+  if(q.g252t){const k=q.g252t,i=B.sel.indexOf(k);if(i>=0)B.sel.splice(i,1);else if(B.sel.length<MAXB){B.sel.push(k);if(b.classList.contains('done'))toast_('שימי לב: לזה כבר יש 360');else if(b.classList.contains('noph'))toast_('שימי לב: לזה עוד אין תמונה שלך')}else toast_(`עד ${MAXB} מוצרים בפעם אחת`);const y=d0(DL);paintB();d0(DL,y);return}
   if(q.g252next!=null){B.step='list';return paintB()}
   if(q.g252x!=null){B=null;return DL.close()}
   if(q.g252back!=null){B.step='pick';return paintB()}

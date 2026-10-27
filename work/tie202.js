@@ -339,7 +339,9 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
 // v248 (Sara 27/10 16:43 "במסך הזה שאני רואה את המטפחת עם הכיסוי, לראות את זה בתקריב ... קודם כל תקריב, וגם אני יכולה להזיז לראות את זה של הבובה"):
 // in the item window the first picture is the close-up of the tie on her (it turns when it is 8 angles); the next one is the doll
 const C8R={};window.C8R=C8R;
-function cuOf(id){try{const c=curTx(id);return c&&txs(id).find(y=>y.cu&&y.L[0]==c.L[0])||null}catch(_){return null}}
+// v254 (Sara 18:29 "לא עשית את זה"): her plum scarf wears a layer uploaded as a plain 'scarf' (not one of its ties), so no tie was "active" and no close-up showed.
+// The close-up of the active tie wins; otherwise the first tie that has an 8-angle close-up, then any close-up
+function cuOf(id){try{const c=curTx(id),L=txs(id);return c&&L.find(y=>y.cu&&y.L[0]==c.L[0])||L.find(y=>y.cu&&y.cu8)||L.find(y=>y.cu)||null}catch(_){return null}}
 // v253 (Sara 27/10 18:15 "בכיסויים אני רוצה את התקריב מקדימה של הכיסוי … וכשאני שמה את העכבר זה מסתובב 360"): the close-up of the tie that is on her now
 // (8 angles) stands for the cover wherever she chooses covers – the closet cards, the category picture picker and the category tile on the home page
 window.cuFace253=id=>{const x=cuOf(id);return x&&x.cu8?x.cu:''};
@@ -366,7 +368,7 @@ if(typeof galList=='function'){const _gl=galList;galList=function(id){const L=_g
 let HC={k:'',el:null,t:null};
 function homeCu(){const av=document.querySelector('.z-av');if(!av)return;let T=null;try{T=R360T()}catch(_){}const hk=T&&T.head?T.head():'';let x=null,id='';
  if(/^u/.test(hk))for(const k in IT){if(keyOf(k)==hk){id=k;break}}
- if(id){const c=curTx(id);x=c&&txs(id).find(y=>y.cu&&y.L[0]==c.L[0])||null}
+ if(id)x=cuOf(id);
  const key=x?x.cu+(x.cu8?':8':''):'';if(key==HC.k&&(!key||(HC.el&&HC.el.isConnected)))return;HC.k=key;
  if(HC.t){clearInterval(HC.t);HC.t=null}if(HC.el)HC.el.remove();HC.el=null;if(!x)return;
  const b=document.createElement('button');b.type='button';b.className='z-cu247';b.setAttribute('aria-label','הכיסוי מקרוב: '+x.n+' – להגדלה');

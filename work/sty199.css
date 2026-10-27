@@ -432,3 +432,10 @@ dialog#g250{overflow:auto!important;max-height:94dvh;overscroll-behavior:contain
 #c180p .g180 .c253 img{object-fit:cover;object-position:top}
 .h9im.c253 img{object-fit:cover;object-position:top}
 #cl163 .ph.c253{background-size:cover!important;background-position:top center!important}
+/* v254: lights and groups in the "several products" picker */
+#g250 .g254h{grid-column:1/-1;margin:8px 0 0;font-size:.9rem}
+#g250 .g254h.done{color:#2f6b3a}#g250 .g254h.noph{color:#8a5a2b}
+#g250 .g252i .g254l{display:flex;gap:4px}
+#g250 .g252i .g254l i{font-style:normal;font-size:.7rem;font-weight:700;padding:1px 6px;border-radius:999px;background:#eee;color:#999;filter:grayscale(1);opacity:.7}
+#g250 .g252i .g254l i.on{background:#e3f3e5;color:#1f6b2c;filter:none;opacity:1}
+#g250 .g252i.done,#g250 .g252i.noph{opacity:.55}#g250 .g252i.done.on,#g250 .g252i.noph.on{opacity:1}
