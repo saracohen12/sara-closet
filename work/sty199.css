@@ -426,3 +426,9 @@ dialog#g250::backdrop{background:rgba(30,20,15,.45)}
 @media (max-width:560px){#g250 .g252r{grid-template-columns:48px 1fr auto}#g250 .g252r [data-g252rm]{grid-column:3}#g250 .g252r img{width:48px}#g250 .g252g{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}}
 /* v252: on a phone the GPT window was taller than the screen and its buttons were cut off – it scrolls now */
 dialog#g250{overflow:auto!important;max-height:94dvh;overscroll-behavior:contain}
+/* v253: covers show the close-up of her with the tie on (turns on mouse-over) */
+.card .ph.c253 img{object-fit:cover;object-position:top}
+.card .ph .c253b{position:absolute;top:8px;inset-inline-end:8px;z-index:2;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.92);color:#2a1d17;font-size:.72rem;font-style:normal;font-weight:700;pointer-events:none}
+#c180p .g180 .c253 img{object-fit:cover;object-position:top}
+.h9im.c253 img{object-fit:cover;object-position:top}
+#cl163 .ph.c253{background-size:cover!important;background-position:top center!important}

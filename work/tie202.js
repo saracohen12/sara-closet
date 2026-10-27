@@ -340,6 +340,23 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
 // in the item window the first picture is the close-up of the tie on her (it turns when it is 8 angles); the next one is the doll
 const C8R={};window.C8R=C8R;
 function cuOf(id){try{const c=curTx(id);return c&&txs(id).find(y=>y.cu&&y.L[0]==c.L[0])||null}catch(_){return null}}
+// v253 (Sara 27/10 18:15 "בכיסויים אני רוצה את התקריב מקדימה של הכיסוי … וכשאני שמה את העכבר זה מסתובב 360"): the close-up of the tie that is on her now
+// (8 angles) stands for the cover wherever she chooses covers – the closet cards, the category picture picker and the category tile on the home page
+window.cuFace253=id=>{const x=cuOf(id);return x&&x.cu8?x.cu:''};
+const C253={};function fr253(a){if(C253[a])return C253[a];return C253[a]=cu8Frames(a).then(F=>{if(F)C8R[a]=C8R[a]||F;return F})}
+window.fr253=fr253;
+function cards253(){document.querySelectorAll('.card[data-id] .ph>img').forEach(im=>{const id=im.closest('.card').dataset.id,a=D[id]?window.cuFace253(id):'',ph=im.parentNode;
+  if(!a){if(im.dataset.c253){im.dataset.th=im.dataset.th0||id;delete im.dataset.c253;ph.classList.remove('c253');const b=ph.querySelector('.c253b');if(b)b.remove();im.src=(TH&&TH[id])||im.src}return}
+  if(im.dataset.c253==a)return;im.dataset.c253=a;if(im.dataset.th){im.dataset.th0=im.dataset.th;delete im.dataset.th}ph.classList.add('c253');
+  if(!ph.querySelector('.c253b'))ph.insertAdjacentHTML('beforeend','<i class="c253b" aria-hidden="true">🔄 מקרוב</i>');
+  fr253(a).then(F=>{if(F&&im.dataset.c253==a)im.src=F[0]})})}
+setInterval(()=>{try{cards253()}catch(e){ERR('c253',e)}},1500);
+const set253=(el,u)=>{if(el.tagName=='IMG')el.src=u;else el.style.backgroundImage=`url('${u}')`};
+const sp253=(im,on,once)=>{const a=im&&im.dataset.c253;if(!a)return;if(im._t){clearInterval(im._t);im._t=null;if(once){fr253(a).then(F=>F&&set253(im,F[0]));return}}
+ fr253(a).then(F=>{if(!F)return;if(!on){set253(im,F[0]);return}let i=0;im._t=setInterval(()=>{i=(i+1)%8;set253(im,F[i]);if(once&&i==0){clearInterval(im._t);im._t=null}},still()?450:170)})};
+window.sp253=sp253;const el253=p=>p.querySelector('img[data-c253]')||(p.dataset.c253?p:null);
+document.addEventListener('pointerover',e=>{if(e.pointerType=='touch')return;const p=e.target.closest&&e.target.closest('.c253');if(p&&!(e.relatedTarget&&p.contains(e.relatedTarget)))sp253(el253(p),true)});
+document.addEventListener('pointerout',e=>{if(e.pointerType=='touch')return;const p=e.target.closest&&e.target.closest('.c253');if(p&&!(e.relatedTarget&&p.contains(e.relatedTarget)))sp253(el253(p),false)});
 if(typeof galList=='function'){const _gl=galList;galList=function(id){const L=_gl.apply(this,arguments);try{const x=cuOf(id);if(!x)return L;
   let u='/_blob/'+x.cu;if(x.cu8){const F=C8R[x.cu];if(F)u=F[0];else cu8Frames(x.cu).then(F=>{if(F&&!C8R[x.cu]){C8R[x.cu]=F;try{if(typeof CUR!='undefined'&&CUR==id)paintGal(id)}catch(_){}}})}
   return [{u,n:'מקרוב',cu248:x.cu},...L]}catch(e){ERR('gal248',e)}return L}}
