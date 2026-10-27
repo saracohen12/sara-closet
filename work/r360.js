@@ -30,7 +30,7 @@ const HEADS=[{k:'c',n:'כיסוי',src:'a8/t_c.webp'},{k:'w',n:'פאה',src:'a8/
 Object.entries(READY).forEach(([id,r])=>{if(r.head)HEADS.push({k:r.k[0],id,src:'a8/t_'+r.k[0]+'.webp'})});   // v185: her avatar wearing it (the shop photo was often not loaded yet on the home row → an empty circle)
 const CATS=[['all','הכל'],['ready','✓ כבר על האווטאר'],['dresses','שמלות'],['tops','חולצות'],['base','חולצות בסיס'],['sweaters','סוודרים'],['skirts','חצאיות'],['sets','סטים'],['outer','ז׳קטים ומעילים'],['scarves','כיסויי ראש'],['shoes','נעליים'],['belts','חגורות'],['jewelry','תכשיטים'],['bags','תיקים']];
 const CATIDS=new Set(CATS.slice(2).map(c=>c[0]));
-const DEF={on:{b:1,s:1,n:1,g:1,j:1,e:1},head:'c',tuck:0,wb:0,cam:'black',bg:'',mk:'',tf:'',tc:null};   // v199: mk = makeup, tf/tc = the cover a tie is made of and its colour
+const DEF={on:{b:1,s:1,n:1,g:1,j:1,e:1},head:'c',tuck:0,under:0,wb:0,cam:'black',bg:'',mk:'',tf:'',tc:null};   // v199: mk = makeup, tf/tc = the cover a tie is made of and its colour
 const clone=o=>JSON.parse(JSON.stringify(o));
 let ST=load();
 // 21:19 she asked to leave the wig until it is redone: start once on the cover
@@ -264,9 +264,13 @@ function paintCam(){const sw=dlg&&dlg.querySelector('.r3cam .r3sw');if(!sw)retur
   +CAM.map(c=>`<button type="button" role="radio" data-r3cam="${c.k}" aria-label="${c.n}"><i style="background:${c.c?`rgb(${c.c})`:'linear-gradient(135deg,#e9c3a6,#c99476)'}"></i><span>${c.n}</span></button>`).join('');thl(T)}
 const ORDER=['shoes','base','body','bottom','top','outer','belt','coat','wrist','bag','neck'];   // what covers what, from the floor up (tucked: the top under the skirt)
 function layersFor(v,s){const on=s.on||{},L=[];const x=k=>({s:'x'+k+(v+1)});const of=sl=>Object.keys(SLOT).filter(k=>on[k]&&SL(k)==sl);
- const ord=s.tuck?ORDER.map(o=>o=='bottom'?'top':o=='top'?'bottom':o):ORDER;
+ let ord=s.tuck?ORDER.map(o=>o=='bottom'?'top':o=='top'?'bottom':o):ORDER;
+ if(s.under){ord=ord.filter(o=>o!='top');ord.splice(ord.indexOf('body'),0,'top')}   // v255 (Sara 18:58 "איך אני שמה גופיית בסיס לשמלה"): any top worn under the dress
  const bs=of('base').length;   // v210: her base shirt under a lace dress shows through the lace, instead of the plain colour
  ord.forEach(sl=>{if(sl=='body'&&!bs)Object.keys(LACE).forEach(k=>{if(on[k])L.push({s:'x'+k+'u'+(v+1),t:camOf(s.cam),ref:LACE[k]})});of(sl).forEach(k=>L.push(x(k)))});
+ // v255 (Sara 27/10 18:58 "בשמלות ארוכות אתה עולה על הנעליים"): a long dress or skirt was cut from GPT's sheet together with the doll's beige flats under its hem,
+ // so it covered the shoes she chose. The shoes are drawn once more over the dress, skirt and coat (the shoe layer is only the shoe, at the floor)
+ const shs=of('shoes');if(shs.length&&(of('body').length||of('bottom').length||of('coat').length))shs.forEach(k=>L.push(x(k)));
  const st=STY[s.head],z=st&&'z'+s.head.slice(1)+(v+1);
  const head=s.head=='w'?[{s:(s.wb&&WB[v]?'wb':'w')+(v+1),hd:1}]:st?[DYN[s.head+(v+1)]&&{s:s.head+(v+1),hd:1},st.set=='tie'&&DYN[z]&&{s:z,t:s.tc||GREY,ref:st.lum}].filter(Boolean):(s.head&&s.head!='c')?[x(s.head)]:[];
  // v199 makeup: over a whole head (tie, hairstyle) right after it; with a cover under everything (a cover item is drawn over it). Her first wig is another drawing of the face: no makeup on it
@@ -413,6 +417,7 @@ function build(){
    <div class="r3styr"></div>
    <label class="r3tuck r3wb"><input type="checkbox"> שיער מאחורי הכתפיים (רואים צווארון ושרשרת)</label>
    <label class="r3tuck r3tk"><input type="checkbox"> חולצה בתוך החצאית</label>
+   <label class="r3tuck r3un"><input type="checkbox"> החולצה מתחת לשמלה (כמו חולצת בסיס)</label>
    <div class="r3cam" hidden><span class="r3lbl">גופיית בסיס מתחת לתחרה <small>הגופיות שלך, או צבע</small></span><div class="r3sw" role="radiogroup" aria-label="צבע גופיית הבסיס"></div></div>
    <div class="r3bgw"><span class="r3lbl">רקע <small class="r3bgn"></small></span><div class="r3bgs" role="radiogroup" aria-label="רקע"></div></div>
   </div>
@@ -439,6 +444,7 @@ function build(){
  dlg.querySelector('.r3cmpb').onclick=()=>{CMP=CMP?null:[];paintLooks()};
  dlg.querySelector('.r3wb input').onchange=e=>{ST.wb=e.target.checked?1:0;keep();redraw()};
  dlg.querySelector('.r3tk input').onchange=e=>{ST.tuck=e.target.checked?1:0;keep();redraw()};
+ dlg.querySelector('.r3un input').onchange=e=>{ST.under=e.target.checked?1:0;keep();redraw()};
  dlg.querySelector('.r3save').onclick=saveLook3;dlg.querySelector('.r3pin').onclick=()=>TODAY.pin();dlg.querySelector('.r3dl').onclick=share;
  dlg.querySelectorAll('.r3tabs button').forEach(b=>b.onclick=()=>{TAB=b.dataset.t;paintTabs()});
  const q=dlg.querySelector('.r3q');q.addEventListener('input',()=>{Q=q.value.trim();SHOWN=60;paintGrid()});
@@ -472,7 +478,7 @@ function build(){
   if(t.dataset.cmp){pickCmp(t.dataset.cmp);return}
   if(t.dataset.l3pin){TODAY.pinLook(t.dataset.l3pin);return}
   if(t.dataset.look){useLook(t.dataset.look);nudgePin();return}
-  if(t.dataset.l3){const l=L3[t.dataset.l3];if(l){ST=Object.assign(clone(DEF),{on:Object.assign({},l.on||{}),head:l.head||'c',tuck:l.tuck?1:0,wb:l.wb?1:0,cam:l.cam==null?'black':l.cam,mk:l.mk||'',tf:l.tf||'',tc:l.tc||null});MISS=[];keep();redraw();paintMiss();big.show(0);nudgePin()}return}
+  if(t.dataset.l3){const l=L3[t.dataset.l3];if(l){ST=Object.assign(clone(DEF),{on:Object.assign({},l.on||{}),head:l.head||'c',tuck:l.tuck?1:0,under:l.under?1:0,wb:l.wb?1:0,cam:l.cam==null?'black':l.cam,mk:l.mk||'',tf:l.tf||'',tc:l.tc||null});MISS=[];keep();redraw();paintMiss();big.show(0);nudgePin()}return}
   if(t.dataset.l3x){const id=t.dataset.l3x;if(DB)DB.collection('looks360').doc(id).delete().catch(()=>{});delete L3[id];paintLooks();return}});
  paintCats();paintTabs();paintRoom();paintLooks()}
 function paintTabs(){if(!dlg)return;dlg.querySelectorAll('.r3tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t==TAB));dlg.querySelectorAll('.r3pane').forEach(p=>p.hidden=p.dataset.p!=TAB);if(TAB=='closet')paintGrid();else paintLooks()}
@@ -517,7 +523,8 @@ function paintRoom(){if(!dlg)return;
  const fx=ids.filter(id=>READY[id]&&READY[id].dyn&&window.acts197).map(id=>`<div class="r3fx"><span>${esc(nm(id).split(' ').slice(0,3).join(' '))}</span>${acts197(id)}</div>`).join('');
  wv.innerHTML=(chips.join('')||'<p class="r3note">עוד לא לבשת כלום. בוחרים למטה מהארון.</p>')+fx;thl(ids);
  dlg.querySelector('.r3cnt').textContent=ids.length?`${ids.length} פריטים`:'';
- const t=dlg.querySelector('.r3tk');const sl=x=>Object.keys(ST.on).some(k=>ST.on[k]&&SLOT[k]&&SL(k)==x);t.hidden=!(sl('top')&&sl('bottom'));   // v225 (Sara 19:22 "איפה מכניסים את החולצה"): any top with any skirt, not only the first two itemst.querySelector('input').checked=!!ST.tuck;
+ const t=dlg.querySelector('.r3tk');const sl=x=>Object.keys(ST.on).some(k=>ST.on[k]&&SLOT[k]&&SL(k)==x);t.hidden=!(sl('top')&&sl('bottom'));t.querySelector('input').checked=!!ST.tuck;   // v225 (Sara 19:22 "איפה מכניסים את החולצה"): any top with any skirt, not only the first two items
+ const un=dlg.querySelector('.r3un');un.hidden=!(sl('top')&&sl('body'));un.querySelector('input').checked=!!ST.under;
  const w=dlg.querySelector('.r3wb');w.hidden=ST.head!='w';w.querySelector('input').checked=!!ST.wb;
  paintSty();
  const bn=bgList().find(b=>b.k==(ST.bg||''));dlg.querySelector('.r3bgn').textContent=bn?bn.n:'';
@@ -562,7 +569,7 @@ function lookOf(k){let LK={};try{LK=LOOKS||{}}catch(_){}
  if(k.startsWith('m:')){const l=LK[k.slice(2)];if(!l)return null;const its=Object.values(l.items||{}).filter(x=>D[x]);
   const s=l.r360?Object.assign(clone(DEF),clone(l.r360)):stateFrom(its,{head:ST.head,cam:ST.cam,bg:ST.bg});if(l.r360&&l.r360.bg==null)s.bg=ST.bg;if(!l.r360&&!its.some(x=>READY[x]&&READY[x].head))s.head=ST.head=='w'?'w':s.head;
   return {name:l.name||'לוק',s,miss:its.filter(x=>!isReady(x)&&CATIDS.has(cat(x))),id:k.slice(2)}}
- if(k.startsWith('o:')){const l=L3[k.slice(2)];if(!l)return null;return {name:l.name||'לוק',s:Object.assign(clone(DEF),{on:Object.assign({},l.on||{}),head:l.head||'c',tuck:l.tuck?1:0,wb:l.wb?1:0,cam:l.cam==null?'black':l.cam,bg:ST.bg}),miss:[]}}
+ if(k.startsWith('o:')){const l=L3[k.slice(2)];if(!l)return null;return {name:l.name||'לוק',s:Object.assign(clone(DEF),{on:Object.assign({},l.on||{}),head:l.head||'c',tuck:l.tuck?1:0,under:l.under?1:0,wb:l.wb?1:0,cam:l.cam==null?'black':l.cam,bg:ST.bg}),miss:[]}}
  return null}
 function pickCmp(k){if(!CMP)return;const i=CMP.indexOf(k);if(i>=0)CMP.splice(i,1);else CMP.push(k);
  if(CMP.length>=2){const a=lookOf(CMP[0]),b=lookOf(CMP[1]);CMP=null;paintLooks();if(a&&b)compare(a,b);return}paintLooks()}
@@ -587,7 +594,7 @@ function useLook(id){let l=null;try{l=LOOKS[id]}catch(_){}if(!l)return;
  const bg=ST.bg;if(l.r360){ST=Object.assign(clone(DEF),clone(l.r360));if(l.r360.bg==null)ST.bg=bg;MISS=Object.values(l.items||{}).filter(x=>D[x]&&!isReady(x))}else applyIds(Object.values(l.items||{}),true);
  keep();redraw();paintMiss();big&&big.show(0);toast_(`👗 ${l.name||'הלוק'}`)}
 function applyIds(ids,reset){ids=ids.filter(id=>D[id]);
- if(reset){const head=ST.head;ST.on={};ST.tuck=0;ST.head=ids.some(id=>READY[id]&&READY[id].head)?'c':head}
+ if(reset){const head=ST.head;ST.on={};ST.tuck=0;ST.under=0;ST.head=ids.some(id=>READY[id]&&READY[id].head)?'c':head}
  ids.filter(isReady).forEach(id=>{const r=READY[id];if(r.head){ST.head=r.k[0];return}if(!r.k.every(k=>ST.on[k]))wearItem(id)});
  MISS=ids.filter(id=>!isReady(id)&&CATIDS.has(cat(id)))}
 async function thumb(){const c=document.createElement('canvas');await paint(c,0,ST);const t=document.createElement('canvas');t.width=120;t.height=180;t.getContext('2d').drawImage(c,0,0,120,180);return t.toDataURL('image/jpeg',.82)}
@@ -597,7 +604,7 @@ async function saveLook3(){const ids=wornIds(ST);if(!ids.length&&!whole(ST.head)
  const th=await thumb();let id=null;
  try{id=await saveLook(items,occNow(),null)}catch(_){}
  if(id&&LOOKS[id]){LOOKS[id].r360=clone(ST);LOOKS[id].th360=th;try{await saveDoc('looks',id,LOOKS[id])}catch(_){}}
- else if(DB){const k='l'+Date.now().toString(36);L3[k]={name:'לוק · '+new Date().toLocaleDateString('he-IL'),on:clone(ST.on),head:ST.head,tuck:ST.tuck,wb:ST.wb,cam:ST.cam,mk:ST.mk||'',tf:ST.tf||'',tc:ST.tc||null,t:Date.now(),th};DB.collection('looks360').doc(k).set(L3[k]).catch(()=>{})}
+ else if(DB){const k='l'+Date.now().toString(36);L3[k]={name:'לוק · '+new Date().toLocaleDateString('he-IL'),on:clone(ST.on),head:ST.head,tuck:ST.tuck,under:ST.under||0,wb:ST.wb,cam:ST.cam,mk:ST.mk||'',tf:ST.tf||'',tc:ST.tc||null,t:Date.now(),th};DB.collection('looks360').doc(k).set(L3[k]).catch(()=>{})}
  paintLooks();toast_('♡ הלוק נשמר')}
 async function saveFile(name,blob){let dl=null;try{dl=await window.claude?.use?.('downloads')}catch(_){}
  try{if(dl){await dl.save({filename:name,data:blob});return}}catch(e){if(e&&e.code=='declined')return}
@@ -829,7 +836,7 @@ const KV=(()=>{let db=null;const op=()=>db||(db=new Promise(r=>{try{const q=inde
  const tx=async(m,f)=>{const d=await op();if(!d)return null;return new Promise(r=>{try{const t=d.transaction('k',m),q=f(t.objectStore('k'));t.oncomplete=()=>r(q&&q.result);t.onerror=t.onabort=()=>r(null)}catch(_){r(null)}})};
  return {get:k=>tx('readonly',st=>st.get(k)),put:(k,v)=>tx('readwrite',st=>st.put(v,k)),
   tidy:p=>tx('readwrite',st=>{const q=st.openKeyCursor?st.openKeyCursor():st.openCursor();q.onsuccess=()=>{const c=q.result;if(!c)return;if(!String(c.key).startsWith(p))st.delete(c.key);c.continue()};return null})}})();
-const KVV='rv1:'+String(window.A8V||window.VER||'')+'|';   // v245: was the site version, so every update wiped her saved pictures; bump rv1 when the drawing code changes
+const KVV='rv2:'+String(window.A8V||window.VER||'')+'|';   // v245: was the site version, so every update wiped her saved pictures; bump rv1 when the drawing code changes
 const sig8=s=>[s.head,s.mk,defTie()].filter(Boolean).map(k=>k+':'+(DYN[k+'1']||'')+(DYN['z'+String(k).slice(1)+'1']||'')).join(',')+'|'+(s.tc?s.tc.join(','):'');
 const pkey=(t,ck,s)=>KVV+t+'|'+ck+'|'+sig8(s);
 const PQ=new Map(),FR0={};
