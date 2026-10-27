@@ -112,8 +112,6 @@ g=['T51',SIDX[('1BGU',4)]]; G.append(g); NOTE[tuple(g)]='אותה שמלת קט�
 # v176: the floral turtleneck re-ordered in M after T37 (S) was cancelled; the velvet skirt twice in the same order
 if 'T591091_3' in ID: G.append(['T37','T591091_3']); NOTE[('T37','T591091_3')]='אותה חולצת גולף שחורה עם פרחים ועלי זהב: במידה S (15/10) בוטלה כי אזלה מהמלאי, והוזמנה שוב במידה M (25/10).'
 if 'T591091_15' in ID: G.append(['T591091_14','T591091_15']); NOTE[('T591091_14','T591091_15')]='אותה חצאית קטיפה חומה במידה S הופיעה פעמיים באותה הזמנה מ-25/10 (₪28.04 ו-₪46.74 אחרי הנחות).'
-# v240: the same brown chain loafer (CN 39) is in two Temu 3 orders of 27/10
-if 'T8151206_8' in ID and 'T231206_10' in ID: G.append(['T8151206_8','T231206_10']); NOTE[('T8151206_8','T231206_10')]='אותו מוקסין עקב חום עם שרשרת, מידה CN 39 (EU 38): הוזמן פעמיים ב-27/10 – בקבלה 2 (₪60.87) ובקבלה 3 (₪62.21).'
 NOMULTI={'other'}
 for x in items:
     if x['src']=='sh' and x['qty']>1 and x['cat'] not in NOMULTI and not any(x['id'] in g for g in G):
