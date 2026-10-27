@@ -296,3 +296,27 @@ dialog#sty199.w213,dialog#sty204v.w213{width:min(900px,100vw)}
 .h9logo small{white-space:nowrap}
 .h9logo .h236v{display:block;font-style:normal;font-size:.8em;font-weight:500;letter-spacing:.02em;opacity:.75;white-space:nowrap;line-height:1.3}
 .ad236v{font-weight:600;white-space:nowrap}
+/* v237: ✨ fix a flaw in GPT (fix237.js) */
+dialog#fix237{width:min(720px,100vw);max-width:100vw;max-height:94dvh;margin:auto auto 0;padding:0;border:0;border-radius:24px 24px 0 0;background:var(--z-solid,#fff);color:var(--z-ink,#222);overflow:auto;font-family:var(--z-body)}
+@media (min-width:600px){dialog#fix237{margin:auto;border-radius:24px}}
+dialog#fix237::backdrop{background:rgba(20,12,8,.5)}
+#fix237 .mk{padding:0 16px 20px}
+#fix237 .mkh{position:sticky;top:0;display:flex;align-items:center;gap:10px;padding:14px 0 8px;background:var(--z-solid,#fff);z-index:1}
+#fix237 h3{flex:1;margin:0;font-size:1.05rem;line-height:1.3;font-family:var(--z-display);font-weight:var(--z-dw)}
+#fix237 .mkx{width:44px;height:44px;border-radius:50%;border:1px solid var(--z-line,#ddd);background:none;color:inherit;font-size:1rem;flex:none;cursor:pointer}
+#fix237 .f237p{font-size:.88rem;line-height:1.5;color:var(--z-muted,#6b5d55);margin:2px 0 8px}
+#fix237 .f237s{margin:6px 0;padding-inline-start:20px;font-size:.9rem;line-height:1.5}
+#fix237 .f237s li{margin-bottom:8px}
+#fix237 .f237w{border-radius:14px;overflow:hidden;background:#d9dde2;border:1px solid var(--z-line,#ddd)}
+#fix237 canvas.f237c{display:block;width:100%;height:auto;min-height:160px;touch-action:none;cursor:crosshair}
+#fix237 .f237bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
+#fix237 .f237n{font-size:.84rem;color:var(--z-muted,#6b5d55)}
+#fix237 .f237l{display:flex;flex-direction:column;gap:4px}
+#fix237 .f237l textarea{font:inherit;font-size:.9rem;padding:8px 10px;border-radius:12px;border:1px solid var(--z-line,#ddd);background:var(--z-solid,#fff);color:inherit;resize:vertical}
+#fix237 .f237parts{display:flex;gap:6px;margin-bottom:8px}
+#fix237 .mkb{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+#fix237 .mkb button,#fix237 .f237parts button{font:inherit;font-size:.86rem;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--z-line,#ddd);background:var(--z-surface,#f6f2ee);color:var(--z-ink,#2a1d17);cursor:pointer}
+#fix237 .f237parts button[aria-pressed=true]{border-color:var(--z-pri,#2a1d17);font-weight:700}
+#fix237 .mkb .mkp{background:var(--z-pri,#2a1d17);color:var(--z-pri-ink,#fff);border:0;font-weight:600}
+#fix237 .mkb button:disabled{opacity:.45;cursor:default}
+#fix237 .f237l textarea{background:#fffaf4!important;color:#2a1d17!important}

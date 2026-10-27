@@ -55,7 +55,7 @@ window.bar188=function(id){const go=`<button type="button" class="it77p b188" da
 // v197 (Sara 08:29 "עלתה לאוויר של המוצר תמונה לא נכונה, אני לא מצליחה למחוק/לשנות... גם אם לחצתי מדוד עלי שיהיה לי אפשרות למחוק ולהחליף"):
 // replace / delete right under "לנסות עליי", in the avatar box and in the studio
 const mine=id=>ups(id).length>0||parts(id).length>0;
-const acts=id=>`<span class="b188x"><button type="button" data-up188="${es(id)}" aria-label="להחליף את התמונה של האווטאר">🔄 להחליף</button><button type="button" data-off190="${es(id)}" aria-label="למחוק מהאווטאר">🗑 למחוק</button></span>`;
+const acts=id=>`<span class="b188x"><button type="button" data-fix237="${es(id)}" aria-label="לתקן ב-GPT רק את מה שלא יצא טוב">✨ לתקן</button><button type="button" data-up188="${es(id)}" aria-label="להחליף את התמונה של האווטאר">🔄 להחליף</button><button type="button" data-off190="${es(id)}" aria-label="למחוק מהאווטאר">🗑 למחוק</button></span>`;
 window.acts197=id=>mine(id)?acts(id):'';
 // v233 (Sara 27/10 07:07 "אופציה שנרשום לך אם יש משהו מיוחד כדי שתשים לב כשאתה חותך ... לבן, שקוף, שמנת ... לא יהיה חובה"):
 // a notes box next to the upload, kept on the item (IT[id].a8note) and with each cut part (n). cut8 reads the words it knows; the rest is for Claude
