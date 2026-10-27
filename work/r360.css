@@ -213,3 +213,11 @@ dialog#r3cmp::backdrop,dialog#r3sh::backdrop{background:rgba(20,12,8,.55)}
 #r360 .r3jyr>span{flex:1 1 100%;font-size:.92rem}
 #r360 .r3jyr button{min-height:44px;padding:0 14px;border-radius:22px;border:1px solid var(--z-line,#ccc);background:var(--z-card,#fff);color:inherit;font:inherit}
 #r360 .r3jyh{display:block;font-size:.92rem}#r360 .r3jyh small{font-weight:400;opacity:.75}
+
+/* v264 (Sara 22:36 "אני עדיין לא מצליחה להזיז"): jewellery height right under the avatar – the rows inside "לובשת עכשיו" were folded away on the phone */
+#r360 .r3jyo{width:100%;max-width:420px;box-sizing:border-box;padding:8px 10px;border-radius:16px;background:var(--z-surface,#f6f0ea);border:1px solid var(--z-line,#e6dcd2)}
+#r360 .r3jyo .r3jyh small{display:none}
+#r360 .r3jyo .r3jyr{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px}
+#r360 .r3jyo .r3jyr>span{flex:1 1 120px;min-width:0;font-size:.85rem}
+#r360 .r3jyo .r3jyr>span small{display:none}
+#r360 .r3jyo button{min-height:40px;min-width:44px;padding:0 12px;border-radius:20px}

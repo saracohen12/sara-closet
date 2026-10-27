@@ -25,7 +25,7 @@ function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='cl262'
  DL.addEventListener('cancel',e=>{e.preventDefault();if(!RUN)DL.close()});DL.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
   if(b.dataset.x!=null&&!RUN)return DL.close();if(b.dataset.go!=null)go()});return DL}
 function show(h){const d=dlg();d.innerHTML=`<div class="mk"><div class="mkh"><h3 id="cl262t">🧹 לפנות מקום לתמונות</h3><button type="button" class="mkx" data-x aria-label="סגירה">✕</button></div>${h}</div>`;if(!d.open)d.showModal()}
-let SC=null;
+let SC=null;   // last scan
 async function open(){if(RUN)return show('<p class="cl262p">מוחקת… <b data-n></b></p>');show('<p class="cl262p">בודקת אילו תמונות עדיין בשימוש… (כחצי דקה)</p>');
  try{SC=await scan()}catch(e){ERR('scan',e);SC=null;show(`<p class="cl262p">${e.code=='not_granted'?'רק בעלת האתר יכולה לפנות מקום. לפתוח את האתר מהחשבון שלך.':e.code=='big'?'יש כאן יותר מדי נתונים לבדיקה בטוחה. כתבי לי ואני אפנה מקום.':'לא הצלחתי לבדוק. לנסות שוב בעוד רגע.'}</p>`);return}
  const u=SC.usage||{};
@@ -37,15 +37,25 @@ async function go(){if(RUN||!SC||!SC.free.length)return;RUN=true;const L=SC.free
  for(const x of L){for(let t=0;t<4;t++){try{await a.delete(x.id);n++;break}catch(e){if(e&&e.code=='rate_limited'||e&&e.code=='store_unavailable'){wait=Math.min(8000,(wait||800)*2);await new Promise(r=>setTimeout(r,wait));continue}bad++;ERR('del',e);break}}
   wait=Math.max(0,wait-200);const c=DL.querySelector('[data-n]');if(c)c.textContent=n;const p=DL.querySelector('progress');if(p)p.value=n+bad}
  RUN=false;SC=null;show(`<p class="cl262p">✓ נמחקו <b>${n}</b> תמונות ישנות. עכשיו יש מקום להעלות שוב.${bad?` (${bad} לא נמחקו)`:''}</p><span class="mkb"><button type="button" class="mkp" data-x>סגירה</button></span>`);
- toast_(`✓ פיניתי ${n} תמונות`);try{banner()}catch(_){}}
+ toast_(`✓ פיניתי ${n} תמונות`);try{const x=document.getElementById('cl262b');if(x)x.remove();banner()}catch(_){}}
 window.clean262=open;
 // a line at the top when the store is (nearly) full, and in the admin panel
 async function banner(){let u=null;try{const a=await claude.use('assets');if(!a)return;u=(await a.list()).usage}catch(_){return}
  const full=u&&((u.maxFiles&&u.files>=u.maxFiles-150)||(u.maxBytes&&u.bytes>=u.maxBytes*.93));let b=document.getElementById('cl262b');
- if(!full){if(b)b.remove();return}
+ if(!full){if(b&&!b.dataset.d)b.remove();return}
  if(!b){b=document.createElement('div');b.id='cl262b';b.setAttribute('role','status');document.body.appendChild(b)}
- b.innerHTML=`<span>📦 המקום לתמונות ${u.files>=u.maxFiles?'מלא':'כמעט מלא'} (${u.files} מתוך ${u.maxFiles})</span><button type="button" data-cl262>🧹 לפנות מקום</button>`}
+ delete b.dataset.d;b.innerHTML=`<span>📦 המקום לתמונות ${u.files>=u.maxFiles?'מלא':'כמעט מלא'} (${u.files} מתוך ${u.maxFiles})</span><button type="button" data-cl262>🧹 לפנות מקום</button>`}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-cl262]');if(!b)return;e.preventDefault();open()},true);
+// v263 (Sara 22:21 "מנגנון כל יום לבדוק האם יש קובץ מיותר ולהוריד אותם"): once a day, a minute after the site opens, it checks by itself (reading only).
+// When it finds files nothing uses, a bar offers "🧹 לנקות" – the delete itself always waits for her press (deleting is final).
+const today=()=>new Date().toISOString().slice(0,10);
+const lsG=k=>{try{return localStorage.getItem(k)}catch(_){return null}},lsS=(k,v)=>{try{localStorage.setItem(k,v)}catch(_){}};
+async function daily(){if(RUN||lsG('cl262d')==today())return;let r=null;try{r=await scan()}catch(e){if(e&&e.code!='not_granted')ERR('daily',e);return}lsS('cl262d',today());
+ if(!r||r.free.length<10)return;if(!SC)SC=r;let b=document.getElementById('cl262b');if(b&&!b.dataset.d)return;
+ if(!b){b=document.createElement('div');b.id='cl262b';b.dataset.d='1';b.setAttribute('role','status');document.body.appendChild(b)}
+ b.innerHTML=`<span>🧹 הבדיקה היומית: ${r.free.length} קבצים ישנים שאף אחד לא משתמש בהם</span><span class="cl262bb"><button type="button" data-cl262>🧹 לנקות</button><button type="button" class="cl262no" data-cl262no>אחר כך</button></span>`}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-cl262no]');if(!b)return;const x=document.getElementById('cl262b');if(x)x.remove()});
+setTimeout(()=>daily().catch(()=>{}),60000);setInterval(()=>daily().catch(()=>{}),60*60e3);
 setTimeout(()=>banner().catch(()=>{}),8000);setInterval(()=>banner().catch(()=>{}),10*60e3);
 // admin panel: a button with the tools
 setInterval(()=>{const d=document.querySelector('.ad172h');if(!d||d.querySelector('[data-cl262]'))return;d.insertAdjacentHTML('beforeend','<button type="button" class="cl262a" data-cl262>🧹 לפנות מקום לתמונות</button>')},1500);

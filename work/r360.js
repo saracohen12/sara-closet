@@ -373,10 +373,10 @@ async function paint(cv,v,s,pad){s=headOf(s);const bg=s.bg||'';const hw=whole(s.
  const miss=ms.some(m=>!m);if(cv._pg!==my)return !miss;if(cv.width!=BW||cv.height!=BH+pt+pb){cv.width=BW;cv.height=BH+pt+pb}const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);g.drawImage(oc,0,0);
  if(pad){if(miss)again(cv,v,s,pad,my);else cv._rt=0}return !miss}   // a layer missing: not kept as a finished picture (frames, thumbs), the stage tries again
 const JYT={},JYN={neck:'📿 שרשרת',ears:'✨ עגילים',wrist:'⌚ צמיד',belt:'➰ חגורה'};
-function paintJY(){if(!dlg)return;const w=dlg.querySelector('.r3jy');if(!w)return;const L=[];
+function paintJY(){if(!dlg)return;const W=[...dlg.querySelectorAll('.r3jy')];if(!W.length)return;const L=[];
  Object.keys(ST.on||{}).forEach(k=>{const id=KEYOF[k];if(!ST.on[k]||!id||!JYS.includes(SLOT[k])||L.some(x=>x[0]==id&&x[1]==SLOT[k]))return;L.push([id,SLOT[k]])});
- w.hidden=!L.length;w.innerHTML=L.length?'<b class="r3jyh">גובה התכשיט <small>מזיזים קצת למעלה או למטה, בכל הזוויות</small></b>'+L.map(([id,sl])=>{const v=jyOf(id,sl),a=`data-id="${esc(id)}" data-sl="${sl}"`;
-  return `<div class="r3jyr"><span>${JYN[sl]} <small>${esc(nm(id).split(' ').slice(0,3).join(' '))}</small></span><button type="button" ${a} data-jy="-3" aria-label="להעלות">⬆ למעלה</button><button type="button" ${a} data-jy="3" aria-label="להוריד">⬇ למטה</button>${v?`<button type="button" ${a} data-jy="0" aria-label="למקום המקורי">↺</button>`:''}</div>`}).join(''):''}
+ const H=L.length?'<b class="r3jyh">גובה התכשיט <small>מזיזים קצת למעלה או למטה, בכל הזוויות</small></b>'+L.map(([id,sl])=>{const v=jyOf(id,sl),a=`data-id="${esc(id)}" data-sl="${sl}"`;
+  return `<div class="r3jyr"><span>${JYN[sl]} <small>${esc(nm(id).split(' ').slice(0,3).join(' '))}</small></span><button type="button" ${a} data-jy="-3" aria-label="להעלות">⬆ למעלה</button><button type="button" ${a} data-jy="3" aria-label="להוריד">⬇ למטה</button>${v?`<button type="button" ${a} data-jy="0" aria-label="למקום המקורי">↺</button>`:''}</div>`}).join(''):'';W.forEach(w=>{w.hidden=!L.length;w.innerHTML=H})}
 function wornIds(s){const ids=[];if(s.head&&KEYOF[s.head])ids.push(KEYOF[s.head]);if(/^yt/.test(s.head||'')&&s.tf){const t=KEYOF[s.tf]||(D[s.tf]?s.tf:'');if(t&&!ids.includes(t))ids.push(t)}Object.keys(s.on||{}).forEach(k=>{const id=KEYOF[k];if(s.on[k]&&id&&!ids.includes(id))ids.push(id)});return ids}
 function wearing(s){const a=wornIds(s).map(nm);if(s.head=='w')a.unshift('הפאה');const n=k=>STY[k]&&STY[k].n;if(n(s.head))a.unshift(n(s.head));if(n(s.mk))a.push('איפור: '+n(s.mk));return a.join(' · ')}
 
@@ -425,6 +425,7 @@ function build(){
   <div class="r3miss" hidden></div>
   <div class="r3ctl"><button type="button" class="r3prev" aria-label="זווית קודמת">→</button><div class="r3dots" role="group" aria-label="זוויות"></div><button type="button" class="r3next" aria-label="זווית הבאה">←</button></div>
   <div class="r3ctl r3ctl2"><span class="r3ang" aria-live="polite">חזית</span><button type="button" class="r3play">▶ סיבוב</button><button type="button" class="r3dl" aria-label="תמונה לשליחה בוואטסאפ או לשמירה">📲 לשתף</button></div>
+  <div class="r3jy r3jyo" hidden></div>
  </div>
  <div class="r3side" role="region" aria-label="מה לובשים">
   <div class="r3blk r3now"><h3>לובשת עכשיו <small class="r3cnt"></small></h3>
@@ -462,9 +463,9 @@ function build(){
  dlg.querySelector('.r3wb input').onchange=e=>{ST.wb=e.target.checked?1:0;keep();redraw()};
  dlg.querySelector('.r3tk input').onchange=e=>{ST.tuck=e.target.checked?1:0;keep();redraw()};
  dlg.querySelector('.r3un input').onchange=e=>{ST.under=e.target.checked?1:0;keep();redraw()};
- dlg.querySelector('.r3jy').onclick=e=>{const b=e.target.closest('button[data-jy]');if(!b)return;const id=b.dataset.id,sl=b.dataset.sl,d=+b.dataset.jy;
+ dlg.querySelectorAll('.r3jy').forEach(w=>w.onclick=e=>{const b=e.target.closest('button[data-jy]');if(!b)return;const id=b.dataset.id,sl=b.dataset.sl,d=+b.dataset.jy;
   const v=d?Math.max(-45,Math.min(45,jyOf(id,sl)+d)):0;JYL[id+'|'+sl]=v;paintJY();redraw();clearTimeout(JYT[id]);
-  JYT[id]=setTimeout(async()=>{const o={};JYS.forEach(x=>{const n=jyOf(id,x);if(n)o[x]=n});try{await putItem(id,{jy:Object.keys(o).length?o:''})}catch(er){(window.ERRS=window.ERRS||[]).push('v260 jy: '+(er&&er.message||er));(window.toast||(()=>{}))('לא נשמר. לנסות שוב')}},700)};
+  JYT[id]=setTimeout(async()=>{const o={};JYS.forEach(x=>{const n=jyOf(id,x);if(n)o[x]=n});try{await putItem(id,{jy:Object.keys(o).length?o:''})}catch(er){(window.ERRS=window.ERRS||[]).push('v260 jy: '+(er&&er.message||er));(window.toast||(()=>{}))('לא נשמר. לנסות שוב')}},700)});
  dlg.querySelector('.r3save').onclick=saveLook3;dlg.querySelector('.r3pin').onclick=()=>TODAY.pin();dlg.querySelector('.r3dl').onclick=share;
  dlg.querySelectorAll('.r3tabs button').forEach(b=>b.onclick=()=>{TAB=b.dataset.t;paintTabs()});
  const q=dlg.querySelector('.r3q');q.addEventListener('input',()=>{Q=q.value.trim();SHOWN=60;paintGrid()});
