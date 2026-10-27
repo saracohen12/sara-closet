@@ -80,6 +80,9 @@ function styles(list){try{for(const c in FRM)if(c[0]=='#')delete FRM[c];for(cons
  try{paintHeads();redraw()}catch(_){}
  coverThumb().then(u=>{if(u)document.querySelectorAll('[data-zh="c"] img').forEach(i=>i.src=u)}).catch(()=>{})}
 const styList=set=>Object.keys(STY).filter(k=>!set||STY[k].set==set).sort((a,b)=>STY[a].t-STY[b].t);
+// v238: ties and hairstyles in her order (⭐ first, then the last picked) – sty199 window.STYORD
+const ordSty=set=>{const L=styList(set),O=window.STYORD;if(!O)return L;try{return O.sort(set,L,k=>O.unit(STY[k].id))}catch(_){return L}};
+const recSty=k=>{try{const O=window.STYORD,st=STY[k];if(O&&st&&(st.set=='tie'||st.set=='hair'))O.rec(st.set,O.unit(st.id))}catch(_){}};
 // v227: makeup groups = the groups of her prompts (doc.p 'm:day:3', or the same name), the rest is "שלי"; hidden groups are kept on this device
 const mkHid=()=>{try{return new Set(JSON.parse(localStorage.getItem('mkc227')||'[]'))}catch(_){return new Set()}};
 function mkGroups(ms){const P=window.STYP,C=P&&P.MKC||[],by={};
@@ -444,7 +447,7 @@ function build(){
   if(t.dataset.cat){CAT=t.dataset.cat;SHOWN=60;paintGrid();return}
   if(t.dataset.it){const id=t.dataset.it;if(coverTie(id)){if(/^yt/.test(ST.head)&&tfId()==id){ST.head='c';ST.tf=''}else wearCover(id);keep();redraw();return}if(isReady(id)){wearItem(id);keep();redraw()}else make(id);return}
   if(t.dataset.off){const o=t.dataset.off;if(o=='w')ST.head='c';else if(o=='yh')ST.head='w';else if(o=='yt')ST.head=ST.tf&&(ST.tf=='c'||KEYOF[ST.tf])?ST.tf:'c';else if(o=='ym')ST.mk='';else if(o==tfId()&&/^yt/.test(ST.head)){ST.head='c';ST.tf=''}else takeOff(o);keep();redraw();return}
-  if(t.dataset.syh!=null){ST.head=t.dataset.syh||'w';keep();redraw();return}
+  if(t.dataset.syh!=null){if(t.dataset.syh)recSty(t.dataset.syh);ST.head=t.dataset.syh||'w';keep();redraw();return}
   if(t.dataset.sytfm!=null){SCALL=!SCALL;paintSty();return}
   if(t.dataset.t228s!=null){const [id,i]=t.dataset.t228s.split('|');if(window.tie228)tie228.set(id,+i).then(ok=>{if(ok&&READY[id]){ST.head=READY[id].k[0];ST.tf='';keep();redraw()}});return}
   if(t.dataset.sytf!=null){const id=t.dataset.sytf,k=/^yt/.test(ST.head)?ST.head:defTie();
@@ -455,7 +458,7 @@ function build(){
   if(t.dataset.r3cam!=null){ST.cam=t.dataset.r3cam;keep();redraw();return}   // not data-cam: imgup.js takes that one for the camera
   if(t.dataset.bg!=null){ST.bg=t.dataset.bg;keep();redraw();return}
   if(t.dataset.bgnew!=null){bgDlg();return}
-  if(t.dataset.syt!=null){const k=t.dataset.syt;if(!k){if(/^yt/.test(ST.head))ST.head=ST.tf&&(ST.tf=='c'||KEYOF[ST.tf])?ST.tf:'c'}
+  if(t.dataset.syt!=null){const k=t.dataset.syt;if(k)recSty(k);if(!k){if(/^yt/.test(ST.head))ST.head=ST.tf&&(ST.tf=='c'||KEYOF[ST.tf])?ST.tf:'c'}
    else{if(!/^yt/.test(ST.head)){ST.tf=ST.head=='w'||/^yh/.test(ST.head)?'c':ST.head;ST.tc=null}ST.head=k;try{localStorage.setItem('tie202',k)}catch(_){}if(!ST.tc){tfRGB(ST.tf).then(c=>{if(ST.head==k&&!ST.tc){ST.tc=c;keep();redraw()}})}
    const tid=tfId();if(tid&&D[tid]&&!READY[tid]&&typeof putItem=='function')putItem(tid,{tie:STY[k].id}).catch(()=>{})}keep();redraw();return}
   if(t.dataset.sytc!=null){const v=t.dataset.sytc,tid=tfId();if(v=='cover'){if(tid&&D[tid]){delete IRGB[tid];if(itOf(tid).tc&&typeof putItem=='function')putItem(tid,{tc:''}).catch(()=>{})}
@@ -478,7 +481,7 @@ const TIEC=[['לבן','246,244,239'],['שמנת','239,229,207'],['בז׳','217,1
 function paintSty(){const box=dlg&&dlg.querySelector('.r3styr');if(!box)return;
  const chip=(attr,k,name,on,src)=>`<button type="button" role="radio" aria-checked="${on}" ${attr}="${esc(k)}"><img alt="" ${src==null?`data-sth="${esc(k)}" src="${STH[k]||''}"`:`src="${src}"`}><span>${esc(name)}</span></button>`;
  const add=(set,t)=>`<button type="button" class="r3styadd" data-styopen="${set}" aria-label="${t}"><b aria-hidden="true">＋</b><span>עוד</span></button>`;
- const H=ST.head=='w'||/^yh/.test(ST.head),hs=styList('hair'),ts=styList('tie'),ms=styList('mk');let h='';
+ const H=ST.head=='w'||/^yh/.test(ST.head),hs=ordSty('hair'),ts=ordSty('tie'),ms=styList('mk');let h='';
  if(H&&hs.length)h+=`<span class="r3lbl">💇 תסרוקת</span><div class="r3heads r3sty" role="radiogroup" aria-label="תסרוקת">${chip('data-syh','','כמו שהיא',ST.head=='w','a8/t_w.webp'+V)}${hs.map(k=>chip('data-syh',k,STY[k].n,ST.head==k)).join('')}${add('hair','להוסיף תסרוקת')}</div>`;
  // v204 (Sara 11:46 "גם שם זה קטן, תגדילי, וזה גם מתגלגל ... בצבע מטפחת, אני לא רוצה ... אני רוצה ... אחת המטפחות שנמצאות לי"): big tiles that wrap,
  // and instead of colours: her own scarves – the tie takes the colour of the one she picks; the exact one (with its print) is the 🎯 prompt
@@ -742,7 +745,7 @@ function fold221(){const side=dlg.querySelector('.r3side');if(!side)return;let O
   see.hidden=false;clearTimeout(st);st=setTimeout(()=>see.hidden=true,6000)});
  side.addEventListener('keydown',e=>{const l=e.target.closest('.r3fh');if(l&&(e.key=='Enter'||e.key==' ')){e.preventDefault();tog(l)}});
  let q=0;new MutationObserver(()=>{if(!q)q=requestAnimationFrame(()=>{q=0;apply()})}).observe(side,{childList:true,subtree:true});apply()}
-function open(){if(!dlg){build();fold221()}
+function open(){try{window.STYORD&&STYORD.freeze()}catch(_){}if(!dlg){build();fold221()}
  document.querySelectorAll('dialog[open]').forEach(d=>{if(d!==dlg&&d.id!='r3mk')try{d.close()}catch(_){}});
  if(!dlg.open){dlg.showModal();document.documentElement.classList.add('r3on')}paintCats();paintTabs();paintRoom();paintMiss();big.show(0);
  if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!document.documentElement.dataset.still&&!sessionStorage.getItem('r3spun')){sessionStorage.setItem('r3spun',1);setTimeout(()=>big.play(true),400)}}
@@ -818,7 +821,33 @@ try{if(typeof albumHTML=='function'){const _al=albumHTML;albumHTML=async functio
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-pin185],[data-pin185g]');if(!b)return;e.preventDefault();e.stopPropagation();
  if(b.dataset.pin185!=null)TODAY.pinLook('m:'+b.dataset.pin185);else{let L=null;try{L=GEN[+b.dataset.pin185g]}catch(_){}if(L)TODAY.pinIds(Object.values(L),'הלוק')}},true);
 
-window.R360={dbgFrames:(h,mk,on,raw)=>frames8("#dbg|"+h+"|"+mk+"|"+JSON.stringify(on||{})+(raw?"r":""),Object.assign(clone(DEF),{on:on||{},bg:"",head:h,mk:mk||"",tc:null,rawHead:raw?1:0})),open,close,make,prompts,openWith,styCard,styFace,styFrames,headFrames,Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
+// v238 (Sara 27/10 10:00 "פותחת את הקשירות ולוקח הרבה זמן עד שהן עולות"): every picture drawn for a style (8 angles, cards, chips) is kept on her phone
+// (IndexedDB, per site version and per the exact layers it was drawn from), so the next time it opens at once; cards first draw only the front angle.
+const KV=(()=>{let db=null;const op=()=>db||(db=new Promise(r=>{try{const q=indexedDB.open('r360c',1);q.onupgradeneeded=()=>{try{q.result.createObjectStore('k')}catch(_){}};q.onsuccess=()=>r(q.result);q.onerror=()=>r(null);q.onblocked=()=>r(null)}catch(_){r(null)}}));
+ const tx=async(m,f)=>{const d=await op();if(!d)return null;return new Promise(r=>{try{const t=d.transaction('k',m),q=f(t.objectStore('k'));t.oncomplete=()=>r(q&&q.result);t.onerror=t.onabort=()=>r(null)}catch(_){r(null)}})};
+ return {get:k=>tx('readonly',st=>st.get(k)),put:(k,v)=>tx('readwrite',st=>st.put(v,k)),
+  tidy:p=>tx('readwrite',st=>{const q=st.openKeyCursor?st.openKeyCursor():st.openCursor();q.onsuccess=()=>{const c=q.result;if(!c)return;if(!String(c.key).startsWith(p))st.delete(c.key);c.continue()};return null})}})();
+const KVV=String(window.VER||'')+'|';
+const sig8=s=>[s.head,s.mk,defTie()].filter(Boolean).map(k=>k+':'+(DYN[k+'1']||'')+(DYN['z'+String(k).slice(1)+'1']||'')).join(',')+'|'+(s.tc?s.tc.join(','):'');
+const pkey=(t,ck,s)=>KVV+t+'|'+ck+'|'+sig8(s);
+const PQ=new Map(),FR0={};
+{const f8=frames8;frames8=function(ck,s){if(FRM[ck])return Promise.resolve(FRM[ck]);const q='f'+ck;if(PQ.has(q))return PQ.get(q);const kk=pkey('f',ck,s);
+  const p=KV.get(kk).then(v=>Array.isArray(v)&&v.length==8?(FRM[ck]=v):f8(ck,s).then(F=>{if(F&&F.length==8)KV.put(kk,F);return F})).catch(()=>f8(ck,s)).finally(()=>PQ.delete(q));PQ.set(q,p);return p}}
+{const fc=styCard;styCard=function(k,o){o=o||{};if(k&&!STY[k])return Promise.resolve('');const ck=[k||'base:'+(o.set||'tie'),o.all?'all':o.one?'one':'',o.rgb?o.rgb.join(','):''].join('|');if(CARD[ck])return Promise.resolve(CARD[ck]);
+  const q='c'+ck;if(PQ.has(q))return PQ.get(q);const kk=pkey('c',ck,{head:k,mk:'',tc:o.rgb});
+  const p=KV.get(kk).then(v=>typeof v=='string'&&v?(CARD[ck]=v):fc(k,o).then(u=>{if(u)KV.put(kk,u);return u})).catch(()=>fc(k,o)).finally(()=>PQ.delete(q));PQ.set(q,p);return p}}
+{const ft=styThumb;styThumb=function(k,rgb){const ck=rgb?k+'|'+rgb.join(','):k;if(STH[ck])return Promise.resolve(STH[ck]);const st=STY[k];if(!st)return Promise.resolve('');
+  const q='t'+ck;if(PQ.has(q))return PQ.get(q);const kk=pkey('t',ck+'|'+(st.cu||''),{head:k,mk:'',tc:st.set=='tie'?(rgb||ST.tc||GREY):null});
+  const p=KV.get(kk).then(v=>typeof v=='string'&&v?(STH[ck]=v):ft(k,rgb).then(u=>{if(u)KV.put(kk,u);return u})).catch(()=>ft(k,rgb)).finally(()=>PQ.delete(q));PQ.set(q,p);return p}}
+// the front angle alone: what a card shows until she turns it
+function styFrame0(k,o){o=o||{};const st=STY[k];if(!st)return Promise.resolve('');const hk=st.set=='mk'?hairHead():k,ck=k+'|'+(o.rgb?o.rgb.join(','):'')+(st.set=='mk'?'|'+hk:'');
+ if(FRM[ck])return Promise.resolve(FRM[ck][0]);if(FR0[ck])return FR0[ck];
+ const s=Object.assign(clone(DEF),{on:{},bg:'',head:hk,mk:st.set=='mk'?k:'',tc:st.set=='tie'?(o.rgb||GREY):null}),kk=pkey('f',ck,s),k0=pkey('f0',ck,s);
+ return FR0[ck]=(async()=>{const a=await KV.get(kk);if(Array.isArray(a)&&a.length==8){FRM[ck]=a;return a[0]}const b=await KV.get(k0);if(typeof b=='string'&&b)return b;
+  const c=document.createElement('canvas');if(!await paint(c,0,s))return '';const f=document.createElement('canvas');f.width=176;f.height=240;f.getContext('2d').drawImage(c,70,0,220,300,0,0,176,240);
+  const u=f.toDataURL('image/jpeg',.84);KV.put(k0,u);return u})().catch(()=>'').then(u=>{if(!u)delete FR0[ck];return u})}
+setTimeout(()=>{try{KV.tidy(KVV)}catch(_){}},9000);   // pictures of older versions go
+window.R360={dbgFrames:(h,mk,on,raw)=>frames8("#dbg|"+h+"|"+mk+"|"+JSON.stringify(on||{})+(raw?"r":""),Object.assign(clone(DEF),{on:on||{},bg:"",head:h,mk:mk||"",tc:null,rawHead:raw?1:0})),open,close,make,prompts,openWith,styCard,styFace,styFrames,styFrame0,headFrames,restyle:()=>{try{if(dlg&&dlg.open)paintSty()}catch(_){}},Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
  ready:()=>Object.keys(READY).filter(id=>D[id]),isReady,kind:kindOf,sync:resync,dyn:id=>!!(READY[id]&&READY[id].dyn),names:NAMES,show:v=>{if(big){big.stop();big.show(v)}},
  still:async(id,v)=>{if(!READY[id])return null;const s=stateFrom([id],{head:ST.head=='w'?'w':'c',cam:ST.cam,bg:''});
   if((await Promise.all(layersFor(v||0,s).map(l=>im(l.s)))).some(m=>!m))return null;   // a layer that did not load would show the bare doll

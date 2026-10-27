@@ -69,7 +69,7 @@ function txs(id){const L=(Array.isArray(itx(id).tx)?itx(id).tx:[]).filter(x=>x&&
 const isOn=(id,x)=>{const c=curTx(id);return !!c&&c.L[0]==x.L[0]};
 const part=x=>({s:'head',k:'tiex',L:x.L,src:x.src||'',t:x.t||Date.now(),cv:x.cv||1,sh:x.sh||null});
 const keyOf=id=>'u'+String(id).replace(/[^A-Za-z0-9]/g,'');
-async function setTx(id,i,quiet){const L=txs(id),x=L[i];if(!x)return false;
+async function setTx(id,i,quiet){const L=txs(id),x=L[i];if(!x)return false;try{if(x.p&&window.STYORD)STYORD.rec('tie',x.p)}catch(_){}
  try{await putItem(id,{a8:[part(x)],tx:L})}catch(e){ERR('settx',e);toast_('לא הצלחתי לשמור. לנסות שוב');return false}
  try{R().sync()}catch(_){}if(!quiet)toast_(`✓ ${x.n} – על האווטאר`);return true}
 async function delTx(id,i){const L=txs(id),x=L[i];if(!x)return;const on=isOn(id,x),nu=L.filter((_,j)=>j!=i);
@@ -122,24 +122,24 @@ function pk(){if(PK)return PK;PK=document.createElement('dialog');PK.id='tie202'
   if(d.sty202){PK.close();try{S().open('tie')}catch(_){}}});return PK}
 const R360T=()=>window.R360&&R360.today||null;
 function paintPK(){if(!PK||!PK.open||!PID)return;const y=PK.scrollTop;open(PID).then(()=>{PK.scrollTop=y})}
-async function open(id){PID=id;pk();const p=P(),T=p?p.TIES:[],L=txs(id),lib=list('tie');let home='';try{home=R360T().head()}catch(_){}
+async function open(id){PID=id;pk();const p=P(),T=p?p.TIES:[],L=txs(id),lib=list('tie'),O=window.STYORD,rk=u=>O?O.rank('tie',u):0,TI=T.map((t,i)=>i).sort((a,b)=>rk('w'+a)-rk('w'+b)||a-b),LI=L.map((x,i)=>i).sort((a,b)=>rk(L[a].p)-rk(L[b].p)||a-b);   // v238: her orderlet home='';try{home=R360T().head()}catch(_){}
  const libImg=i=>{const x=lib.find(y=>y.p=='w'+i);return x?key(x):''};
  const made=i=>L.find(x=>x.p=='w'+i||x.n==T[i][0]);
  PK.innerHTML=`<div class="mk"><div class="mkh"><h3 id="tie202t">🧕 הקשירות של ${es(nm(id).split(' ').slice(0,5).join(' '))}</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
   ${L.length?`<h4 class="t228h">הקשירות שהכנת לכיסוי הזה <small>${L.length}</small></h4><p class="tie202p">לוחצים על קשירה והיא זו שעל האווטאר. 🏠 שמה אותה בדף הראשי.</p>
-  <div class="t228g">${L.map((x,i)=>{const on=isOn(id,x);return `<div class="t228c${on?' on':''}"><button type="button" class="t228i" data-t228on="${i}" aria-pressed="${on}"><img alt="" data-t228th="${es(x.L[0])}" src="/_blob/${es(x.L[0])}"><span>${es(x.n)}</span>${on?'<b>✓ על האווטאר</b>':''}${on&&home==keyOf(id)?'<b class="t228hm">🏠 בדף הראשי</b>':''}</button>
+  <div class="t228g">${LI.map(i=>[L[i],i]).map(([x,i])=>{const on=isOn(id,x);return `<div class="t228c${on?' on':''}"><button type="button" class="t228i" data-t228on="${i}" aria-pressed="${on}"><img alt="" data-t228th="${es(x.L[0])}" src="/_blob/${es(x.L[0])}"><span>${es(x.n)}</span>${on?'<b>✓ על האווטאר</b>':''}${on&&home==keyOf(id)?'<b class="t228hm">🏠 בדף הראשי</b>':''}</button>
    <div class="t228a"><button type="button" data-t228see="${i}">👀 עליי</button><button type="button" data-t228home="${i}">🏠 לדף הראשי</button><button type="button" data-t228del="${i}" aria-label="להסיר את ${es(x.n)}">🗑</button></div></div>`}).join('')}</div>`:''}
   <h4 class="t228h">➕ קשירה ${L.length?'נוספת':'ראשונה'} לכיסוי הזה</h4>
   <ol class="t228s"><li><b>⬇ שומרים</b> את התמונה של הכיסוי ואת הבובה (פעם אחת).<span class="mkb"><button type="button" data-tie202dl="photo">⬇ תמונת הכיסוי</button><button type="button" data-tie202dl="sheet">⬇ הבובה ב-8 זוויות</button></span></li>
    <li>בוחרים קשירה ברשימה ו<b>📋 מעתיקים</b> את הפרומפט שלה. ב-GPT, בשיחה חדשה: מצרפים את שתי התמונות ומדביקים.</li>
    <li><b>📤 מעלים</b> את מה ש-GPT החזיר באותה שורה. אפשר כמה קשירות לאותו כיסוי, כל אחת בשורה שלה.</li></ol>
-  <div class="t228l">${T.map((t,i)=>{const m=made(i),k=libImg(i);return `<div class="t228r${m?' done':''}">${k?`<img alt="" data-k="${es(k)}" src="">`:'<i aria-hidden="true">🧕</i>'}<div class="t228n"><b>${i+1}. ${es(t[0])}</b>${m?'<em>✓ כבר הכנת</em>':''}<small>${es(t[2]||'')}</small></div>
+  <div class="t228l">${TI.map(i=>[T[i],i]).map(([t,i])=>{const m=made(i),k=libImg(i);return `<div class="t228r${m?' done':''}">${k?`<img alt="" data-k="${es(k)}" src="">`:'<i aria-hidden="true">🧕</i>'}<div class="t228n"><b>${i+1}. ${es(t[0])}</b>${m?'<em>✓ כבר הכנת</em>':''}<small>${es(t[2]||'')}</small></div>
    <span class="mkb"><button type="button" data-t228cp="${i}">📋 פרומפט</button><button type="button" class="mkp" data-up188="${es(id)}" data-w="1" data-tx228="${i}">${m?'🔄 להחליף':'📤 להעלות'}</button></span></div>`}).join('')}</div></div>`;
  if(!PK.open)PK.showModal();thumbs();PKS=L.map(x=>x.n+(isOn(id,x)?'*':'')).join(',');
  PK.querySelectorAll('img[data-k]').forEach(i=>{try{R().styThumb(i.dataset.k).then(u=>{if(u)i.src=u})}catch(_){}})}
 // its own toast says what was saved
 {const _bp=window.beforePut;if(typeof _bp=='function')beforePut=function(id,patch){const k=patch&&Object.keys(patch);if(k&&k.length&&k.every(x=>x=='tie'||x=='tc'||x=='tx'||x=='a8'||x=='a8up'))return;return _bp.apply(this,arguments)}}
-window.tie202open=id=>open(id).catch(e=>ERR('open',e));
+window.tie202open=id=>{try{window.STYORD&&STYORD.freeze()}catch(_){}return open(id).catch(e=>ERR('open',e))};
 window.tie228={txs,set:async(id,i)=>{const ok=await setTx(id,i);barBtn();return ok}};
 // the tie's picture is a whole 8-angle frame with a small head: show the head itself, cropped to what was cut
 const TH={};
@@ -153,7 +153,7 @@ function thumbs(){document.querySelectorAll('img[data-t228th]').forEach(i=>{cons
 let PKS=null;function pkTick(){if(!PK||!PK.open||!PID||PKS===null)return;const s=txs(PID).map(x=>x.n+(isOn(PID,x)?'*':'')).join(',');if(s!=PKS){PKS=s;paintPK()}}   // a tie she just uploaded shows up
 
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-sty202],[data-tie202]');if(!t||t.closest('#tie202'))return;e.preventDefault();e.stopPropagation();
- if(t.dataset.tie202){open(t.dataset.tie202).catch(er=>ERR('open',er));return}
+ if(t.dataset.tie202){try{window.STYORD&&STYORD.freeze()}catch(_){}open(t.dataset.tie202).catch(er=>ERR('open',er));return}
  const c=document.getElementById('cl163');if(c&&c.open&&c.contains(t))c.close();try{S().open(t.dataset.sty202)}catch(er){ERR('lib',er)}},true);
 function tick(){try{home();closet();covers();barBtn();pkTick();thumbs()}catch(e){ERR('tick',e)}}
 if(typeof afterOpen=='function'){const _ao=afterOpen;afterOpen=function(){const r=_ao.apply(this,arguments);setTimeout(barBtn,0);setTimeout(barBtn,350);return r}}

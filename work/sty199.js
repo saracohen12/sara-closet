@@ -29,7 +29,21 @@ function push(){try{R()&&R().styles(LIST.filter(x=>!gone(x)))}catch(e){ERR('reg'
 const mine=set=>LIST.filter(x=>x.set==set);
 const seen=set=>mine(set).filter(x=>!gone(x));
 (async()=>{try{const db=await window.claude?.use?.('db');if(!db)return;db.collection('stylehide').onSnapshot(sn=>{const d=sn.docs.find(y=>y.id=='all'),v=d&&d.data();
-  HID=new Set(v&&Array.isArray(v.k)?v.k:[]);push();paint()},e=>ERR('hsnap',e))}catch(e){ERR('hdb',e)}})();
+  HID=new Set(v&&Array.isArray(v.k)?v.k:[]);const od=sn.docs.find(y=>y.id=='ord'),ov=od&&od.data();if(ov&&!ORDT){ORDSETS.forEach(t=>ORD[t]=ordOk(ov[t]));if(!RS.tie.length&&!RS.hair.length)freeze();try{R()&&R().restyle&&R().restyle()}catch(_){}}push();paint()},e=>ERR('hsnap',e))}catch(e){ERR('hdb',e)}})();
+// v238 (Sara 27/10 10:00 "קשירות שאני יותר אוהבת, להעלות אותן קדימה" + 10:00 "הקשירות האחרונות שנבחרו – בהתחלה"): ties and hairstyles in her order –
+// ⭐ favourites first (she moves them ⬆), then the last ones she picked, then the rest. db 'stylehide'/'ord' {tie:{f:[],r:[]},hair:{f:[],r:[]}}; units are hidK keys.
+const ORDSETS=['tie','hair'];let ORD={tie:{f:[],r:[]},hair:{f:[],r:[]}},RS={tie:[],hair:[]},ORDT=null;
+const ordOk=v=>v&&typeof v=='object'?{f:Array.isArray(v.f)?v.f.slice(0,60):[],r:Array.isArray(v.r)?v.r.slice(0,8):[]}:{f:[],r:[]};
+function freeze(){ORDSETS.forEach(t=>RS[t]=ORD[t].r.slice())}   // the recent order is taken when a screen opens, so a pick doesn't jump under her finger
+function rank(set,u){const o=ORD[set];if(!o||!u)return 1e4;const f=o.f.indexOf(u);if(f>=0)return f;const r=(RS[set]||[]).indexOf(u);return r>=0?100+r:1e4}
+const unitOf=x=>x?(x.p&&presets(x.set).some(pr=>pr.k==x.p)?x.p:'id:'+x.id):'';
+const ordSort=(set,arr,uf)=>arr.map((e,i)=>[e,i]).sort((a,b)=>(rank(set,uf(a[0]))-rank(set,uf(b[0])))||(a[1]-b[1])).map(z=>z[0]);
+function ordSave(){clearTimeout(ORDT);ORDT=setTimeout(async()=>{try{if(DB)await DB.collection('stylehide').doc('ord').set(Object.assign({t:Date.now()},ORD))}catch(e){ERR('ord',e)}},600)}
+function ordChanged(){ordSave();try{R()&&R().restyle&&R().restyle()}catch(_){}}
+function fav(set,u){const o=ORD[set];if(!o||!u)return;const i=o.f.indexOf(u);if(i>=0)o.f.splice(i,1);else o.f.push(u);ordChanged();paint()}
+function favUp(set,u){const o=ORD[set];const i=o?o.f.indexOf(u):-1;if(i<=0)return;o.f.splice(i,1);o.f.splice(i-1,0,u);ordChanged();paint()}
+function rec(set,u){const o=ORD[set];if(!o||!u)return;o.r=[u,...o.r.filter(y=>y!=u)].slice(0,8);ordSave()}
+window.STYORD={rank,freeze,rec,unit:id=>unitOf(LIST.find(x=>x.id==id)),sort:ordSort};
 async function hide(k,on){if(!k)return;const was=new Set(HID);if(on)HID.add(k);else HID.delete(k);push();paint();
  try{if(!DB)throw new Error('db');await DB.collection('stylehide').doc('all').set({k:[...HID],t:Date.now()})}catch(e){ERR('hide',e);HID=was;push();paint();toast_('✗ '+ERRT.x);return false}
  return true}
@@ -61,7 +75,7 @@ function el(){if(DL)return DL;DL=document.createElement('dialog');DL.id='sty199'
  DL.addEventListener('pointerover',e=>{if(e.pointerType!='mouse'||still())return;const b=e.target.closest('.syrot');if(b&&!b._t&&!(e.relatedTarget&&b.contains(e.relatedTarget)))turn(b,true)});
  DL.addEventListener('pointerout',e=>{if(e.pointerType!='mouse')return;const b=e.target.closest('.syrot');if(b&&!(e.relatedTarget&&b.contains(e.relatedTarget)))stopRot(b,b._F)});
  DL.addEventListener('cancel',e=>{e.preventDefault();DL.close()});return DL}
-function open(tab){if(tab&&SETS.some(s=>s[0]==tab))TAB=tab;el();ED='';ADD=false;paint();if(!DL.open)DL.showModal();DL.scrollTop=0}
+function open(tab){if(tab&&SETS.some(s=>s[0]==tab))TAB=tab;freeze();el();ED='';ADD=false;paint();if(!DL.open)DL.showModal();DL.scrollTop=0}
 const prompt=set=>{const p=P();if(!p)return '';const n=NAME[set].trim();return set=='hair'?p.hair(n):set=='tie'?p.tie(n):p.mkBoth?p.mkBoth(n,DESC.trim()):p.faceW?p.faceW(n,DESC.trim()):p.face(NUM)};   // v205: a new makeup from her words, only the doll
 function prompt2(set,pr){const p=P();if(!p||!pr)return '';return set=='tie'?p.tieW(pr.n,pr.d,pr.he):set=='hair'?p.hairW(pr.n,pr.d,pr.he,pr.sp):p.mkBoth?p.mkBoth(pr.n,pr.d||pr.sub):p.faceW?p.faceW(pr.n,pr.d||pr.sub):p.face(pr.no)}   // v205: makeup from the words, only the doll attached
 function fill(){if(!DL)return;DL.querySelectorAll('textarea[data-syp]').forEach(t=>t.value=prompt(t.dataset.syp))}
@@ -86,7 +100,8 @@ function card(set,pr,x){const k=pr?pr.k:x.id,b=busy()&&PROC.k==k,title=x?x.n:pr.
  const sub=pr&&pr.sub?pr.sub:!pr&&oldTie(x)?'מהרשימה הקודמת':'',hk=hidK(pr,x);
  // v207 (Sara 13:47 "אני רוצה גם לבדוק שהפרומט של התסרוקות ממש טובות וברורות"): every preset card can show its whole prompt
  const howT=pr?`<details class="sycd"><summary>${set=='tie'?'איך קושרים':set=='hair'?'איך זה נראה':'הפרומפט'}</summary>${pr.he?`<p>${es(pr.he)}</p>`:''}<button type="button" class="syread" data-syread="${es(pr.k)}">📄 לקרוא את כל הפרומפט</button></details>`:'';
- return `<div class="syc${x?' up':''}${b?' busy':''}">${pic}<button type="button" class="syrm" data-syrm="${es(hk)}" aria-label="להסיר מהרשימה: ${es(title)}" title="להסיר"${b?' disabled':''}>🗑</button><b class="sycn">${pr?pr.no+'. ':''}${es(title)}</b>${sub?`<small class="sycs">${es(sub)}</small>`:''}${howT}${x&&set=='mk'?cuRow(x):''}<span class="sycb">${btn}</span></div>`}
+ return `<div class="syc${x?' up':''}${b?' busy':''}">${pic}<button type="button" class="syrm" data-syrm="${es(hk)}" aria-label="להסיר מהרשימה: ${es(title)}" title="להסיר"${b?' disabled':''}>🗑</button>${ORD[set]?favBtns(set,hk,title):''}<b class="sycn">${pr?pr.no+'. ':''}${es(title)}</b>${sub?`<small class="sycs">${es(sub)}</small>`:''}${howT}${x&&set=='mk'?cuRow(x):''}<span class="sycb">${btn}</span></div>`}
+function favBtns(set,u,title){const f=ORD[set].f,i=f.indexOf(u);return `<button type="button" class="syfav" data-syfav="${es(u)}" aria-pressed="${i>=0}" aria-label="${i>=0?'להוריד מהאהובות':'לאהובות, קדימה'}: ${es(title)}" title="${i>=0?'אהובה – להוריד':'לאהובות, קדימה'}">${i>=0?'⭐':'☆'}</button>${i>0?`<button type="button" class="syfu" data-syfu="${es(u)}" aria-label="להזיז קדימה: ${es(title)}" title="קדימה">⬆</button>`:''}`}
 // v206: what she removed, to bring back
 function hiddenList(set){const L=[];presets(set).forEach(pr=>{if(HID.has(pr.k))L.push({k:pr.k,n:(pr.no?pr.no+'. ':'')+pr.n,pic:!!doneOf(set,pr)})});
  mine(set).forEach(x=>{if(HID.has('id:'+x.id)&&!(x.p&&HID.has(x.p)))L.push({k:'id:'+x.id,n:x.n,pic:true})});return L}
@@ -94,7 +109,7 @@ function hiddenHTML(set){const L=hiddenList(set);if(!L.length)return '';
  return `<div class="syhid"><button type="button" class="syhidb" data-syhid aria-expanded="${SHOWH}">↩ מה שהסרתי <small>${L.length}</small></button>${SHOWH?`<ul>${L.map(h=>`<li><span>${es(h.n)}${h.pic?' <small>· יש תמונה</small>':''}</span><button type="button" data-syback="${es(h.k)}">↩ להחזיר</button></li>`).join('')}</ul>`:''}</div>`}
 const addCard=set=>{const one=SET(set)[3];return `<button type="button" class="syc sycadd" data-syadd aria-expanded="${ADD}"><span class="sycim"><b aria-hidden="true">＋</b></span><b class="sycn">להוסיף ${one}</b><small class="sycs">${set=='mk'?'לפי מה שתכתבי':'לפי תמונה שלך'}</small></button>`};
 function how(set){const sheet='<button type="button" data-sydl="sheet">⬇ הבובה ב-8 זוויות</button>';
- if(set=='tie')return `<div class="syhow"><p><b>בכל קשירה:</b> 📋 מעתיקים, ב-GPT בשיחה חדשה מצרפים את הבובה ומדביקים, ואת מה שחזר 📤 מעלים באותה משבצת. מיד רואים אותה עלייך.</p><p><small>🗑 על דגם שלא אהבת – מסיר אותו מהרשימה. אפשר להחזיר ב"↩ מה שהסרתי" למטה.</small></p><span class="mkb">${sheet}</span></div>`;
+ if(set=='tie')return `<div class="syhow"><p><b>בכל קשירה:</b> 📋 מעתיקים, ב-GPT בשיחה חדשה מצרפים את הבובה ומדביקים, ואת מה שחזר 📤 מעלים באותה משבצת. מיד רואים אותה עלייך.</p><p><small>☆ על קשירה שאת אוהבת – היא עוברת להתחלה (גם בסטודיו), ו-⬆ מזיז אותה עוד קדימה. אחרי האהובות באות הקשירות שבחרת לאחרונה. 🗑 מסיר דגם מהרשימה, ו"↩ מה שהסרתי" למטה מחזיר.</small></p><span class="mkb">${sheet}</span></div>`;
  if(set=='hair')return `<div class="syhow"><p><b>בכל תסרוקת:</b> 📋 מעתיקים, ב-GPT בשיחה חדשה מצרפים את הפאה שלך ואת הבובה ומדביקים, ואת מה שחזר 📤 מעלים באותה משבצת.</p><p><small>🗑 על דגם שלא אהבת – מסיר אותו מהרשימה. אפשר להחזיר ב"↩ מה שהסרתי" למטה.</small></p><span class="mkb">${sheet}<button type="button" data-sydl="wig">⬇ הפאה שלי</button></span></div>`;
  // v215 (Sara 16:20 "אני לא הבנתי מה אני אמורה לעלות פה ... תעשה לי סדר"): three steps, what she sees after
  return `<div class="syhow"><p><b>איך עושים איפור</b> (פעם אחת לכל איפור):</p>
@@ -120,9 +135,11 @@ function grid(set,list){return `<div class="syg2${set=='mk'?' mk2':''}">${list.j
 function body(set){const ex=extras(set).map(x=>card(set,null,x));
  // v207: her hairstyles in her 3 groups
  const p0=P();if(set=='hair'&&p0&&p0.HAIRG){const G=p0.HAIRG,sh=shown(set);
-  return G.map(([from,t],gi)=>{const to=gi+1<G.length?G[gi+1][0]:1e9,L=sh.filter(pr=>pr.no-1>=from&&pr.no-1<to);
+  return G.map(([from,t],gi)=>{const to=gi+1<G.length?G[gi+1][0]:1e9,L=ordSort(set,sh.filter(pr=>pr.no-1>=from&&pr.no-1<to),pr=>pr.k);
    return L.length?`<section class="sycat"><h4>${es(t)} <small>${L.length}</small></h4>${grid(set,L.map(pr=>card(set,pr,doneOf(set,pr))))}</section>`:''}).join('')
    +(ex.length?`<section class="sycat"><h4>שלי</h4>${grid(set,ex)}</section>`:'')+grid(set,[addCard(set)])+hiddenHTML(set)}
+ if(set=='tie'){const E=ordSort(set,[...shown(set).map(pr=>({pr,x:doneOf(set,pr)})),...extras(set).map(x=>({pr:null,x}))],e=>hidK(e.pr,e.x));   // v238: her order
+  return grid(set,[...E.map(e=>card(set,e.pr,e.x)),addCard(set)])+'<p class="sytip">הקשירות כאן בצבע אחד לדוגמה. על כיסוי היא בצבע של הכיסוי.</p>'+hiddenHTML(set)}
  if(set!='mk')return grid(set,[...shown(set).map(pr=>card(set,pr,doneOf(set,pr))),...ex,addCard(set)])+(set=='tie'?'<p class="sytip">הקשירות כאן בצבע אחד לדוגמה. על כיסוי היא נצבעת בצבע של הכיסוי.</p>':'')+hiddenHTML(set);
  const p=P();if(!p)return '';const all=shown('mk');
  const H=mkHid(),mineN=c=>all.filter(pr=>pr.c==c&&doneOf('mk',pr)).length;
@@ -137,7 +154,7 @@ function paint(){if(!DL)return;const set=TAB,y=DL.scrollTop,tt=DL.querySelector(
 function pics(root){const r=R();if(!r||!r.styCard)return;
  root.querySelectorAll('img[data-syc]').forEach(i=>{const k=i.dataset.syc;if(!k)return;const x=LIST.find(y=>key(y)==k);r.styCard(k,{rgb:x&&x.set=='tie'?LIBC:null}).then(u=>{if(u)i.src=u})});
  root.querySelectorAll('img[data-sycb]').forEach(i=>r.styCard('',{set:i.dataset.sycb,one:i.dataset.sycb!='mk'}).then(u=>{if(u)i.src=u}));
- root.querySelectorAll('img[data-syf]').forEach(i=>{const k=i.dataset.syf;if(!k||!r.styFrames)return;const x=LIST.find(y=>key(y)==k);r.styFrames(k,{rgb:x&&x.set=='tie'?LIBC:null}).then(F=>{if(F[0])i.src=F[0]})});
+ root.querySelectorAll('img[data-syf]').forEach(i=>{const k=i.dataset.syf;if(!k||!r.styFrames)return;const x=LIST.find(y=>key(y)==k),o={rgb:x&&x.set=='tie'?LIBC:null};(r.styFrame0?r.styFrame0(k,o):r.styFrames(k,o).then(F=>F[0])).then(u=>{if(u&&!i.closest('.syrot')?._t)i.src=u})});   // v238: the front first, the other 7 when she turns it
  root.querySelectorAll('img[data-sycell]').forEach(i=>cell(i.dataset.sycell).then(u=>{if(u)i.src=u}));
  root.querySelectorAll('img[data-syface]').forEach(i=>{if(!r.styFace)return;r.styFace(i.dataset.syface,i.dataset.h,{big:i.dataset.big=='1'}).then(u=>{if(u)i.src=u;else{const f=i.closest('.syfc');if(f)f.hidden=true}})})}
 // one look's square out of the category grid (rows × columns as the step-1 prompt asks), a little inside so the lines and numbers stay out
@@ -231,7 +248,7 @@ async function run(set,fs,re,pre){if(PROC&&!PROC.err){toast_('רגע, עוד ג�
  const last=LIST.find(x=>x.id==done[done.length-1]);
  if(CU&&last){try{await cuUp(last.id,CU,true)}catch(e){ERR('cu',e)}}
  toast_(done.length>1?`✓ ${done.length} ${SET(set)[2]} על האווטאר`:`✓ ${the} על האווטאר${CU&&last&&last.cu?' והתקריב בכרטיס':''}`)}   // v204: no action – the toast's button reads "ביטול"
-function wear(id){const x=LIST.find(y=>y.id==id);if(!x)return;const k=key(x);if(!k)return;try{if(DL&&DL.open)DL.close();R().wearStyle(k)}catch(e){ERR('wear',e)}}
+function wear(id){const x=LIST.find(y=>y.id==id);if(!x)return;const k=key(x);if(!k)return;if(ORD[x.set])rec(x.set,unitOf(x));try{if(DL&&DL.open)DL.close();R().wearStyle(k)}catch(e){ERR('wear',e)}}
 // v215: the 8-angle sheet (its shape, and the white line between its two rows) vs. the close-up
 async function isSheet(f){const u=URL.createObjectURL(f);try{const m=await new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=u});
   const q=m.naturalWidth/m.naturalHeight;if(q<1.25||q>1.42)return false;const w=240,h=Math.round(w/q),c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(m,0,0,w,h);
@@ -257,6 +274,8 @@ async function del(id){const x=LIST.find(y=>y.id==id);if(!x||!DB)return;const ke
  toast_('נמחק',async()=>{try{await DB.collection('styles').doc(id).set(keep);if(!LIST.some(y=>y.id==id))LIST.push(Object.assign({},keep,{id}));LIST.sort((a,b)=>(a.t||0)-(b.t||0));push();paint()}catch(e){ERR('undo',e)}})}
 
 function click(e){if(e.target===DL)return DL.close();const b=e.target.closest('button');if(!b||!DL.contains(b))return;const d=b.dataset;
+ if(d.syfav!=null){fav(TAB,d.syfav);return}
+ if(d.syfu!=null){favUp(TAB,d.syfu);return}
  if(d.sycat!=null){const H=mkHid(),c=d.sycat;H.has(c)?H.delete(c):H.add(c);try{localStorage.setItem('mkc227',JSON.stringify([...H]))}catch(_){}paint();return}   // v227: a makeup group folds (the same groups fold in the studio)
  if(b.classList.contains('mkx'))return DL.close();
  if(d.sytab){TAB=d.sytab;ED='';ADD=false;SHOWH=false;PROC=PROC&&PROC.err?null:PROC;paint();DL.scrollTop=0;const t=DL.querySelector(`[data-sytab="${TAB}"]`);if(t)t.focus();return}
