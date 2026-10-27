@@ -247,7 +247,7 @@ function pick(set,re,pre,g){FSET=set;FRE=re||'';FPRE=pre||null;FG=g||'';if(!FI){
  FI.addEventListener('change',()=>{const fs=[...FI.files];FI.value='';if(!fs.length)return;if(FG)return grid1(FG,fs[0]).catch(e=>ERR('grid',e));run(FSET,fs,FRE,FPRE).catch(e=>ERR('run',e))})}FI.multiple=!g&&(set=='mk'||set=='hair'||!re&&!pre);FI.click()}
 // makeup step 1: the grid GPT returned for one category → every look of it shows its square (db 'stylegrid' {src}, one per category)
 async function grid1(c,f){let a=null;try{a=await claude.use('assets')}catch(_){}if(!a||!DB){PROC={err:ERRT[a?'db':'assets']};paint();return}
- toast_('שומרת את הרשת…');try{const src=(await put1(a,f)).id;await DB.collection('stylegrid').doc(c).set({src,t:Date.now()});MKG[c]=src;Object.keys(CELL).forEach(k=>{if(k.startsWith('m:'+c+':'))delete CELL[k]});paint();
+ toast_('שומרת את הרשת…');try{const src=(await put1(a,await slim272(f))).id;await DB.collection('stylegrid').doc(c).set({src,t:Date.now()});MKG[c]=src;Object.keys(CELL).forEach(k=>{if(k.startsWith('m:'+c+':'))delete CELL[k]});paint();
   const t=(P().MKC.find(x=>x[0]==c)||[])[1]||'';toast_(`✓ הרשת של ${t} באתר. עכשיו רואים כל איפור`);log('grid_ok',{c})}catch(e){ERR('grid',e);toast_('✗ '+ERRT.x)}}
 const ERRT={shape:'התמונה לא בצורה של הגיליון (2 שורות של 4 משבצות). מעלים את התמונה המלאה שחזרה מ-GPT, בלי לחתוך',
  empty:'לא מצאתי שינוי על הבובה. זו התמונה ש-GPT החזיר?',assets:'שמירת תמונות לא זמינה כאן. לפתוח את האתר ב-Chrome ולנסות שוב',db:'השמירה לא זמינה כאן. לפתוח את האתר ב-Chrome',x:'משהו השתבש. לנסות שוב'};
@@ -282,7 +282,7 @@ async function run(set,fs,re,pre){if(PROC&&!PROC.err){toast_('רגע, עוד ג�
   try{const r=await cut8.run(fs[i],KIND[set],v=>{PROC={v:v+1,i:i+1,n:fs.length,k:pk,n0:base};const s=DL&&DL.querySelector('.syst');if(s)s.outerHTML=status()});
    if(r.px.filter(x=>x>(set=='mk'?30:150)).length<(set=='mk'?1:5))throw Object.assign(new Error('empty'),{code:'empty'});
    PROC={v:9,i:i+1,n:fs.length,k:pk,n0:base};paint();
-   const src=(await put1(a,fs[i])).id,L=[];for(let v=0;v<8;v++)L.push(set!='mk'||r.px[v]>3?(await put1(a,await blobOf(r.views[v]))).id:'');
+   const src=(await put1(a,await slim272(fs[i]))).id,L=[];for(let v=0;v<8;v++)L.push(set!='mk'||r.px[v]>3?(await put1(a,await blobOf(r.views[v]))).id:'');
    let M=null;if(r.fab){M=[];for(let v=0;v<8;v++)M.push((await put1(a,await blobOf(r.fab[v]))).id)}
    const old=re&&LIST.find(x=>x.id==re);
    const n=old?old.n:(base?(fs.length>1?`${base} ${i+1}`:base):`${one} ${mine(set).length+done.length+1}`);

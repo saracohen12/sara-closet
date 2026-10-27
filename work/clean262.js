@@ -11,14 +11,35 @@ const HEX=/[0-9a-f]{32}/g,KEEP_MS=3*3600e3;
 const add=(S,t)=>{(String(t||'').match(HEX)||[]).forEach(x=>S.add(x))};
 async function scan(){const a=await claude.use('assets'),db=await claude.use('db');if(!a||!db)throw Object.assign(new Error('no access'),{code:'not_granted'});
  const L=await a.list(),used=new Set();
- for(const c of [...COLS,...LOGS]){const sn=await db.collection(c).limit(1000).get();
+ const BK=[];for(const c of [...COLS,...LOGS]){const sn=await db.collection(c).limit(1000).get();
   if(sn.docs.length>=1000&&!LOGS.includes(c))throw Object.assign(new Error('too big: '+c),{code:'big'});
-  sn.docs.forEach(d=>{add(used,d.id);try{add(used,JSON.stringify(d.data()))}catch(_){}})}
+  sn.docs.forEach(d=>{add(used,d.id);if(c=='backup83'){BK.push({id:d.id,data:d.data()});return}try{add(used,JSON.stringify(d.data()))}catch(_){}})}
+ // v272: the daily backups kept the 8 old files of everything that was packed into one picture (or cut again) for a whole week, so packing freed
+ // nothing. An old file in a backup that is the SAME picture under its new name (same item, same GPT sheet src+t, same angle) is renamed in the backup
+ // before the delete – a restore then brings back the very same item; everything else a backup points at stays.
+ const MAP=bkMap(BK),cur=new Set(used);for(const b of BK){const d=b.data||{};for(const k in d){const s=typeof d[k]=='string'?d[k]:JSON.stringify(d[k]);if(k!='items'){add(used,s);continue}(String(s).match(HEX)||[]).forEach(x=>{if(!(MAP[x]&&!cur.has(x)))used.add(x)})}}
  add(used,document.documentElement.innerHTML);
  try{for(let i=0;i<localStorage.length;i++)add(used,localStorage.getItem(localStorage.key(i)))}catch(_){}
  for(const g of ['IT','SET','LOOKS','PLAN','D'])try{add(used,JSON.stringify(window[g]||(typeof eval(g)!='undefined'?eval(g):null)))}catch(_){}
  const now=Date.now(),free=L.assets.filter(x=>!used.has(x.id)&&now-Date.parse(x.createdAt)>KEEP_MS);
- return {a,usage:L.usage,all:L.assets.length,free,bytes:free.reduce((s,x)=>s+(x.sizeBytes||0),0)}}
+ const have=new Set(L.assets.map(x=>x.id)),rn=free.filter(x=>MAP[x.id]),bad=rn.filter(x=>!have.has(String(MAP[x.id]).split('~')[0]));
+ const F=bad.length?free.filter(x=>!bad.includes(x)):free;
+ return {a,db,usage:L.usage,all:L.assets.length,free:F,bytes:F.reduce((s,x)=>s+(x.sizeBytes||0),0),BK,MAP,rn:rn.length-bad.length}}
+// old name -> new name, from the backups' items next to today's items
+function bkMap(BK){const M={},cur=(typeof IT=='object'&&IT)||{};
+ const walk=(o,f)=>{if(!o||typeof o!='object')return;if(Array.isArray(o))return o.forEach(x=>walk(x,f));if(typeof o.src=='string'&&o.src&&Array.isArray(o.L))f(o);for(const k in o)walk(o[k],f)};
+ for(const b of BK){let items=null;try{items=JSON.parse(b.data&&b.data.items||'null')}catch(_){}if(!items)continue;
+  for(const id in items){const now=cur[id];if(!now)continue;const C=[];walk(now,o=>C.push(o));if(!C.length)continue;
+   walk(items[id],o=>{const c=C.find(x=>x.src==o.src&&(x.t||0)==(o.t||0)&&x.L.length==o.L.length);if(!c)return;
+    for(const key of ['L','M']){const A=o[key],B=c[key];if(!Array.isArray(A)||!Array.isArray(B)||A.length!=B.length)continue;
+     A.forEach((x,i)=>{const y=B[i];if(typeof x=='string'&&/^[0-9a-f]{32}$/.test(x)&&typeof y=='string'&&y&&y!=x&&/^[0-9a-f]{32}(~[0-7])?$/.test(y))M[x]=y})}})}}
+ return M}
+// before deleting: rename the old files in the backups (only the 'items' text changes; a backup that can't be renamed keeps its files)
+async function bkFix(sc){const ids=new Set(sc.free.map(x=>x.id)),keep=new Set();
+ for(const b of sc.BK){let s=b.data&&b.data.items;if(typeof s!='string')continue;const hits=(s.match(HEX)||[]).filter(x=>ids.has(x)&&sc.MAP[x]);if(!hits.length)continue;
+  for(const x of new Set(hits))s=s.split(x).join(sc.MAP[x]);
+  try{await sc.db.collection('backup83').doc(b.id).update({items:s})}catch(e){ERR('bkfix',e);hits.forEach(x=>keep.add(x))}}
+ return keep}
 const mb=b=>Math.round(b/1048576);
 let DL=null,RUN=false;
 function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='cl262';DL.dir='rtl';DL.setAttribute('aria-labelledby','cl262t');document.body.appendChild(DL);
@@ -33,7 +54,7 @@ async function open(){if(RUN)return show('<p class="cl262p">מוחקת… <b dat
   ${SC.free.length?`<p class="cl262p"><b>${SC.free.length}</b> מהן ישנות ואף אחד כבר לא משתמש בהן – גזירות קודמות שהוחלפו, העלאות שלא נשמרו (${mb(SC.bytes)} MB).<br>כל מה שמופיע באתר נשאר: בגדים, אווטאר, קשירות, תסרוקות, איפורים, רקעים ולוקים.</p>
   <span class="mkb"><button type="button" class="mkp" data-go>🧹 למחוק ${SC.free.length} תמונות ישנות</button><button type="button" data-x>לא עכשיו</button></span>`
   :'<p class="cl262p">אין תמונות ישנות למחוק – הכול בשימוש. אפשר לבקש עוד מקום ("Request a higher limit").</p>'}`)}
-async function go(){if(RUN||!SC||!SC.free.length)return;RUN=true;const L=SC.free,a=SC.a;let n=0,bad=0,wait=0;show(`<p class="cl262p">מוחקת… <b data-n>0</b> מתוך ${L.length}. לא לסגור את הדף.</p><progress max="${L.length}" value="0"></progress>`);
+async function go(){if(RUN||!SC||!SC.free.length)return;RUN=true;let L=SC.free;const a=SC.a;if(SC.rn){const keep=await bkFix(SC);if(keep.size)L=L.filter(x=>!keep.has(x.id))}let n=0,bad=0,wait=0;show(`<p class="cl262p">מוחקת… <b data-n>0</b> מתוך ${L.length}. לא לסגור את הדף.</p><progress max="${L.length}" value="0"></progress>`);
  for(const x of L){for(let t=0;t<4;t++){try{await a.delete(x.id);n++;break}catch(e){if(e&&e.code=='rate_limited'||e&&e.code=='store_unavailable'){wait=Math.min(8000,(wait||800)*2);await new Promise(r=>setTimeout(r,wait));continue}bad++;ERR('del',e);break}}
   wait=Math.max(0,wait-200);const c=DL.querySelector('[data-n]');if(c)c.textContent=n;const p=DL.querySelector('progress');if(p)p.value=n+bad}
  RUN=false;SC=null;show(`<p class="cl262p">✓ נמחקו <b>${n}</b> תמונות ישנות. עכשיו יש מקום להעלות שוב.${bad?` (${bad} לא נמחקו)`:''}</p><span class="mkb"><button type="button" class="mkp" data-x>סגירה</button></span>`);

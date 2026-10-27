@@ -254,7 +254,7 @@ async function apply(){const {ids,T,fs,map}=UP;const d=dlg();d.close();UP.urls.f
  let n=0;const CU={},bad=[];   // v268: what didn't work is said at the end (it always said ✓)
  for(const x of jobs){n++;const o=x.t.o,id=x.t.id;toast_(`מסדרת ${n} מתוך ${jobs.length}: ${ids.length>1?nm(id)+' · ':''}${o.n}`);
   try{if(o.role=='cu'){if(!a)throw new Error('assets');const r=await a.upload(await cuJpeg(x.f));if(r&&r.id)(CU[id]=CU[id]||[]).push({k:o.cuOf,n:o.n,cu:r.id,cu8:1});continue}
-   if(o.role=='whole'){if(!a)throw new Error('assets');const r=await a.upload(x.f);if(r&&r.id)await putItem(id,{whole:r.id});continue}
+   if(o.role=='whole'){if(!a)throw new Error('assets');const r=await a.upload(await slim272(x.f));if(r&&r.id)await putItem(id,{whole:r.id});continue}
    const t=o.pk?subId(id,o.pk):id;if(o.pk){try{window.syncParts85&&syncParts85()}catch(_){}if(!D[t]){await new Promise(r=>setTimeout(r,1600))}}
    window.av188kind(t,o.kind);if((await window.av188up(t,[x.f]))===false)bad.push(o.n)}catch(e){ERR('apply',e);bad.push(o.n)}}
 for(const id of used){const cus=CU[id]||[];

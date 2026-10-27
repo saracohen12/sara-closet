@@ -109,7 +109,7 @@ async function up(id,fs){if(BUSY){toast_('רגע, עוד שומרת');return fal
  {let kn='';try{kn=KO[id]||R360.kind(id)}catch(_){}const max=AT[id]!=null||KO[id]?1:(TWIN[kn]?TWIN[kn].length:1);if(fs.length>max){fs=[...fs].slice(0,max);toast_(max==1?'לקחתי רק את התמונה הראשונה – לפריט הזה צריך תמונה אחת':`לקחתי רק את ${max} הראשונות`)}}
  BUSY=true;let a=null;try{a=await claude.use('assets')}catch(_){}
  if(!a){BUSY=false;toast_(ERRT.assets);return false}
- let upFail=false;const add=[];try{for(let i=0;i<fs.length;i++){toast_(`שומרת ${i+1} מתוך ${fs.length}…`);const r=await a.upload(fs[i]);add.push({a:r.id,t:Date.now(),n:String(fs[i].name||'').slice(0,80)})}}
+ let upFail=false;const add=[];try{for(let i=0;i<fs.length;i++){toast_(`שומרת ${i+1} מתוך ${fs.length}…`);const r=await a.upload(await slim272(fs[i]));add.push({a:r.id,t:Date.now(),n:String(fs[i].name||'').slice(0,80)})}}
  catch(e){upFail=true;ERR('upload',e);toast_(/quota/.test(e&&e.code||'')?ERRT.full:add.length?`נשמרו ${add.length}, השאר לא עלו. לנסות שוב`:'התמונה לא עלתה. לנסות שוב')}
  if(add.length){try{await putItem(id,{a8up:[...ups(id),...add]})}catch(e){ERR('put',e)}rebox(id);repaint(id)}
  BUSY=false;
