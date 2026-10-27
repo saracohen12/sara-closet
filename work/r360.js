@@ -373,10 +373,13 @@ async function paint(cv,v,s,pad){s=headOf(s);const bg=s.bg||'';const hw=whole(s.
  const miss=ms.some(m=>!m);if(cv._pg!==my)return !miss;if(cv.width!=BW||cv.height!=BH+pt+pb){cv.width=BW;cv.height=BH+pt+pb}const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);g.drawImage(oc,0,0);
  if(pad){if(miss)again(cv,v,s,pad,my);else cv._rt=0}return !miss}   // a layer missing: not kept as a finished picture (frames, thumbs), the stage tries again
 const JYT={},JYN={neck:'📿 שרשרת',ears:'✨ עגילים',wrist:'⌚ צמיד',belt:'➰ חגורה'};
-function paintJY(){if(!dlg)return;const W=[...dlg.querySelectorAll('.r3jy')];if(!W.length)return;const L=[];
+// v266 (Sara 23:34 "לא כל הזמן על המסך – עיגול קטן, פותחת, מזיזה, סוגרת"): the rows live in a small panel over the avatar, opened by 📿 and closed by ✓
+let JYOPEN=false;
+function paintJY(){if(!dlg)return;const W=[...dlg.querySelectorAll('.r3jy')],B=dlg.querySelector('.r3jyb');if(!W.length)return;const L=[];
  Object.keys(ST.on||{}).forEach(k=>{const id=KEYOF[k];if(!ST.on[k]||!id||!JYS.includes(SLOT[k])||L.some(x=>x[0]==id&&x[1]==SLOT[k]))return;L.push([id,SLOT[k]])});
  const H=L.length?'<b class="r3jyh">גובה התכשיט <small>מזיזים קצת למעלה או למטה, בכל הזוויות</small></b>'+L.map(([id,sl])=>{const v=jyOf(id,sl),a=`data-id="${esc(id)}" data-sl="${sl}"`;
-  return `<div class="r3jyr"><span>${JYN[sl]} <small>${esc(nm(id).split(' ').slice(0,3).join(' '))}</small></span><button type="button" ${a} data-jy="-3" aria-label="להעלות">⬆ למעלה</button><button type="button" ${a} data-jy="3" aria-label="להוריד">⬇ למטה</button>${v?`<button type="button" ${a} data-jy="0" aria-label="למקום המקורי">↺</button>`:''}</div>`}).join(''):'';W.forEach(w=>{w.hidden=!L.length;w.innerHTML=H})}
+  return `<div class="r3jyr"><span>${JYN[sl]} <small>${esc(nm(id).split(' ').slice(0,3).join(' '))}</small></span><button type="button" ${a} data-jy="-3" aria-label="להעלות">⬆ למעלה</button><button type="button" ${a} data-jy="3" aria-label="להוריד">⬇ למטה</button>${v?`<button type="button" ${a} data-jy="0" aria-label="למקום המקורי">↺</button>`:''}</div>`}).join(''):'';if(!L.length)JYOPEN=false;if(B){B.hidden=!L.length;B.setAttribute('aria-expanded',JYOPEN);B.classList.toggle('on',JYOPEN)}
+ W.forEach(w=>{w.hidden=!L.length||!JYOPEN;w.innerHTML=H+(L.length?'<button type="button" class="r3jyx" data-jyx>✓ סיום</button>':'')})}
 function wornIds(s){const ids=[];if(s.head&&KEYOF[s.head])ids.push(KEYOF[s.head]);if(/^yt/.test(s.head||'')&&s.tf){const t=KEYOF[s.tf]||(D[s.tf]?s.tf:'');if(t&&!ids.includes(t))ids.push(t)}Object.keys(s.on||{}).forEach(k=>{const id=KEYOF[k];if(s.on[k]&&id&&!ids.includes(id))ids.push(id)});return ids}
 function wearing(s){const a=wornIds(s).map(nm);if(s.head=='w')a.unshift('הפאה');const n=k=>STY[k]&&STY[k].n;if(n(s.head))a.unshift(n(s.head));if(n(s.mk))a.push('איפור: '+n(s.mk));return a.join(' · ')}
 
@@ -425,7 +428,7 @@ function build(){
   <div class="r3miss" hidden></div>
   <div class="r3ctl"><button type="button" class="r3prev" aria-label="זווית קודמת">→</button><div class="r3dots" role="group" aria-label="זוויות"></div><button type="button" class="r3next" aria-label="זווית הבאה">←</button></div>
   <div class="r3ctl r3ctl2"><span class="r3ang" aria-live="polite">חזית</span><button type="button" class="r3play">▶ סיבוב</button><button type="button" class="r3dl" aria-label="תמונה לשליחה בוואטסאפ או לשמירה">📲 לשתף</button></div>
-  <div class="r3jy r3jyo" hidden></div>
+  <button type="button" class="r3jyb" hidden aria-expanded="false" aria-label="גובה התכשיט – להזיז שרשרת, עגילים, צמיד">📿</button><div class="r3jy r3jyo" role="dialog" aria-label="גובה התכשיט" hidden></div>
  </div>
  <div class="r3side" role="region" aria-label="מה לובשים">
   <div class="r3blk r3now"><h3>לובשת עכשיו <small class="r3cnt"></small></h3>
@@ -435,7 +438,6 @@ function build(){
    <label class="r3tuck r3wb"><input type="checkbox"> שיער מאחורי הכתפיים (רואים צווארון ושרשרת)</label>
    <label class="r3tuck r3tk"><input type="checkbox"> חולצה בתוך החצאית</label>
    <label class="r3tuck r3un"><input type="checkbox"> החולצה מתחת לשמלה (כמו חולצת בסיס)</label>
-   <div class="r3jy" hidden></div>
    <div class="r3cam" hidden><span class="r3lbl">גופיית בסיס מתחת לתחרה <small>הגופיות שלך, או צבע</small></span><div class="r3sw" role="radiogroup" aria-label="צבע גופיית הבסיס"></div></div>
    <div class="r3bgw"><span class="r3lbl">רקע <small class="r3bgn"></small></span><div class="r3bgs" role="radiogroup" aria-label="רקע"></div></div>
   </div>
@@ -463,7 +465,8 @@ function build(){
  dlg.querySelector('.r3wb input').onchange=e=>{ST.wb=e.target.checked?1:0;keep();redraw()};
  dlg.querySelector('.r3tk input').onchange=e=>{ST.tuck=e.target.checked?1:0;keep();redraw()};
  dlg.querySelector('.r3un input').onchange=e=>{ST.under=e.target.checked?1:0;keep();redraw()};
- dlg.querySelectorAll('.r3jy').forEach(w=>w.onclick=e=>{const b=e.target.closest('button[data-jy]');if(!b)return;const id=b.dataset.id,sl=b.dataset.sl,d=+b.dataset.jy;
+ dlg.querySelector('.r3jyb').onclick=()=>{JYOPEN=!JYOPEN;paintJY()};
+ dlg.querySelectorAll('.r3jy').forEach(w=>w.onclick=e=>{if(e.target.closest('[data-jyx]')){JYOPEN=false;paintJY();try{dlg.querySelector('.r3jyb').focus()}catch(_){}return}const b=e.target.closest('button[data-jy]');if(!b)return;const id=b.dataset.id,sl=b.dataset.sl,d=+b.dataset.jy;
   const v=d?Math.max(-45,Math.min(45,jyOf(id,sl)+d)):0;JYL[id+'|'+sl]=v;paintJY();redraw();clearTimeout(JYT[id]);
   JYT[id]=setTimeout(async()=>{const o={};JYS.forEach(x=>{const n=jyOf(id,x);if(n)o[x]=n});try{await putItem(id,{jy:Object.keys(o).length?o:''})}catch(er){(window.ERRS=window.ERRS||[]).push('v260 jy: '+(er&&er.message||er));(window.toast||(()=>{}))('לא נשמר. לנסות שוב')}},700)});
  dlg.querySelector('.r3save').onclick=saveLook3;dlg.querySelector('.r3pin').onclick=()=>TODAY.pin();dlg.querySelector('.r3dl').onclick=share;
@@ -477,7 +480,8 @@ function build(){
   if(t.dataset.r3more!=null||t.dataset.r3less!=null){try{window.STYORD.more(t.dataset.r3more||t.dataset.r3less,t.dataset.r3more!=null)}catch(_){}paintSty();return}
   if(t.dataset.syh!=null){if(t.dataset.syh){recSty(t.dataset.syh);starSty(t.dataset.syh)}ST.head=t.dataset.syh||'w';keep();redraw();return}
   if(t.dataset.sytfm!=null){SCALL=!SCALL;paintSty();return}
-  if(t.dataset.t228s!=null){const [id,i]=t.dataset.t228s.split('|');if(window.tie228)tie228.set(id,+i).then(ok=>{if(ok&&READY[id]){ST.head=READY[id].k[0];ST.tf='';keep();redraw()}});return}
+  if(t.dataset.t266tx!=null){TXOPEN=TXOPEN==t.dataset.t266tx?'':t.dataset.t266tx;paintSty();return}
+  if(t.dataset.t228s!=null){TXOPEN='';const [id,i]=t.dataset.t228s.split('|');if(window.tie228)tie228.set(id,+i).then(ok=>{if(ok&&READY[id]){ST.head=READY[id].k[0];ST.tf='';keep();redraw()}try{paintSty()}catch(_){}});return}
   if(t.dataset.sytf!=null){const id=t.dataset.sytf,k=/^yt/.test(ST.head)?ST.head:defTie();
    if(id=='c'){if(k){ST.head=k;ST.tf='c';ST.tc=GREY}else ST.head='c'}
    else if(READY[id]&&READY[id].head){ST.head=READY[id].k[0];ST.tf=''}   // her scarf with its own 8-angle picture: that one
@@ -506,6 +510,7 @@ function build(){
 function paintTabs(){if(!dlg)return;dlg.querySelectorAll('.r3tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t==TAB));dlg.querySelectorAll('.r3pane').forEach(p=>p.hidden=p.dataset.p!=TAB);if(TAB=='closet')paintGrid();else paintLooks()}
 // v199: under "על הראש": the hairstyles when the wig is on, the ties when a cover is on (then its colour), the makeup – only rows she has styles for
 const TIEC=[['לבן','246,244,239'],['שמנת','239,229,207'],['בז׳','217,196,166'],['ניוד','200,161,132'],['אפור','167,166,163'],['שחור','40,38,38'],['כחול כהה','31,44,77'],['תכלת','169,195,223'],['חום','107,74,51'],['זית','92,97,55'],['בורדו','109,31,44'],['ורוד','227,180,191']];
+let TXOPEN='';   // v266: the cover whose ties are open
 function paintSty(){const box=dlg&&dlg.querySelector('.r3styr');if(!box)return;
  const chip=(attr,k,name,on,src)=>`<button type="button" role="radio" aria-checked="${on}" ${attr}="${esc(k)}"><img alt="" ${src==null?`data-sth="${esc(k)}" src="${STH[k]||''}"`:`src="${src}"`}><span>${esc(name)}</span></button>`;
  const add=(set,t)=>`<button type="button" class="r3styadd" data-styopen="${set}" aria-label="${t}"><b aria-hidden="true">＋</b><span>עוד</span></button>`;
@@ -527,7 +532,9 @@ function paintSty(){const box=dlg&&dlg.querySelector('.r3styr');if(!box)return;
    ${all>11?`<button type="button" class="r3scm" data-sytfm aria-expanded="${!!SCALL}">${SCALL?'פחות':'עוד '+(all-11)}</button>`:''}</div>`;
   // v228: no painted ties – her scarf with the real ties she made for it, and a way to add one
   const it=sel&&sel!='c'?sel:'',TX=it&&window.tie228?tie228.txs(it):[];
-  if(TX.length>1)h+=`<div class="r3heads r3sty r3tx" role="radiogroup" aria-label="הקשירות של המטפחת">${TX.map((x,i)=>{const on=READY[it]&&DYN['x'+READY[it].k[0]+'1']=='/_blob/'+x.L[0];return `<button type="button" role="radio" aria-checked="${!!on}" data-t228s="${esc(it)}|${i}"><img alt="" data-t228th="${esc(x.L[0])}" src="/_blob/${esc(x.L[0])}"><span>${esc(x.n)}</span></button>`}).join('')}</div>`;
+  // v266 (Sara 23:34 "בחרתי מטפחת – לראות את הקשירה הנוכחית, ולא לגלגל את הכל"): only the tie she has on, "עוד N קשירות" opens the rest, a pick closes it again
+  const txOn=x=>READY[it]&&DYN['x'+READY[it].k[0]+'1']=='/_blob/'+x.L[0],cur=Math.max(0,TX.findIndex(txOn)),TXS=TXOPEN==it?TX.map((x,i)=>i):[cur];
+  if(TX.length>1)h+=`<div class="r3heads r3sty r3tx" role="radiogroup" aria-label="הקשירות של המטפחת">${TXS.map(i=>[TX[i],i]).map(([x,i])=>{const on=txOn(x);return `<button type="button" role="radio" aria-checked="${!!on}" data-t228s="${esc(it)}|${i}"><img alt="" data-t228th="${esc(x.L[0])}" src="/_blob/${esc(x.L[0])}"><span>${esc(x.n)}</span></button>`}).join('')}<button type="button" class="r3scm r3txm" data-t266tx="${esc(it)}" aria-expanded="${TXOPEN==it}">${TXOPEN==it?'▴ רק הנוכחית':'▾ עוד '+(TX.length-1)+' קשירות'}</button></div>`;
   h+=it?`<button type="button" class="r3stb r3ex" data-tie202="${esc(it)}">${TX.length?'🧕 הקשירות של המטפחת הזו · להוסיף עוד':'🧕 להכין למטפחת הזו קשירה אמיתית'}</button>`:`<p class="r3note r3exn">🧕 בוחרים מטפחת, ואז מכינים לה קשירות אמיתיות, עם ההדפס שלה.</p>`}
  // v227 (Sara 19:33 "תמיין את האיפורים לפי הנושאים ... יום יום אירוע וכו, כמובן שאפשר להסתיר סיווג"): her makeups in the groups of her prompts, each group folds
  if(ms.length){const G=mkGroups(ms),H=mkHid();h+=`<span class="r3lbl">💄 איפור</span><div class="r3mkg" aria-label="איפור"><div class="r3heads r3sty r3mk r3mk0" role="radiogroup" aria-label="בלי איפור">${chip('data-sym','','בלי',!ST.mk,'a8/t_c.webp'+V)}</div>

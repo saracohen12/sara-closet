@@ -214,10 +214,14 @@ dialog#r3cmp::backdrop,dialog#r3sh::backdrop{background:rgba(20,12,8,.55)}
 #r360 .r3jyr button{min-height:44px;padding:0 14px;border-radius:22px;border:1px solid var(--z-line,#ccc);background:var(--z-card,#fff);color:inherit;font:inherit}
 #r360 .r3jyh{display:block;font-size:.92rem}#r360 .r3jyh small{font-weight:400;opacity:.75}
 
-/* v264 (Sara 22:36 "אני עדיין לא מצליחה להזיז"): jewellery height right under the avatar – the rows inside "לובשת עכשיו" were folded away on the phone */
-#r360 .r3jyo{width:100%;max-width:420px;box-sizing:border-box;padding:8px 10px;border-radius:16px;background:var(--z-surface,#f6f0ea);border:1px solid var(--z-line,#e6dcd2)}
+/* v266 (Sara 23:34): jewellery height = a small round 📿 on the avatar; it opens a panel over the lower part of the stage, ✓ closes it */
+@media (max-width:899px){#r360 .r3stage{position:relative}}
+#r360 .r3jyb{position:absolute;top:26px;left:26px;z-index:4;width:44px;height:44px;border-radius:50%;border:1px solid var(--z-line,#e6dcd2);background:rgba(255,255,255,.92);font-size:1.25rem;line-height:1;box-shadow:0 4px 14px rgba(40,20,10,.18);cursor:pointer;padding:0}
+#r360 .r3jyb.on{background:var(--z-pri,#b4532a);border-color:transparent}
+#r360 .r3jyo{position:absolute;left:12px;right:12px;bottom:118px;z-index:5;max-width:420px;margin:0 auto;box-sizing:border-box;padding:10px 12px;border-radius:18px;background:rgba(255,250,244,.96);border:1px solid var(--z-line,#e6dcd2);box-shadow:0 10px 30px rgba(40,20,10,.22);backdrop-filter:blur(6px)}
 #r360 .r3jyo .r3jyh small{display:none}
-#r360 .r3jyo .r3jyr{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px}
-#r360 .r3jyo .r3jyr>span{flex:1 1 120px;min-width:0;font-size:.85rem}
+#r360 .r3jyo .r3jyr{display:flex;align-items:center;gap:6px;margin-top:6px}
+#r360 .r3jyo .r3jyr>span{flex:1 1 auto;min-width:0;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #r360 .r3jyo .r3jyr>span small{display:none}
 #r360 .r3jyo button{min-height:40px;min-width:44px;padding:0 12px;border-radius:20px}
+#r360 .r3jyo .r3jyx{display:block;width:100%;margin-top:8px;min-height:42px;border-radius:21px;border:0;background:var(--z-ink,#3a2418);color:#fff;font:inherit;font-weight:600;cursor:pointer}

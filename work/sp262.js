@@ -59,7 +59,9 @@ async function pack(a,L){const bms=await Promise.all(L.map(x=>x?decode(x):null))
   return L.map((y,v)=>y?up.id+'~'+v:'')}
  finally{bms.forEach(b=>{try{b&&b.close()}catch(_){}})}}
 const same=(A,B)=>Array.isArray(A)&&Array.isArray(B)&&A.length==B.length&&A.every((x,i)=>x==B[i]);
-let RUN=false,DONE=0;
+let RUN=false,DONE=0,QUIET=0;
+// the packer's own writes are silent (no "נשמר … ביטול" toast – an undo there would point the item back at the 8 old files)
+try{const _bp=beforePut;beforePut=function(){if(QUIET)return;return _bp.apply(this,arguments)}}catch(_){}
 const sig=L=>L.join(',');
 // every list of 8 that is still 8 files: items' 360 parts (a8) and a cover's ties (tx), styles (L) and a tie's fabric mask (M).
 // The same 8 can sit in two places (a cover's tie is in a8 and in tx) – it is packed once and changed everywhere, so "which tie is on" still matches.
@@ -75,7 +77,7 @@ async function run(max){if(RUN)return;RUN=true;let n=0;try{const a=await claude.
    const k=sig(g.L),swap=L=>Array.isArray(L)&&sig(L)==k?NL.slice():L;
    for(const id of new Set(g.at.filter(w=>w.id).map(w=>w.id))){const it=IT[id]||{},pt={};
     ['a8','tx'].forEach(f=>{const cur=it[f];if(!Array.isArray(cur))return;let hit=0;const nx=cur.map(q=>q&&Array.isArray(q.L)&&sig(q.L)==k?(hit=1,Object.assign({},q,{L:NL.slice()})):q);if(hit)pt[f]=nx});
-    if(Object.keys(pt).length){await putItem(id,pt);DONE++}}
+    if(Object.keys(pt).length){QUIET=1;try{await putItem(id,pt)}finally{QUIET=0}DONE++}}
    for(const sid of new Set(g.at.filter(w=>w.st).map(w=>w.st))){const ref=db.collection('styles').doc(sid),fr=await ref.get();if(!fr.exists)continue;const v=fr.data()||{},pt={};
     ['L','M'].forEach(f=>{if(Array.isArray(v[f])&&sig(v[f])==k)pt[f]=NL.slice()});if(Object.keys(pt).length){await ref.update(pt);DONE++}}
    try{R360.sync()}catch(_){}}
