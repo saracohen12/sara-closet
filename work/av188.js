@@ -134,7 +134,7 @@ async function cut(id,src,ua,t,at){if(PROC[id]&&PROC[id].v){toast_('רגע, עו
   PROC[id]={v:9};paintSt(id);
   try{a=await claude.use('assets')}catch(_){}if(!a)throw Object.assign(new Error('assets'),{code:'assets'});
   for(const c of r.views)L.push((await put1(a,await blobOf(c))).id);
-  const np={s:SLOT[kind]||'top',k:kind,L,src:ua||'',t:t||Date.now(),cv:cut8.CV||1,sh:r.shifts.some(s=>s[0]||s[1])?r.shifts:null,...(nt?{n:nt}:{})};if(re)P[at]=np;else P.push(np);
+  const np={s:SLOT[kind]||'top',k:kind,L,src:ua||'',t:t||Date.now(),cv:cut8.cvOf?cut8.cvOf(kind):cut8.CV||1,sh:r.shifts.some(s=>s[0]||s[1])?r.shifts:null,...(nt?{n:nt}:{})};if(re)P[at]=np;else P.push(np);
   await putItem(id,{a8:P});delete PROC[id];DONE.add(id);
   try{R360.sync()}catch(_){}rebox(id);repaint(id);avNow(id);log('cut8_ok',{id,kind,re,ms:Date.now()-t0,px:r.px.join(',')});
   if(re)return true;const half=TWIN[(()=>{try{return R360.kind(id)}catch(_){return ''}})()]&&P.length==1;
@@ -156,7 +156,7 @@ async function off(id){const o={a8:it(id).a8||'',a8up:it(id).a8up||''};if(!o.a8&
 
 // a picture that was uploaded but not cut yet (on another phone, before v190, or the page was closed in the middle) is cut when the site opens
 const DONE=new Set();let SOON=null;
-const RE=new Set(),stale=id=>RE.has(id)||!window.cut8?[]:parts(id).map((p,j)=>!(p.cv>=cut8.CV)&&p.src?j:-1).filter(j=>j>=0);
+const RE=new Set(),stale=id=>RE.has(id)||!window.cut8?[]:parts(id).map((p,j)=>!(p.cv>=(cut8.cvOf?cut8.cvOf(p.k):cut8.CV))&&p.src?j:-1).filter(j=>j>=0);
 const pending=id=>{const u=ups(id);if(!u.length||DONE.has(id)||PROC[id])return null;const last=u[u.length-1],P=parts(id);
  if(P.some(p=>p.src==last.a))return null;if(ready(id)&&!(window.R360&&R360.dyn(id)))return null;return last};
 function soon(){if(SOON)return;SOON=setTimeout(async()=>{SOON=null;if(BUSY)return;

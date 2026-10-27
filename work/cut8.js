@@ -59,15 +59,25 @@ function lift(d,m,isB){const w=(f,r)=>{let a=-1,z=-1;for(let c=0;c<W;c++)if(f(r*
 function slide(d,m,b){const isB=i=>{const k=i*3;return !(b[k+2]-b[k]>22&&b[k+2]>150)};[d,m]=lift(d,m,isB);
  // only a top that covers her arms too (long sleeves): a tank leaves her arms outside it, and stretching it to her edges pulled its hem out sideways
  {let gm=0,gb=0;for(let r=Math.floor(H*.28);r<Math.floor(H*.34);r++){let a=-1,z=-1,p=-1,q=-1;for(let c=0;c<W;c++){const i=r*W+c;if(m[i]){if(a<0)a=c;z=c}if(isB(i)){if(p<0)p=c;q=c}}if(a>=0&&p>=0){gm+=z-a;gb+=q-p}}if(!gb||gm<gb*.85)return [d,m]}
- // row by row: the top's left/right edges are stretched onto the doll's left/right edges at that row (arms included on both), smoothed over 15 rows
- const A=new Float32Array(H).fill(NaN),Z=new Float32Array(H).fill(NaN),P=new Float32Array(H),Q=new Float32Array(H);
- for(let r=Math.floor(H*.15);r<Math.floor(H*.62);r++){let a=-1,z=-1,p=-1,q=-1;for(let c=0;c<W;c++){const i=r*W+c;if(m[i]){if(a<0)a=c;z=c}if(isB(i)){if(p<0)p=c;q=c}}
-  if(a<0||p<0)continue;const wm=z-a,wb=q-p;if(wm<30||wb<30||wm<wb*.6||wm>wb*1.35)continue;A[r]=a;Z[r]=z;P[r]=p;Q[r]=q}
- const sm=(X,r)=>{let s=0,n=0;for(let t=r-7;t<=r+7;t++)if(t>=0&&t<H&&!isNaN(A[t])){s+=X[t];n++}return n>4?s/n:NaN};
+ // row by row: the top's left/right edges are moved onto the doll's left/right edges at that row (arms included on both).
+ // v271 (Sara 27/10 22:51 "הם מרוחות ולא גזורות טוב"): rows that failed the test were left where they were while their neighbours moved, so the top tore
+ // into sideways bands (the hand on the hip, the elbow). Now each row's left/right shift is measured, odd rows are dropped, the gaps are filled from the
+ // rows around them, the ends fade to no shift, and the shift may change by at most 1 px from row to row – the top bends, it never tears.
+ const r0=Math.floor(H*.15),r1=Math.floor(H*.62),DL=new Float32Array(H).fill(NaN),DR=new Float32Array(H).fill(NaN),P=new Float32Array(H).fill(NaN),Q=new Float32Array(H).fill(NaN);
+ for(let r=r0;r<r1;r++){let a=-1,z=-1,p=-1,q=-1;for(let c=0;c<W;c++){const i=r*W+c;if(m[i]){if(a<0)a=c;z=c}if(isB(i)){if(p<0)p=c;q=c}}
+  if(a<0||p<0)continue;const wm=z-a,wb=q-p;if(wm<30||wb<30||wm<wb*.6||wm>wb*1.35)continue;const k=wb/wm;if(k<.85||k>1.3)continue;DL[r]=a-p;DR[r]=z-q;P[r]=p;Q[r]=q}
+ const med=(X,r)=>{const v=[];for(let t=r-7;t<=r+7;t++)if(t>=0&&t<H&&!isNaN(X[t]))v.push(X[t]);v.sort((x,y)=>x-y);return v.length>4?v[v.length>>1]:NaN};
+ const DL0=DL.slice(),DR0=DR.slice();for(let r=0;r<H;r++)if(!isNaN(DL0[r])){const ml=med(DL0,r),mr=med(DR0,r);if(isNaN(ml)||Math.abs(DL0[r]-ml)>6||Math.abs(DR0[r]-mr)>6){DL[r]=DR[r]=P[r]=Q[r]=NaN}}
+ const ok=[];for(let r=0;r<H;r++)if(!isNaN(DL[r]))ok.push(r);if(ok.length<8)return [d,m];
+ const fill=(X,fade)=>{const Y=new Float32Array(H),f=ok[0],l=ok[ok.length-1];let j=0;
+  for(let r=0;r<H;r++){if(r<=f)Y[r]=fade?X[f]*Math.max(0,1-(f-r)/12):X[f];else if(r>=l)Y[r]=fade?X[l]*Math.max(0,1-(r-l)/12):X[l];
+   else{while(ok[j+1]<=r)j++;const u=ok[j],v=ok[j+1];Y[r]=v==u?X[u]:X[u]+(X[v]-X[u])*(r-u)/(v-u)}}return Y};
+ const box=X=>{const Y=new Float32Array(H);for(let r=0;r<H;r++){let s=0,n=0;for(let t=r-7;t<=r+7;t++)if(t>=0&&t<H){s+=X[t];n++}Y[r]=s/n}return Y};
+ const cap=X=>{for(let r=1;r<H;r++)X[r]=Math.max(X[r-1]-1,Math.min(X[r-1]+1,X[r]));for(let r=H-2;r>=0;r--)X[r]=Math.max(X[r+1]-1,Math.min(X[r+1]+1,X[r]));return X};
+ const L=cap(box(fill(DL,1))),R=cap(box(fill(DR,1))),PP=box(fill(P,0)),QQ=box(fill(Q,0));
  const d2=new Float32Array(d),m2=new Uint8Array(m);let moved=0;
- for(let r=0;r<H;r++){const a=sm(A,r),z=sm(Z,r),p=sm(P,r),q=sm(Q,r);if(isNaN(a)||isNaN(p))continue;const k=(q-p)/(z-a);if(k<.85||k>1.3)continue;
-  if(Math.abs(p-a)<1.5&&Math.abs(q-z)<1.5)continue;moved++;
-  for(let c=0;c<W;c++){const sc=Math.round(a+(c-p)/k),i=r*W+c;if(sc<0||sc>=W){m2[i]=0;continue}const j=r*W+sc;m2[i]=m[j];d2[i*3]=d[j*3];d2[i*3+1]=d[j*3+1];d2[i*3+2]=d[j*3+2]}}
+ for(let r=0;r<H;r++){const dl=L[r],dr=R[r],p=PP[r],q=QQ[r];if(Math.abs(dl)<1.5&&Math.abs(dr)<1.5)continue;moved++;
+  for(let c=0;c<W;c++){const t=q>p?Math.max(0,Math.min(1,(c-p)/(q-p))):0,sc=Math.round(c+dl+(dr-dl)*t),i=r*W+c;if(sc<0||sc>=W){m2[i]=0;continue}const j=r*W+sc;m2[i]=m[j];d2[i*3]=d[j*3];d2[i*3+1]=d[j*3+1];d2[i*3+2]=d[j*3+2]}}
  // a few px of her shoulder/arm still beside a top that covers her whole shoulder line: the top's edge colour is carried out to her edge (≤10 px; not for a tank – her sleeves are outside it)
  for(let r=Math.floor(H*.15);r<Math.floor(H*.32);r++){let a=-1,z=-1,p=-1,q=-1;for(let c=0;c<W;c++){const i=r*W+c;if(m2[i]){if(a<0)a=c;z=c}if(isB(i)){if(p<0)p=c;q=c}}
   if(a<0||p<0||z-a<(q-p)*.85)continue;const cp=(c,s)=>{const i=r*W+c,j=r*W+s;m2[i]=1;d2[i*3]=d2[j*3];d2[i*3+1]=d2[j*3+1];d2[i*3+2]=d2[j*3+2];moved++};
@@ -321,5 +331,5 @@ window.cut8dbg=async(src,v)=>{const img=await toImg(src),S=sheetData(img),b=awai
  const im=a=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),x=g.createImageData(W,H);for(let i=0;i<N;i++){const on=a.length==N?a[i]:0;x.data[i*4]=on?255:0;x.data[i*4+1]=on?255:0;x.data[i*4+2]=on?255:0;x.data[i*4+3]=255}g.putImageData(x,0,0);return c.toDataURL()};
  const rgb=a=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),x=g.createImageData(W,H);for(let i=0;i<N;i++){x.data[i*4]=a[i*3];x.data[i*4+1]=a[i*3+1];x.data[i*4+2]=a[i*3+2];x.data[i*4+3]=255}g.putImageData(x,0,0);return c.toDataURL()};
  return {d:rgb(d),b:rgb(b),raw:im(CUT8D.raw),morph:im(CUT8D.morph),fin:im(m)}};
-window.cut8={run,MODE,W,H,CV:2,CVW:9,CVH:8,CVX:3,flags,says};   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
+window.cut8={run,MODE,W,H,CV:2,CVT:3,TOPK,cvOf:k=>TOPK.includes(k)?3:2,CVW:9,CVH:8,CVX:3,flags,says};   // CVT/cvOf (v271): tops, base shirts and sweaters cut before the no-tear slide are cut again by av188.js   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
 })();
