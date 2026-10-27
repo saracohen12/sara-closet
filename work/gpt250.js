@@ -53,6 +53,14 @@ const asked=id=>it(id).np!=null;
 const npOf=id=>{if(it(id).np!=null)return Math.max(1,Math.min(6,+it(id).np||1));const g=gOf(id);return g?g.n:1};
 const colsOf=id=>{const c=it(id).pc;if(Array.isArray(c))return c;const g=guess(id);return g&&g.n==npOf(id)?g.cols:[]};
 const wbgOf=id=>it(id).wbg!=null?!!it(id).wbg:LIGHT.test(txt(id));
+// v257 (Sara 27/10 19:28 "הוא עשה רקע שחור לכל החולצות, גם לחולצות השחורות"): in a pack every sheet gets its OWN backdrop – a light piece black,
+// a dark piece keeps doll-8's own light backdrop (black on black can't be cut). IT.pb[i] = her choice per piece, else by the piece's colour
+const DARK=/שחור|שחורה|כהה|נייבי|כחול כהה|חום|שוקו|קפה|בורדו|זית|אפור כהה|פחם|black|navy|brown|charcoal/i;
+const pbOf=(id,i)=>{const b=it(id).pb;if(Array.isArray(b)&&b[i]!=null)return !!b[i];const c=(colsOf(id)[i]||namesOf(id)[i]||'');if(DARK.test(c))return false;if(LIGHT.test(c)||/בז['׳]?|beige|nude|אופוויט|תכלת|ורוד בהיר|אפור בהיר/i.test(c))return true;return wbgOf(id)};
+// holes in the fabric (lace, eyelet, mesh): 'open' = through the holes you see what she wears under it (the cut leaves them see-through, a base shirt shows),
+// 'lined' = a lining is sewn under the holes and is part of the garment                                                        → IT.hol
+const HOLE=/תחרה|תחרת|רשת|חורים|אג'ור|אז'ור|קרושה|סרוג ביד|lace|mesh|eyelet|crochet|openwork/i;
+const holOf=id=>it(id).hol!=null?it(id).hol:(HOLE.test(txt(id))?'open':'');
 const bltOf=id=>it(id).blt||'';
 const namesOf=id=>{const n=npOf(id),k=kd(id),s=it(id).pn||[],g=guess(id),G=g&&g.n==n?g.names:[];return Array.from({length:n},(_,i)=>s[i]||G[i]||`${TN[k]||'פריט'} ${i+1}`)};
 // ---------- the pictures GPT returns, in order ----------
@@ -64,8 +72,12 @@ function outs(id){const k=kd(id),O=[];
   if(J.includes('necklace'))O.push({role:'cu',n:'תקריב פנים עם השרשרת',cuOf:'necklace'});
   if(J.includes('earrings'))O.push({role:'cu',n:'תקריב פנים עם העגילים',cuOf:'earrings'});return O}
  if(k=='bag'){O.push({role:'sheet',kind:'bag',n:'התיק',pk:''});O.push({role:'cu',n:'תקריב חצי גוף עם התיק',cuOf:'bag',half:1});return O}
- const n=MULTI.includes(k)?npOf(id):1;if(n>1){const C=colsOf(id);namesOf(id).forEach((x,i)=>O.push({role:'sheet',kind:k,n:x,pk:'g'+(i+1),pn:x,col:C[i]||''}));return O}
+ const n=MULTI.includes(k)?npOf(id):1;if(n>1){const C=colsOf(id);namesOf(id).forEach((x,i)=>O.push({role:'sheet',kind:k,n:x,pk:'g'+(i+1),pn:x,col:C[i]||'',bk:pbOf(id,i)}));return O}
  O.push({role:'sheet',kind:k,n:TN[k]||'הפריט',pk:''});return O}
+// which sheets get a black backdrop (jewelry / shoes / bags never)
+function blk(id,k){if(['jw','shoes','bag'].includes(k))return {all:false,any:false,L:[]};const S=outs(id).filter(o=>o.role!='cu');
+ const L=S.map(o=>o.bk!=null?o.bk:(o.role=='whole'||o.role=='sheet')&&wbgOf(id));return {all:L.length&&L.every(Boolean),any:L.some(Boolean),L,S}}
+const bgNote=(id,k,o)=>{const b=blk(id,k);if(!b.any||b.all||o.role=='cu')return '';const i=b.S.findIndex(x=>x.n==o.n&&x.pk==o.pk&&x.role==o.role);if(i<0)return '';return b.L[i]?' ⬛ רקע שחור בגיליון הזה.':' ⬜ בגיליון הזה הרקע נשאר בדיוק כמו ב-doll-8 (בהיר) – לא שחור.'};
 // ---------- the prompt ----------
 function howOf(k){try{const K=R().KIND[k];if(K)return K[1]}catch(_){}
  if(k=='ring')return 'רק הטבעת, על האצבע של יד ימין (היד על המותן), באותו גודל כמו בתמונה. בזוויות שהיד מוסתרת לא רואים אותה.';return ''}
@@ -83,7 +95,7 @@ function prompt(id,np){const k=kd(id),x=D[id]||{},O=outs(id),ME=(R()&&R().ME)||'
  else if(k=='jw'){const J=jwOf(id);P.push(J.length>1?`בתמונות יש כמה תכשיטים: ${J.map(j=>TN[j]).join(', ')}. כל תכשיט הוא פריט נפרד.`:`מה שקניתי: רק ה${TN[J[0]]}, גם אם בתמונה יש עוד תכשיטים.`)}
  else if(sheets.length>1)P.push(`בתמונות יש ${sheets.length} ${PLURAL[k]||'פריטים'}. כל פריט נפרד, ואני צריכה כל פריט לבד: ${sheets.map((o,i)=>`${i+1}) ${o.n}`).join(', ')}. הסדר: מימין לשמאל כמו בתמונה הראשית.`);
  // the pictures to return
- P.push(`החזירי ${O.length} תמונות נפרדות, בדיוק בסדר הזה:\n`+O.map((o,i)=>`${i+1}. `+retText(o,sheets,k)).join('\n'));
+ P.push(`החזירי ${O.length} תמונות נפרדות, בדיוק בסדר הזה:\n`+O.map((o,i)=>`${i+1}. `+retText(o,sheets,k)+bgNote(id,k,o)).join('\n'));
  P.push(...rulesOf(id,k,sheets));
  P.push(`כל תמונה היא גיליון אחד של 8 משבצות (2 שורות של 4), באותו יחס גובה-רוחב כמו הקובץ שערכת, בלי טקסט ובלי מספרים. סך הכול ${O.length} תמונות. אם אי אפשר את כולן בתשובה אחת, עשי כמה שאפשר, ואני אכתוב "המשך".`);
  return P.join('\n\n')}
@@ -97,8 +109,12 @@ function rulesOf(id,k,sheets){const P=[],ME=(R()&&R().ME)||'';
  if(BELTK.includes(k)){const b=bltOf(id);P.push(b=='on'?'לבגד יש חגורה תפורה מאותו בד: היא חלק מהבגד ונשארת בדיוק כמו בתמונה.':b=='off'?'לבגד הגיעה חגורה נפרדת: הורידי אותה. בגיליון בלי שום חגורה, ורואים את הבגד במקום שהחגורה הייתה.':'בלי חגורה, גם אם בתמונה יש חגורה.')}
  if(cloth)P.push('אם בתמונת המוצר יש עוד בגדים או אביזרים שלא כתבתי, הם לא שלי: אל תוסיפי אותם.');
  if(cloth)P.push(`המידות שלי: ${ME}. הדמות כבר בנויה לפי המידות האלה, אל תשני את הגוף. שמרי על אותו אורך ביחס לגוף כמו בתמונת המוצר, ואותו אורך בכל 8 הזוויות.\nהבגד צריך להיראות אמיתי על הגוף: קפלים, צללים, הבד נופל לפי התנוחה.`);
- if(wbgOf(id)&&k!='jw')P.push('חשוב מאוד: הבגד בהיר (לבן, שמנת או שקוף). כדי שאפשר יהיה לגזור אותו בדיוק, בכל הגיליונות של הדמות צבעי את הרקע מסביב לדמות בשחור אחיד, מכל הצדדים ועד הרצפה. הדמות, הבגד והקווים הלבנים בין המשבצות נשארים. הלבן בבגד נשאר לבן, ובד שקוף נשאר שקוף ורואים דרכו את הגוף.');
- P.push(`אל תשני שום דבר אחר: אותו גיליון, אותו סדר זוויות, אותו מיקום ואותו גודל של הדמות בכל משבצת, אותם פנים בדיוק, אותה תנוחה${wbgOf(id)&&k!='jw'?'':', אותו רקע'}, אותם קווים לבנים בין המשבצות. כל מה שהדמות כבר לובשת בגיליון (כיסוי ראש בז׳, שמלה בצבע עור) נשאר בדיוק אותו דבר. השמלה בצבע עור נשארת בכל מקום שהפריט לא מכסה.`);
+ const B=blk(id,k);
+ if(B.all)P.push('חשוב מאוד: הבגד בהיר (לבן, שמנת או שקוף). כדי שאפשר יהיה לגזור אותו בדיוק, בכל הגיליונות של הדמות צבעי את הרקע מסביב לדמות בשחור אחיד, מכל הצדדים ועד הרצפה. הדמות, הבגד והקווים הלבנים בין המשבצות נשארים. הלבן בבגד נשאר לבן, ובד שקוף נשאר שקוף ורואים דרכו את הגוף.');
+ else if(B.any)P.push(`חשוב מאוד – הרקע שונה בכל גיליון, לפי צבע הבגד: בגיליונות של ${B.S.filter((o,i)=>B.L[i]).map(o=>o.n).join(', ')} (בהירים) צבעי את הרקע מסביב לדמות בשחור אחיד, מכל הצדדים ועד הרצפה. בגיליונות של ${B.S.filter((o,i)=>!B.L[i]).map(o=>o.n).join(', ')} (כהים) הרקע נשאר בדיוק כמו ב-doll-8, בהיר – אף פעם לא רקע שחור מאחורי בגד שחור או כהה, כי אז אי אפשר לגזור אותו.`);
+ const h=holOf(id);if(cloth&&h=='open')P.push(`בבד יש חורים (תחרה, רשת או רקמה עם חורים). דרך החורים רואים בדיוק מה שהדמות לובשת מתחת – השמלה בצבע עור או העור – כמו בגוף אמיתי. אל תמלאי את החורים בשחור, בלבן, ברקע או בצבע הבגד${B.any?', גם בגיליון עם רקע שחור':''}. אל תוסיפי בטנה.`);
+ else if(cloth&&h=='lined')P.push('לבגד יש בטנה תפורה מתחת לחורים או לתחרה, באותו צבע כמו בתמונת המוצר: היא חלק מהבגד ונשארת, ודרך החורים רואים את הבטנה ולא את הגוף.');
+ P.push(`אל תשני שום דבר אחר: אותו גיליון, אותו סדר זוויות, אותו מיקום ואותו גודל של הדמות בכל משבצת, אותם פנים בדיוק, אותה תנוחה${B.all?'':B.any?', אותו רקע (חוץ מהגיליונות שכתוב בהם רקע שחור)':', אותו רקע'}, אותם קווים לבנים בין המשבצות. כל מה שהדמות כבר לובשת בגיליון (כיסוי ראש בז׳, שמלה בצבע עור) נשאר בדיוק אותו דבר. השמלה בצבע עור נשארת בכל מקום שהפריט לא מכסה.`);
  return P}
 window.prompt250=prompt;window.outs250=outs;
 // ---------- the zip ----------
@@ -136,7 +152,7 @@ function bPrompt(ids,np){const all=ids.flatMap(id=>outs(id)),cus=all.filter(o=>o
   if(k=='set'){const [a,b]=setOf(id);L.push(`זה סט של שני חלקים: ${TN[a]} ו${TN[b]}. אני רוצה לראות את הסט ביחד, וגם כל חלק לבד.`)}
   else if(k=='jw'){const J=jwOf(id);L.push(J.length>1?`בתמונות יש כמה תכשיטים: ${J.map(j=>TN[j]).join(', ')}. כל תכשיט הוא פריט נפרד.`:`רק ה${TN[J[0]]}, גם אם בתמונה יש עוד תכשיטים.`)}
   else if(sheets.length>1)L.push(`בתמונות יש ${sheets.length} ${PLURAL[k]||'פריטים'}, ${['sweater','pants'].includes(k)?'כל אחד':'כל אחת'} לבד: ${sheets.map((o,j)=>`${j+1}) ${o.n}`).join(', ')}. הסדר: מימין לשמאל כמו בתמונה הראשית.`);
-  L.push(`התמונות שמחזירים למוצר ${i+1}:\n`+O.map(o=>`${++g}. `+retText(o,sheets,k)).join('\n'));
+  L.push(`התמונות שמחזירים למוצר ${i+1}:\n`+O.map(o=>`${++g}. `+retText(o,sheets,k)+bgNote(id,k,o)).join('\n'));
   // only what is this product's own; the general rules (how to edit the sheet, her measurements, extra clothes, don't change anything else) are said once, below
   const ru=rulesOf(id,k,sheets).slice(0,-1);L.push(...ru[0].split('\n').slice(1).filter(Boolean),...ru.slice(1).filter(r=>!/^(אם בתמונת המוצר|המידות שלי)/.test(r)));
   P.push(L.join('\n'))});
@@ -230,7 +246,7 @@ async function cuJpeg(f){const u=URL.createObjectURL(f);try{const m=await new Pr
 function packQ(id,k){const n=npOf(id),A=asked(id),g=gOf(id),W=PLURAL[k]||'פריטים';
  return `<div class="g250q g256q${A?'':' ask'}"><b>${A?'2. ':'❓ קודם כל: '}כמה ${W} יש בחבילה?</b>${!A&&g?`<small>לפי השם: ${g.n}${g.cols.length?' ('+es(g.cols.join(', '))+')':''}. נכון?</small>`:''}
   <div class="g250cs">${[1,2,3,4,5,6].map(v=>chip(A&&n==v||!A&&g&&g.n==v,'data-g250n',v,v)).join('')}${!A&&g?`<button type="button" class="g250c g256ok" data-g250n="${g.n}">✓ נכון, ${g.n}</button>`:''}</div>
-  ${n>1?`<small>${A?`📁 יש ${n} תיקיות נפרדות בקטגוריה – כל אחת כמו מוצר שקנית לבד. שם וצבע לכל אחת:`:'כל אחת תהיה תיקייה נפרדת. שם וצבע לכל אחת:'}</small><div class="g250pn g256pn">${namesOf(id).map((x,i)=>`<span><i>${i+1}</i><input data-g250pn="${i}" value="${es(x)}" aria-label="שם ${i+1}"><input data-g256pc="${i}" value="${es(colsOf(id)[i]||'')}" placeholder="צבע" aria-label="צבע ${i+1}"></span>`).join('')}</div>`:''}</div>`}
+  ${n>1?`<small>${A?`📁 יש ${n} תיקיות נפרדות בקטגוריה – כל אחת כמו מוצר שקנית לבד. שם וצבע לכל אחת:`:'כל אחת תהיה תיקייה נפרדת. שם וצבע לכל אחת:'}</small><div class="g250pn g256pn">${namesOf(id).map((x,i)=>`<span><i>${i+1}</i><input data-g250pn="${i}" value="${es(x)}" aria-label="שם ${i+1}"><input data-g256pc="${i}" value="${es(colsOf(id)[i]||'')}" placeholder="צבע" aria-label="צבע ${i+1}"><button type="button" class="g250c g257bg${pbOf(id,i)?' on':''}" data-g257bg="${i}" aria-pressed="${pbOf(id,i)}" title="הרקע ש-GPT יעשה בגיליון של ${es(x)}">${pbOf(id,i)?'⬛ רקע שחור':'⬜ רקע בהיר'}</button></span>`).join('')}</div><small>⬛ רקע שחור לבגד בהיר (לבן, שמנת) · ⬜ רקע בהיר לבגד כהה (שחור, חום). לחיצה מחליפה.</small>`:''}</div>`}
 // ---------- the window ----------
 let DL=null,ID='';
 function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';DL.dir='rtl';DL.setAttribute('aria-labelledby','g250t');document.body.appendChild(DL);
@@ -243,6 +259,8 @@ function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';
   if(q.g250k)return save({kd:q.g250k});
   if(q.g250b!=null)return save({blt:q.g250b});
   if(q.g250w!=null)return save({wbg:+q.g250w});
+  if(q.g257h)return save({hol:q.g257h=='no'?'':q.g257h});
+  if(q.g257bg!=null){const n=npOf(ID),L=Array.from({length:n},(_,i)=>pbOf(ID,i)?1:0),i=+q.g257bg;L[i]=L[i]?0:1;return save({pb:L})}
   if(q.g250n)return save({np:+q.g250n});
   if(q.g250j){const L=jwOf(ID).slice(),i=L.indexOf(q.g250j);if(i>=0){if(L.length>1)L.splice(i,1)}else L.push(q.g250j);return save({jw:JW.map(x=>x[0]).filter(x=>L.includes(x))})}
   if(q.g250sa)return save({sp:[q.g250sa,setOf(ID)[1]]});
@@ -276,7 +294,8 @@ function open(id){ID=id;if(B&&!B.sel.includes(id))B.from=0;const d=dlg(),k=kd(id
  if(k=='jw'){const J=jwOf(id);q.push(`<div class="g250q"><b>2. אילו תכשיטים יש במוצר?</b> <small>(אפשר כמה)</small><div class="g250cs">${JW.map(([v,t])=>chip(J.includes(v),'data-g250j',v,t)).join('')}</div><small>כל תכשיט יוצא לבד${J.includes('necklace')||J.includes('earrings')?', ובנוסף תקריב של הפנים שלך עם השרשרת / עם העגילים':''}.</small></div>`)}
  if(MULTI.includes(k))q.push(packQ(id,k));
  if(BELTK.includes(k)){const b=bltOf(id);q.push(`<div class="g250q"><b>${q.length+1}. הגיע עם חגורה?</b><div class="g250cs">${chip(!b||b=='no','data-g250b','no','אין חגורה')}${chip(b=='off','data-g250b','off','חגורה נפרדת – להוריד')}${chip(b=='on','data-g250b','on','חגורה תפורה, מאותו בד – להשאיר')}</div></div>`)}
- if(k!='jw'&&k!='shoes'&&k!='bag'){const w=wbgOf(id);q.push(`<div class="g250q"><b>${q.length+1}. הבגד לבן, שמנת או שקוף?</b><div class="g250cs">${chip(w,'data-g250w',1,'כן – רקע שחור')}${chip(!w,'data-g250w',0,'לא')}</div>${w?'<small>GPT יעשה רקע שחור, וכך האתר גוזר בדיוק בלי חורים.</small>':''}</div>`)}
+ if(k!='jw'&&k!='shoes'&&k!='bag'&&!(MULTI.includes(k)&&npOf(id)>1)){const w=wbgOf(id);q.push(`<div class="g250q"><b>${q.length+1}. הבגד לבן, שמנת או שקוף?</b><div class="g250cs">${chip(w,'data-g250w',1,'כן – רקע שחור')}${chip(!w,'data-g250w',0,'לא')}</div>${w?'<small>GPT יעשה רקע שחור, וכך האתר גוזר בדיוק בלי חורים.</small>':''}</div>`)}
+ if(k!='jw'&&k!='shoes'&&k!='bag'){const h=holOf(id);q.push(`<div class="g250q"><b>${q.length+1}. יש בבד חורים, תחרה או רשת?</b><div class="g250cs">${chip(!h,'data-g257h','no','אין')}${chip(h=='open','data-g257h','open','יש – רואים מה שמתחת')}${chip(h=='lined','data-g257h','lined','יש – עם בטנה תפורה')}</div>${h=='open'?'<small>GPT ישאיר את החורים פתוחים, והאתר גוזר אותם שקופים. בסטודיו לובשים מתחת חולצת בסיס, והיא נראית דרך החורים.</small>':h=='lined'?'<small>הבטנה היא חלק מהבגד ונשארת.</small>':''}</div>`)}
  const ps=(it(id).parts||[]).filter(x=>/^g\d+$/.test(x.k));
  d.innerHTML=`<div class="mk"><div class="mkh"><h3 id="g250t">🚀 ${es(nm(id))} – הכול ל-GPT</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
   <div class="g250top"><img alt="" src="${es(p)}"><div>${q.join('')}</div></div>
@@ -288,7 +307,7 @@ function open(id){ID=id;if(B&&!B.sel.includes(id))B.from=0;const d=dlg(),k=kd(id
  if(!d.open)d.showModal()}
 window.g250open=open;
 // her answers are saved quietly (no generic "נשמר: …" toast)
-{const _bp=typeof beforePut=='function'?beforePut:null;if(_bp)beforePut=function(id,patch){const k=patch&&Object.keys(patch);if(k&&k.length&&k.every(x=>['kd','blt','wbg','np','jw','sp','pn','pc','g250','parts','cus','whole'].includes(x)))return;return _bp.apply(this,arguments)}}
+{const _bp=typeof beforePut=='function'?beforePut:null;if(_bp)beforePut=function(id,patch){const k=patch&&Object.keys(patch);if(k&&k.length&&k.every(x=>['kd','blt','wbg','np','jw','sp','pn','pc','pb','hol','g250','parts','cus','whole'].includes(x)))return;return _bp.apply(this,arguments)}}
 // ---------- the box in the item window, under the buttons ----------
 function box(){const d=document.getElementById('dlg');if(!d||!d.open)return;const bar=d.querySelector('#dlbody .it77');if(!bar)return;
  const ed=d.querySelector('#dlbody .ed[data-id]'),id=(ed&&ed.dataset.id)||(typeof CUR!='undefined'?CUR:'');let x=d.querySelector('.g250box');

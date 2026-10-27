@@ -485,3 +485,5 @@ dialog#g256::backdrop{background:rgba(30,20,15,.45)}
 #g256 .mkb .mkp{background:var(--z-ink,#3a2418);color:#fff;border-color:transparent}
 #g256 .mkh h3 small{font-weight:400;opacity:.7}
 #g256 .g256top input{min-height:38px;padding:4px 10px;border-radius:10px;border:1px solid var(--z-line,#d8cfc6);font:inherit;background:#fff;color:inherit}
+#g250 .g257bg{flex:0 0 auto;white-space:nowrap;font-size:.78rem;padding:4px 8px;min-height:32px}
+@media (max-width:480px){#g250 .g256pn span{flex-wrap:wrap}#g250 .g256pn input[data-g256pc]{flex:1 1 0}}
