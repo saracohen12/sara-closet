@@ -46,7 +46,8 @@ async function setMany(ids,patch,msg){ids=ids.filter(id=>D[id]);if(!ids.length)r
 const toState=(ids,s,msg)=>setMany(ids,()=>({loc:s,locT:s?today():''}),msg);
 
 // "לבשתי היום" → עליי (the whole look too, it calls putItem for every item)
-{const _p=putItem;putItem=function(id,patch){try{if(patch&&'wear' in patch&&patch.wear>(it(id).wear||0)&&!('loc' in patch)){patch.loc='עליי';patch.locT=today()}}catch(_){}return _p.apply(this,arguments)}}
+{const _p=putItem;putItem=function(id,patch){try{if(patch&&'wear' in patch&&patch.wear>(it(id).wear||0)&&!('loc' in patch)&&!(patch._wd&&patch._wd.last&&patch._wd.last!=today())){   // v267: marking a day in the past doesn't put the item 'on me' today
+patch.loc='עליי';patch.locT=today()}}catch(_){}return _p.apply(this,arguments)}}
 
 // ---------- badges on the closet cards and in the studio ----------
 function badge(id){const c=document.querySelector(`.card[data-id="${CSS.escape(id)}"]`);if(!c)return;const s=stOf(id);if((c.dataset.s185||'')==s)return;

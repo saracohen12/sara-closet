@@ -380,9 +380,15 @@ function paint(id){const c=card(id);if(!c)return;place(c,id);const it=IT[id]||{}
  {const od=c.querySelector('.avd');if(od)od.remove();let b=c.querySelector('.ind247');if(!b){b=document.createElement('span');b.className='ind247';b.innerHTML='<i class="p">📷</i><i class="r">360</i>';(c.querySelector('.ph')||c).appendChild(b)}let st='';try{st=window.avStat?avStat(id):''}catch(_){}const has=v=>Array.isArray(v)?v.length>0:!!v,ph=st=='fix'||['img','imgs','pics','p5g','p5gv','p5g118','a8up'].some(k=>has(it[k])),ok=st=='ok';b.querySelector('.p').classList.toggle('on',ph);b.querySelector('.r').classList.toggle('on',ok);b.title=(ph?'📷 יש תמונה':'📷 עוד אין תמונה')+' · '+(ok?'360 מוכן על האווטאר':'360 עוד לא על האווטאר')}}
 function paintAll(){Object.keys(D).forEach(paint);const ks=[...new Set(Object.values(IT).map(v=>v.kid).filter(Boolean))];$('#kids').innerHTML=ks.map(k=>`<option value="${esc(k)}">`).join('');$('#kidf').innerHTML='<option value="">כל הילדים</option>'+ks.map(k=>`<option>${esc(k)}</option>`).join('');$('#kidf').value=KIDF}
 function saveLocal(){try{localStorage.setItem('it',JSON.stringify(IT));localStorage.setItem('ord',JSON.stringify(ORD))}catch(_){}}
-async function putItem(id,patch){if(window.beforePut)beforePut(id,patch);const it=Object.assign({},IT[id]||{},patch);Object.keys(it).forEach(k=>{if(it[k]===''||it[k]===false||it[k]==null)delete it[k]});
+// v267: a key that is gone (or a nested key that is gone) can only be written by replacing the whole doc
+function lostKeys(o,n){if(!o||typeof o!='object'||Array.isArray(o))return false;if(!n||typeof n!='object'||Array.isArray(n))return true;return Object.keys(o).some(k=>!(k in n)||lostKeys(o[k],n[k]))}
+async function putItem(id,patch){if(window.beforePut)beforePut(id,patch);const old=IT[id]||{},it=Object.assign({},old,patch);Object.keys(it).forEach(k=>{if(it[k]===''||it[k]===false||it[k]==null)delete it[k]});
  if(Object.keys(it).length)IT[id]=it;else delete IT[id];paint(id);apply();
- if(DB){try{const d=DB.collection('items').doc(id);if(IT[id])await d.set(IT[id]);else await d.delete()}catch(e){console.warn(e)}}else saveLocal()}
+ if(DB){try{const d=DB.collection('items').doc(id);if(!IT[id]){await d.delete();return}
+   // v267: write only the fields that changed, so a change made at the same time on another device (place, note, state…) is not overwritten by this device's older copy
+   const ks=Object.keys(patch||{}),part=ks.every(k=>k in it&&!lostKeys(old[k],it[k]));
+   if(part&&ks.length&&Object.keys(old).length){const up={};ks.forEach(k=>up[k]=it[k]);try{await d.update(up);return}catch(e){if(!(e&&e.code=='invalid_argument'))throw e}}
+   await d.set(IT[id])}catch(e){console.warn(e)}}else saveLocal()}
 async function putOrd(o,v){ORD[o]=Object.assign({},ORD[o],v&&typeof v=='object'?v:{arrived:v});/* v139: merge, keeps pd */$$('.grid .card').forEach(c=>{if(c.dataset.ord==o)paint(c.dataset.id)});apply();
  if(DB){try{await DB.collection('orders').doc(o).set(ORD[o])}catch(e){console.warn(e)}}else saveLocal()}
 document.addEventListener('click',async e=>{const mdb=e.target.closest('[data-mode]');if(mdb){toggleMode(mdb.closest('.ed').dataset.id,mdb.dataset.mode);return}
@@ -424,8 +430,11 @@ function updFb(){$('#fb').classList.toggle('on',!!(COL||SZ||STF||TGF||SSF||FLF||
 function visible(){return $$('.grid .card:not(.hide)')}
 function step(d){const v=visible();const i=v.findIndex(c=>c.dataset.id==CUR);if(i<0)return;const n=v[(i+d+v.length)%v.length];openItem(n.dataset.id)}
 $('#next').addEventListener('click',()=>step(1));$('#prev').addEventListener('click',()=>step(-1));
-document.addEventListener('keydown',e=>{if(!$('#dlg').open)return;if(e.key=='ArrowLeft')step(1);if(e.key=='ArrowRight')step(-1)});
-let tx=null;$('#dlg').addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+// v267: arrows inside a text box move the cursor – they never jump to another item (the note being typed was lost)
+const TYPING=t=>t&&t.closest&&t.closest('input,textarea,select,[contenteditable],[contenteditable=""],[contenteditable=true]');
+document.addEventListener('keydown',e=>{if(!$('#dlg').open||TYPING(e.target)||TYPING(document.activeElement))return;if(e.key=='ArrowLeft')step(1);if(e.key=='ArrowRight')step(-1)});
+// v267: a swipe changes item only when it starts on the main picture – scrolling a row of pictures ("דומים", head coverings…) or a text box stays in this item
+let tx=null;$('#dlg').addEventListener('touchstart',e=>{const t=e.target;tx=(TYPING(t)||!(t.closest&&t.closest('img.main')))?null:e.touches[0].clientX},{passive:true});
 $('#dlg').addEventListener('touchend',e=>{if(tx==null)return;const dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)>60)step(dx>0?1:-1)});
 let F='all',G='all',C='',SC='';
 const tgs=c=>(c.dataset.tg||'').split('|');
@@ -461,6 +470,9 @@ const MONTHS={8:'אוגוסט',9:'ספטמבר',10:'אוקטובר'};
 let PMIN=null,PMAX=null,MONF='',ORDF='',QM=false,BYO=false,CMP=false,CMPSEL=[],LAST=null,RECENT=[];
 const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
 function daysLeft(iso){if(!iso)return null;const d=new Date(iso+'T00:00:00');return Math.round((d-today())/864e5)}
+// v267: the return countdown in the duplicates table is counted here, from today (it was counted once, when the page was built)
+function rdlCells(){document.querySelectorAll('td[data-rdl]').forEach(td=>{const n=daysLeft(td.dataset.rdl);if(n!=null)td.textContent=n>=0?`עוד ${n} ימים`:'עבר'})}
+try{rdlCells();setTimeout(rdlCells,3000)}catch(_){}
 const fmtD=iso=>{const [y,m,d]=iso.split('-');return `${+d}/${+m}`};
 function isReturnable(id){const it=IT[id]||{};return it.s!='kept'&&it.s!='give'}
 function paintRet(c){const e=c.querySelector('.ret');const iso=c.dataset.rdl;const it=IT[c.dataset.id]||{};e.className='ret';e.textContent='';
@@ -566,7 +578,7 @@ function afterOpen(id){RECENT=[id,...RECENT.filter(z=>z!=id)].slice(0,12);try{lo
  const sims=Object.keys(D).filter(o=>o!=id&&curCat(o)==cat&&card(o)&&card(o).dataset.c==famc&&(IT[o]||{}).s!='ret').slice(0,8);
  if(sims.length)$('#dlbody').insertAdjacentHTML('beforeend',`<div class="sim"><h4>דומים מהארון שלך (אותו סוג ואותו צבע)</h4><div class="strip">${sims.map(o=>`<button class="mini" data-open="${o}">${img(o)||(D[o]||{}).hi?`<img data-th="${o}" src="${img(o)||TPH}" alt="">`:''}<span>${m(D[o].paid)}</span></button>`).join('')}</div></div>`)}
 document.addEventListener('click',e=>{const w=e.target.closest('[data-wear]');if(w){const id=CUR;const cur=(IT[id]||{}).wear||0;putItem(id,{wear:Math.max(0,cur+ +w.dataset.wear)||''}).then(()=>openItem(id))}
- const im=e.target.closest('.dl img.main');if(im){const z=$('#zoom');z.querySelector('img').src=im.src;z.classList.remove('hide')}});
+ const im=e.target.closest('.dl img.main');if(im){const z=$('#zoom'),zi=z&&z.querySelector('img');if(!zi)return;zi.src=im.src;z.classList.remove('hide')}});   // v267: #zoom is empty now (the studio zoom took over) – no error on every tap
 $('#zoom').addEventListener('click',e=>e.currentTarget.classList.add('hide'));
 function recent(){const r=RECENT.filter(id=>D[id]).slice(0,12);$('#recent').innerHTML=r.length?`<h3>נצפו לאחרונה</h3><div class="strip">${r.map(id=>`<button class="mini" data-open="${id}">${img(id)||(D[id]||{}).hi?`<img data-th="${id}" src="${img(id)||TPH}" alt="">`:''}<span>${m(D[id].paid)}</span></button>`).join('')}</div>`:''}
 try{RECENT=JSON.parse(localStorage.getItem('recent')||'[]')}catch(_){}

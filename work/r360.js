@@ -43,6 +43,7 @@ let DB=null,L3={},BGU=[],BGD=null;   // BGU: v204 her own backgrounds (db 'bgs' 
  db.collection('bgs').onSnapshot(sn=>{const L=[];sn.docs.forEach(d=>{const v=d.data();if(v&&v.src)L.push({k:'u_'+d.id,id:d.id,n:v.n||'שלי',u:'/_blob/'+v.src,t:v.t||0})});L.sort((a,b)=>b.t-a.t);BGU=L;try{paintBgs();if(BGD&&BGD.open)bgDlg()}catch(_){}},()=>{});
  db.collection('r360').doc('state').get().then(d=>{const v=d&&d.exists&&d.data&&d.data();if(v&&v.on&&!localStorage.getItem('r360')){ST=Object.assign(clone(DEF),v);redraw()}}).catch(()=>{})}catch(_){}})();
 const toast_=m=>(window.toast||(()=>{}))(m);
+const ERR=(w,e)=>{try{(window.ERRS=window.ERRS||[]).push('r360 '+w+': '+(e&&e.message||e))}catch(_){}};   // v267
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const cat=id=>{try{return curCat(id)}catch(_){return (D[id]||{}).cat||''}};
 const nm=id=>{const x=D[id]||{};return String(x.short||x.full||'').replace(/^[A-Za-z0-9&'.\-\s]+(?=[֐-׿])/,'').trim()};  // the Shein brand name in front is noise
@@ -404,7 +405,7 @@ function Stage(host,opt={}){
  el.addEventListener('keydown',e=>{if(e.key=='ArrowLeft'){api.stop();api.show(cur+1);e.preventDefault()}if(e.key=='ArrowRight'){api.stop();api.show(cur-1);e.preventDefault()}});
  api.draw();label();return api}
 const STAGES=new Set();
-async function redraw(){for(const s of STAGES)await s.draw();paintRoom()}
+async function redraw(){for(const s of STAGES){try{await s.draw()}catch(e){ERR('draw',e)}}paintRoom()}   // v267: one stage that fails no longer stops the others (the studio froze)
 
 // ---------- wearing ----------
 function wearItem(id){const r=READY[id];if(!r)return;
@@ -505,7 +506,9 @@ function build(){
   if(t.dataset.l3pin){TODAY.pinLook(t.dataset.l3pin);return}
   if(t.dataset.look){useLook(t.dataset.look);nudgePin();return}
   if(t.dataset.l3){const l=L3[t.dataset.l3];if(l){ST=Object.assign(clone(DEF),{on:Object.assign({},l.on||{}),head:l.head||'c',tuck:l.tuck?1:0,under:l.under?1:0,wb:l.wb?1:0,cam:l.cam==null?'black':l.cam,mk:l.mk||'',tf:l.tf||'',tc:l.tc||null});MISS=[];keep();redraw();paintMiss();big.show(0);nudgePin()}return}
-  if(t.dataset.l3x){const id=t.dataset.l3x;if(DB)DB.collection('looks360').doc(id).delete().catch(()=>{});delete L3[id];paintLooks();return}});
+  if(t.dataset.l3x){if(typeof sure=='function'&&!sure(t,'בטוח? לחצי שוב'))return;   // v267: two taps, and a way back – one tap on the small ✕ used to delete the look for good
+   const id=t.dataset.l3x,was=L3[id];if(DB)DB.collection('looks360').doc(id).delete().catch(()=>{});delete L3[id];paintLooks();
+   (window.toast||(()=>{}))('הלוק נמחק',was?async()=>{L3[id]=was;paintLooks();try{if(DB){const v=Object.assign({},was);delete v.id;await DB.collection('looks360').doc(id).set(v)}}catch(e){ERR('l3undo',e)}}:undefined);return}});
  paintCats();paintTabs();paintRoom();paintLooks()}
 function paintTabs(){if(!dlg)return;dlg.querySelectorAll('.r3tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t==TAB));dlg.querySelectorAll('.r3pane').forEach(p=>p.hidden=p.dataset.p!=TAB);if(TAB=='closet')paintGrid();else paintLooks()}
 // v199: under "על הראש": the hairstyles when the wig is on, the ties when a cover is on (then its colour), the makeup – only rows she has styles for
@@ -546,7 +549,7 @@ function paintSty(){const box=dlg&&dlg.querySelector('.r3styr');if(!box)return;
  dlg.querySelectorAll('.r3worn img[data-sth]').forEach(i=>{if(!i.getAttribute('src'))styThumb(i.dataset.sth).then(u=>{if(u)i.src=u})})}
 function paintRoom(){if(!dlg)return;
  const hk=ST.head=='w'||/^yh/.test(ST.head)?'w':'c';   // v204: a hairstyle is her wig, anything else is a cover
- dlg.querySelectorAll('.r3heads button').forEach(b=>b.setAttribute('aria-checked',b.dataset.h==hk));
+ dlg.querySelectorAll('.r3heads button[data-h]').forEach(b=>b.setAttribute('aria-checked',b.dataset.h==hk));   // v267: only the head buttons – the tie/hair/makeup chips (no data-h) kept losing their highlight
  const ids=wornIds(ST);const wv=dlg.querySelector('.r3worn');
  const chips=ids.map(id=>`<button type="button" class="r3wc" data-off="${id}" aria-label="להוריד: ${esc(nm(id))}"><img alt="" data-th="${id}" src="${ph(id)}"><span>${esc(nm(id))}</span><b aria-hidden="true">✕</b></button>`);
  if(ST.head=='w')chips.unshift(`<button type="button" class="r3wc" data-off="w" aria-label="להוריד: הפאה"><img alt="" src="a8/t_w.webp${V}"><span>הפאה שלי</span><b aria-hidden="true">✕</b></button>`);
@@ -714,7 +717,7 @@ function kindOf(id){const c=cat(id),t=(D[id]||{}).short+' '+(D[id]||{}).full;
  if(c=='tops')return /בסיס/.test(t)?'base':/סוודר|סריג/.test(t)?'sweater':'top';
  if(c=='outer')return /מעיל/.test(t)?'coat':/וסט|אפוד/.test(t)?'vest':'jacket';
  if(c=='scarves')return /כובע|כיסוי/.test(t)&&!/מטפחת|צעיף/.test(t)?'cover':'scarf';
- if(c=='jewelry')return /סט/.test(t)||(/עגיל/.test(t)&&/שרשר/.test(t))?'jwset':/עגיל/.test(t)?'earrings':/צמיד|שעון/.test(t)?'bracelet':'necklace';
+ if(c=='jewelry')return /(^|[\s,.\-–(])סט($|[\s,.\-–)])/.test(t)||(/עגיל/.test(t)&&/שרשר/.test(t))?'jwset':/עגיל/.test(t)?'earrings':/צמיד|שעון/.test(t)?'bracelet':'necklace';
  if(c=='belts')return 'belt';if(c=='shoes')return 'shoes';if(c=='bags')return 'bag';return 'top'}
 function prompt(id){const K=KIND[kindOf(id)];const [t,how,body,len,n=1,g='cloth']=K;const x=D[id]||{};const item=`${t} – ${nm(id)}${x.color?', צבע: '+x.color:''}`;const P=[];
  P.push(`מצורפות שתי תמונות.\nהתמונה הראשונה: מה שקניתי – ${item}.\nהתמונה השנייה: גיליון של הדמות שלי ב-8 זוויות מסביב, שתי שורות של 4 משבצות.`);
@@ -840,12 +843,12 @@ const pinB=(k,n)=>`<button type="button" class="r3lp" data-l3pin="${esc(k)}" ari
 function nudgePin(){const b=dlg&&dlg.querySelector('.r3pin');if(!b)return;b.classList.remove('r3nudge');void b.offsetWidth;b.classList.add('r3nudge');setTimeout(()=>b.classList.remove('r3nudge'),3200)}
 (async()=>{try{const db=await window.claude?.use?.('db');if(!db)return;const d=await db.collection('r360').doc('home').get();const v=d&&d.exists&&d.data&&d.data();
  if(v&&!localStorage.getItem('r3home')){HOME=Object.assign({head:'c',pin:null},v);STAGES.forEach(s=>s.today&&s.draw());HOMEL.forEach(f=>{try{f()}catch(_){}})}}catch(_){}})();
-let LOTD=null;const lotdIds=()=>{if(!LOTD)LOTD=lotd();return LOTD.ids.filter(id=>!READY[id].head)};
+let LOTD=null;const lotdIds=()=>{if(!LOTD||LOTD.ids.some(id=>!READY[id]))LOTD=lotd();return LOTD.ids.filter(id=>READY[id]&&!READY[id].head)};   // v267: an item taken off the avatar no longer breaks the look of the day
 function homeState(){const head=HOME.head||'c';
  if(HOME.pin)return Object.assign(clone(DEF),clone(HOME.pin),{head});
  return stateFrom(lotdIds(),{head,cam:ST.cam,wb:ST.wb,bg:ST.bg})}
 const TODAY={state:homeState,
- ids:()=>{const s=homeState();return wornIds(s).filter(id=>!READY[id].head)},
+ ids:()=>{const s=homeState();return wornIds(s).filter(id=>READY[id]&&!READY[id].head)},
  pinned:()=>!!HOME.pin,heads:()=>HEAD2().map(h=>({k:h.k,n:h.n||nm(h.id).split(' ').slice(0,2).join(' '),src:h.k=='c'&&STH[defTie()+'|'+GREY.join(',')]||(h.src?h.src+(h.dyn?'':V):ph(h.id))})),coverThumb,head:()=>HOME.head||'c',
  setHead:k=>{HOME.head=k;saveHome()},
  pin:()=>pinGo(ST),

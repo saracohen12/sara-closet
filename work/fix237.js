@@ -50,7 +50,7 @@ async function copy(b){const t=prompt();let ok=false;try{await navigator.clipboa
  if(!ok){try{const a=document.createElement('textarea');a.value=t;a.setAttribute('readonly','');a.style.cssText='position:fixed;opacity:0';DL.appendChild(a);a.select();ok=document.execCommand('copy');a.remove()}catch(_){}}
  const o=b.textContent;b.textContent=ok?'✓ הועתק – עכשיו ל-GPT':'לא הצלחתי להעתיק';setTimeout(()=>{if(b.isConnected)b.textContent=o},2600)}
 // the upload: the usual replace button of the item (a tie on a cover keeps its kind and its place in the cover's ties)
-function upBtn(){const p=parts(ID)[PI]||{};let x='';if(p.k=='tiex'){x=' data-w="1"';try{const t=(window.tie228?tie228.txs(ID):[]).find(y=>y.L&&p.L&&y.L[0]==p.L[0]),m=t&&/^w(\d+)$/.exec(t.p||'');if(m)x+=` data-tx228="${m[1]}"`}catch(_){}}
+function upBtn(){const p=parts(ID)[PI]||{};let x=parts(ID).length>1?` data-at="${PI}"`:'';   // v267: on a set the fixed picture replaces THIS part onlyif(p.k=='tiex'){x=' data-w="1"';try{const t=(window.tie228?tie228.txs(ID):[]).find(y=>y.L&&p.L&&y.L[0]==p.L[0]),m=t&&/^w(\d+)$/.exec(t.p||'');if(m)x+=` data-tx228="${m[1]}"`}catch(_){}}
  return `<button type="button" class="mkp" data-up188="${es(ID)}"${x}>📤 להעלות את התמונה המתוקנת</button>`}
 function paint(){const P=parts(ID);
  DL.innerHTML=`<div class="mk"><div class="mkh"><h3 id="fix237t">✨ לתקן ב-GPT · ${es(nm(ID).split(' ').slice(0,5).join(' '))}</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>

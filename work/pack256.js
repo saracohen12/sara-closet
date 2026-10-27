@@ -72,7 +72,8 @@ window.g256folder=openF;
 // one sheet GPT returned for only this piece (e.g. redoing one shirt)
 function upOne(s){const f=document.createElement('input');f.type='file';f.accept='image/*,.zip,application/zip,application/x-zip-compressed';f.hidden=true;document.body.appendChild(f);
  f.addEventListener('change',async()=>{const fs=[...f.files];f.remove();if(!fs.length)return;
-  try{if(typeof window.av188up!='function')throw new Error('av188');const id=s.split('~')[0],G=window.g256;window.av188kind(s,G?G.kd(id):'top');toast_('מעלה…');await window.av188up(s,fs);toast_('✓ עלה');if(DL&&DL.open)openF(s)}
+  try{if(typeof window.av188up!='function')throw new Error('av188');const id=s.split('~')[0],pk=s.split('~')[1]||'',G=window.g256;let kn=G?G.kd(id):'top';try{const o=(window.outs250?outs250(id):[]).find(o=>o.pk==pk&&o.kind);if(o)kn=o.kind}catch(_){}window.av188kind(s,kn);   // v267: the piece's own kind (a set's skirt, a jewelry set's earrings) – not the product's 'set'/'jw'
+  toast_('מעלה…');await window.av188up(s,fs);toast_('✓ עלה');if(DL&&DL.open)openF(s)}
   catch(e){ERR('up',e);toast_('לא הצלחתי להעלות. לנסות שוב')}});f.click()}
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('.pk256[data-pk256]');if(!t)return;e.preventDefault();e.stopPropagation();openF(t.dataset.pk256)},true);
 document.addEventListener('keydown',e=>{if(e.key!='Enter'&&e.key!=' ')return;const t=e.target.closest&&e.target.closest('.pk256[data-pk256]');if(!t)return;e.preventDefault();openF(t.dataset.pk256)});

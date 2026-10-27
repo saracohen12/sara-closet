@@ -40,14 +40,20 @@ let GEN=[],GENO={};
 function hubOpts(){return {occ:$('#hocc').value,sea:$('#hsea').value,fav:$('#hfav').checked,kids:$('#hkid').checked}}
 function runGen(anchor){GENO=hubOpts();const avoid=new Set();GEN=[0,1,2].map(()=>{const L=genLook(GENO,avoid,anchor);Object.values(L).forEach(id=>{if(id!=anchor&&['dresses','skirts','tops','sets'].includes(curCat(id)))avoid.add(id)});return L});
  $('#hlooks').innerHTML=GEN.map((L,i)=>lookHTML(L,i)).join('')||'<p>לא נמצאו מספיק פריטים. נסי לשנות את הבחירה.</p>'}
-async function saveDoc(col,id,data){if(DB){try{if(data)await DB.collection(col).doc(id).set(data);else await DB.collection(col).doc(id).delete()}catch(e){console.warn(e)}}else{try{localStorage.setItem('hub_'+col,JSON.stringify({looks:LOOKS,plan:PLAN,credits:CREDITS,settings:SET}[col]))}catch(_){}}}
+// v267: the settings doc is shared by many parts of the site – write only the top-level parts that changed since the last snapshot, so one part (or device) doesn't overwrite another's
+let SET0=null;const _lost=(o,n)=>{if(!o||typeof o!='object'||Array.isArray(o))return false;if(!n||typeof n!='object'||Array.isArray(n))return true;return Object.keys(o).some(k=>!(k in n)||_lost(o[k],n[k]))};
+async function saveDoc(col,id,data){if(DB){try{const ref=DB.collection(col).doc(id);
+  if(data&&col=='settings'&&id=='main'&&SET0){const ch=Object.keys(data).filter(k=>JSON.stringify(data[k])!==JSON.stringify(SET0.v[k]));
+   if(!ch.length)return;
+   if(Object.keys(SET0.v).every(k=>k in data)&&ch.every(k=>!_lost(SET0.v[k],data[k]))){const up={};ch.forEach(k=>up[k]=data[k]);try{await ref.update(up);ch.forEach(k=>SET0.v[k]=JSON.parse(JSON.stringify(data[k])));return}catch(e){if(!(e&&e.code=='invalid_argument'))throw e}}}
+  if(data)await ref.set(data);else await ref.delete();if(col=='settings'&&id=='main'&&data)SET0={v:JSON.parse(JSON.stringify(data))}}catch(e){console.warn(e)}}else{try{localStorage.setItem('hub_'+col,JSON.stringify({looks:LOOKS,plan:PLAN,credits:CREDITS,settings:SET}[col]))}catch(_){}}}
 function loadLocalHub(){try{LOOKS=JSON.parse(localStorage.getItem('hub_looks')||'{}');const p=JSON.parse(localStorage.getItem('hub_plan')||'null');if(p)PLAN=p.week||p;CREDITS=JSON.parse(localStorage.getItem('hub_credits')||'{}');const s=JSON.parse(localStorage.getItem('hub_settings')||'null');if(s)SET=s.main||s}catch(_){}}
 loadLocalHub();
 (async()=>{try{const db=await claude.use('db');if(!db)return;
  db.collection('looks').onSnapshot(sn=>{const n={};sn.docs.forEach(d=>{const v=d.data();if(v)n[d.id]=Object.assign({id:d.id},v)});LOOKS=n;renderHub()},e=>{});
  db.collection('plan').onSnapshot(sn=>{sn.docs.forEach(d=>{if(d.id=='week')PLAN=JSON.parse(JSON.stringify(d.data()||{days:{}}))});renderHub()},e=>{});
  db.collection('credits').onSnapshot(sn=>{const n={};sn.docs.forEach(d=>{n[d.id]=JSON.parse(JSON.stringify(d.data()||{}))});CREDITS=n;renderHub()},e=>{});
- db.collection('settings').onSnapshot(sn=>{sn.docs.forEach(d=>{if(d.id=='main')SET=JSON.parse(JSON.stringify(d.data()||{}))/* v93: the snapshot object is read-only – every change to SET was silently lost and saved back as the old doc */});renderHub()},e=>{})}catch(e){}})();
+ db.collection('settings').onSnapshot(sn=>{sn.docs.forEach(d=>{if(d.id=='main'){SET=JSON.parse(JSON.stringify(d.data()||{}));SET0={v:JSON.parse(JSON.stringify(SET))}}/* v93: the snapshot object is read-only – every change to SET was silently lost and saved back as the old doc */});renderHub()},e=>{})}catch(e){}})();
 async function savePlan(){PLAN.days=PLAN.days||{};if(DB)await saveDoc('plan','week',PLAN);else{try{localStorage.setItem('hub_plan',JSON.stringify(PLAN))}catch(_){}}}
 async function saveLook(L,occ,name){const id='l'+Date.now().toString(36);LOOKS[id]={id,name:name||('לוק '+(Object.keys(LOOKS).length+1)),occ,items:L,created:new Date().toISOString().slice(0,10)};
  if(DB)await saveDoc('looks',id,LOOKS[id]);else{try{localStorage.setItem('hub_looks',JSON.stringify(LOOKS))}catch(_){}}toast('הלוק נשמר באלבום');renderHub();return id}

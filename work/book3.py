@@ -172,7 +172,7 @@ def tags(x):
     elif any(k in t for k in ['קיץ','שרוול קצר','גופייה','קצרה','רשת','שיפון']): s.add('קיץ')
     else: s.add('מעבר')
     return sorted(r),sorted(s)
-TODAY=_dt.date(2026,10,20)
+TODAY=_dt.date.today()   # v267: was fixed at 20/10 – the page also recounts in the browser every day (data-rdl)
 EXACT={'GSH1RR24U0017QJ':(10,25),'GSH1R824B00N4WS':(10,26),'GSH1R424X000MNA':(10,20),'GSH1RF24F002MH3':(11,3),'GSH1RR24C001A5K':(10,25)}
 NORET={'GSH19924N00NB85','GSH199241001VHG','GSH1992410000HR','GSH199241002CRC'}  # Shein: this category can't be returned
 def retdate(x):
@@ -233,7 +233,8 @@ for xs,kind in dg:
     rd=[x['retd'] for x in xs if x.get('retd') is not None]
     r=max(rd) if rd else None
     rtxt='—' if r is None else (f'עוד {r} ימים' if r>=0 else 'עבר')
-    drows.append(f'<tr data-ids="{" ".join(x["id"] for x in xs)}"><th><a href="#" class="dlink" data-id="{xs[0]["id"]}">{html.escape(xs[0]["short"][:38])}</a><small>{kind}</small></th><td>{n}</td><td>{money(extra)}</td><td>{rtxt}</td></tr>')
+    rl=[x['rdl'] for x in xs if x.get('rdl') and x.get('retd') is not None]; rla=f' data-rdl="{max(rl)}"' if rl else ''
+    drows.append(f'<tr data-ids="{" ".join(x["id"] for x in xs)}"><th><a href="#" class="dlink" data-id="{xs[0]["id"]}">{html.escape(xs[0]["short"][:38])}</a><small>{kind}</small></th><td>{n}</td><td>{money(extra)}</td><td{rla}>{rtxt}</td></tr>')
 dupt=f'<p class="dnote">אם תחזירי עותק אחד מכל כפילות, אפשר לקבל חזרה עד <b>{money(DT)}</b>. זמני ההחזרה משוערים: בשיין בערך 72 יום מההזמנה, ובטמו 90 יום.</p><table class="sumt"><colgroup><col style="width:52%"><col style="width:10%"><col><col></colgroup><thead><tr><th>פריט</th><th>כמה</th><th>אפשר לקבל</th><th>החזרה</th></tr></thead><tbody>{"".join(drows)}</tbody></table>'
 tT=sum(NET.values());
 rows=[]

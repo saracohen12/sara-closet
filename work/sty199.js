@@ -22,14 +22,19 @@ let HID=new Set(),SHOWH=false;
 const hidK=(pr,x)=>pr?pr.k:'id:'+x.id;
 const gone=x=>HID.has('id:'+x.id)||!!(x.p&&HID.has(x.p))||(!x.p&&HID.size>0&&presets(x.set).some(pr=>pr.n==x.n&&HID.has(pr.k)));
 const R=()=>window.R360;
-function push(){try{R()&&R().styles(LIST.filter(x=>!gone(x)))}catch(e){ERR('reg',e)}}
+// v267: nothing goes to the studio before her styles have loaded – an empty list used to reset her tie, hairstyle and makeup on the avatar
+let SLOAD=false,HLOAD=false,OPEND=false;
+function push(){if(!SLOAD)return;try{R()&&R().styles(LIST.filter(x=>!gone(x)))}catch(e){ERR('reg',e)}}
 (async()=>{try{const db=await window.claude?.use?.('db');if(!db)return;DB=db;
  db.collection('styles').onSnapshot(sn=>{const L=[];sn.docs.forEach(d=>{const v=d.data();if(v&&v.set&&Array.isArray(v.L))L.push(Object.assign({},v,{id:d.id}))});
-  L.sort((a,b)=>(a.t||0)-(b.t||0));LIST=L;push();paint();setTimeout(recut,2500)},e=>ERR('snap',e))}catch(e){ERR('db',e)}})();
+  L.sort((a,b)=>(a.t||0)-(b.t||0));LIST=L;SLOAD=true;push();paint();setTimeout(recut,2500)},e=>ERR('snap',e))}catch(e){ERR('db',e)}})();
 const mine=set=>LIST.filter(x=>x.set==set);
 const seen=set=>mine(set).filter(x=>!gone(x));
 (async()=>{try{const db=await window.claude?.use?.('db');if(!db)return;db.collection('stylehide').onSnapshot(sn=>{const d=sn.docs.find(y=>y.id=='all'),v=d&&d.data();
-  HID=new Set(v&&Array.isArray(v.k)?v.k:[]);const od=sn.docs.find(y=>y.id=='ord'),ov=od&&od.data();if(ov&&!ORDT){ORDSETS.forEach(t=>ORD[t]=ordOk(ov[t]));if(!RS.tie.length&&!RS.hair.length)freeze();try{R()&&R().restyle&&R().restyle()}catch(_){}}push();paint()},e=>ERR('hsnap',e))}catch(e){ERR('hdb',e)}})();
+  HID=new Set(v&&Array.isArray(v.k)?v.k:[]);const od=sn.docs.find(y=>y.id=='ord'),ov=od&&od.data();const first=!HLOAD;HLOAD=true;
+  // v267: a ⭐ or a pick made before her saved order arrived is added to it (it used to replace the whole order and wipe her stars)
+  if(first&&OPEND){const loc=ORD;ORD={};ORDSETS.forEach(t=>{const a=ordOk(ov&&ov[t]),b=loc[t]||{f:[],r:[]};ORD[t]={f:[...a.f,...b.f.filter(u=>!a.f.includes(u))].slice(0,60),r:[...b.r,...a.r.filter(u=>!b.r.includes(u))].slice(0,8)}});OPEND=false;ordSave();if(!RS.tie.length&&!RS.hair.length)freeze()}
+  else if(ov&&!ORDT){ORDSETS.forEach(t=>ORD[t]=ordOk(ov[t]));if(!RS.tie.length&&!RS.hair.length)freeze();try{R()&&R().restyle&&R().restyle()}catch(_){}}push();paint()},e=>ERR('hsnap',e))}catch(e){ERR('hdb',e)}})();
 // v238 (Sara 27/10 10:00 "קשירות שאני יותר אוהבת, להעלות אותן קדימה" + 10:00 "הקשירות האחרונות שנבחרו – בהתחלה"): ties and hairstyles in her order –
 // ⭐ favourites first (she moves them ⬆), then the last ones she picked, then the rest. db 'stylehide'/'ord' {tie:{f:[],r:[]},hair:{f:[],r:[]}}; units are hidK keys.
 const ORDSETS=['tie','hair','mk'];let ORD={tie:{f:[],r:[]},hair:{f:[],r:[]},mk:{f:[],r:[]}},RS={tie:[],hair:[],mk:[]},ORDT=null;   // v261: makeup has ⭐ too
@@ -38,9 +43,10 @@ function freeze(){ORDSETS.forEach(t=>RS[t]=ORD[t].r.slice())}   // the recent or
 function rank(set,u){const o=ORD[set];if(!o||!u)return 1e4;const f=o.f.indexOf(u);if(f>=0)return f;const r=(RS[set]||[]).indexOf(u);return r>=0?100+r:1e4}
 const unitOf=x=>x?(x.p&&presets(x.set).some(pr=>pr.k==x.p)?x.p:'id:'+x.id):'';
 const ordSort=(set,arr,uf)=>arr.map((e,i)=>[e,i]).sort((a,b)=>(rank(set,uf(a[0]))-rank(set,uf(b[0])))||(a[1]-b[1])).map(z=>z[0]);
-function ordSave(){clearTimeout(ORDT);ORDT=setTimeout(async()=>{try{if(DB)await DB.collection('stylehide').doc('ord').set(Object.assign({t:Date.now()},ORD))}catch(e){ERR('ord',e)}},600)}
+function ordSave(){if(!HLOAD){OPEND=true;return}clearTimeout(ORDT);ORDT=setTimeout(async()=>{try{if(DB)await DB.collection('stylehide').doc('ord').set(Object.assign({t:Date.now()},ORD))}catch(e){ERR('ord',e)}ORDT=null},600)}   // v267: ORDT cleared after the write, so changes from another device show again
 function ordChanged(){ordSave();try{R()&&R().restyle&&R().restyle()}catch(_){}}
-function fav(set,u){const o=ORD[set];if(!o||!u)return;const i=o.f.indexOf(u);if(i>=0)o.f.splice(i,1);else o.f.push(u);ordChanged();paint()}
+function fav(set,u){const o=ORD[set];if(!o||!u)return;const i=o.f.indexOf(u);if(i>=0)o.f.splice(i,1);else{if(!o.f.length)MORE[set]=true;o.f.push(u)}   // v267: the first ⭐ keeps the list open
+ ordChanged();paint()}
 function favUp(set,u){const o=ORD[set];const i=o?o.f.indexOf(u):-1;if(i<=0)return;o.f.splice(i,1);o.f.splice(i-1,0,u);ordChanged();paint()}
 function rec(set,u){const o=ORD[set];if(!o||!u)return;o.r=[u,...o.r.filter(y=>y!=u)].slice(0,8);ordSave()}
 // v261 (Sara 27/10 20:59 "בכל מקום שאני רואה את הכיסויים ... אפשרות לסמן כוכבית ... ורק מה שעם כוכבית, זה יוצא ... אם אני רוצה להוסיף, זה נפתח לי, ואז זה מוסיף לי כוכבית"):
@@ -51,7 +57,8 @@ const isFav=(set,u)=>!!(ORD[set]&&u&&ORD[set].f.includes(u));
 const hasFav=set=>!!(ORD[set]&&ORD[set].f.length);
 function star(set,u,on){const o=ORD[set];if(!o||!u)return;const i=o.f.indexOf(u);if(on===undefined)on=i<0;if(on&&i<0){if(!o.f.length)MORE[set]=true;o.f.push(u)}else if(!on&&i>=0)o.f.splice(i,1);else return;ordChanged();paint()}
 window.STYORD={rank,freeze,rec,unit:id=>unitOf(LIST.find(x=>x.id==id)),sort:ordSort,isFav,hasFav,star,reset:()=>Object.keys(MORE).forEach(k=>delete MORE[k]),more:(set,v)=>{if(v!==undefined)MORE[set]=v;return !!MORE[set]}};
-async function hide(k,on){if(!k)return;const was=new Set(HID);if(on)HID.add(k);else HID.delete(k);push();paint();
+async function hide(k,on){if(!k)return;if(!HLOAD){toast_('רגע, הרשימה עוד נטענת – נסי שוב');return false}   // v267: hiding before the list loaded replaced everything she had hidden
+ const was=new Set(HID);if(on)HID.add(k);else HID.delete(k);push();paint();
  try{if(!DB)throw new Error('db');await DB.collection('stylehide').doc('all').set({k:[...HID],t:Date.now()})}catch(e){ERR('hide',e);HID=was;push();paint();toast_('✗ '+ERRT.x);return false}
  return true}
 const key=x=>{try{return R().styKey(x)}catch(_){return ''}};
@@ -254,16 +261,21 @@ async function recut(){if(RCB||!window.cut8||!cut8.CVW||!DB||(PROC&&!PROC.err))r
  try{let a=null;try{a=await claude.use('assets')}catch(_){}if(!a)return;
   const r=await cut8.run('/_blob/'+x.src,KIND[x.set]);if(r.px.filter(p=>p>150).length<5)throw new Error('empty');
   const L=[];for(let v=0;v<8;v++)L.push((await put1(a,await blobOf(r.views[v]))).id);
-  const doc=Object.assign({},x,{L,cv:cut8.CVW});delete doc.id;
-  if(r.fab){const M=[];for(let v=0;v<8;v++)M.push((await put1(a,await blobOf(r.fab[v]))).id);doc.M=M;doc.lum=r.lum||doc.lum||128}
-  await DB.collection('styles').doc(x.id).set(doc);log('sty_recut',{set:x.set,id:x.id,px:r.px.join(',')})}
+  const doc={L,cv:cut8.CVW};
+  if(r.fab){const M=[];for(let v=0;v<8;v++)M.push((await put1(a,await blobOf(r.fab[v]))).id);doc.M=M;doc.lum=r.lum||x.lum||128}
+  // v267: write only the new layers, and only if the style still has the same picture – a name, close-up or new picture she saved meanwhile stays.
+  // If she replaced the picture while this ran, these new files are ours, a few seconds old and used nowhere – they are deleted.
+  const ref=DB.collection('styles').doc(x.id),fr=await ref.get(),cur=fr.exists?fr.data():null;
+  if(!cur||cur.src!==x.src){for(const f of [...L,...(doc.M||[])])try{await a.delete(f)}catch(_){}return}
+  await ref.update(doc);log('sty_recut',{set:x.set,id:x.id,px:r.px.join(',')})}
  catch(e){ERR('recut',e)}finally{RCB=false;setTimeout(recut,1500)}}
 async function run(set,fs,re,pre){if(PROC&&!PROC.err){toast_('רגע, עוד גוזרת');return}if(!window.cut8)return;
  let a=null;try{a=await claude.use('assets')}catch(_){}
  if(!a||!DB){PROC={err:ERRT[a?'db':'assets']};paint();return}
  let CU=null;if(set=='mk'){const S=[];for(const f of fs){if(!CU&&!(await isSheet(f)))CU=f;else S.push(f)}fs=S;   // v215: the two pictures GPT returned, in any order
   if(!fs.length){await cuOnly(CU,re,pre);return}}
- if(set=='hair'&&fs.length>1&&window.sheetKind247){const K=await Promise.all(fs.map(f=>sheetKind247(f)));const S=[];fs.forEach((f,i)=>{if(!CU&&K[i].grid&&K[i].close)CU=f;else S.push(f)});fs=S;   // v251: the close-up and the doll, in any order
+ if(set=='hair'&&fs.length&&window.sheetKind247){   // v267: also when she picks ONE file – a close-up alone used to be cut as the doll sheet and replaced the hairstyle's layers
+ const K=await Promise.all(fs.map(f=>sheetKind247(f)));const S=[];fs.forEach((f,i)=>{if(!CU&&K[i].grid&&K[i].close)CU=f;else S.push(f)});fs=S;   // v251: the close-up and the doll, in any order
   if(!fs.length){await cuOnly(CU,re,pre,'hair');return}}
  const [,,,one,the]=SET(set),base=pre?pre.n:NAME[set].trim(),done=[],pk=pre?pre.k:(re||'add');
  for(let i=0;i<fs.length;i++){PROC={v:1,i:i+1,n:fs.length,k:pk,n0:base};paint();const t0=Date.now();

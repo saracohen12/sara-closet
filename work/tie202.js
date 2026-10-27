@@ -133,7 +133,7 @@ function pk(){if(PK)return PK;PK=document.createElement('dialog');PK.id='tie202'
   if(d.t245cuup!=null){pick245({id:PID,cuOnly:+d.t245cuup});return}
   if(d.t245cu!=null){big245(d.t245cu);return}
   if(d.t261more!=null||d.t261less!=null){PMORE=d.t261more!=null;const y=PK.scrollTop;await open(PID);PK.scrollTop=y;return}
-  if(d.t261f!=null){try{STYORD.star('tie',d.t261f)}catch(_){}const y=PK.scrollTop;await open(PID);PK.scrollTop=y;return}
+  if(d.t261f!=null){try{if(!STYORD.hasFav('tie'))PMORE=true;STYORD.star('tie',d.t261f)}catch(_){}const y=PK.scrollTop;await open(PID);PK.scrollTop=y;return}
   if(d.t246pick!=null){PICK=true;PMORE=false;SEL.clear();await open(PID);PK.scrollTop=0;return}
   if(d.t246no!=null){PICK=false;SEL.clear();await open(PID);PK.scrollTop=0;return}
   if(d.t246sel!=null){const p=d.t246sel,room=MAXW-txw(PID).length;if(SEL.has(p))SEL.delete(p);else if(SEL.size>=room){toast_(`אפשר עד ${MAXW} קשירות שמחכות`);return}else SEL.add(p);
@@ -192,9 +192,11 @@ async function zipOf(files){const enc=new TextEncoder(),parts=[],cen=[];let off=
  const cs=cen.reduce((a,b)=>a+(b.byteLength||b.length),0),e=new DataView(new ArrayBuffer(22));e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,cs,true);e.setUint32(16,off,true);
  return new Blob([...parts,...cen,e.buffer],{type:'application/zip'})}
 window.zip246=(f)=>zipOf(f);window.jpeg246=u=>jpegOf(u);
-async function jpegOf(u){const bl=await (await fetch(u)).blob(),o=URL.createObjectURL(bl);try{const m=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=o});
+// v268: a picture kept inside the page (data:…, e.g. the shop photo's thumbnail) is turned into a file directly – fetch() of it is blocked in the app, so it fell out of the ZIP
+const d2b=u=>{const [h,d]=u.split(',');const m=/data:([^;,]+)/.exec(h),bin=/;base64/.test(h)?atob(d):decodeURIComponent(d),a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new Blob([a],{type:m?m[1]:'image/png'})};
+async function jpegOf(u){if(!u)throw new Error('no picture');const bl=/^data:/.test(u)?d2b(u):await (async()=>{const r=await fetch(u);if(!r.ok)throw new Error('http '+r.status);return r.blob()})(),o=URL.createObjectURL(bl);try{const m=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=o});
   const c=document.createElement('canvas');c.width=m.naturalWidth;c.height=m.naturalHeight;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(m,0,0);
-  return await new Promise(r=>c.toBlob(b=>r(b||bl),'image/jpeg',.92))}catch(_){return bl}finally{URL.revokeObjectURL(o)}}
+  return await new Promise(r=>c.toBlob(b=>r(b||bl),'image/jpeg',.92))}catch(_){if(!/^image\//.test(bl.type||''))throw new Error('not a picture');return bl}finally{URL.revokeObjectURL(o)}}
 function wList(id){const {pre,pics}=choices(),all=[...pics,...pre],p=P(),T=p?p.TIES:[];let f=0;
  return txw(id).map(w=>all.find(c=>c.p==w.p)).filter(Boolean).map(c=>({c,n:c.n,file:c.doc&&c.doc.src?`tie-${String(++f).padStart(2,'0')}.jpg`:'',det:c.kind=='w'&&T[c.i]?T[c.i][1]:''}))}
 // v247 (Sara 13:22): her face close-up in 8 angles (with her wig) goes into every ZIP; and every picture she has of the scarf, not only the main one

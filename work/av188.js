@@ -102,13 +102,17 @@ let BUSY=false;
 // v250: the GPT window says which kind each returned sheet is (a piece of a pack, a part of a set)
 const KO={};window.av188kind=(id,k)=>{if(k)KO[id]=k;else delete KO[id]};
 window.av188up=(id,fs,w)=>{if(w)WH.add(id);else WH.delete(id);return up(id,fs)};
-async function up(id,fs){if(BUSY){toast_('רגע, עוד שומרת');return}BUSY=true;let a=null;try{a=await claude.use('assets')}catch(_){}
+const AT={};   // v267: the part a fix replaces (the fix window's upload button says which)
+async function up(id,fs){if(BUSY){toast_('רגע, עוד שומרת');return}
+ // v267: an item that takes one picture gets one – several files (or a GPT ZIP opened into pictures) were all cut, each replacing the one before
+ {let kn='';try{kn=KO[id]||R360.kind(id)}catch(_){}const max=AT[id]!=null||KO[id]?1:(TWIN[kn]?TWIN[kn].length:1);if(fs.length>max){fs=[...fs].slice(0,max);toast_(max==1?'לקחתי רק את התמונה הראשונה – לפריט הזה צריך תמונה אחת':`לקחתי רק את ${max} הראשונות`)}}
+ BUSY=true;let a=null;try{a=await claude.use('assets')}catch(_){}
  if(!a){BUSY=false;toast_(ERRT.assets);return}
  const add=[];try{for(let i=0;i<fs.length;i++){toast_(`שומרת ${i+1} מתוך ${fs.length}…`);const r=await a.upload(fs[i]);add.push({a:r.id,t:Date.now(),n:String(fs[i].name||'').slice(0,80)})}}
  catch(e){ERR('upload',e);toast_(add.length?`נשמרו ${add.length}, השאר לא עלו. לנסות שוב`:'התמונה לא עלתה. לנסות שוב')}
  if(add.length){try{await putItem(id,{a8up:[...ups(id),...add]})}catch(e){ERR('put',e)}rebox(id);repaint(id)}
  BUSY=false;
- for(let i=0;i<add.length;i++)await cut(id,fs[i],add[i].a,add[i].t)}
+ const at=AT[id];delete AT[id];for(let i=0;i<add.length;i++)await cut(id,fs[i],add[i].a,add[i].t,i==0&&at!=null&&parts(id)[at]?at:undefined)}
 async function del(id,i){const old=ups(id);const x=old[i];if(!x)return;const nu=old.filter((_,k)=>k!=i);await putItem(id,{a8up:nu.length?nu:''});rebox(id);repaint(id);
  toast_('התמונה הוסרה',async()=>{await putItem(id,{a8up:[...ups(id).slice(0,i),x,...ups(id).slice(i)]});rebox(id);repaint(id)})}
 
@@ -162,7 +166,7 @@ setTimeout(soon,4000);
 
 // every old "upload for the avatar" button (5 poses) now leads to the new avatar
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-up188],[data-re233],[data-mk188],[data-del188],[data-m77up],[data-go190],[data-see190],[data-off190]');if(!t)return;
- if(t.dataset.up188){e.preventDefault();e.stopPropagation();if(t.dataset.w)WH.add(t.dataset.up188);else WH.delete(t.dataset.up188);saveNote(t.dataset.up188);picker(t.dataset.up188);return}
+ if(t.dataset.up188){e.preventDefault();e.stopPropagation();if(t.dataset.at!=null)AT[t.dataset.up188]=+t.dataset.at;else delete AT[t.dataset.up188];if(t.dataset.w)WH.add(t.dataset.up188);else WH.delete(t.dataset.up188);saveNote(t.dataset.up188);picker(t.dataset.up188);return}
  if(t.dataset.re233){e.preventDefault();e.stopPropagation();recut(t.dataset.re233).catch(er=>ERR('recut',er));return}
  if(t.dataset.del188){e.preventDefault();e.stopPropagation();del(t.dataset.del188,+t.dataset.i).catch(er=>ERR('del',er));return}
  if(t.dataset.go190){e.preventDefault();e.stopPropagation();const b=document.querySelector(`#dlbody [data-a8box="${CSS.escape(t.dataset.go190)}"]`);if(b){b.open=true;b.scrollIntoView({behavior:'smooth',block:'center'})}return}

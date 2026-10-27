@@ -35,8 +35,8 @@ function kd(id){const k=it(id).kd;if(k)return ['jwset','necklace','earrings','br
  return ['necklace','earrings','bracelet','ring','jwset'].includes(r)?'jw':r||'top'}
 const txt=id=>{const x=D[id]||{};return (x.short||'')+' '+(x.full||'')+' '+(x.color||'')};
 function jwOf(id){const s=it(id).jw;if(Array.isArray(s)&&s.length)return s;const t=txt(id),L=[];
- if(/שרשר|תליון|necklace|pendant/i.test(t))L.push('necklace');if(/עגיל|earring/i.test(t))L.push('earrings');if(/צמיד|שעון|bracelet/i.test(t))L.push('bracelet');if(/טבעת|ring\b/i.test(t))L.push('ring');
- if(/סט/.test(t)&&!L.length)L.push('necklace','earrings');return L.length?L:['necklace']}
+ if(/שרשר|תליון|necklace|pendant/i.test(t))L.push('necklace');if(/עגיל|earring/i.test(t))L.push('earrings');if(/צמיד|שעון|bracelet/i.test(t))L.push('bracelet');if(/טבעת|\bring\b/i.test(t))L.push('ring');
+ if(/(^|[\s,.\-–(])סט($|[\s,.\-–)])/.test(t)&&!L.length)L.push('necklace','earrings');return L.length?L:['necklace']}
 function setOf(id){const s=it(id).sp;if(Array.isArray(s)&&s.length==2)return s;const t=txt(id);
  const a=/מעיל/.test(t)?'coat':/וסט|אפוד/.test(t)?'vest':/סוודר|סריג|קרדיגן/.test(t)?'sweater':/ז['׳]?קט|ג['׳]קט|בלייזר/.test(t)?'jacket':'top';
  const b=/שמל/.test(t)?'dress':/מכנס/.test(t)?'pants':'skirt';return [a,b]}
@@ -83,9 +83,11 @@ const bgNote=(id,k,o)=>{const b=blk(id,k);if(!b.any||b.all||o.role=='cu')return 
 // ---------- the prompt ----------
 function howOf(k){try{const K=R().KIND[k];if(K)return K[1]}catch(_){}
  if(k=='ring')return 'רק הטבעת, על האצבע של יד ימין (היד על המותן), באותו גודל כמו בתמונה. בזוויות שהיד מוסתרת לא רואים אותה.';return ''}
-function photos(id){let L=[];try{L=(window.all102?all102(id):[])}catch(_){}
- L=L.filter(g=>g&&g.u&&!/^data:/.test(g.u)&&!/^(עליי|מקרוב|כל הסט)/.test(g.n||'')&&!/^על האווטאר/.test(g.n||''));
- if(!L.length){try{L=[{u:R().ph(id),n:'מהחנות'}]}catch(_){}}return L.slice(0,6)}
+function photos(id){let A=[];try{A=(window.all102?all102(id):[])}catch(_){}
+ A=A.filter(g=>g&&g.u&&!/^(עליי|מקרוב|כל הסט)/.test(g.n||'')&&!/^על האווטאר/.test(g.n||''));let L=A.filter(g=>!/^data:/.test(g.u));
+ // v268: when the shop photo exists only inside the page (data:) it is still sent – it used to be dropped, and the ZIP went without the product
+ if(!L.length)L=A.slice(0,1);
+ if(!L.length){try{const u=R().ph(id)||(typeof TH!='undefined'&&TH[id])||'';if(u&&(typeof TPH=='undefined'||u!=TPH))L=[{u,n:'מהחנות'}]}catch(_){}}return L.slice(0,6)}
 function prompt(id,np){const k=kd(id),x=D[id]||{},O=outs(id),ME=(R()&&R().ME)||'',np_=np||photos(id).length||1;
  const sheets=O.filter(o=>o.role!='cu'),cus=O.filter(o=>o.role=='cu'),item=`${TN[k]||'פריט'} – ${nm(id)}${x.color?', צבע: '+x.color:''}`;
  const P=[];
@@ -146,7 +148,8 @@ async function copyTxt(b,t){let ok=false;try{await navigator.clipboard.writeText
 let B=null;   // {cat, sel:[ids], step:'pick'|'list'}
 const MAXB=8;
 function bPrompt(ids,np){const all=ids.flatMap(id=>outs(id)),cus=all.filter(o=>o.role=='cu'),P=[];
- P.push(`מצורף קובץ ZIP עם ${ids.length} מוצרים שקניתי. כל מוצר לבד, אחד אחרי השני. בתוך ה-ZIP:\n`+ids.map((id,i)=>{const n=np&&np[i]||photos(id).length||1;
+ P.push(`מצורף קובץ ZIP עם ${ids.length} מוצרים שקניתי. כל מוצר לבד, אחד אחרי השני. בתוך ה-ZIP:\n`+ids.map((id,i)=>{const n=np&&np[i]!=null?np[i]:Math.min(4,photos(id).length);   // v268: the same count as the ZIP (at most 4), 0 = not in the ZIP
+  if(!n)return `• מוצר ${i+1} – התמונה שלו לא בתוך ה-ZIP, אני מצרפת אותה בנפרד (צילום מסך)`;
   return `• ${n>1?`p${i+1}-item-1.jpg עד p${i+1}-item-${n}.jpg`:`p${i+1}-item-1.jpg`} – מוצר ${i+1}${n>1?' (כל התמונות הן אותו מוצר)':''}`}).join('\n')+`\n• doll-8.jpg – גיליון של הדמות שלי ב-8 זוויות מסביב, שתי שורות של 4 משבצות.${extraFiles(cus)}`);
  let g=0;
  ids.forEach((id,i)=>{const k=kd(id),x=D[id]||{},O=outs(id),sheets=O.filter(o=>o.role!='cu');const L=[];
@@ -166,11 +169,12 @@ function bPrompt(ids,np){const all=ids.flatMap(id=>outs(id)),cus=all.filter(o=>o
 window.bprompt252=bPrompt;
 async function bZip(b){const ids=B.sel.slice(),o=b.textContent;b.disabled=true;b.textContent='מכינה את הקובץ…';
  try{const files=[],np=[];try{await thLoad(B.cat)}catch(_){}
-  for(let i=0;i<ids.length;i++){let n=0;for(const g of photos(ids[i]).slice(0,4)){try{files.push({name:`p${i+1}-item-${n+1}.jpg`,blob:await jpeg246(g.u)});n++}catch(e){ERR('bzipph',e)}}np.push(n||1)}
+  try{await Promise.all([...new Set(ids.map(cat0))].map(c=>thLoad(c)))}catch(_){}
+  const miss=[];for(let i=0;i<ids.length;i++){let n=0;for(const g of photos(ids[i]).slice(0,4)){try{files.push({name:`p${i+1}-item-${n+1}.jpg`,blob:await jpeg246(g.u)});n++}catch(e){ERR('bzipph',e)}}np.push(n);if(!n)miss.push(i+1)}   // v268: 0 = no picture went in (the prompt says so)
   await shared(ids.flatMap(id=>outs(id)),files);
   files.push({name:'prompt.txt',blob:new Blob(['\ufeff'+bPrompt(ids,np)],{type:'text/plain;charset=utf-8'})});
   await R().saveFile(`gpt-${ids.length}-products.zip`,await zip246(files));B.np=np;
-  toast_(`✓ ירד ZIP אחד: ${ids.length} מוצרים, הבובה והפרומפט`);for(const id of ids)try{await putItem(id,{g250:Date.now()})}catch(_){}}
+  toast_(miss.length?`⚠ ירד ZIP, אבל בלי תמונה של מוצר ${miss.join(', ')} – צרפי ל-GPT צילום מסך שלו`:`✓ ירד ZIP אחד: ${ids.length} מוצרים, הבובה והפרומפט`);for(const id of ids)try{await putItem(id,{g250:Date.now()})}catch(_){}}
  catch(e){ERR('bzip',e);toast_('לא הצלחתי להכין את הקובץ. לנסות שוב')}finally{if(b.isConnected){b.disabled=false;b.textContent=o}}}
 function catItems(c){return Object.keys(D).filter(k=>!k.includes('~')&&cat0(k)==c&&!it(k).gen&&!it(k).oos&&it(k).s!='ret'&&it(k).s!='give')}
 function bOpen(id){const c=cat0(id);if(!B||B.cat!=c)B={cat:c,sel:[id],step:'pick'};else{if(!B.sel.includes(id)&&B.sel.length<MAXB)B.sel.unshift(id);B.step='pick'}paintB()}
@@ -286,13 +290,13 @@ function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';
   if(q.g250cp!=null)return copyTxt(b,prompt(ID));
   if(q.g250up!=null)return pick(ID);
   if(q.g252!=null)return bOpen(ID);
-  if(q.g252t){const k=q.g252t,i=B.sel.indexOf(k);if(i>=0)B.sel.splice(i,1);else if(B.sel.length<MAXB){B.sel.push(k);if(b.classList.contains('done'))toast_('שימי לב: לזה כבר יש 360');else if(b.classList.contains('noph'))toast_('שימי לב: לזה עוד אין תמונה שלך')}else toast_(`עד ${MAXB} מוצרים בפעם אחת`);const y=d0(DL);paintB();d0(DL,y);return}
+  if(q.g252t){B.np=null;const k=q.g252t,i=B.sel.indexOf(k);if(i>=0)B.sel.splice(i,1);else if(B.sel.length<MAXB){B.sel.push(k);if(b.classList.contains('done'))toast_('שימי לב: לזה כבר יש 360');else if(b.classList.contains('noph'))toast_('שימי לב: לזה עוד אין תמונה שלך')}else toast_(`עד ${MAXB} מוצרים בפעם אחת`);const y=d0(DL);paintB();d0(DL,y);return}
   if(q.g252next!=null){B.step='list';return paintB()}
   if(q.g252x!=null){B=null;return DL.close()}
   if(q.g252back!=null){B.step='pick';return paintB()}
   if(q.g252q){B.from=1;return open(q.g252q)}
   if(q.g256n){const k=q.g256n;try{await putItem(k,{np:+q.v});await ensurePieces(k)}catch(er){ERR('bnp',er)}return paintB()}
-  if(q.g252rm){B.sel=B.sel.filter(k=>k!=q.g252rm);if(!B.sel.length)B.step='pick';return paintB()}
+  if(q.g252rm){B.np=null;B.sel=B.sel.filter(k=>k!=q.g252rm);if(!B.sel.length)B.step='pick';return paintB()}
   if(q.g252zip!=null)return bZip(b);
   if(q.g252cp!=null)return copyTxt(b,bPrompt(B.sel,B.np));
   if(q.g252up!=null)return pick(B.sel.slice());
