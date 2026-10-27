@@ -85,14 +85,14 @@ for k,(full,d,tot,L) in AE.items():
         items.append(dict(id=f'A{k}_{j}',src='ae',cat=cat,short=n,color=c,size=sz,full=n,file='הזמנה '+k[-6:],order=full,date=d,
             price=p,qty=1,paid=p,ototal=tot,on=len(L),onote=AENOTE.get(k,''),img=timg(im) if _os.path.exists(im) else None,lines=[j]))
 # v176: Temu orders added later from a PDF (temu/inv_tn.py), images temu/app/<key>_<j>.jpg
-TN={};TNNOTE={}
+TN={};TNNOTE={};TNFILE={}  # v240: TNFILE[key] = receipt label as Sara names it
 if _os.path.exists('temu/inv_tn.py'): exec(open('temu/inv_tn.py').read())
 TNF={'t1':15,'t2':24,'t3':1}
 for k,(acc,full,d,sm,L) in TN.items():
     fno=TNF[acc];TNF[acc]+=1
     for j,(n,fl,c,sz,pr,pd,cat) in enumerate(L):
         im=f'temu/app/{k}_{j}.jpg'
-        items.append(dict(id=f'T{k}_{j}',src=acc,cat=cat,short=n,color=c,size=sz,full=fl,file=(f'קובץ {fno}' if acc=='t1' else f'חשבון נוסף {fno}' if acc=='t2' else f'חשבון 3 · {fno}'),order=full,date=d,
+        items.append(dict(id=f'T{k}_{j}',src=acc,cat=cat,short=n,color=c,size=sz,full=fl,file=TNFILE.get(k) or (f'קובץ {fno}' if acc=='t1' else f'חשבון נוסף {fno}' if acc=='t2' else f'חשבון 3 · {fno}'),order=full,date=d,
             price=pr,qty=1,paid=pd,tn=1,osub=sm['osub'],credit=sm['credit'],refund=0,onet=sm['total'],onote=TNNOTE.get(k,''),img=timg(im) if _os.path.exists(im) else None))
 ID={x['id']:x for x in items}
 SKUM=json.load(open('shein/sku_map.json')) if _os.path.exists('shein/sku_map.json') else {}
@@ -112,6 +112,8 @@ g=['T51',SIDX[('1BGU',4)]]; G.append(g); NOTE[tuple(g)]='אותה שמלת קט�
 # v176: the floral turtleneck re-ordered in M after T37 (S) was cancelled; the velvet skirt twice in the same order
 if 'T591091_3' in ID: G.append(['T37','T591091_3']); NOTE[('T37','T591091_3')]='אותה חולצת גולף שחורה עם פרחים ועלי זהב: במידה S (15/10) בוטלה כי אזלה מהמלאי, והוזמנה שוב במידה M (25/10).'
 if 'T591091_15' in ID: G.append(['T591091_14','T591091_15']); NOTE[('T591091_14','T591091_15')]='אותה חצאית קטיפה חומה במידה S הופיעה פעמיים באותה הזמנה מ-25/10 (₪28.04 ו-₪46.74 אחרי הנחות).'
+# v240: the same brown chain loafer (CN 39) is in two Temu 3 orders of 27/10
+if 'T8151206_8' in ID and 'T231206_10' in ID: G.append(['T8151206_8','T231206_10']); NOTE[('T8151206_8','T231206_10')]='אותו מוקסין עקב חום עם שרשרת, מידה CN 39 (EU 38): הוזמן פעמיים ב-27/10 – בקבלה 2 (₪60.87) ובקבלה 3 (₪62.21).'
 NOMULTI={'other'}
 for x in items:
     if x['src']=='sh' and x['qty']>1 and x['cat'] not in NOMULTI and not any(x['id'] in g for g in G):
@@ -188,7 +190,7 @@ def retdays(x):
     except: return None
     od=_dt.date(2026,m,d); dl=od+_dt.timedelta(days=72 if x['src']=='sh' else 90)
     return (dl-TODAY).days
-INTRANSIT={'P0-097-14609727468151206','P0-097-03584171136631005','GSH199249001100','P0-097-18076072617591091','GSH19X248000VSY','GSH19X24N00NM5K','GSH19624C00MEX3','GSH19T24900MS2G','GSH19Q24600NN8H','GSH19424S001CNR','GSH19C246001BGU','GSH19R24700MU9J','GSH19924N00MU5B','GSH19924N002QB0','GSH19924N00NB85','GSH199241001VHG','GSH1992410000HR','GSH199241002CRC'}
+INTRANSIT={'P0-097-14609737083511206','P0-097-14609699308151206','P0-097-14609733274231206','P0-097-14609727468151206','P0-097-03584171136631005','GSH199249001100','P0-097-18076072617591091','GSH19X248000VSY','GSH19X24N00NM5K','GSH19624C00MEX3','GSH19T24900MS2G','GSH19Q24600NN8H','GSH19424S001CNR','GSH19C246001BGU','GSH19R24700MU9J','GSH19924N00MU5B','GSH19924N002QB0','GSH19924N00NB85','GSH199241001VHG','GSH1992410000HR','GSH199241002CRC'}
 def money(v): return f'₪{v:,.2f}'
 nav=[];secs=[];meta={};opts=[]
 ALWAYS={'base'}   # v210 (Sara 14:24): her new category, there even before she moves shirts into it
