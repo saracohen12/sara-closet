@@ -10,7 +10,7 @@ const ERR=(w,e)=>{try{(window.ERRS=window.ERRS||[]).push('v199 '+w+': '+(e&&(e.c
 const es=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const toast_=(m,u)=>(window.toast||(()=>{}))(m,u);
 const log=(s,x)=>{try{window.step157&&step157(s,x)}catch(_){}};
-const V='?v='+(window.VER||'');
+const V='?v='+(window.A8V||window.VER||'');
 const P=()=>window.STYP;
 const SETS=[['hair','💇','תסרוקות','תסרוקת','התסרוקת'],['tie','🧕','קשירות','קשירה','הקשירה'],['mk','💄','איפור','איפור','האיפור']];
 const SET=k=>SETS.find(s=>s[0]==k)||SETS[0];
@@ -97,7 +97,7 @@ function card(set,pr,x){const k=pr?pr.k:x.id,b=busy()&&PROC.k==k,title=x?x.n:pr.
   :`<span class="sycim none${set!='mk'?' tall':''}"><img alt="" data-sycb="${set}" src=""><i>עוד אין תמונה</i></span>`;
  const btn=b?'<span class="sycw">✂ גוזרת…</span>':x?`<button type="button" class="mkp" data-sywear="${es(x.id)}">👗 ללבוש</button>`
   :`<button type="button" data-syp2="${es(pr.k)}">📋 פרומפט</button><button type="button" class="mkp" data-syup2="${es(pr.k)}"${busy()?' disabled':''}>📤 להעלות</button>`;
- const sub=pr&&pr.sub?pr.sub:!pr&&oldTie(x)?'מהרשימה הקודמת':'',hk=hidK(pr,x);
+ const sub=pr&&pr.sub?pr.sub:x&&x.sub?x.sub:!pr&&oldTie(x)?'מהרשימה הקודמת':'',hk=hidK(pr,x);
  // v207 (Sara 13:47 "אני רוצה גם לבדוק שהפרומט של התסרוקות ממש טובות וברורות"): every preset card can show its whole prompt
  const howT=pr?`<details class="sycd"><summary>${set=='tie'?'איך קושרים':set=='hair'?'איך זה נראה':'הפרומפט'}</summary>${pr.he?`<p>${es(pr.he)}</p>`:''}<button type="button" class="syread" data-syread="${es(pr.k)}">📄 לקרוא את כל הפרומפט</button></details>`:'';
  return `<div class="syc${x?' up':''}${b?' busy':''}">${pic}<button type="button" class="syrm" data-syrm="${es(hk)}" aria-label="להסיר מהרשימה: ${es(title)}" title="להסיר"${b?' disabled':''}>🗑</button>${ORD[set]?favBtns(set,hk,title):''}<b class="sycn">${pr?pr.no+'. ':''}${es(title)}</b>${sub?`<small class="sycs">${es(sub)}</small>`:''}${howT}${x&&set=='mk'?cuRow(x):''}<span class="sycb">${btn}</span></div>`}
@@ -296,5 +296,5 @@ function click(e){if(e.target===DL)return DL.close();const b=e.target.closest('b
  if(d.sycp){const x=LIST.find(y=>y.id==d.sycp);if(x)copy(b,cuPrompt(x));return}
  if(d.sycu){if(busy())return toast_('רגע, עוד גוזרת');return pick('mk',d.sycu)}
  if(d.syup)return pick(d.syup)}
-window.STY199={open,list:()=>LIST.slice()};
+window.STY199={open,list:()=>LIST.slice(),gone:x=>gone(x)};
 })();

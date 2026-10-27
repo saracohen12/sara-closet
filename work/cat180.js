@@ -157,7 +157,7 @@ function styPicker(set){SSET=set;SID='';mkP();const cur=scov()[set]||null;
   ${cur&&cur.u?`<h4 class="s211h">התמונה שהעלית</h4><div class="g180">${opt({u:cur.u},cur.u,'התמונה שלי')}</div>`:''}
   ${mineH?`<h4 class="s211h">${set=='tie'?'הקשירות שלך':set=='hair'?'התסרוקות שלך':'האיפורים שלך'} על האווטאר</h4><div class="g180">${mineH}</div>`:''}
   ${cuH?`<h4 class="s211h">התקריבים החדים שלך</h4><div class="g180">${cuH}</div>`:''}
-  <h4 class="s211h">האווטאר שלך</h4><div class="g180">${AVP.map(([a,n])=>opt({a},a+'?v='+(window.VER||''),n)).join('')}</div>`;
+  <h4 class="s211h">האווטאר שלך</h4><div class="g180">${AVP.map(([a,n])=>opt({a},a+'?v='+(window.A8V||window.VER||''),n)).join('')}</div>`;
  if(!P.open)P.showModal();P.scrollTop=0;
  P.querySelectorAll('img[data-sth211]').forEach(i=>{try{R().styThumb(i.dataset.sth211).then(u=>{if(u)i.src=u})}catch(_){}})}
 async function styChoose(v){if(typeof SET!='object'||!SET||!SSET)return;SET.styCover=Object.assign({},SET.styCover||{});if(v)SET.styCover[SSET]=v;else delete SET.styCover[SSET];

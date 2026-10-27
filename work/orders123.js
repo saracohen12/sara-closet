@@ -77,7 +77,7 @@ function fixText(ids){return '🧵 בגדים לתיקון:\n'+ids.map((id,i)=>{
  return `${i+1}. ${it.tname||x.short}${x.color?' · '+x.color:''}${k?' – '+k:''}${it.note?' ('+it.note+')':''}`}).join('\n')}
 function fixList(L){const ids=fixIds(L);if(!ids.length)return '<p class="o3empty">עוד לא סימנת בגדים לתיקון. בתוך הזמנה לוחצים "🧵 דרוש תיקון".</p>';
  loadThumbs(ids);return `<div class="o3all"><button data-o3fixcopy>📋 העתיקי רשימה לתופרת (${ids.length})</button></div><div class="o3items">${ids.map(itemRow).join('')}</div>`}
-const FLT=[['מה הגיע',[['','הכל'],['u','⚪ לא סימנתי'],['m','❌ חסר'],['n','⏳ בדרך'],['y','✅ הכל הגיע'],['oos','🚫 בוטל – אזל מהמלאי']]],
+const FLT=[['מה הגיע',[['','הכל'],['u','⚪ לא סימנתי'],['m','❌ חסר'],['n','⏳ בדרך'],['y','✅ להציג רק מה שהגיע'],['oos','🚫 בוטל – אזל מהמלאי']]],
  ['החזרות והחלטות',[['rp','↩ להחזיר (עוד לא נשלח)'],['rs','📮 הוחזרו'],['mb','❓ מתלבטת'],['fix','🧵 לתיקון']]],
  ['תמונות',[['pnd','📸 עוד לא העליתי תמונות'],['pdd','✅ סיימתי להעלות תמונות']]],
  ['אווטאר',[['anl','🧍 עוד לא סיימתי אווטאר'],['and','✅ סיימתי אווטאר']]]];

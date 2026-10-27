@@ -289,7 +289,14 @@ for f in sorted(os.listdir('gpt')):
 out=out.replace('%%GPTM%%',json.dumps(GPTM))
 import datetime as _dt
 VER=open('version.txt').read().strip();VDATE=_dt.date.today().strftime('%d.%m.%Y')
-out=out.replace('%%VER%%',VER).replace('%%VDATE%%',VDATE)
+# v245: a8 pictures get their own version (a hash of the files) so a new site version doesn't make her phone download and redraw the avatar again
+import hashlib as _hl
+_h=_hl.sha1()
+for _p in sorted(['a8/'+f for f in _os.listdir('a8')]+(['bg/'+f for f in _os.listdir('bg')] if _os.path.isdir('bg') else [])):
+    _f=_p
+    if _os.path.isfile(_p): _h.update(_f.encode()); _h.update(open(_p,'rb').read())
+A8V=_h.hexdigest()[:10]
+out=out.replace('%%VER%%',VER).replace('%%VDATE%%',VDATE).replace('%%A8V%%',A8V)
 # v74: cache-bust avatar files – a browser that cached an older av/*_head.webp showed a double face in the side pose
 import re as _re74
 _AVV=open('version.txt').read().strip()

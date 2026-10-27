@@ -11,7 +11,7 @@ const W=360,H=541,SW=1448,SHH=1086,N=W*H;
 // (same feet line, height and body axis). GPT draws on the doll BEFORE that, so each layer must get the same move, or the dress sits
 // beside the doll (Sara 26/10 07:32-07:33: the arm and the front of the body showed next to the dress). [scale, dx, dy] = new2/turn/turn.json
 const TURN=[[1,-.75,2],[1,0,0],[1.0038986,-12.2465887,-2.0584795],[.998062,-4.6414728,.0251938],[1.0258964,2.0069721,8.8964148],[1.0279441,1.6516966,7.8602796],[1.0258964,13.5483065,7.8705177],[1.0177865,-6.763834,8.928854]];
-const V='?v='+(window.VER||'');
+const V='?v='+(window.A8V||window.VER||'');
 
 const loadImg=src=>new Promise((r,j)=>{const i=new Image();i.decoding='async';i.onload=()=>r(i);i.onerror=()=>j(new Error('img'));i.src=src});
 async function toImg(x){if(typeof x=='string')return loadImg(x);const u=URL.createObjectURL(x);try{return await loadImg(u)}finally{setTimeout(()=>URL.revokeObjectURL(u),3000)}}
@@ -170,6 +170,14 @@ function maskWhole(b,d,v,fab,keepBlue){const bs=gauss(b,3,1.2),ds=gauss(d,3,1.2)
   for(let i=0;i<N;i++)if(HL[i]&&sz[HL[i]]<450)m[i]=1}   // below it a closed hole is a missed bit of hair (at the nape the doll is dark too); a gap between strands is open
  // the neck: below the doll's head line GPT's neck fades into the doll's own neck (unless hair covers it), so no line shows where they meet
  // v214 (Sara 15:57 "עדיין יש חורים, אני רואה בשתי תמונות חורים"): only her skin fades there – at the back hair covers the nape (dark like the doll's), and fading it left a see-through line
+ // v245 (Sara's 27 ties, 27/10): a long scarf over her body lost bits (grey knit over the beige dress passed as a shadow) – below the neck the scarf grows into neighbours of its own colour
+ if(fab)for(let it=0;it<8;it++){const T=[0,1,2,3].map(()=>new Float64Array((W+1)*(H+1)));
+  for(let r=0;r<H;r++)for(let c=0;c<W;c++){const i=r*W+c,j=(r+1)*(W+1)+c+1,on=m[i]?1:0;for(let z=0;z<4;z++){const t=T[z];t[j]=t[j-1]+t[j-W-1]-t[j-W-2]+(on?(z<3?d[i*3+z]:1):0)}}
+  const bx=(t,r0,c0,r1,c1)=>t[(r1+1)*(W+1)+c1+1]-t[r0*(W+1)+c1+1]-t[(r1+1)*(W+1)+c0]+t[r0*(W+1)+c0],e=dilate(m,2);let add=0;
+  for(let r=nk;r<low;r++)for(let c=8;c<W-8;c++){const i=r*W+c,k=i*3;if(m[i]||!e[i]||dbg[i]<=22||diff[i]<25||blue(k))continue;
+   const r0=Math.max(0,r-7),r1=Math.min(H-1,r+7),c0=Math.max(0,c-7),c1=Math.min(W-1,c+7),n=bx(T[3],r0,c0,r1,c1);if(n<12)continue;
+   let q=0;for(let z=0;z<3;z++)q+=(d[k+z]-bx(T[z],r0,c0,r1,c1)/n)**2;if(q<34*34){m[i]=2;add++}}
+  for(let i=0;i<N;i++)if(m[i]==2)m[i]=1;if(!add)break}
  const A=Float32Array.from(m);for(let r=nk-3;r<nk;r++)for(let c=0;c<W;c++){const i=r*W+c,k=i*3;if(A[i]&&diff[i]<40&&d[k]*.299+d[k+1]*.587+d[k+2]*.114>150)A[i]*=(nk-r)/4}
  // v218 (Sara 17:28 "צל צהוב, לא גזור טוב"): below the neck the hair's edge kept a beige rim of GPT's body/top. An edge pixel (4 px) lighter than the hair inside it (6 px around) fades out
  // v220 (17:52 "עדיין צל צהוב בשיער"): an edge pixel whose colour is nearer to what was there before (GPT's beige top, the backdrop) than to the hair inside takes the hair's colour and fades

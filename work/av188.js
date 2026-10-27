@@ -97,6 +97,8 @@ window.mkst188=mkst;
 let FI=null,FID='';const WH=new Set();
 function picker(id){FID=id;if(!FI){FI=document.createElement('input');FI.type='file';FI.accept='image/*';FI.multiple=true;FI.hidden=true;document.body.appendChild(FI);FI.addEventListener('change',()=>{const fs=[...FI.files];FI.value='';if(fs.length)up(FID,fs)})}FI.click()}
 let BUSY=false;
+// v245: the cover window (tie202) hands over the 8-angle file itself – she picks the sheet and the close-up together there
+window.av188up=(id,fs,w)=>{if(w)WH.add(id);else WH.delete(id);return up(id,fs)};
 async function up(id,fs){if(BUSY){toast_('רגע, עוד שומרת');return}BUSY=true;let a=null;try{a=await claude.use('assets')}catch(_){}
  if(!a){BUSY=false;toast_(ERRT.assets);return}
  const add=[];try{for(let i=0;i<fs.length;i++){toast_(`שומרת ${i+1} מתוך ${fs.length}…`);const r=await a.upload(fs[i]);add.push({a:r.id,t:Date.now(),n:String(fs[i].name||'').slice(0,80)})}}

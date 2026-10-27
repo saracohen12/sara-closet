@@ -3,7 +3,7 @@
 // Her whole closet is in the room: items that already have a 360 sheet (READY) are worn on the avatar, every other item offers the one-message GPT prompt to make one.
 // The home hero wears the look of the day (built from READY items) – 20:59 "מה שיופיע למעלה בתמונה שלי... הלבוש שחשבת שיכול להתאים".
 (function(){
-const V='?v='+(window.VER||'');
+const V='?v='+(window.A8V||window.VER||'');   // v245: the a8 pictures' own version – stays the same across site versions
 const NAMES=['חזית','חצי ימין','צד ימין','גב ימין','גב','גב שמאל','צד שמאל','חצי שמאל'];
 const BACK=[0,0,0,1,1,1,0,0];            // views where the head covers the ears: earrings go under the hair/scarf
 const WB=[1,1,0,0,0,0,0,1];              // views with a 'hair behind the shoulders' wig layer (wb*.webp)
@@ -827,7 +827,7 @@ const KV=(()=>{let db=null;const op=()=>db||(db=new Promise(r=>{try{const q=inde
  const tx=async(m,f)=>{const d=await op();if(!d)return null;return new Promise(r=>{try{const t=d.transaction('k',m),q=f(t.objectStore('k'));t.oncomplete=()=>r(q&&q.result);t.onerror=t.onabort=()=>r(null)}catch(_){r(null)}})};
  return {get:k=>tx('readonly',st=>st.get(k)),put:(k,v)=>tx('readwrite',st=>st.put(v,k)),
   tidy:p=>tx('readwrite',st=>{const q=st.openKeyCursor?st.openKeyCursor():st.openCursor();q.onsuccess=()=>{const c=q.result;if(!c)return;if(!String(c.key).startsWith(p))st.delete(c.key);c.continue()};return null})}})();
-const KVV=String(window.VER||'')+'|';
+const KVV='rv1:'+String(window.A8V||window.VER||'')+'|';   // v245: was the site version, so every update wiped her saved pictures; bump rv1 when the drawing code changes
 const sig8=s=>[s.head,s.mk,defTie()].filter(Boolean).map(k=>k+':'+(DYN[k+'1']||'')+(DYN['z'+String(k).slice(1)+'1']||'')).join(',')+'|'+(s.tc?s.tc.join(','):'');
 const pkey=(t,ck,s)=>KVV+t+'|'+ck+'|'+sig8(s);
 const PQ=new Map(),FR0={};

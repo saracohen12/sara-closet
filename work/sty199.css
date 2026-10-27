@@ -325,3 +325,28 @@ dialog#fix237::backdrop{background:rgba(20,12,8,.5)}
 #sty199 .syfav{top:56px}
 #sty199 .syfav[aria-pressed=true]{background:#fff4cc}
 #sty199 .syfu{top:100px;font-weight:700}
+/* v245: the cover's tie window – wide, 3 big turning pictures in a row, two ways to GPT, the close-up (tie202.js) */
+dialog#tie202{width:min(1100px,100vw)}
+#tie202 .t245g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (min-width:700px){#tie202 .t245g{grid-template-columns:repeat(3,minmax(0,1fr))}}
+#tie202 .t245c{display:flex;flex-direction:column;gap:6px;padding:8px;border:1.5px solid var(--z-line,#ddd);border-radius:18px;background:var(--z-solid,#fff);min-width:0}
+#tie202 .t245c.done{background:var(--z-surface,#f6f2ee)}
+#tie202 .t245c.on{border-color:var(--z-acc,#b4532c);box-shadow:0 0 0 3px var(--z-acc-soft,#f3d9cc)}
+#tie202 .t245p{position:relative;display:block;width:100%;padding:0;border:0;border-radius:14px;overflow:hidden;background:#dfe7f1;cursor:pointer;aspect-ratio:3/4}
+#tie202 .t245p img{width:100%;height:100%;object-fit:cover;object-position:50% 0;display:block;max-width:none}
+#tie202 .t245p.cu{aspect-ratio:4/3;background:#eee}
+#tie202 .t245p.cu img{object-position:50% 50%}
+#tie202 .t245p.sm{width:46%;align-self:center}
+#tie202 .t245p.none{display:grid;place-items:center;align-content:center;gap:4px;cursor:default;font-size:2rem;font-style:normal}
+#tie202 .t245p.none small{font-size:.78rem;opacity:.7}
+#tie202 .t245p .c212h{position:absolute;inset-inline-start:6px;bottom:6px;font-style:normal;font-size:.72rem;font-weight:600;padding:3px 8px;border-radius:999px;background:rgba(255,255,255,.88);color:#2a1d17}
+#tie202 .t245n{font-size:.92rem;line-height:1.3}
+#tie202 .t245c em{font-style:normal;font-size:.78rem;font-weight:600;color:var(--z-acc,#b4532c)}
+#tie202 .t245h{font-size:.78rem;opacity:.75;line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#tie202 .t245b{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto}
+#tie202 .t245b button{flex:1 1 auto;font:inherit;font-size:.8rem;min-height:40px;padding:0 10px;border-radius:999px;border:1px solid var(--z-line,#ddd);background:var(--z-surface,#f6f2ee);color:var(--z-ink,#2a1d17);cursor:pointer}
+#tie202 .t245b .mkp{background:var(--z-pri,#2a1d17);color:var(--z-pri-ink,#fff);border:0;font-weight:600}
+dialog#t245v{width:min(1400px,100vw);max-width:100vw;max-height:100dvh;padding:0;border:0;border-radius:16px;background:#111;overflow:auto}
+dialog#t245v::backdrop{background:rgba(0,0,0,.8)}
+#t245v img{display:block;width:100%;height:auto;max-width:none}
+#t245v .mkx{position:sticky;top:8px;float:left;margin:8px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:#222;font-size:1rem;cursor:pointer;z-index:1}
