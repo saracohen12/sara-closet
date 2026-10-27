@@ -206,3 +206,10 @@ dialog#r3cmp::backdrop,dialog#r3sh::backdrop{background:rgba(20,12,8,.55)}
 /* v224 (Sara 19:11 "אני לא מגיעה לכל הכפתורים של הביגוד"): the category row scrolled sideways, which a mouse can't do – it wraps now */
 #r360 .r3cats{flex-wrap:wrap;overflow:visible}
 #r360 .r3cats button{min-height:36px;padding:0 12px}
+
+/* v260: jewellery height */
+#r360 .r3jy{margin-top:10px}
+#r360 .r3jyr{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:6px}
+#r360 .r3jyr>span{flex:1 1 100%;font-size:.92rem}
+#r360 .r3jyr button{min-height:44px;padding:0 14px;border-radius:22px;border:1px solid var(--z-line,#ccc);background:var(--z-card,#fff);color:inherit;font:inherit}
+#r360 .r3jyh{display:block;font-size:.92rem}#r360 .r3jyh small{font-weight:400;opacity:.75}

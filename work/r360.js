@@ -99,6 +99,11 @@ async function coverRGB(k){if(!k||k=='c')return BEIGE;const m=await im('x'+k+'1'
 // IT[id].tie = the tie (db 'styles' id) she picked for that cover, IT[id].tc = a colour she picked for it. ST.tf may be a closet item id.
 const isCover=id=>{if(!D[id]||cat(id)!='scarves')return false;const t=String((D[id].short||'')+' '+(D[id].full||''));return !/כובע|ברט/.test(t)||/כיסוי ראש/.test(t)};   // v228: "כובע כיסוי ראש" is a cover too
 const itOf=id=>(typeof IT=='object'&&IT&&IT[id])||{};
+// v260 (Sara 27/10 20:52 "תכשיט … לפעמים הוא מדי למטה … תן לי את האופציה להעלות או להוריד, בעיקר השרשרת"): a necklace, earrings, bracelet or belt
+// can be moved up or down on her (IT[id].jy, px of the 541-px frame, + = down), the same in all 8 angles; JYL = her last press before it is saved
+const JYS=['neck','ears','wrist','belt'],JYL={};
+const jyOf=(id,sl)=>{const q=id+'|'+sl;if(q in JYL)return JYL[q];const j=itOf(id).jy;return j&&typeof j=='object'?+j[sl]||0:0};   // per part: a set's necklace and earrings move apart
+const JY=k=>{const id=KEYOF[k];return id&&JYS.includes(SLOT[k])?jyOf(id,SLOT[k]):0};
 const COLW=[[/שחור|black/i,[34,32,32]],[/לבן|white/i,[246,244,239]],[/שמנת|קרם|אופ.?וויט|ivory|cream/i,[239,229,207]],[/בז|חאקי|שמפניה|beige|khaki/i,[217,196,166]],[/ניוד|nude/i,[200,161,132]],
  [/אפור|כסף|grey|gray/i,[150,149,147]],[/נייבי|כחול כהה|navy/i,[31,44,77]],[/תכלת|sky/i,[169,195,223]],[/כחול|ג.ינס|blue/i,[52,86,150]],[/קפה|חום|brown|coffee/i,[107,74,51]],[/קאמל|זהב|חרדל|camel|gold/i,[180,135,70]],
  [/זית|olive/i,[92,97,55]],[/ירוק|green/i,[46,110,70]],[/בורדו|יין|בורגונדי|burgundy|wine/i,[109,31,44]],[/אדום|red/i,[180,30,40]],[/ורוד עתיק|פודרה|dusty/i,[206,162,160]],[/ורוד|pink/i,[227,150,170]],
@@ -263,7 +268,7 @@ function paintCam(){const sw=dlg&&dlg.querySelector('.r3cam .r3sw');if(!sw)retur
  sw.innerHTML=T.map(id=>`<button type="button" role="radio" class="r3tank" data-r3cam="i:${esc(id)}" aria-label="${esc(nm(id))}"><img alt="" data-th="${esc(id)}" src="${esc(ph(id))}"><span>${esc(nm(id).split(' ').slice(0,3).join(' '))}</span></button>`).join('')
   +CAM.map(c=>`<button type="button" role="radio" data-r3cam="${c.k}" aria-label="${c.n}"><i style="background:${c.c?`rgb(${c.c})`:'linear-gradient(135deg,#e9c3a6,#c99476)'}"></i><span>${c.n}</span></button>`).join('');thl(T)}
 const ORDER=['shoes','base','body','bottom','top','outer','belt','coat','wrist','bag','neck'];   // what covers what, from the floor up (tucked: the top under the skirt)
-function layersFor(v,s){const on=s.on||{},L=[];const x=k=>({s:'x'+k+(v+1)});const of=sl=>Object.keys(SLOT).filter(k=>on[k]&&SL(k)==sl);
+function layersFor(v,s){const on=s.on||{},L=[];const x=k=>({s:'x'+k+(v+1),k});const of=sl=>Object.keys(SLOT).filter(k=>on[k]&&SL(k)==sl);
  let ord=s.tuck?ORDER.map(o=>o=='bottom'?'top':o=='top'?'bottom':o):ORDER;
  if(s.under){ord=ord.filter(o=>o!='top');ord.splice(ord.indexOf('body'),0,'top')}   // v255 (Sara 18:58 "איך אני שמה גופיית בסיס לשמלה"): any top worn under the dress
  const bs=of('base').length;   // v210: her base shirt under a lace dress shows through the lace, instead of the plain colour
@@ -358,9 +363,14 @@ async function paint(cv,v,s,pad){s=headOf(s);const bg=s.bg||'';const hw=whole(s.
   const g=c.createRadialGradient(FX[v],FY+3,2,FX[v],FY+3,52);g.addColorStop(0,'rgba(40,28,20,.30)');g.addColorStop(1,'rgba(40,28,20,0)');c.save();c.translate(FX[v],FY+3);c.scale(1,.16);c.translate(-FX[v],-FY-3);c.fillStyle=g;c.fillRect(FX[v]-60,FY-60,120,126);c.restore()}
  c.drawImage(base,0,0);if(E){for(let i=0;i<8;i++){c.globalAlpha=(i+1)/8;c.drawImage(E,0,0,2,1,0,BH-8+i,BW,1)}c.globalAlpha=1}
  const HTv=!s.rawHead&&hw?((await headT(s.head))||[])[v]:null;
- ms.forEach((m,i)=>{if(!m)return;const l=L[i],im=l.t?tinted(m,l.t,l.ref):m;if(l.hd&&HTv)drawHead(c,im,HTv);else c.drawImage(im,0,0)});if(L.fit)await mkFit(c,v,s.head,L.fit,pt,L.fitId);if(pt||pb)c.restore();
+ ms.forEach((m,i)=>{if(!m)return;const l=L[i],im=l.t?tinted(m,l.t,l.ref):m;if(l.hd&&HTv)drawHead(c,im,HTv);else c.drawImage(im,0,l.k?JY(l.k):0)});if(L.fit)await mkFit(c,v,s.head,L.fit,pt,L.fitId);if(pt||pb)c.restore();
  const miss=ms.some(m=>!m);if(cv._pg!==my)return !miss;if(cv.width!=BW||cv.height!=BH+pt+pb){cv.width=BW;cv.height=BH+pt+pb}const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);g.drawImage(oc,0,0);
  if(pad){if(miss)again(cv,v,s,pad,my);else cv._rt=0}return !miss}   // a layer missing: not kept as a finished picture (frames, thumbs), the stage tries again
+const JYT={},JYN={neck:'📿 שרשרת',ears:'✨ עגילים',wrist:'⌚ צמיד',belt:'➰ חגורה'};
+function paintJY(){if(!dlg)return;const w=dlg.querySelector('.r3jy');if(!w)return;const L=[];
+ Object.keys(ST.on||{}).forEach(k=>{const id=KEYOF[k];if(!ST.on[k]||!id||!JYS.includes(SLOT[k])||L.some(x=>x[0]==id&&x[1]==SLOT[k]))return;L.push([id,SLOT[k]])});
+ w.hidden=!L.length;w.innerHTML=L.length?'<b class="r3jyh">גובה התכשיט <small>מזיזים קצת למעלה או למטה, בכל הזוויות</small></b>'+L.map(([id,sl])=>{const v=jyOf(id,sl),a=`data-id="${esc(id)}" data-sl="${sl}"`;
+  return `<div class="r3jyr"><span>${JYN[sl]} <small>${esc(nm(id).split(' ').slice(0,3).join(' '))}</small></span><button type="button" ${a} data-jy="-3" aria-label="להעלות">⬆ למעלה</button><button type="button" ${a} data-jy="3" aria-label="להוריד">⬇ למטה</button>${v?`<button type="button" ${a} data-jy="0" aria-label="למקום המקורי">↺</button>`:''}</div>`}).join(''):''}
 function wornIds(s){const ids=[];if(s.head&&KEYOF[s.head])ids.push(KEYOF[s.head]);if(/^yt/.test(s.head||'')&&s.tf){const t=KEYOF[s.tf]||(D[s.tf]?s.tf:'');if(t&&!ids.includes(t))ids.push(t)}Object.keys(s.on||{}).forEach(k=>{const id=KEYOF[k];if(s.on[k]&&id&&!ids.includes(id))ids.push(id)});return ids}
 function wearing(s){const a=wornIds(s).map(nm);if(s.head=='w')a.unshift('הפאה');const n=k=>STY[k]&&STY[k].n;if(n(s.head))a.unshift(n(s.head));if(n(s.mk))a.push('איפור: '+n(s.mk));return a.join(' · ')}
 
@@ -418,6 +428,7 @@ function build(){
    <label class="r3tuck r3wb"><input type="checkbox"> שיער מאחורי הכתפיים (רואים צווארון ושרשרת)</label>
    <label class="r3tuck r3tk"><input type="checkbox"> חולצה בתוך החצאית</label>
    <label class="r3tuck r3un"><input type="checkbox"> החולצה מתחת לשמלה (כמו חולצת בסיס)</label>
+   <div class="r3jy" hidden></div>
    <div class="r3cam" hidden><span class="r3lbl">גופיית בסיס מתחת לתחרה <small>הגופיות שלך, או צבע</small></span><div class="r3sw" role="radiogroup" aria-label="צבע גופיית הבסיס"></div></div>
    <div class="r3bgw"><span class="r3lbl">רקע <small class="r3bgn"></small></span><div class="r3bgs" role="radiogroup" aria-label="רקע"></div></div>
   </div>
@@ -445,6 +456,9 @@ function build(){
  dlg.querySelector('.r3wb input').onchange=e=>{ST.wb=e.target.checked?1:0;keep();redraw()};
  dlg.querySelector('.r3tk input').onchange=e=>{ST.tuck=e.target.checked?1:0;keep();redraw()};
  dlg.querySelector('.r3un input').onchange=e=>{ST.under=e.target.checked?1:0;keep();redraw()};
+ dlg.querySelector('.r3jy').onclick=e=>{const b=e.target.closest('button[data-jy]');if(!b)return;const id=b.dataset.id,sl=b.dataset.sl,d=+b.dataset.jy;
+  const v=d?Math.max(-45,Math.min(45,jyOf(id,sl)+d)):0;JYL[id+'|'+sl]=v;paintJY();redraw();clearTimeout(JYT[id]);
+  JYT[id]=setTimeout(async()=>{const o={};JYS.forEach(x=>{const n=jyOf(id,x);if(n)o[x]=n});try{await putItem(id,{jy:Object.keys(o).length?o:''})}catch(er){(window.ERRS=window.ERRS||[]).push('v260 jy: '+(er&&er.message||er));(window.toast||(()=>{}))('לא נשמר. לנסות שוב')}},700)};
  dlg.querySelector('.r3save').onclick=saveLook3;dlg.querySelector('.r3pin').onclick=()=>TODAY.pin();dlg.querySelector('.r3dl').onclick=share;
  dlg.querySelectorAll('.r3tabs button').forEach(b=>b.onclick=()=>{TAB=b.dataset.t;paintTabs()});
  const q=dlg.querySelector('.r3q');q.addEventListener('input',()=>{Q=q.value.trim();SHOWN=60;paintGrid()});
@@ -524,6 +538,7 @@ function paintRoom(){if(!dlg)return;
  wv.innerHTML=(chips.join('')||'<p class="r3note">עוד לא לבשת כלום. בוחרים למטה מהארון.</p>')+fx;thl(ids);
  dlg.querySelector('.r3cnt').textContent=ids.length?`${ids.length} פריטים`:'';
  const t=dlg.querySelector('.r3tk');const sl=x=>Object.keys(ST.on).some(k=>ST.on[k]&&SLOT[k]&&SL(k)==x);t.hidden=!(sl('top')&&sl('bottom'));t.querySelector('input').checked=!!ST.tuck;   // v225 (Sara 19:22 "איפה מכניסים את החולצה"): any top with any skirt, not only the first two items
+ paintJY();
  const un=dlg.querySelector('.r3un');un.hidden=!(sl('top')&&sl('body'));un.querySelector('input').checked=!!ST.under;
  const w=dlg.querySelector('.r3wb');w.hidden=ST.head!='w';w.querySelector('input').checked=!!ST.wb;
  paintSty();
