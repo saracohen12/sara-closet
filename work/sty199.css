@@ -408,3 +408,21 @@ dialog#g250::backdrop{background:rgba(30,20,15,.45)}
 /* v251: a hairstyle's close-up in 8 angles turns on its card (3/4, the whole head from the top) */
 #sty199 .sycim.c8{aspect-ratio:3/4;background:#d9e2ee}
 #sty199 .sycim.c8 img{width:100%;height:100%;object-fit:cover;object-position:top}
+/* v252: several products of one category in one zip */
+.g250box .g250bb{display:flex;gap:6px;flex-wrap:wrap}
+.g250box .g250bb button:not(.mkp){min-height:40px;padding:6px 12px;border-radius:999px;border:1px solid var(--z-line,#d8cfc6);background:#fff;color:inherit;font:inherit;cursor:pointer}
+#g250 .g252g{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;max-height:58vh;overflow:auto;padding:2px}
+#g250 .g252i{position:relative;display:flex;flex-direction:column;gap:4px;padding:6px;border-radius:14px;border:2px solid var(--z-line,#e3d9cf);background:#fff;color:inherit;font:inherit;font-size:.8rem;text-align:start;cursor:pointer;line-height:1.3}
+#g250 .g252i img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:10px;background:#eee}
+#g250 .g252i span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#g250 .g252i em{font-style:normal;font-size:.72rem;color:#2f6b3a}
+#g250 .g252i.on{border-color:var(--z-ink,#3a2418);box-shadow:0 0 0 2px var(--z-ink,#3a2418) inset}
+#g250 .g252i b{position:absolute;top:10px;inset-inline-start:10px;width:28px;height:28px;border-radius:50%;background:var(--z-ink,#3a2418);color:#fff;display:grid;place-items:center}
+#g250 .g252l{display:flex;flex-direction:column;gap:8px}
+#g250 .g252r{display:grid;grid-template-columns:56px 1fr auto auto;gap:10px;align-items:center;padding:6px;border-radius:14px;background:var(--z-surface,#f6f2ee)}
+#g250 .g252r img{width:56px;aspect-ratio:3/4;object-fit:cover;border-radius:8px;background:#eee}
+#g250 .g252r div{display:flex;flex-direction:column;gap:2px;min-width:0}#g250 .g252r small{opacity:.75;font-size:.78rem;line-height:1.35}
+#g250 .g252r button{min-height:36px;padding:4px 10px;border-radius:999px;border:1px solid var(--z-line,#d8cfc6);background:#fff;color:inherit;font:inherit;cursor:pointer}
+@media (max-width:560px){#g250 .g252r{grid-template-columns:48px 1fr auto}#g250 .g252r [data-g252rm]{grid-column:3}#g250 .g252r img{width:48px}#g250 .g252g{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}}
+/* v252: on a phone the GPT window was taller than the screen and its buttons were cut off – it scrolls now */
+dialog#g250{overflow:auto!important;max-height:94dvh;overscroll-behavior:contain}
