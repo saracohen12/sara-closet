@@ -27,7 +27,7 @@ const BELTK=['dress','skirt','pants','set','coat','jacket','vest'];
 const MULTI=['top','base','sweater','skirt','pants','belt','dress'];
 const JW=[['necklace','שרשרת'],['earrings','עגילים'],['bracelet','צמיד'],['ring','טבעת']];
 const SETA=[['jacket',"ז'קט"],['top','חולצה'],['vest','אפודה'],['sweater','סוודר'],['coat','מעיל']],SETB=[['dress','שמלה'],['skirt','חצאית'],['pants','מכנסיים']];
-const LIGHT=/לבן|לבנה|שמנת|קרם|אופ.?וויט|שקוף|שקופה|ניוד|white|ivory|cream|off.?white|clear|transparent/i;
+const LIGHT=/לבן|לבנה|שמנת|קרם|אופ.?וויט|שקוף|שקופה|white|ivory|cream|off.?white|clear|transparent/i;
 const cat0=id=>{try{return curCat(id)}catch(_){return (D[id]||{}).cat}};
 const OK_CATS=new Set(['dresses','skirts','tops','base','sweaters','outer','sets','jewelry','belts','shoes','bags']);
 // ---------- what she answered (saved on the item) ----------
@@ -52,11 +52,13 @@ const gOf=id=>{const k=kd(id);if(!MULTI.includes(k)||it(id).np!=null||oneDone(id
 const asked=id=>it(id).np!=null;
 const npOf=id=>{if(it(id).np!=null)return Math.max(1,Math.min(6,+it(id).np||1));const g=gOf(id);return g?g.n:1};
 const colsOf=id=>{const c=it(id).pc;if(Array.isArray(c))return c;const g=guess(id);return g&&g.n==npOf(id)?g.cols:[]};
-const wbgOf=id=>it(id).wbg!=null?!!it(id).wbg:LIGHT.test(txt(id));
+// v258 (Sara 19:34 "רקע שחור אך ורק אם יש לבן ושקוף על הבגד … אם יש חום, שחור או כל צבע אחר – פחות כדאי"): black only for white / cream / see-through;
+// a garment whose own colour is dark or coloured keeps doll-8's light backdrop, even when "לבן" appears somewhere in the name
+const wbgOf=id=>{if(it(id).wbg!=null)return !!it(id).wbg;const c=(D[id]||{}).color||'';if(c&&!LIGHT.test(c)&&!/פולי|multi/i.test(c))return false;return LIGHT.test(txt(id))};
 // v257 (Sara 27/10 19:28 "הוא עשה רקע שחור לכל החולצות, גם לחולצות השחורות"): in a pack every sheet gets its OWN backdrop – a light piece black,
 // a dark piece keeps doll-8's own light backdrop (black on black can't be cut). IT.pb[i] = her choice per piece, else by the piece's colour
 const DARK=/שחור|שחורה|כהה|נייבי|כחול כהה|חום|שוקו|קפה|בורדו|זית|אפור כהה|פחם|black|navy|brown|charcoal/i;
-const pbOf=(id,i)=>{const b=it(id).pb;if(Array.isArray(b)&&b[i]!=null)return !!b[i];const c=(colsOf(id)[i]||namesOf(id)[i]||'');if(DARK.test(c))return false;if(LIGHT.test(c)||/בז['׳]?|beige|nude|אופוויט|תכלת|ורוד בהיר|אפור בהיר/i.test(c))return true;return wbgOf(id)};
+const pbOf=(id,i)=>{const b=it(id).pb;if(Array.isArray(b)&&b[i]!=null)return !!b[i];const c=(colsOf(id)[i]||namesOf(id)[i]||'');if(DARK.test(c))return false;return LIGHT.test(c)};
 // holes in the fabric (lace, eyelet, mesh): 'open' = through the holes you see what she wears under it (the cut leaves them see-through, a base shirt shows),
 // 'lined' = a lining is sewn under the holes and is part of the garment                                                        → IT.hol
 const HOLE=/תחרה|תחרת|רשת|חורים|אג'ור|אז'ור|קרושה|סרוג ביד|lace|mesh|eyelet|crochet|openwork/i;
@@ -110,8 +112,8 @@ function rulesOf(id,k,sheets){const P=[],ME=(R()&&R().ME)||'';
  if(cloth)P.push('אם בתמונת המוצר יש עוד בגדים או אביזרים שלא כתבתי, הם לא שלי: אל תוסיפי אותם.');
  if(cloth)P.push(`המידות שלי: ${ME}. הדמות כבר בנויה לפי המידות האלה, אל תשני את הגוף. שמרי על אותו אורך ביחס לגוף כמו בתמונת המוצר, ואותו אורך בכל 8 הזוויות.\nהבגד צריך להיראות אמיתי על הגוף: קפלים, צללים, הבד נופל לפי התנוחה.`);
  const B=blk(id,k);
- if(B.all)P.push('חשוב מאוד: הבגד בהיר (לבן, שמנת או שקוף). כדי שאפשר יהיה לגזור אותו בדיוק, בכל הגיליונות של הדמות צבעי את הרקע מסביב לדמות בשחור אחיד, מכל הצדדים ועד הרצפה. הדמות, הבגד והקווים הלבנים בין המשבצות נשארים. הלבן בבגד נשאר לבן, ובד שקוף נשאר שקוף ורואים דרכו את הגוף.');
- else if(B.any)P.push(`חשוב מאוד – הרקע שונה בכל גיליון, לפי צבע הבגד: בגיליונות של ${B.S.filter((o,i)=>B.L[i]).map(o=>o.n).join(', ')} (בהירים) צבעי את הרקע מסביב לדמות בשחור אחיד, מכל הצדדים ועד הרצפה. בגיליונות של ${B.S.filter((o,i)=>!B.L[i]).map(o=>o.n).join(', ')} (כהים) הרקע נשאר בדיוק כמו ב-doll-8, בהיר – אף פעם לא רקע שחור מאחורי בגד שחור או כהה, כי אז אי אפשר לגזור אותו.`);
+ if(B.all)P.push('חשוב מאוד: הבגד לבן, שמנת או שקוף. כדי שאפשר יהיה לגזור אותו בדיוק, בכל הגיליונות של הדמות צבעי את הרקע מסביב לדמות בשחור אחיד, מכל הצדדים ועד הרצפה. הדמות, הבגד והקווים הלבנים בין המשבצות נשארים. הלבן בבגד נשאר לבן, ובד שקוף נשאר שקוף ורואים דרכו את הגוף (השמלה בצבע עור), לא את השחור.');
+ else if(B.any)P.push(`חשוב מאוד – הרקע שונה בכל גיליון: רקע שחור אך ורק בגיליון של בגד לבן, שמנת או שקוף – כאן: ${B.S.filter((o,i)=>B.L[i]).map(o=>o.n).join(', ')}. שם צבעי את הרקע מסביב לדמות בשחור אחיד, מכל הצדדים ועד הרצפה; הלבן בבגד נשאר לבן, ובד שקוף נשאר שקוף ורואים דרכו את הגוף (השמלה בצבע עור), לא את השחור. בכל שאר הגיליונות – ${B.S.filter((o,i)=>!B.L[i]).map(o=>o.n).join(', ')} – הרקע נשאר בדיוק כמו ב-doll-8, בהיר. אף פעם לא רקע שחור מאחורי בגד שחור, חום, בז׳ או צבעוני – אי אפשר לגזור אותו.`);
  const h=holOf(id);if(cloth&&h=='open')P.push(`בבד יש חורים (תחרה, רשת או רקמה עם חורים). דרך החורים רואים בדיוק מה שהדמות לובשת מתחת – השמלה בצבע עור או העור – כמו בגוף אמיתי. אל תמלאי את החורים בשחור, בלבן, ברקע או בצבע הבגד${B.any?', גם בגיליון עם רקע שחור':''}. אל תוסיפי בטנה.`);
  else if(cloth&&h=='lined')P.push('לבגד יש בטנה תפורה מתחת לחורים או לתחרה, באותו צבע כמו בתמונת המוצר: היא חלק מהבגד ונשארת, ודרך החורים רואים את הבטנה ולא את הגוף.');
  P.push(`אל תשני שום דבר אחר: אותו גיליון, אותו סדר זוויות, אותו מיקום ואותו גודל של הדמות בכל משבצת, אותם פנים בדיוק, אותה תנוחה${B.all?'':B.any?', אותו רקע (חוץ מהגיליונות שכתוב בהם רקע שחור)':', אותו רקע'}, אותם קווים לבנים בין המשבצות. כל מה שהדמות כבר לובשת בגיליון (כיסוי ראש בז׳, שמלה בצבע עור) נשאר בדיוק אותו דבר. השמלה בצבע עור נשארת בכל מקום שהפריט לא מכסה.`);
@@ -246,7 +248,7 @@ async function cuJpeg(f){const u=URL.createObjectURL(f);try{const m=await new Pr
 function packQ(id,k){const n=npOf(id),A=asked(id),g=gOf(id),W=PLURAL[k]||'פריטים';
  return `<div class="g250q g256q${A?'':' ask'}"><b>${A?'2. ':'❓ קודם כל: '}כמה ${W} יש בחבילה?</b>${!A&&g?`<small>לפי השם: ${g.n}${g.cols.length?' ('+es(g.cols.join(', '))+')':''}. נכון?</small>`:''}
   <div class="g250cs">${[1,2,3,4,5,6].map(v=>chip(A&&n==v||!A&&g&&g.n==v,'data-g250n',v,v)).join('')}${!A&&g?`<button type="button" class="g250c g256ok" data-g250n="${g.n}">✓ נכון, ${g.n}</button>`:''}</div>
-  ${n>1?`<small>${A?`📁 יש ${n} תיקיות נפרדות בקטגוריה – כל אחת כמו מוצר שקנית לבד. שם וצבע לכל אחת:`:'כל אחת תהיה תיקייה נפרדת. שם וצבע לכל אחת:'}</small><div class="g250pn g256pn">${namesOf(id).map((x,i)=>`<span><i>${i+1}</i><input data-g250pn="${i}" value="${es(x)}" aria-label="שם ${i+1}"><input data-g256pc="${i}" value="${es(colsOf(id)[i]||'')}" placeholder="צבע" aria-label="צבע ${i+1}"><button type="button" class="g250c g257bg${pbOf(id,i)?' on':''}" data-g257bg="${i}" aria-pressed="${pbOf(id,i)}" title="הרקע ש-GPT יעשה בגיליון של ${es(x)}">${pbOf(id,i)?'⬛ רקע שחור':'⬜ רקע בהיר'}</button></span>`).join('')}</div><small>⬛ רקע שחור לבגד בהיר (לבן, שמנת) · ⬜ רקע בהיר לבגד כהה (שחור, חום). לחיצה מחליפה.</small>`:''}</div>`}
+  ${n>1?`<small>${A?`📁 יש ${n} תיקיות נפרדות בקטגוריה – כל אחת כמו מוצר שקנית לבד. שם וצבע לכל אחת:`:'כל אחת תהיה תיקייה נפרדת. שם וצבע לכל אחת:'}</small><div class="g250pn g256pn">${namesOf(id).map((x,i)=>`<span><i>${i+1}</i><input data-g250pn="${i}" value="${es(x)}" aria-label="שם ${i+1}"><input data-g256pc="${i}" value="${es(colsOf(id)[i]||'')}" placeholder="צבע" aria-label="צבע ${i+1}"><button type="button" class="g250c g257bg${pbOf(id,i)?' on':''}" data-g257bg="${i}" aria-pressed="${pbOf(id,i)}" title="הרקע ש-GPT יעשה בגיליון של ${es(x)}">${pbOf(id,i)?'⬛ רקע שחור':'⬜ רקע בהיר'}</button></span>`).join('')}</div><small>⬛ רקע שחור רק לבגד לבן, שמנת או שקוף · ⬜ כל צבע אחר – הרקע הרגיל. לחיצה מחליפה.</small>`:''}</div>`}
 // ---------- the window ----------
 let DL=null,ID='';
 function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';DL.dir='rtl';DL.setAttribute('aria-labelledby','g250t');document.body.appendChild(DL);
