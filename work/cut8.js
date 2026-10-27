@@ -145,11 +145,15 @@ function shade(bs,ds,k){const sb=bs[k]+bs[k+1]+bs[k+2]+1,sd=ds[k]+ds[k+1]+ds[k+2
 // and GPT's body sits a few px off the doll (thin beige strips along the arm and back in the side views). Now:
 // · a light blue pixel is backdrop (not for tiex – her own scarf may be blue) · a piece must touch the doll's head, not just be high up
 // · below the neck a pixel counts only if it differs from every doll pixel around it (5 px) – a moved body edge is not hair · small holes are filled
-function maskWhole(b,d,v,fab,keepBlue){const bs=gauss(b,3,1.2),ds=gauss(d,3,1.2),diff=new Float32Array(N),dbg=new Float32Array(N),bgr=new Float32Array(H*3),bgb=new Float32Array(H*3),col=[];
+function maskWhole(b,d,v,fab,keepBlue){const grow=fab||keepBlue;   // v248: her own cover's tie (tiex) also grows its long tails
+const bs=gauss(b,3,1.2),ds=gauss(d,3,1.2),diff=new Float32Array(N),dbg=new Float32Array(N),bgr=new Float32Array(H*3),bgb=new Float32Array(H*3),col=[];
  for(let c=0;c<10;c++)col.push(c);for(let c=W-10;c<W;c++)col.push(c);
  for(let r=0;r<H;r++)for(let z=0;z<3;z++){const vs=col.map(c=>d[(r*W+c)*3+z]).sort((x,y)=>x-y);bgr[r*3+z]=(vs[9]+vs[10])/2;const vb=col.map(c=>b[(r*W+c)*3+z]).sort((x,y)=>x-y);bgb[r*3+z]=(vb[9]+vb[10])/2}
  const nk=NK[v]+4,low=Math.floor(H*.8),RN=5;let m=new Uint8Array(N);
  const blue=k=>{const R=d[k],G=d[k+1],B=d[k+2];return B-R>28&&B>=G-6&&R*.299+G*.587+B*.114>105};
+ // v248 (Sara 27/10 16:20 "הוא גזר את זה של האבטר … לא גזר טוב"): GPT's backdrop on her plum ties was a deeper blue with a soft gradient, and tiex kept every blue pixel
+ // (in case the scarf itself is blue) – so chunks of backdrop came with the head. Now blue is kept only when the scarf really is blue: most of the doll's head area turned blue.
+ if(keepBlue){let nb=0,nt=0;for(let r=0;r<nk;r++)for(let c=8;c<W-8;c++){const i=r*W+c,k=i*3;let t=0;for(let z=0;z<3;z++){const e=b[k+z]-bgb[r*3+z];t+=e*e}if(t>900){nt++;if(blue(k))nb++}}keepBlue=nt>0&&nb/nt>.3}
  const grey=k=>{const mx=Math.max(d[k],d[k+1],d[k+2]),mn=Math.min(d[k],d[k+1],d[k+2]);return mx>0&&(mx-mn)/mx<.1};   // v224: a grey scarf near her arm's dark crease is not GPT's body moved (that is skin-coloured)
  const far=(r,c,k)=>{for(let y=Math.max(0,r-RN);y<=Math.min(H-1,r+RN);y++)for(let x=Math.max(0,c-RN);x<=Math.min(W-1,c+RN);x++){const j=(y*W+x)*3;let s=0;for(let z=0;z<3;z++){const a=ds[k+z]-bs[j+z];s+=a*a}if(s<1600)return false}return true};
  for(let r=0;r<low;r++)for(let c=0;c<W;c++){const i=r*W+c,k=i*3;let s=0,t=0;for(let z=0;z<3;z++){const a=ds[k+z]-bs[k+z],e=d[k+z]-bgr[r*3+z];s+=a*a;t+=e*e}
@@ -171,7 +175,7 @@ function maskWhole(b,d,v,fab,keepBlue){const bs=gauss(b,3,1.2),ds=gauss(d,3,1.2)
  // the neck: below the doll's head line GPT's neck fades into the doll's own neck (unless hair covers it), so no line shows where they meet
  // v214 (Sara 15:57 "עדיין יש חורים, אני רואה בשתי תמונות חורים"): only her skin fades there – at the back hair covers the nape (dark like the doll's), and fading it left a see-through line
  // v245 (Sara's 27 ties, 27/10): a long scarf over her body lost bits (grey knit over the beige dress passed as a shadow) – below the neck the scarf grows into neighbours of its own colour
- if(fab)for(let it=0;it<8;it++){const T=[0,1,2,3].map(()=>new Float64Array((W+1)*(H+1)));
+ if(grow)for(let it=0;it<8;it++){const T=[0,1,2,3].map(()=>new Float64Array((W+1)*(H+1)));
   for(let r=0;r<H;r++)for(let c=0;c<W;c++){const i=r*W+c,j=(r+1)*(W+1)+c+1,on=m[i]?1:0;for(let z=0;z<4;z++){const t=T[z];t[j]=t[j-1]+t[j-W-1]-t[j-W-2]+(on?(z<3?d[i*3+z]:1):0)}}
   const bx=(t,r0,c0,r1,c1)=>t[(r1+1)*(W+1)+c1+1]-t[r0*(W+1)+c1+1]-t[(r1+1)*(W+1)+c0]+t[r0*(W+1)+c0],e=dilate(m,2);let add=0;
   for(let r=nk;r<low;r++)for(let c=8;c<W-8;c++){const i=r*W+c,k=i*3;if(m[i]||!e[i]||dbg[i]<=22||diff[i]<25||blue(k))continue;
