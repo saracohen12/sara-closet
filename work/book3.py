@@ -119,7 +119,7 @@ for x in items:
 for g in G:
     for m in g:
         ID[m]['dup']=[o for o in g if o!=m]; ID[m]['dupnote']=NOTE.get(tuple(g),'')
-SRC={'t1':'טמו 1 (חשבון 8711309)','t2':'טמו 2 (חשבון 9285464)','t3':'טמו 3 (החשבון החדש)','sh':'שיין','ae':'עלי אקספרס'}
+SRC={'t1':'טמו 1 (חשבון 8711309)','t2':'טמו 2 (חשבון 9285464)','t3':'טמו 3 (smart20.mortgage)','sh':'שיין','ae':'עלי אקספרס'}
 SEC=[('dresses','שמלות'),('skirts','חצאיות'),('sets','סטים'),('pants','מכנסיים'),('tops','חולצות'),('base','חולצות בסיס'),('sweaters','סוודרים'),('outer',"ז'קטים ומעילים"),('scarves','כיסויי ראש וצעיפים'),('belts','חגורות'),('jewelry','תכשיטים'),('shoes','נעליים ואביזרים'),('bags','תיקים'),('hosiery','גרביונים וגרביים'),('night','הלבשה תחתונה ולילה'),('hair','אביזרי שיער'),('makeup','איפור וטיפוח'),('girls','בנות'),('boys','בנים'),('men','גברים'),('wedding','חתונה ואירועים'),('other','בית ושונות')]
 SOVR={'S16D0_2':'wedding','S16D0_3':'wedding','S16D0_4':'wedding','S16D0_5':'wedding','S16D0_6':'wedding','SMSCW_13':'wedding','S1A5K_0':'wedding',
  'SMSCW_4':'shoes','SMSCW_6':'shoes','SMSCW_11':'shoes','SMSCW_14':'shoes'}
