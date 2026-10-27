@@ -494,3 +494,7 @@ dialog#g256::backdrop{background:rgba(30,20,15,.45)}
 #sty199 .syrest{margin:14px 4px 6px;font-size:.95rem}
 #sty199 .syfavs h4{margin:6px 4px}
 #r360 .r3styadd.r3more b{background:#fff4cc}
+
+/* v270: a product with no photo can't be picked – greyed out, no pointer */
+#g250 .g252i.noph,#g250 .g252i:disabled{opacity:.38;filter:grayscale(1);cursor:not-allowed;border-style:dashed}
+#g250 .g252i .g270x{color:#8a2b1c;font-weight:700}
