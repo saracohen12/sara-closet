@@ -87,7 +87,7 @@ function open172(){let d=$1('#ad172');if(!d){d=document.createElement('dialog');
  let r={};try{r=counts()}catch(e){ERR('counts',e)}
  let k=0;const reg=f=>{const id='a'+(k++);ACT[id]=f;return id};
  const w=WAIT.filter(x=>r[x[2]]>0);const ver=(($1('#ver')||{}).textContent||'').trim();
- d.innerHTML=`<div class="ad172h"><h3>⚙️ פאנל ניהול<small>כל מה שקורה בארון, במקום אחד</small></h3><button data-ad172x aria-label="סגירה">✕</button></div><div class="ad172b">
+ d.innerHTML=`<div class="ad172h"><h3>⚙️ פאנל ניהול<small>כל מה שקורה בארון, במקום אחד${window.VER?` · <b class="ad236v">גרסה ${window.VER}</b>`:''}</small></h3><button data-ad172x aria-label="סגירה">✕</button></div><div class="ad172b">
   <div class="ad172s"><button data-ad172="${reg(()=>{shut();openCloset163()})}"><b>${r.items||0}</b><span>פריטים בארון</span></button><button data-ad172="${reg(()=>{shut();openOrders123()})}"><b>${r.orders||0}</b><span>הזמנות</span></button><button data-ad172="${reg(()=>{if(window.R360){shut();R360.open()}else only('avok')})}"><b>${r.ok||0}</b><span>על האווטאר 360</span></button><button data-ad172="${reg(()=>{shut();openGen161()})}"><b>${r.gen||0}</b><span>ברשימה הכללית</span></button></div>
   <div class="ad172g">מה מחכה לך</div><div class="ad172w">${w.map(x=>`<button class="${x[3]?'hot':''}" data-ad172="${reg(x[4])}"><i>${x[0]}</i><span>${x[1]}</span><b>${r[x[2]]}</b></button>`).join('')||'<p>✓ אין כרגע שום דבר שמחכה לך</p>'}</div>
   ${TOOLS.map(([g,L])=>`<div class="ad172g">${g}</div><div class="ad172t">${L.map(t=>{const lab=typeof t[1]=='function'?t[1]():t[1];return typeof t[2]=='string'?`<a href="${t[2]}" target="_blank" rel="noopener"><i>${t[0]}</i>${lab}</a>`:`<button data-ad172="${reg(t[2])}"><i>${t[0]}</i>${lab}</button>`}).join('')}</div>`).join('')}

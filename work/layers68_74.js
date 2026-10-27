@@ -134,7 +134,7 @@ document.body.appendChild(sh);const shb=sh.querySelector('.sh9b');
 sh.querySelector('.x9').addEventListener('click',()=>sh.close());sh.addEventListener('click',e=>{if(e.target===sh)sh.close()});
 // --- 2. app bar
 const h1=top.querySelector('h1');const bar=document.createElement('div');bar.className='h9bar';
-bar.innerHTML='<div class="h9logo"><i aria-hidden="true">✦</i><span><b>הארון</b><small>של שרה</small></span></div><div class="h9act"></div>';
+bar.innerHTML='<div class="h9logo"><i aria-hidden="true">✦</i><span><b>הארון</b><small>של שרה'+(window.VER?'<em class="h236v" title="עודכן '+(window.VDATE||'')+'">גרסה '+window.VER+'</em>':'')+'</small></span></div><div class="h9act"></div>';   // v236 (Sara 27/10 "ליד הארון של שרה ... מספר גרסה, בקטן")
 const act=bar.querySelector('.h9act');const bell=$('#bell'),hb=$('#helpb'),vr=$('#ver');
 if(bell)act.appendChild(bell);if(hb){hb.textContent='?';hb.setAttribute('aria-label','איך משתמשים');act.appendChild(hb)}if(vr)act.appendChild(vr);
 // --- 3. hero + quick tiles + categories
