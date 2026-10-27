@@ -439,3 +439,49 @@ dialog#g250{overflow:auto!important;max-height:94dvh;overscroll-behavior:contain
 #g250 .g252i .g254l i{font-style:normal;font-size:.7rem;font-weight:700;padding:1px 6px;border-radius:999px;background:#eee;color:#999;filter:grayscale(1);opacity:.7}
 #g250 .g252i .g254l i.on{background:#e3f3e5;color:#1f6b2c;filter:none;opacity:1}
 #g250 .g252i.done,#g250 .g252i.noph{opacity:.55}#g250 .g252i.done.on,#g250 .g252i.noph.on{opacity:1}
+/* v256: a split pack – one folder card per piece after the pack's card; the piece's own window */
+.pk256{margin:0;display:flex;flex-direction:column;gap:3px;min-width:0;text-align:start;background:var(--card);border:2px dashed var(--accent,#b07a4f);border-radius:14px;padding:0 0 10px;color:inherit;cursor:pointer;overflow:hidden;box-shadow:var(--shadow)}
+.pk256.hide{display:none}
+.pk256:focus-visible{outline:3px solid var(--accent,#b07a4f);outline-offset:2px}
+.pk256 .ph{display:block;position:relative;background:var(--ph);aspect-ratio:3/4;width:100%;margin-bottom:6px}
+.pk256 .ph img{width:100%;height:100%;object-fit:contain;display:block}
+.pk256 .t{padding:0 10px;font-weight:600;line-height:1.3}
+.pk256 .m{padding:0 10px;font-size:.85em;opacity:.75}
+.pk256f{position:absolute;top:6px;inset-inline-start:6px;background:var(--accent,#b07a4f);color:#fff;font-size:.8em;font-weight:700;padding:2px 8px;border-radius:999px}
+.pk256b{position:absolute;bottom:6px;inset-inline-start:6px;background:rgba(0,0,0,.66);color:#fff;font-size:.75em;padding:2px 8px;border-radius:999px;pointer-events:none}
+.g256q.ask{border:2px solid var(--accent,#b07a4f);border-radius:12px;padding:8px;background:color-mix(in srgb,var(--accent,#b07a4f) 10%,transparent)}
+.g256q .g256ok{font-weight:700}
+.g256pn span{display:flex;gap:6px;align-items:center;margin-top:4px}
+.g256pn i{font-style:normal;font-weight:700;min-width:1.2em}
+.g256pn input{min-width:0;flex:1}
+.g256pn input[data-g256pc]{flex:.6}
+.g256bn{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:4px;font-size:.85em}
+.g256bn.ask{color:var(--accent,#b07a4f);font-weight:700}
+.g256bn .g250c{min-width:2.2em;padding:2px 6px}
+dialog#g256{width:min(560px,100vw);max-width:100vw;max-height:94dvh;overflow:auto!important;overscroll-behavior:contain;border:0;border-radius:20px;padding:0;background:var(--z-bg,#fffaf5);color:var(--z-ink,#2a1d17);box-sizing:border-box}
+#g256 .mk{padding:14px}
+.g256top{display:flex;gap:12px;align-items:flex-start}
+.g256top img{width:42%;max-width:220px;aspect-ratio:3/4;object-fit:contain;background:var(--ph);border-radius:12px}
+.g256top>div{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0}
+.g256top label{display:flex;flex-direction:column;gap:2px;font-size:.9em}
+.g256st{margin:0;font-weight:600}.g256st.ok{color:#2e7d32}
+.g256nav{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+@media (max-width:480px){.g256top{flex-direction:column}.g256top img{width:100%;max-width:none;max-height:38vh}}
+#g250 .g250top{grid-template-columns:110px minmax(0,1fr)}
+@media (max-width:560px){#g250 .g250top{grid-template-columns:minmax(0,1fr)}}
+#g250 .g256pn span{flex:1 1 100%;min-width:0}
+#g250 .g256pn input{flex:1 1 0}
+#g250 .g256pn input[data-g256pc]{flex:.6 1 0}
+.card .pk256b{bottom:auto;top:34px;inset-inline-end:6px;inset-inline-start:auto}
+dialog#g256::backdrop{background:rgba(30,20,15,.45)}
+#g256 .mk{padding:14px 16px 18px}
+#g256 .mkh{display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:-14px;background:inherit;z-index:2;padding:6px 0}
+#g256 .mkh h3{margin:0;font-size:1.05rem}
+#g256 .mkx{width:40px;height:40px;border-radius:50%;border:1px solid var(--z-line,#ddd);background:#fff;font-size:1rem;cursor:pointer}
+#g256 .g250c{min-height:36px;padding:6px 12px;border-radius:999px;border:1px solid var(--z-line,#d8cfc6);background:#fff;color:inherit;font:inherit;font-size:.86rem;cursor:pointer}
+#g256 .g250c.on{background:var(--z-ink,#3a2418);color:#fff;border-color:transparent}
+#g256 .mkb{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+#g256 .mkb button{min-height:42px;padding:8px 14px;border-radius:999px;border:1px solid var(--z-line,#d8cfc6);background:#fff;color:inherit;font:inherit;cursor:pointer}
+#g256 .mkb .mkp{background:var(--z-ink,#3a2418);color:#fff;border-color:transparent}
+#g256 .mkh h3 small{font-weight:400;opacity:.7}
+#g256 .g256top input{min-height:38px;padding:4px 10px;border-radius:10px;border:1px solid var(--z-line,#d8cfc6);font:inherit;background:#fff;color:inherit}

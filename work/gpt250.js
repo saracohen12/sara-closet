@@ -40,10 +40,21 @@ function jwOf(id){const s=it(id).jw;if(Array.isArray(s)&&s.length)return s;const
 function setOf(id){const s=it(id).sp;if(Array.isArray(s)&&s.length==2)return s;const t=txt(id);
  const a=/מעיל/.test(t)?'coat':/וסט|אפוד/.test(t)?'vest':/סוודר|סריג|קרדיגן/.test(t)?'sweater':/ז['׳]?קט|ג['׳]קט|בלייזר/.test(t)?'jacket':'top';
  const b=/שמל/.test(t)?'dress':/מכנס/.test(t)?'pants':'skirt';return [a,b]}
-const npOf=id=>Math.max(1,Math.min(6,+it(id).np||1));
+// v256 (Sara 27/10 19:05 "בתמונה אחת יש לי שלוש חולצות … תשאל אותי מראש כמה חולצות יש … שלוש תיקיות על המסך"): a pack is read from its name
+// ("3 חולצות בסיס גולף: לבן, חום, שחור") until she answers – how many, and each one's colour; the pieces (folders) are made as soon as she answers
+const PACKW=/(^|\s)([2-6])\s*(?:יח\S*\s*)?(חולצות|גופיות|טי.?שירטים|סוודרים|חצאיות|חגורות|שמלות|מכנסיים|טייצים)/;
+function guess(id){const x=D[id]||{},m=((x.short||'')+' '+(x.full||'')).match(PACKW);if(!m)return null;const n=+m[2];
+ let cs=[];const a=(x.short||'').match(/[:(]\s*([^:()]*?)\s*\)?\s*$/);if(a)cs=a[1].split(/\s*[,،\/+]\s*/).map(v=>v.trim()).filter(Boolean);if(cs.length!=n)cs=[];
+ const w=/גופי/.test(m[3])?'גופייה':/סוודר/.test(m[3])?'סוודר':/חצאי/.test(m[3])?'חצאית':/חגור/.test(m[3])?'חגורה':/שמל/.test(m[3])?'שמלה':/מכנס|טייצ/.test(m[3])?'מכנסיים':'חולצה';
+ return {n,cols:cs,names:Array.from({length:n},(_,i)=>cs[i]?`${w} בצבע ${cs[i]}`:`${w} ${i+1}`)}}
+const oneDone=id=>{try{return !(it(id).parts||[]).length&&!!R().isReady(id)}catch(_){return false}};   // already on the avatar as one item: the name does not split it
+const gOf=id=>{const k=kd(id);if(!MULTI.includes(k)||it(id).np!=null||oneDone(id))return null;return guess(id)};
+const asked=id=>it(id).np!=null;
+const npOf=id=>{if(it(id).np!=null)return Math.max(1,Math.min(6,+it(id).np||1));const g=gOf(id);return g?g.n:1};
+const colsOf=id=>{const c=it(id).pc;if(Array.isArray(c))return c;const g=guess(id);return g&&g.n==npOf(id)?g.cols:[]};
 const wbgOf=id=>it(id).wbg!=null?!!it(id).wbg:LIGHT.test(txt(id));
 const bltOf=id=>it(id).blt||'';
-const namesOf=id=>{const n=npOf(id),k=kd(id),s=it(id).pn||[];return Array.from({length:n},(_,i)=>s[i]||`${TN[k]||'פריט'} ${i+1}`)};
+const namesOf=id=>{const n=npOf(id),k=kd(id),s=it(id).pn||[],g=guess(id),G=g&&g.n==n?g.names:[];return Array.from({length:n},(_,i)=>s[i]||G[i]||`${TN[k]||'פריט'} ${i+1}`)};
 // ---------- the pictures GPT returns, in order ----------
 // {role:'sheet'|'whole'|'cu', kind, n (name), pk (piece key or '' = the product itself), cuOf (jewel kind for a close-up)}
 function outs(id){const k=kd(id),O=[];
@@ -53,7 +64,7 @@ function outs(id){const k=kd(id),O=[];
   if(J.includes('necklace'))O.push({role:'cu',n:'תקריב פנים עם השרשרת',cuOf:'necklace'});
   if(J.includes('earrings'))O.push({role:'cu',n:'תקריב פנים עם העגילים',cuOf:'earrings'});return O}
  if(k=='bag'){O.push({role:'sheet',kind:'bag',n:'התיק',pk:''});O.push({role:'cu',n:'תקריב חצי גוף עם התיק',cuOf:'bag',half:1});return O}
- const n=MULTI.includes(k)?npOf(id):1;if(n>1){namesOf(id).forEach((x,i)=>O.push({role:'sheet',kind:k,n:x,pk:'g'+(i+1),pn:x}));return O}
+ const n=MULTI.includes(k)?npOf(id):1;if(n>1){const C=colsOf(id);namesOf(id).forEach((x,i)=>O.push({role:'sheet',kind:k,n:x,pk:'g'+(i+1),pn:x,col:C[i]||''}));return O}
  O.push({role:'sheet',kind:k,n:TN[k]||'הפריט',pk:''});return O}
 // ---------- the prompt ----------
 function howOf(k){try{const K=R().KIND[k];if(K)return K[1]}catch(_){}
@@ -124,7 +135,7 @@ function bPrompt(ids,np){const all=ids.flatMap(id=>outs(id)),cus=all.filter(o=>o
   L.push(`━━ מוצר ${i+1}: ${TN[k]||'פריט'} – ${nm(id)}${x.color?', צבע: '+x.color:''} (התמונות p${i+1}-…)`);
   if(k=='set'){const [a,b]=setOf(id);L.push(`זה סט של שני חלקים: ${TN[a]} ו${TN[b]}. אני רוצה לראות את הסט ביחד, וגם כל חלק לבד.`)}
   else if(k=='jw'){const J=jwOf(id);L.push(J.length>1?`בתמונות יש כמה תכשיטים: ${J.map(j=>TN[j]).join(', ')}. כל תכשיט הוא פריט נפרד.`:`רק ה${TN[J[0]]}, גם אם בתמונה יש עוד תכשיטים.`)}
-  else if(sheets.length>1)L.push(`בתמונות יש ${sheets.length} ${PLURAL[k]||'פריטים'}, כל אחד לבד: ${sheets.map((o,j)=>`${j+1}) ${o.n}`).join(', ')}. הסדר: מימין לשמאל כמו בתמונה הראשית.`);
+  else if(sheets.length>1)L.push(`בתמונות יש ${sheets.length} ${PLURAL[k]||'פריטים'}, ${['sweater','pants'].includes(k)?'כל אחד':'כל אחת'} לבד: ${sheets.map((o,j)=>`${j+1}) ${o.n}`).join(', ')}. הסדר: מימין לשמאל כמו בתמונה הראשית.`);
   L.push(`התמונות שמחזירים למוצר ${i+1}:\n`+O.map(o=>`${++g}. `+retText(o,sheets,k)).join('\n'));
   // only what is this product's own; the general rules (how to edit the sheet, her measurements, extra clothes, don't change anything else) are said once, below
   const ru=rulesOf(id,k,sheets).slice(0,-1);L.push(...ru[0].split('\n').slice(1).filter(Boolean),...ru.slice(1).filter(r=>!/^(אם בתמונת המוצר|המידות שלי)/.test(r)));
@@ -161,18 +172,20 @@ function paintB(){const d=dlg();ID='';const c=B.cat,title=(()=>{try{return docum
  else{const all=B.sel.flatMap(k=>outs(k));
   d.innerHTML=`<div class="mk"><div class="mkh"><h3 id="g250t">📦 ${B.sel.length} מוצרים – הכול ל-GPT</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
    <p class="g250p">לכל מוצר בדקי שהסוג נכון. "⚙ שאלות" פותח את השאלות שלו (חגורה, כמה פריטים, לבן), ו"↩ לרשימה" מחזיר לכאן.</p>
-   <div class="g252l">${B.sel.map((k,i)=>{let p='';try{p=R().ph(k)}catch(_){}const O=outs(k);return `<div class="g252r"><img alt="" src="${es(p)}"><div><b>${i+1}. ${es(nm(k))}</b><small>${es(TN[kd(k)]||'')} · ${O.length} ${O.length>1?'תמונות':'תמונה'}: ${O.map(o=>es(o.n)).join(', ')}</small></div><button type="button" data-g252q="${es(k)}">⚙ שאלות</button><button type="button" data-g252rm="${es(k)}" aria-label="להוריד מהרשימה: ${es(nm(k))}">✕</button></div>`}).join('')}</div>
+   <div class="g252l">${B.sel.map((k,i)=>{let p='';try{p=R().ph(k)}catch(_){}const O=outs(k);return `<div class="g252r"><img alt="" src="${es(p)}"><div><b>${i+1}. ${es(nm(k))}</b><small>${es(TN[kd(k)]||'')} · ${O.length} ${O.length>1?'תמונות':'תמונה'}: ${O.map(o=>es(o.n)).join(', ')}</small>${MULTI.includes(kd(k))?`<span class="g256bn${asked(k)?'':' ask'}">${asked(k)?'כמה בחבילה:':'❓ כמה בחבילה?'} ${[1,2,3,4,5,6].map(v=>`<button type="button" class="g250c${npOf(k)==v?' on':''}" data-g256n="${es(k)}" data-v="${v}" aria-pressed="${npOf(k)==v}">${v}</button>`).join('')}</span>`:''}</div><button type="button" data-g252q="${es(k)}">⚙ שאלות</button><button type="button" data-g252rm="${es(k)}" aria-label="להוריד מהרשימה: ${es(nm(k))}">✕</button></div>`}).join('')}</div>
    <div class="g250o"><b>GPT יחזיר ${all.length} תמונות</b>, מוצר אחרי מוצר.</div>
    <ol class="g250s"><li><b>⬇ להוריד</b> – ZIP אחד עם כל המוצרים, הבובה והפרומפט.</li><li>ב-GPT בשיחה חדשה: מצרפים את ה-ZIP ומדביקים את הפרומפט (📋).</li><li><b>📤 להעלות</b> – בוחרים את כל התמונות שחזרו בבת אחת. אני מסדרת מה שייך לאיזה מוצר.</li></ol>
    <div class="mkb g250bar"><button type="button" class="mkp" data-g252zip>⬇ להוריד הכול (ZIP)</button><button type="button" data-g252cp>📋 הפרומפט</button><button type="button" class="mkp" data-g252up>📤 להעלות מה שחזר</button><button type="button" data-g252back>↩ לבחור מוצרים</button></div>
    <details class="g250pr"><summary>לקרוא את הפרומפט</summary><textarea readonly rows="12">${es(bPrompt(B.sel))}</textarea></details></div>`}
  if(!d.open)d.showModal()}
 window.g252open=bOpen;
+window.g256={npOf,namesOf,colsOf,asked,kd,ensurePieces,MULTI,TN};
 // ---------- pieces (fix85 parts) ----------
 const subId=(id,k)=>id+'~'+k;
-async function ensurePieces(id){const O=outs(id).filter(o=>o.pk);if(!O.length)return;const old=Array.isArray(it(id).parts)?it(id).parts:[];
- const keep=old.filter(p=>!/^g\d+$/.test(p.k)),mine=O.map(o=>{const p=old.find(q=>q.k==o.pk);return {k:o.pk,n:(o.pn||o.n).slice(0,40),cat:CATOF[o.kind]||cat0(id)}});
- const nu=[...keep,...mine];if(JSON.stringify(nu)!=JSON.stringify(old))await putItem(id,{parts:nu});try{window.syncParts85&&syncParts85()}catch(_){}}
+// v256: also when she answers how many (not only at upload), and fewer pieces when she lowers the number – each piece's own avatar stays saved under its id
+async function ensurePieces(id){const O=outs(id).filter(o=>o.pk),old=Array.isArray(it(id).parts)?it(id).parts:[];if(!O.length&&!old.some(p=>/^g\d+$/.test(p.k)))return;
+ const keep=old.filter(p=>!/^g\d+$/.test(p.k)),mine=O.map(o=>{const p={k:o.pk,n:(o.pn||o.n).slice(0,40),cat:MULTI.includes(kd(id))&&o.kind==kd(id)?cat0(id):(CATOF[o.kind]||cat0(id))};if(o.col)p.color=o.col;return p});
+ const nu=[...keep,...mine];if(JSON.stringify(nu)!=JSON.stringify(old))await putItem(id,{parts:nu.length?nu:null});try{window.syncParts85&&syncParts85()}catch(_){}}
 // ---------- upload: she picks every picture GPT returned; the site shows which is which (by order), she can change it, then ✓ ----------
 let UP=null;
 function pick(ids){ids=[].concat(ids);const f=document.createElement('input');f.type='file';f.accept='image/*';f.multiple=true;f.hidden=true;document.body.appendChild(f);
@@ -213,12 +226,18 @@ for(const id of used){const cus=CU[id]||[];
  toast_(`✓ סידרתי ${jobs.length} תמונות${used.length>1?` של ${used.length} מוצרים`:''}`);try{paint(used[0])}catch(_){}}
 async function cuJpeg(f){const u=URL.createObjectURL(f);try{const m=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=u});const k=Math.min(1,1600/Math.max(m.naturalWidth,m.naturalHeight));
   const c=document.createElement('canvas');c.width=Math.round(m.naturalWidth*k);c.height=Math.round(m.naturalHeight*k);c.getContext('2d').drawImage(m,0,0,c.width,c.height);return await new Promise(r=>c.toBlob(r,'image/jpeg',.9))}finally{URL.revokeObjectURL(u)}}
+// v256: "how many in the pack" – asked first, before the zip; her answer makes the folders (pieces) at once
+function packQ(id,k){const n=npOf(id),A=asked(id),g=gOf(id),W=PLURAL[k]||'פריטים';
+ return `<div class="g250q g256q${A?'':' ask'}"><b>${A?'2. ':'❓ קודם כל: '}כמה ${W} יש בחבילה?</b>${!A&&g?`<small>לפי השם: ${g.n}${g.cols.length?' ('+es(g.cols.join(', '))+')':''}. נכון?</small>`:''}
+  <div class="g250cs">${[1,2,3,4,5,6].map(v=>chip(A&&n==v||!A&&g&&g.n==v,'data-g250n',v,v)).join('')}${!A&&g?`<button type="button" class="g250c g256ok" data-g250n="${g.n}">✓ נכון, ${g.n}</button>`:''}</div>
+  ${n>1?`<small>${A?`📁 יש ${n} תיקיות נפרדות בקטגוריה – כל אחת כמו מוצר שקנית לבד. שם וצבע לכל אחת:`:'כל אחת תהיה תיקייה נפרדת. שם וצבע לכל אחת:'}</small><div class="g250pn g256pn">${namesOf(id).map((x,i)=>`<span><i>${i+1}</i><input data-g250pn="${i}" value="${es(x)}" aria-label="שם ${i+1}"><input data-g256pc="${i}" value="${es(colsOf(id)[i]||'')}" placeholder="צבע" aria-label="צבע ${i+1}"></span>`).join('')}</div>`:''}</div>`}
 // ---------- the window ----------
 let DL=null,ID='';
 function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';DL.dir='rtl';DL.setAttribute('aria-labelledby','g250t');document.body.appendChild(DL);
  DL.addEventListener('cancel',e=>{e.preventDefault();DL.close()});
  DL.addEventListener('change',e=>{const s=e.target.closest('[data-g250m]');if(s&&UP){UP.map[+s.dataset.g250m]=+s.value;return}
-  const t=e.target.closest('[data-g250pn]');if(t){const L=namesOf(ID);L[+t.dataset.g250pn]=t.value.trim()||L[+t.dataset.g250pn];save({pn:L},true)}});
+  const t=e.target.closest('[data-g250pn]');if(t){const L=namesOf(ID);L[+t.dataset.g250pn]=t.value.trim()||L[+t.dataset.g250pn];save({pn:L},true);return}
+  const c=e.target.closest('[data-g256pc]');if(c){const n=npOf(ID),L=Array.from({length:n},(_,i)=>colsOf(ID)[i]||'');L[+c.dataset.g256pc]=c.value.trim();save({pc:L,pn:namesOf(ID)},true)}});
  DL.addEventListener('click',async e=>{if(e.target===DL)return DL.close();const b=e.target.closest('button');if(!b)return;const q=b.dataset;
   if(b.classList.contains('mkx'))return DL.close();
   if(q.g250k)return save({kd:q.g250k});
@@ -237,6 +256,7 @@ function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';
   if(q.g252x!=null){B=null;return DL.close()}
   if(q.g252back!=null){B.step='pick';return paintB()}
   if(q.g252q){B.from=1;return open(q.g252q)}
+  if(q.g256n){const k=q.g256n;try{await putItem(k,{np:+q.v});await ensurePieces(k)}catch(er){ERR('bnp',er)}return paintB()}
   if(q.g252rm){B.sel=B.sel.filter(k=>k!=q.g252rm);if(!B.sel.length)B.step='pick';return paintB()}
   if(q.g252zip!=null)return bZip(b);
   if(q.g252cp!=null)return copyTxt(b,bPrompt(B.sel,B.np));
@@ -247,14 +267,14 @@ function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';
   if(q.g250see){DL.close();try{R().openWith(null,{a:q.g250see})}catch(er){ERR('see',er)}}});
  return DL}
 const d0=(d,y)=>{const m=d.querySelector('.g252g');if(y==null)return m?m.scrollTop:0;if(m)m.scrollTop=y};
-async function save(p,quiet){try{await putItem(ID,p)}catch(e){ERR('save',e)}if(!quiet)open(ID)}
+async function save(p,quiet){try{await putItem(ID,p);if(['np','pn','pc','kd','sp','jw'].some(k=>k in p))await ensurePieces(ID)}catch(e){ERR('save',e)}if(!quiet)open(ID)}
 const chip=(on,attr,v,t)=>`<button type="button" class="g250c${on?' on':''}" ${attr}="${es(v)}" aria-pressed="${on}">${t}</button>`;
 function open(id){ID=id;if(B&&!B.sel.includes(id))B.from=0;const d=dlg(),k=kd(id),O=outs(id),ph=photos(id);let p='';try{p=R().ph(id)}catch(_){}
  const q=[];
  q.push(`<div class="g250q"><b>1. מה זה?</b><div class="g250cs">${TY.map(([v,t])=>chip(k==v,'data-g250k',v,t)).join('')}</div></div>`);
  if(k=='set'){const [a,b]=setOf(id);q.push(`<div class="g250q"><b>2. אילו חלקים בסט?</b><div class="g250cs">${SETA.map(([v,t])=>chip(a==v,'data-g250sa',v,t)).join('')}</div><div class="g250cs">${SETB.map(([v,t])=>chip(b==v,'data-g250sb',v,t)).join('')}</div><small>GPT יחזיר 3 תמונות: כל הסט, רק ה${TN[a]}, רק ה${TN[b]}.</small></div>`)}
  if(k=='jw'){const J=jwOf(id);q.push(`<div class="g250q"><b>2. אילו תכשיטים יש במוצר?</b> <small>(אפשר כמה)</small><div class="g250cs">${JW.map(([v,t])=>chip(J.includes(v),'data-g250j',v,t)).join('')}</div><small>כל תכשיט יוצא לבד${J.includes('necklace')||J.includes('earrings')?', ובנוסף תקריב של הפנים שלך עם השרשרת / עם העגילים':''}.</small></div>`)}
- if(MULTI.includes(k)){const n=npOf(id);q.push(`<div class="g250q"><b>2. כמה ${PLURAL[k]||'פריטים'} יש בתמונה?</b><div class="g250cs">${[1,2,3,4,5,6].map(v=>chip(n==v,'data-g250n',v,v)).join('')}</div>${n>1?`<small>כל אחד יהיה פריט נפרד. אפשר לתת שמות (למשל צבע):</small><div class="g250pn">${namesOf(id).map((x,i)=>`<input data-g250pn="${i}" value="${es(x)}" aria-label="שם ${i+1}">`).join('')}</div>`:''}</div>`)}
+ if(MULTI.includes(k))q.push(packQ(id,k));
  if(BELTK.includes(k)){const b=bltOf(id);q.push(`<div class="g250q"><b>${q.length+1}. הגיע עם חגורה?</b><div class="g250cs">${chip(!b||b=='no','data-g250b','no','אין חגורה')}${chip(b=='off','data-g250b','off','חגורה נפרדת – להוריד')}${chip(b=='on','data-g250b','on','חגורה תפורה, מאותו בד – להשאיר')}</div></div>`)}
  if(k!='jw'&&k!='shoes'&&k!='bag'){const w=wbgOf(id);q.push(`<div class="g250q"><b>${q.length+1}. הבגד לבן, שמנת או שקוף?</b><div class="g250cs">${chip(w,'data-g250w',1,'כן – רקע שחור')}${chip(!w,'data-g250w',0,'לא')}</div>${w?'<small>GPT יעשה רקע שחור, וכך האתר גוזר בדיוק בלי חורים.</small>':''}</div>`)}
  const ps=(it(id).parts||[]).filter(x=>/^g\d+$/.test(x.k));
@@ -268,7 +288,7 @@ function open(id){ID=id;if(B&&!B.sel.includes(id))B.from=0;const d=dlg(),k=kd(id
  if(!d.open)d.showModal()}
 window.g250open=open;
 // her answers are saved quietly (no generic "נשמר: …" toast)
-{const _bp=typeof beforePut=='function'?beforePut:null;if(_bp)beforePut=function(id,patch){const k=patch&&Object.keys(patch);if(k&&k.length&&k.every(x=>['kd','blt','wbg','np','jw','sp','pn','g250','parts','cus','whole'].includes(x)))return;return _bp.apply(this,arguments)}}
+{const _bp=typeof beforePut=='function'?beforePut:null;if(_bp)beforePut=function(id,patch){const k=patch&&Object.keys(patch);if(k&&k.length&&k.every(x=>['kd','blt','wbg','np','jw','sp','pn','pc','g250','parts','cus','whole'].includes(x)))return;return _bp.apply(this,arguments)}}
 // ---------- the box in the item window, under the buttons ----------
 function box(){const d=document.getElementById('dlg');if(!d||!d.open)return;const bar=d.querySelector('#dlbody .it77');if(!bar)return;
  const ed=d.querySelector('#dlbody .ed[data-id]'),id=(ed&&ed.dataset.id)||(typeof CUR!='undefined'?CUR:'');let x=d.querySelector('.g250box');
