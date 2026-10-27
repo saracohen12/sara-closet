@@ -188,6 +188,7 @@ async function zipOf(files){const enc=new TextEncoder(),parts=[],cen=[];let off=
   z.setUint32(16,c,true);z.setUint32(20,data.length,true);z.setUint32(24,data.length,true);z.setUint16(28,nm.length,true);z.setUint32(42,off,true);cen.push(z.buffer,nm);off+=30+nm.length+data.length}
  const cs=cen.reduce((a,b)=>a+(b.byteLength||b.length),0),e=new DataView(new ArrayBuffer(22));e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,cs,true);e.setUint32(16,off,true);
  return new Blob([...parts,...cen,e.buffer],{type:'application/zip'})}
+window.zip246=(f)=>zipOf(f);window.jpeg246=u=>jpegOf(u);
 async function jpegOf(u){const bl=await (await fetch(u)).blob(),o=URL.createObjectURL(bl);try{const m=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=o});
   const c=document.createElement('canvas');c.width=m.naturalWidth;c.height=m.naturalHeight;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(m,0,0);
   return await new Promise(r=>c.toBlob(b=>r(b||bl),'image/jpeg',.92))}catch(_){return bl}finally{URL.revokeObjectURL(o)}}
@@ -337,7 +338,7 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
  const c=document.getElementById('cl163');if(c&&c.open&&c.contains(t))c.close();try{S().open(t.dataset.sty202)}catch(er){ERR('lib',er)}},true);
 // v248 (Sara 27/10 16:43 "במסך הזה שאני רואה את המטפחת עם הכיסוי, לראות את זה בתקריב ... קודם כל תקריב, וגם אני יכולה להזיז לראות את זה של הבובה"):
 // in the item window the first picture is the close-up of the tie on her (it turns when it is 8 angles); the next one is the doll
-const C8R={};
+const C8R={};window.C8R=C8R;
 function cuOf(id){try{const c=curTx(id);return c&&txs(id).find(y=>y.cu&&y.L[0]==c.L[0])||null}catch(_){return null}}
 if(typeof galList=='function'){const _gl=galList;galList=function(id){const L=_gl.apply(this,arguments);try{const x=cuOf(id);if(!x)return L;
   let u='/_blob/'+x.cu;if(x.cu8){const F=C8R[x.cu];if(F)u=F[0];else cu8Frames(x.cu).then(F=>{if(F&&!C8R[x.cu]){C8R[x.cu]=F;try{if(typeof CUR!='undefined'&&CUR==id)paintGal(id)}catch(_){}}})}

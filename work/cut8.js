@@ -24,6 +24,25 @@ function rgbOf(img,x,y,w,h){const c=document.createElement('canvas');c.width=w;c
 function sheetData(img){const w=img.naturalWidth,h=img.naturalHeight,r=(w/h)/(SW/SHH);if(r<.94||r>1.06)return null;
  const c=document.createElement('canvas');c.width=SW;c.height=SHH;const g=c.getContext('2d',{willReadFrequently:true});g.imageSmoothingQuality='high';g.drawImage(img,0,0,SW,SHH);
  return g.getImageData(0,0,SW,SHH).data}
+// v250 (Sara 27/10 16:53 "כשזה לבן, או שזה שמנת, או שזה שקוף … שיעשה לך רקע שחור, ככה שאתה תדע לגזור את זה ממש טוב"): a light garment comes back
+// from GPT on a black backdrop. The black that touches the edge of a square is the backdrop (plus its 2 px grey fringe): it is painted as the doll's
+// backdrop here, and in each square it is replaced by the doll's own pixels, so white or see-through fabric is never taken for background
+function deBlack(S){const cw=SW/4,ch=SHH/2,lum=q=>S[q]*.299+S[q+1]*.587+S[q+2]*.114;let dark=0;
+ for(let r=0;r<2;r++)for(let c=0;c<4;c++){let n=0;for(const [fx,fy] of [[.06,.04],[.94,.04],[.06,.5],[.94,.5]]){const x=Math.round(c*cw+fx*cw),y=Math.round(r*ch+fy*ch);if(lum((y*SW+x)*4)<50)n++}if(n>=3)dark++}
+ if(dark<6)return null;
+ const M=new Uint8Array(SW*SHH),Q=new Int32Array(SW*SHH);let h=0,t=0;
+ const ok=i=>{const q=i*4,mx=Math.max(S[q],S[q+1],S[q+2]),mn=Math.min(S[q],S[q+1],S[q+2]);return mx<72&&mx-mn<40};
+ const seed=i=>{if(!M[i]&&ok(i)){M[i]=1;Q[t++]=i}};
+ for(let r=0;r<2;r++)for(let c=0;c<4;c++){const x0=Math.round(c*cw)+6,x1=Math.round((c+1)*cw)-7,y0=Math.round(r*ch)+6,y1=Math.round((r+1)*ch)-7;
+  for(let x=x0;x<=x1;x++){seed(y0*SW+x);seed(y1*SW+x)}for(let y=y0;y<=y1;y++){seed(y*SW+x0);seed(y*SW+x1)}}
+ while(h<t){const i=Q[h++],x=i%SW;if(x>0)seed(i-1);if(x<SW-1)seed(i+1);if(i>=SW)seed(i-SW);if(i<SW*(SHH-1))seed(i+SW)}
+ for(let pass=0;pass<2;pass++){const add=[];for(let i=SW;i<SW*(SHH-1);i++){if(M[i])continue;const x=i%SW;if(x<1||x>SW-2)continue;if(!(M[i-1]||M[i+1]||M[i-SW]||M[i+SW]))continue;
+  const q=i*4,mx=Math.max(S[q],S[q+1],S[q+2]),mn=Math.min(S[q],S[q+1],S[q+2]);if(lum(q)<150&&mx-mn<45)add.push(i)}add.forEach(i=>M[i]=1)}
+ for(let i=0;i<M.length;i++)if(M[i]){const q=i*4;S[q]=160;S[q+1]=185;S[q+2]=218}
+ return M}
+function panelM(M,v,ex,ey){const [x0,y0]=OFFS[v],[dx,dy]=SH[v],o=new Uint8Array(N);
+ for(let r=0;r<H;r++){const sy=Math.min(SHH-1,Math.max(0,y0+dy+ey+r));for(let c=0;c<W;c++){const sx=Math.min(SW-1,Math.max(0,x0+dx+ex+c));o[r*W+c]=M[sy*SW+sx]}}
+ return o}
 // one square: pixel (x0+dx+c, y0+dy+r), edges repeated (crop.py pads with mode='edge')
 function panel(S,v,ex,ey){const [x0,y0]=OFFS[v],[dx,dy]=SH[v],o=new Float32Array(N*3);
  for(let r=0;r<H;r++){const sy=Math.min(SHH-1,Math.max(0,y0+dy+ey+r));for(let c=0;c<W;c++){const sx=Math.min(SW-1,Math.max(0,x0+dx+ex+c)),s=(sy*SW+sx)*4,k=(r*W+c)*3;o[k]=S[s];o[k+1]=S[s+1];o[k+2]=S[s+2]}}
@@ -95,6 +114,12 @@ function mask(b,d,o){const SMALL=o.mode=='small',HEAD=o.mode=='head'||SMALL,CUT=
    if(any){const [L2,n2]=label(dilate(m,8)),s2=new Float64Array(n2+1);for(let i=0;i<N;i++)if(m[i])s2[L2[i]]++;let bg=1;for(let l=2;l<=n2;l++)if(s2[l]>s2[bg])bg=l;for(let i=0;i<N;i++)if(L2[i]!=bg)m[i]=0}}}
  else m.fill(0);
  if(!SMALL)m=fillHoles(m);
+ // v250 (Sara 27/10 16:53 "חגורות… שתגזור בדיוק מה שצריך, שלא תשאיר לי את החום"): the belt's rim kept doll-beige pixels.
+ // A rim pixel that looks more like the bare doll there than like the belt's own core colour is the doll, not the belt
+ if(o.rim)for(let p=0;p<3;p++){const core=erode(m,3);let cr=0,cg=0,cb=0,cn=0;for(let i=0;i<N;i++)if(core[i]){const k=i*3;cr+=d[k];cg+=d[k+1];cb+=d[k+2];cn++}
+  if(cn<30)break;cr/=cn;cg/=cn;cb/=cn;let dropped=0;
+  for(let i=0;i<N;i++){if(!m[i]||core[i])continue;const k=i*3,dd=Math.hypot(d[k]-b[k],d[k+1]-b[k+1],d[k+2]-b[k+2]),dc=Math.hypot(d[k]-cr,d[k+1]-cg,d[k+2]-cb);if(dd<.8*dc){m[i]=0;dropped++}}
+  if(!dropped)break}
  if(CUT)for(let i=Math.floor(H*.45)*W;i<N;i++)m[i]=0;
  else if(!HEAD&&!o.nohem){let mw=0;const w=new Int32Array(H);for(let r=0;r<H;r++){let s=0;for(let c=0;c<W;c++)s+=m[r*W+c];w[r]=s;if(s>mw)mw=s}
   let last=-1;for(let r=0;r<H;r++)if(w[r]>=.35*mw)last=r;if(last>=0)for(let i=(last+2)*W;i<N;i++)m[i]=0}   // the hem: nothing of the item below the last wide row (feet, floor)
@@ -230,18 +255,18 @@ async function snug(c,v){const dir=BACK[v];if(!dir)return c;let A;try{A=await bo
  if(moved){im.data.set(o);g.putImageData(im,0,0)}return c}
 
 // how each kind of item is cut (KIND keys in r360.js)
-const MODE={cover:{mode:'head'},scarf:{mode:'head'},necklace:{mode:'small',rows:[.1,.55],one:1},earrings:{mode:'small',rows:[.03,.2]},bracelet:{mode:'small',low:1},
- belt:{rows:[.28,.62],nohem:1},shoes:{rows:[.8,1],nohem:1},hair:{mode:'whole'},tie:{mode:'whole',fab:1},tiex:{mode:'whole'},makeup:{mode:'face'}};
+const MODE={cover:{mode:'head'},scarf:{mode:'head'},necklace:{mode:'small',rows:[.1,.55],one:1},earrings:{mode:'small',rows:[.03,.2]},bracelet:{mode:'small',low:1},ring:{mode:'small',low:1},
+ belt:{rows:[.28,.62],nohem:1,rim:1},shoes:{rows:[.8,1],nohem:1},hair:{mode:'whole'},tie:{mode:'whole',fab:1},tiex:{mode:'whole'},makeup:{mode:'face'}};
 const tick=()=>new Promise(r=>setTimeout(r,0));
 // src: a File/Blob or a url · kind: KIND key · onStep(i): progress · opt.note: her notes for the cut (v233) → {views:[canvas×8], shifts, px}
 async function run(src,kind,onStep,opt){const img=await toImg(src);const S=sheetData(img);if(!S)throw Object.assign(new Error('shape'),{code:'shape',w:img.naturalWidth,h:img.naturalHeight});
- const o=Object.assign({},MODE[kind]||{},flags(opt&&opt.note)),views=[],shifts=[],fab=[],lum=[];
- for(let v=0;v<8;v++){onStep&&onStep(v);await tick();const b=await base(v);const s=shift(S,v,b,o.mode=='head'||o.mode=='whole');shifts.push(s);const d=panel(S,v,s[0],s[1]);
+ const o=Object.assign({},MODE[kind]||{},flags(opt&&opt.note)),views=[],shifts=[],fab=[],lum=[];const BM=deBlack(S);
+ for(let v=0;v<8;v++){onStep&&onStep(v);await tick();const b=await base(v);const s=shift(S,v,b,o.mode=='head'||o.mode=='whole');shifts.push(s);const d=panel(S,v,s[0],s[1]);if(BM){const pm=panelM(BM,v,s[0],s[1]);for(let i=0;i<N;i++)if(pm[i]){const k=i*3;d[k]=b[k];d[k+1]=b[k+1];d[k+2]=b[k+2]}}
   if(o.mode=='whole'){const [m,f,l]=maskWhole(b,d,v,o.fab,kind=='tiex');views.push(kind=='hair'?await snug(turn(layerA(d,m.A),v),v):turn(layerA(d,m.A),v));if(f){fab.push(turn(layer(d,f),v));lum.push(...l)}}
   else if(o.mode=='face')views.push(turn(layerA(d,maskFace(b,d,v)),v));
   else views.push(turn(layer(d,mask(b,d,o)),v))}
  lum.sort((x,y)=>x-y);
- return {views,shifts,px:views.map(c=>c.px),fab:fab.length?fab:null,lum:lum.length?Math.round(lum[lum.length>>1]):0}}
+ return {views,shifts,px:views.map(c=>c.px),fab:fab.length?fab:null,lum:lum.length?Math.round(lum[lum.length>>1]):0,black:!!BM}}
 // test helper: the panel, the doll and the masks of one view of a sheet (window.cut8dbg(url,v))
 window.cut8dbg=async(src,v)=>{const img=await toImg(src),S=sheetData(img),b=await base(v),s=shift(S,v,b,true),d=panel(S,v,s[0],s[1]);window.CUT8D={};const [m]=maskWhole(b,d,v,1,false);
  const im=a=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),x=g.createImageData(W,H);for(let i=0;i<N;i++){const on=a.length==N?a[i]:0;x.data[i*4]=on?255:0;x.data[i*4+1]=on?255:0;x.data[i*4+2]=on?255:0;x.data[i*4+3]=255}g.putImageData(x,0,0);return c.toDataURL()};

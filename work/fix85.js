@@ -127,6 +127,7 @@ if(typeof drawerItems=='function'){const _di=drawerItems;drawerItems=function(sl
  add.sort((a,b)=>(avReady(b)?1:0)-(avReady(a)?1:0));return r.concat(add)}catch(e){ERR('ptdrawer',e);return r}};window.drawerItems=drawerItems}
 function syncParts(){try{if(typeof IT!='object')return;const sig=Object.keys(IT).filter(k=>IT[k]&&IT[k].parts).map(k=>k+':'+JSON.stringify(IT[k].parts)).join('|');if(sig!==SIG){SIG=sig;materialize()}}catch(e){ERR('parts',e)}}
 setInterval(syncParts,1500);setTimeout(syncParts,300);
+window.pieces85=()=>[...PIECES].filter(s=>D[s]);window.syncParts85=syncParts;   // v250: the 360 studio lists the pieces too
 // a piece shows its own avatar picture, or the product photo until it has one
 if(typeof img=='function'){const _img=img;img=function(t){if(isPart(t)){const g=typeof p5gOf=='function'&&p5gOf(t);if(g&&g.front)return p5gUrl(g,'front');return _img(D[t].part)}return _img(t)};window.img=img}
 // opening a piece opens its product, at the pieces box
@@ -143,6 +144,7 @@ function ptHTML(id){const ps=partsOf(id);const sg=ps.length?[]:suggest(id);const
    <div data-imgrow="${s}"><details class="p5gbox" open><summary>👗 ${esc(p.n)} על האווטר ב-5 תנוחות</summary><div class="gslot">${typeof p5gHTML=='function'&&D[s]?p5gHTML(s):''}</div></details></div></details>`}).join('')}
   <details class="pt85x"><summary>✏️ לשנות את הפירוק</summary>${editor(ps)}</details></details>`}
 function ptMount(id){const d=document.getElementById('dlg');if(!d||!d.open||isPart(id))return;const cat=(IT[id]||{}).cat||(D[id]||{}).cat;if(!SPLITCATS.includes(cat))return;
+ syncParts();if(partsOf(id).some(p=>/^g\d+$/.test(p.k))){const o=d.querySelector('.pt85');if(o)o.remove();return}   // v250: pieces made in the GPT window show there
  syncParts();const old=d.querySelector('.pt85');const html=ptHTML(id);if(old){old.outerHTML=html;return}
  const row=d.querySelector(`[data-imgrow="${id}"]`);const anchor=row&&(row.querySelector('.p5gbox')||row);if(anchor){anchor.insertAdjacentHTML(anchor===row?'beforeend':'afterend',html)}}
 {const _oi=openItem;openItem=function(id){const r=_oi.apply(this,arguments);if(!isPart(id))Promise.resolve(r).then(()=>setTimeout(()=>{try{ptMount(id)}catch(e){ERR('ptmount',e)}},120));return r};window.openItem=openItem}

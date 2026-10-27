@@ -19,7 +19,8 @@ const parts=id=>(it(id).a8||[]).filter(p=>p&&Array.isArray(p.L)&&p.L.length==8);
 const ready=id=>{try{return !!(window.R360&&R360.isReady(id))}catch(_){return false}};
 const has=v=>Array.isArray(v)?v.length>0:!!v;
 const pics=id=>{const t=it(id);return ups(id).length>0||['img','imgs','pics','p5g','p5gv','p5g118'].some(k=>has(t[k]))};
-const st=id=>ready(id)?'ok':pics(id)?'fix':'no';
+const pready=id=>{const ps=it(id).parts;return Array.isArray(ps)&&ps.length>0&&ps.some(p=>/^g\d+$/.test(p.k))&&ps.every(p=>ready(id+'~'+p.k))};   // v250: a pack split into pieces is ready when every piece is
+const st=id=>ready(id)||pready(id)?'ok':pics(id)?'fix':'no';
 window.st188=st;window.up188=id=>ups(id).length;
 
 // ---------- the dot and every count / filter that reads it ----------
@@ -38,7 +39,7 @@ setTimeout(()=>{labels();repaintAll()},300);setTimeout(repaintAll,3000);
 // ---------- what the item window says ----------
 const PROC={};   // id → {v: 1-8 cutting, 9 saving} while the site prepares it, {err} when it could not
 const KN={dress:'השמלה',top:'החולצה',base:'החולצה',sweater:'הסוודר',skirt:'החצאית',pants:'המכנסיים',vest:'האפודה',jacket:'הז׳קט',coat:'המעיל',cover:'הכיסוי',scarf:'המטפחת',tiex:'המטפחת בקשירה',
- necklace:'השרשרת',earrings:'העגילים',bracelet:'הצמיד',belt:'החגורה',shoes:'הנעליים',bag:'התיק'};
+ necklace:'השרשרת',earrings:'העגילים',bracelet:'הצמיד',ring:'הטבעת',belt:'החגורה',shoes:'הנעליים',bag:'התיק'};
 const ERRT={shape:'התמונה לא בצורה של הגיליון (2 שורות של 4 משבצות). צריך להעלות את התמונה המלאה שחזרה מ-GPT, בלי לחתוך אותה',
  empty:'לא מצאתי בגד חדש על הבובה. האם זו התמונה ש-GPT החזיר עם הבגד?',assets:'שמירת תמונות לא זמינה כאן. לפתוח את האתר ב-Chrome ולנסות שוב',
  x:'משהו השתבש בהכנה. לנסות שוב'};
@@ -98,6 +99,8 @@ let FI=null,FID='';const WH=new Set();
 function picker(id){FID=id;if(!FI){FI=document.createElement('input');FI.type='file';FI.accept='image/*';FI.multiple=true;FI.hidden=true;document.body.appendChild(FI);FI.addEventListener('change',()=>{const fs=[...FI.files];FI.value='';if(fs.length)up(FID,fs)})}FI.click()}
 let BUSY=false;
 // v245: the cover window (tie202) hands over the 8-angle file itself – she picks the sheet and the close-up together there
+// v250: the GPT window says which kind each returned sheet is (a piece of a pack, a part of a set)
+const KO={};window.av188kind=(id,k)=>{if(k)KO[id]=k;else delete KO[id]};
 window.av188up=(id,fs,w)=>{if(w)WH.add(id);else WH.delete(id);return up(id,fs)};
 async function up(id,fs){if(BUSY){toast_('רגע, עוד שומרת');return}BUSY=true;let a=null;try{a=await claude.use('assets')}catch(_){}
  if(!a){BUSY=false;toast_(ERRT.assets);return}
@@ -110,7 +113,7 @@ async function del(id,i){const old=ups(id);const x=old[i];if(!x)return;const nu=
  toast_('התמונה הוסרה',async()=>{await putItem(id,{a8up:[...ups(id).slice(0,i),x,...ups(id).slice(i)]});rebox(id);repaint(id)})}
 
 const SLOT={tiex:'head',dress:'body',top:'top',base:'top',sweater:'outer',skirt:'bottom',pants:'bottom',vest:'outer',jacket:'outer',coat:'outer',cover:'head',scarf:'head',
- necklace:'neck',earrings:'ears',bracelet:'wrist',belt:'belt',shoes:'shoes',bag:'bag'};
+ necklace:'neck',earrings:'ears',bracelet:'wrist',ring:'wrist',belt:'belt',shoes:'shoes',bag:'bag'};
 const TWIN={set:['top','skirt'],jwset:['necklace','earrings']};
 const blobOf=c=>new Promise(r=>c.toBlob(b=>{if(b&&b.type=='image/webp')return r(b);c.toBlob(r,'image/png')},'image/webp',.92));
 async function put1(a,b){let last;for(const w of [0,1500,4000]){if(w)await new Promise(r=>setTimeout(r,w));try{return await a.upload(b)}catch(e){last=e}}throw last}
@@ -119,7 +122,7 @@ async function put1(a,b){let last;for(const w of [0,1500,4000]){if(w)await new P
 async function cut(id,src,ua,t,at){if(PROC[id]&&PROC[id].v)return;if(!window.cut8)return;
  let kind='dress';try{kind=R360.kind(id)}catch(_){}let P=parts(id);const re=at!=null&&!!P[at];
  if(!re&&WH.has(id)){kind='tiex';WH.delete(id)}   // v202: her exact scarf tied by the tie prompt – the whole head, like the ties
- if(re)kind=P[at].k;else if(TWIN[kind]){const w=TWIN[kind];if(P.length>=w.length)P=[];kind=w[P.length]}else P=[];
+ if(re)kind=P[at].k;else if(KO[id]){kind=KO[id];delete KO[id];P=[]}else if(TWIN[kind]){const w=TWIN[kind];if(P.length>=w.length)P=[];kind=w[P.length]}else P=[];
  PROC[id]={v:1};rebox(id);const t0=Date.now(),nt=note(id).trim();log('cut8_start',{id,kind,note:nt.length});
  try{const r=await cut8.run(src,kind,v=>{PROC[id]={v:v+1};paintSt(id)},{note:nt});
   if(r.px.filter(x=>x>150).length<5)throw Object.assign(new Error('empty'),{code:'empty'});

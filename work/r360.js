@@ -21,7 +21,7 @@ const KEYOF={};Object.entries(READY).forEach(([id,r])=>r.k.forEach(k=>KEYOF[k]=i
 const SLOT={d:'body',b:'top',s:'bottom',n:'shoes',g:'belt',j:'neck',e:'ears'};
 // a dress takes the top and the skirt (v190: by slot, so items cut on the site follow the same rule)
 // v210 (Sara 14:24 "קטגוריה חדשה, חולצת בסיס ... אבחר את החולצת בסיס מתחת לשמלה"): an item in her "חולצות בסיס" category is worn UNDER everything – with a dress too
-const SL=k=>{const s=SLOT[k],id=KEYOF[k];return s=='top'&&id&&cat(id)=='base'?'base':s};
+const SL=k=>{const s=SLOT[k],id=KEYOF[k];if(s=='outer'&&id&&kindOf(id)=='coat')return 'coat';return s=='top'&&id&&cat(id)=='base'?'base':s};   // v250 (Sara 16:53): a coat is drawn over a jacket
 const clashOf=k=>{const s=SL(k),w=s=='body'?['top','bottom']:(s=='top'||s=='bottom')?['body']:[];return Object.keys(SLOT).filter(o=>w.includes(SL(o)))};
 // see-through lace: x<k>u<view> is what shows through it (the arm as GPT drew it); with a base shirt it is tinted. value = its mean luminance
 const LACE={d:149};
@@ -262,7 +262,7 @@ const TANKS=()=>Object.keys(D).filter(id=>/גופי|קמיסול|camisole/i.test
 function paintCam(){const sw=dlg&&dlg.querySelector('.r3cam .r3sw');if(!sw)return;const T=TANKS();
  sw.innerHTML=T.map(id=>`<button type="button" role="radio" class="r3tank" data-r3cam="i:${esc(id)}" aria-label="${esc(nm(id))}"><img alt="" data-th="${esc(id)}" src="${esc(ph(id))}"><span>${esc(nm(id).split(' ').slice(0,3).join(' '))}</span></button>`).join('')
   +CAM.map(c=>`<button type="button" role="radio" data-r3cam="${c.k}" aria-label="${c.n}"><i style="background:${c.c?`rgb(${c.c})`:'linear-gradient(135deg,#e9c3a6,#c99476)'}"></i><span>${c.n}</span></button>`).join('');thl(T)}
-const ORDER=['shoes','base','body','bottom','top','outer','belt','wrist','bag','neck'];   // what covers what, from the floor up (tucked: the top under the skirt)
+const ORDER=['shoes','base','body','bottom','top','outer','belt','coat','wrist','bag','neck'];   // what covers what, from the floor up (tucked: the top under the skirt)
 function layersFor(v,s){const on=s.on||{},L=[];const x=k=>({s:'x'+k+(v+1)});const of=sl=>Object.keys(SLOT).filter(k=>on[k]&&SL(k)==sl);
  const ord=s.tuck?ORDER.map(o=>o=='bottom'?'top':o=='top'?'bottom':o):ORDER;
  const bs=of('base').length;   // v210: her base shirt under a lace dress shows through the lace, instead of the plain colour
@@ -526,7 +526,7 @@ function paintRoom(){if(!dlg)return;
  dlg.querySelectorAll('.r3grid [data-it]').forEach(b=>{if(isReady(b.dataset.it)||coverTie(b.dataset.it))b.setAttribute('aria-pressed',ids.includes(b.dataset.it))})}
 
 // her closet, by category; items with a 360 sheet first
-function pool(){return Object.keys(D).filter(id=>{if(!CATIDS.has(cat(id)))return false;const it=(typeof IT=='object'&&IT&&IT[id])||{};if(it.gen||it.oos||it.s=='ret'||it.s=='give')return false;return true})}
+function pool(){return Object.keys(D).concat(window.pieces85?pieces85():[]).filter(id=>{if(!CATIDS.has(cat(id)))return false;const it=(typeof IT=='object'&&IT&&IT[id])||{};if(it.gen||it.oos||it.s=='ret'||it.s=='give')return false;return true})}
 function paintCats(){if(!dlg)return;const P=pool();const n=c=>c=='all'?P.length:c=='ready'?P.filter(isReady).length:P.filter(id=>cat(id)==c).length;
  dlg.querySelector('.r3cats').innerHTML=CATS.map(([k,t])=>{const c=n(k);return c||k=='all'?`<button type="button" data-cat="${k}" aria-pressed="${k==CAT}">${t} <small>${c}</small></button>`:''}).join('')}
 function paintGrid(){if(!dlg||TAB!='closet')return;dlg.querySelectorAll('.r3cats button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.cat==CAT));
@@ -654,18 +654,20 @@ const KIND={dress:['שמלה','השמלה מכסה את השמלה בצבע עו
  pants:['מכנסיים','המכנסיים מתחילים בקו המותן שלה ומגיעים עד האורך האמיתי.',1,1],
  set:['סט (2 חלקים)','זה סט של שני חלקים, ואני צריכה כל חלק בנפרד:\nתמונה 1: הגיליון עם החלק העליון בלבד.\nתמונה 2: הגיליון עם החלק התחתון בלבד.',1,1,2],
  vest:['אפודה','אפודה בלי שרוולים, מעל השמלה. הידיים והשרוולים הקצרים של השמלה נשארים בדיוק כמו שהם.',1,1],
- jacket:['ז\'קט','הז\'קט מעל השמלה, פתוח או סגור בדיוק כמו בתמונה, השרוולים על הידיים שלה.',1],
- coat:['מעיל','המעיל מעל הכל, פתוח או סגור בדיוק כמו בתמונה, באורך האמיתי שלו.',1,1],
+ jacket:['ז\'קט','הז\'קט יושב מעל הבגדים שעל הדמות, כמו שלובשים ז\'קט על שמלה: פתוח או סגור בדיוק כמו בתמונה, השרוולים על הידיים שלה. איפה שהז\'קט פתוח או קצר רואים את השמלה שמתחת בלי שינוי.',1],
+ coat:['מעיל','המעיל יושב מעל כל הבגדים שעל הדמות, כמו שלובשים מעיל בחוץ: פתוח או סגור בדיוק כמו בתמונה, באורך האמיתי שלו, השרוולים על הידיים שלה. איפה שהמעיל פתוח רואים את השמלה שמתחת בלי שינוי.',1,1],
  cover:['כיסוי ראש','כיסוי הראש מחליף את כיסוי הבז׳ הפשוט שעל הדמות ומסתיר אותו לגמרי, כולל השוליים. בצד ובגב צרי אותו כמו שהוא נראה באמת מהכיוון הזה.',0,0,1,'head'],
  scarf:['מטפחת','המטפחת קשורה בדיוק כמו בתמונה: אותה קשירה, אותו נפח, אותו קשר. היא מחליפה את כיסוי הבז׳ הפשוט שעל הדמות ומסתירה אותו לגמרי. בצד ובגב צרי את הקשר כמו שהוא נראה באמת מהכיוון הזה.',0,0,1,'head'],
  necklace:['שרשרת','רק השרשרת, גם אם בתמונה יש עוד תכשיטים. על הצוואר, באורך האמיתי שלה, נופלת על החזה כמו במציאות. מקדימה רואים את כל השרשרת והתליון, מהצד רואים אותה יורדת מהצוואר, ומהגב רק את השרשרת הדקה על העורף (אם רואים אותה).',0,0,1,'jw'],
  earrings:['עגילים','רק העגילים, גם אם בתמונה יש עוד תכשיטים. על שתי האוזניים, באותו גודל ובאותו אורך כמו בתמונה. אם כיסוי הראש מכסה חלק מהאוזן, תנוך האוזן והעגיל יוצאים מתחתיו ונראים. מקדימה רואים את שני העגילים, מהצד רק את העגיל שבצד הזה.',0,0,1,'jw'],
+ ring:['טבעת','רק הטבעת, על אחת האצבעות של היד השמאלית (היד שיורדת ישר למטה), באותו גודל כמו בתמונה. בזוויות שהיד מוסתרת לא רואים אותה.',0,0,1,'jw'],
  bracelet:['צמיד','רק הצמיד, על פרק היד השמאלי, באותו גודל כמו בתמונה. בזוויות שהיד מוסתרת לא רואים אותו.',0,0,1,'jw'],
  jwset:['סט תכשיטים','בתמונת המוצר יש כמה תכשיטים. אני צריכה כל תכשיט בתמונה נפרדת (שרשרת לבד, עגילים לבד). בכל תמונה רק תכשיט אחד, בלי האחרים.',0,0,2,'jw'],
  belt:['חגורה','החגורה על קו המותן שלה, מסביב לכל הגוף, בדיוק באותו רוחב ואותו אבזם כמו בתמונה. בצד היד עוברת מעל החגורה.',0,0,1,'more'],
  shoes:['נעליים','הנעליים האלה במקום הנעליים הבז\'. אותו מיקום של הרגליים, אותה עמידה. מקדימה, מהצד ומאחור צרי את הנעל כמו שהיא נראית באמת מהכיוון הזה.',0,0,1,'more'],
  bag:['תיק','התיק תלוי על הכתף, בגודל האמיתי שלו ביחס לגוף, בלי לשנות את תנוחת הידיים. מהגב ומהצד רואים אותו כמו במציאות.',0,0,1,'more']};
 function kindOf(id){const c=cat(id),t=(D[id]||{}).short+' '+(D[id]||{}).full;
+ {const kd=(typeof IT=='object'&&IT&&IT[id]||{}).kd;if(kd&&KIND[kd])return kd}   // v250: the type she picked in the GPT window
  if(c=='dresses')return 'dress';if(c=='skirts')return /מכנס/.test(t)?'pants':'skirt';if(c=='sets')return 'set';if(c=='sweaters')return 'sweater';
  if(c=='base')return 'base';
  if(c=='tops')return /בסיס/.test(t)?'base':/סוודר|סריג/.test(t)?'sweater':'top';
@@ -848,7 +850,7 @@ function styFrame0(k,o){o=o||{};const st=STY[k];if(!st)return Promise.resolve(''
   const u=f.toDataURL('image/jpeg',.84);KV.put(k0,u);return u})().catch(()=>'').then(u=>{if(!u)delete FR0[ck];return u})}
 setTimeout(()=>{try{KV.tidy(KVV)}catch(_){}},9000);   // pictures of older versions go
 window.R360={dbgFrames:(h,mk,on,raw)=>frames8("#dbg|"+h+"|"+mk+"|"+JSON.stringify(on||{})+(raw?"r":""),Object.assign(clone(DEF),{on:on||{},bg:"",head:h,mk:mk||"",tc:null,rawHead:raw?1:0})),open,close,make,prompts,openWith,styCard,styFace,styFrames,styFrame0,headFrames,restyle:()=>{try{if(dlg&&dlg.open)paintSty()}catch(_){}},Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
- ready:()=>Object.keys(READY).filter(id=>D[id]),isReady,kind:kindOf,sync:resync,dyn:id=>!!(READY[id]&&READY[id].dyn),names:NAMES,show:v=>{if(big){big.stop();big.show(v)}},
+ ready:()=>Object.keys(READY).filter(id=>D[id]),isReady,kind:kindOf,KIND,ME,prompt1:prompt,sync:resync,dyn:id=>!!(READY[id]&&READY[id].dyn),names:NAMES,show:v=>{if(big){big.stop();big.show(v)}},
  still:async(id,v)=>{if(!READY[id])return null;const s=stateFrom([id],{head:ST.head=='w'?'w':'c',cam:ST.cam,bg:''});
   if((await Promise.all(layersFor(v||0,s).map(l=>im(l.s)))).some(m=>!m))return null;   // a layer that did not load would show the bare doll
   const c=document.createElement('canvas');return await paint(c,v||0,s)?c:null},   // v195: the doll wearing just this item (the first picture in its window), with her wig if she picked it in the studio
