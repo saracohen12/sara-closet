@@ -250,17 +250,17 @@ async function apply(){const {ids,T,fs,map}=UP;const d=dlg();d.close();UP.urls.f
  if(typeof window.av188up!='function'){toast_('לא הצלחתי להעלות. לרענן את הדף');return}
  const jobs=fs.map((f,j)=>({f,t:T[map[j]],i:map[j]})).filter(x=>x.t).sort((p,q)=>p.i-q.i),used=[...new Set(jobs.map(x=>x.t.id))];
  for(const id of used)await ensurePieces(id);let a=null;try{a=await claude.use('assets')}catch(_){}
- let n=0;const CU={};
+ let n=0;const CU={},bad=[];   // v268: what didn't work is said at the end (it always said ✓)
  for(const x of jobs){n++;const o=x.t.o,id=x.t.id;toast_(`מסדרת ${n} מתוך ${jobs.length}: ${ids.length>1?nm(id)+' · ':''}${o.n}`);
   try{if(o.role=='cu'){if(!a)throw new Error('assets');const r=await a.upload(await cuJpeg(x.f));if(r&&r.id)(CU[id]=CU[id]||[]).push({k:o.cuOf,n:o.n,cu:r.id,cu8:1});continue}
    if(o.role=='whole'){if(!a)throw new Error('assets');const r=await a.upload(x.f);if(r&&r.id)await putItem(id,{whole:r.id});continue}
    const t=o.pk?subId(id,o.pk):id;if(o.pk){try{window.syncParts85&&syncParts85()}catch(_){}if(!D[t]){await new Promise(r=>setTimeout(r,1600))}}
-   window.av188kind(t,o.kind);await window.av188up(t,[x.f])}catch(e){ERR('apply',e)}}
+   window.av188kind(t,o.kind);if((await window.av188up(t,[x.f]))===false)bad.push(o.n)}catch(e){ERR('apply',e);bad.push(o.n)}}
 for(const id of used){const cus=CU[id]||[];
   if(cus.length){const old=(it(id).cus||[]).filter(c=>!cus.some(q=>q.k==c.k));try{await putItem(id,{cus:[...old,...cus]})}catch(e){ERR('cus',e)}}
   // a set: the product wears both parts together; each piece can be worn alone
   if(kd(id)=='set'){const ps=['g1','g2'].map(k=>(it(subId(id,k)).a8||[])).flat().filter(p=>p&&Array.isArray(p.L)&&p.L.length==8);if(ps.length)try{await putItem(id,{a8:ps});R().sync()}catch(e){ERR('set',e)}}}
- toast_(`✓ סידרתי ${jobs.length} תמונות${used.length>1?` של ${used.length} מוצרים`:''}`);try{paint(used[0])}catch(_){}}
+ toast_(bad.length?`✓ ${jobs.length-bad.length} סודרו · ✗ ${bad.length} לא: ${bad.slice(0,3).join(', ')}${bad.length>3?'…':''} – אפשר להעלות אותן שוב`:`✓ סידרתי ${jobs.length} תמונות${used.length>1?` של ${used.length} מוצרים`:''}`);try{paint(used[0])}catch(_){}}
 async function cuJpeg(f){const u=URL.createObjectURL(f);try{const m=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=u});const k=Math.min(1,1600/Math.max(m.naturalWidth,m.naturalHeight));
   const c=document.createElement('canvas');c.width=Math.round(m.naturalWidth*k);c.height=Math.round(m.naturalHeight*k);c.getContext('2d').drawImage(m,0,0,c.width,c.height);return await new Promise(r=>c.toBlob(r,'image/jpeg',.9))}finally{URL.revokeObjectURL(u)}}
 // v256: "how many in the pack" – asked first, before the zip; her answer makes the folders (pieces) at once

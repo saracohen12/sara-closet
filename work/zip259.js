@@ -27,7 +27,8 @@ async function unzip(file){const b=new Uint8Array(await file.arrayBuffer());let 
  if(e<0)throw new Error('not a zip');const n=u16(b,e+10);let p=u32(b,e+16);const out=[];
  for(let k=0;k<n&&u32(b,p)==0x02014b50;k++){const m=u16(b,p+10),cs=u32(b,p+20),nl=u16(b,p+28),xl=u16(b,p+30),cl=u16(b,p+32),lo=u32(b,p+42);
   const name=new TextDecoder().decode(b.subarray(p+46,p+46+nl));p+=46+nl+xl+cl;
-  const base=name.split('/').pop();if(!IMG.test(base)||/^(__MACOSX|\.)/.test(name)||base[0]=='.')continue;
+  const base=name.split('/').pop();if(/^(prompt\.txt|doll-8\.jpg)$/i.test(base))throw Object.assign(new Error('own zip'),{code:'own'});   // v268: the ZIP she SENT to GPT, not the one it returned
+  if(!IMG.test(base)||/^(__MACOSX|\.)/.test(name)||base[0]=='.')continue;
   const d=lo+30+u16(b,lo+26)+u16(b,lo+28),raw=b.slice(d,d+cs);let blob;
   if(m==0)blob=new Blob([raw]);else if(m==8){if(typeof DecompressionStream!='function')throw new Error('no inflate');blob=await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).blob()}else continue;
   const ty=/png$/i.test(base)?'image/png':/webp$/i.test(base)?'image/webp':'image/jpeg';out.push({name,f:new File([blob],base,{type:ty,lastModified:file.lastModified||0})})}
@@ -39,5 +40,5 @@ document.addEventListener('change',e=>{const t=e.target;if(!t||t.type!='file'||t
  (async()=>{toast_('פותח את ה-ZIP…');const out=[];for(const f of fs){if(isZip(f))out.push(...await unzip(f));else out.push(f)}
   if(!out.length){t.value='';toast_('לא מצאתי תמונות בתוך ה-ZIP');return}
   const dt=new DataTransfer();out.forEach(f=>dt.items.add(f));t.files=dt.files;t._z259=1;try{t.dispatchEvent(new Event('change',{bubbles:true}))}finally{t._z259=0}
-  toast_(`✓ ${out.length} תמונות מה-ZIP`)})().catch(er=>{ERR('unzip',er);t.value='';toast_(/inflate/.test(er.message)?'הדפדפן הזה לא פותח ZIP – לחלץ את התמונות ולהעלות אותן':'לא הצלחתי לפתוח את ה-ZIP. לנסות שוב')})},true);
+  toast_(`✓ ${out.length} תמונות מה-ZIP`)})().catch(er=>{ERR('unzip',er);t.value='';toast_(er&&er.code=='own'?'זה ה-ZIP ששלחת ל-GPT. צריך את ה-ZIP (או התמונות) שחזרו ממנו':/inflate/.test(er.message)?'הדפדפן הזה לא פותח ZIP – לחלץ את התמונות ולהעלות אותן':'לא הצלחתי לפתוח את ה-ZIP. לנסות שוב')})},true);
 })();
