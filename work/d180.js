@@ -75,6 +75,7 @@ function home(){
    try{new Set(ids.map(id=>curCat(id))).forEach(c=>thLoad(c).then(()=>thApply(TH)))}catch(_){}
    const [r,all]=R360.readyCount();s.querySelector('.z-rdy').innerHTML=`<b>${r}</b> מתוך ${all} בגדים כבר על האווטאר · <u>להוסיף עוד</u>`};
   paintLk();setTimeout(paintLk,2500);T.onchange(paintLk);
+  setInterval(()=>{if(document.hidden)return;try{const [r,all]=R360.readyCount(),h=`<b>${r}</b> מתוך ${all} בגדים כבר על האווטאר · <u>להוסיף עוד</u>`,z=s.querySelector('.z-rdy');if(z&&z.innerHTML!=h)z.innerHTML=h}catch(_){}},4000); // v243: live count
   st.el.addEventListener('click',()=>T.wear());
   let on=true;try{on=localStorage.getItem('h181spin')!='0'}catch(_){}
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)on=false;

@@ -337,7 +337,7 @@ function paintEntry(){try{
  const cta=q('.h9cta')||q('.h9hero');if(!cta)return;let e=q('#ord123b');
  if(!e){e=document.createElement('button');e.id='ord123b';e.dataset.o3go='';cta.appendChild(e)}
  let u=0,m=0;for(const id of Object.keys(D)){const s=st(id);if(s=='m')m++;else if(!s)u++}
- e.innerHTML=`<span>📦</span><span><b>ההזמנות שלי</b><small>${m?`❌ ${m} חסרים · `:''}${u?`⚪ ${u} לא סימנתי`:'הכל מסומן'}</small></span>`;
+ const h=`<span>📦</span><span><b>ההזמנות שלי</b><small>${m?`❌ ${m} חסרים · `:''}${u?`⚪ ${u} לא סימנתי`:'הכל מסומן'}</small></span>`;if(e.innerHTML!=h)e.innerHTML=h;
  }catch(err){LOG('entry',err)}}
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-o3go]');if(!t)return;e.preventDefault();e.stopPropagation();
  V.back=null;const id=t.dataset.o3go;if(id&&D[id]){document.querySelectorAll('dialog[open]').forEach(d=>{if(d.id!='ord123')try{d.close()}catch(_){}});open(D[id].order,id)}else open()},true);
@@ -367,7 +367,7 @@ function paintRet(){try{const cta=q('.h9cta')||q('.h9hero');if(!cta)return;let e
  const ids=retAll();if(!ids.length){if(e)e.remove();return}
  if(!e){e=document.createElement('button');e.id='ret152b';e.onclick=ev=>{ev.preventDefault();O3RET()};const o=q('#ord123b');o?o.after(e):cta.appendChild(e)}
  const pk=new Set(ids.map(id=>D[id].order)).size,s=retSoon(ids),n=s!=null?left(s):null;
- e.innerHTML=`<span>↩</span><span><b>מוצרים להחזרה (${ids.length})</b><small>${pk==1?'חבילה אחת':pk+' חבילות'}${s?` · ${n<0?'עבר הזמן של חלק':'הכי קרוב: עד '+dd(s)+(n<=7?` ⏰ עוד ${n} ימים`:'')}`:''}</small></span>`;
+ const h=`<span>↩</span><span><b>מוצרים להחזרה (${ids.length})</b><small>${pk==1?'חבילה אחת':pk+' חבילות'}${s?` · ${n<0?'עבר הזמן של חלק':'הכי קרוב: עד '+dd(s)+(n<=7?` ⏰ עוד ${n} ימים`:'')}`:''}</small></span>`;if(e.innerHTML!=h)e.innerHTML=h;
  e.classList.toggle('urg',n!=null&&n<=7)}catch(err){LOG('ret152',err)}}
 // item window: מצב = שמרתי / להחזיר / החזרתי / למסור, and a reason row while it waits to be returned
 function retRow152(id){const ed=q('#dlbody .ed:not(.edtop)');if(!ed||ed.dataset.id!=id)return;const row=ed.querySelector('.erow.r152')||[...ed.querySelectorAll('.erow')].find(r=>r.querySelector('[data-k="s:ret"]'));if(!row)return;
@@ -410,4 +410,6 @@ document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.c
 let pT;const kick=()=>{clearTimeout(pT);pT=setTimeout(()=>{paintEntry();paintRet();const d=q('#ord123');if(d&&d.open&&!V.res&&!document.activeElement.matches('[data-o3q],[data-o3note]')&&!(V.local&&Date.now()-V.local<1500))refresh()},400)};
 if(typeof apply=='function'){const a0=apply;window.apply=apply=function(){const r=a0.apply(this,arguments);kick();return r}}
 setTimeout(paintEntry,1200);setTimeout(paintEntry,4000);setTimeout(paintRet,1300);setTimeout(paintRet,4100);
+// v243: the home buttons stay live – the order marks (ORD, e.g. 'arrived') load after the first paint and don't go through apply()
+setInterval(()=>{if(!document.hidden){paintEntry();paintRet()}},3000);document.addEventListener('visibilitychange',()=>{if(!document.hidden){paintEntry();paintRet()}});
 })();
