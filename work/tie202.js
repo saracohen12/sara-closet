@@ -132,11 +132,14 @@ function pk(){if(PK)return PK;PK=document.createElement('dialog');PK.id='tie202'
   if(d.t245up!=null){const [k,i]=d.t245up.split(':');pick245({id:PID,kind:k,i});return}
   if(d.t245cuup!=null){pick245({id:PID,cuOnly:+d.t245cuup});return}
   if(d.t245cu!=null){big245(d.t245cu);return}
-  if(d.t246pick!=null){PICK=true;SEL.clear();await open(PID);PK.scrollTop=0;return}
+  if(d.t261more!=null||d.t261less!=null){PMORE=d.t261more!=null;const y=PK.scrollTop;await open(PID);PK.scrollTop=y;return}
+  if(d.t261f!=null){try{STYORD.star('tie',d.t261f)}catch(_){}const y=PK.scrollTop;await open(PID);PK.scrollTop=y;return}
+  if(d.t246pick!=null){PICK=true;PMORE=false;SEL.clear();await open(PID);PK.scrollTop=0;return}
   if(d.t246no!=null){PICK=false;SEL.clear();await open(PID);PK.scrollTop=0;return}
   if(d.t246sel!=null){const p=d.t246sel,room=MAXW-txw(PID).length;if(SEL.has(p))SEL.delete(p);else if(SEL.size>=room){toast_(`אפשר עד ${MAXW} קשירות שמחכות`);return}else SEL.add(p);
    const on=SEL.has(p);b.setAttribute('aria-pressed',on);b.closest('.t245c').classList.toggle('sel',on);const n=PK.querySelector('[data-t246n]');if(n)n.textContent=SEL.size;const ok=PK.querySelector('[data-t246ok]');if(ok)ok.disabled=!SEL.size;return}
   if(d.t246ok!=null){const {pre,pics}=choices(),all=[...pics,...pre],add=[...SEL].map(p=>all.find(c=>c.p==p)).filter(Boolean).map(c=>({p:c.p,n:c.n}));
+   try{add.forEach(c=>{if(!STYORD.isFav('tie',c.p))STYORD.star('tie',c.p,true)})}catch(_){}
    if(await setW(PID,[...txw(PID),...add].slice(0,MAXW))){PICK=false;SEL.clear();await open(PID);PK.scrollTop=0;toast_(`✓ ${add.length} קשירות באוסף`)}return}
   if(d.t246rm!=null){await setW(PID,txw(PID).filter(w=>w.p!=d.t246rm));paintPK();return}
   if(d.t246zip!=null)return dlAll(PID,b);
@@ -165,13 +168,13 @@ function card(id,c,L){const m=L.find(x=>x.p==c.p||x.n==c.n),k=c.doc?key(c.doc):'
  return `<div class="t245c${m?' done':''}">${pic}<b class="t245n">${c.kind=='w'?c.no+'. ':''}${es(c.n)}</b>${m?'<em>✓ כבר הכנת לכיסוי הזה</em>':''}${c.he?`<small class="t245h">${es(c.he)}</small>`:''}
   <span class="t245b">${c.kind=='w'?`<button type="button" data-t228cp="${c.i}">📋 פרומפט במלל</button>`:''}${src?`<button type="button" data-t245cpi="${c.kind}:${es(c.i)}">🖼 פרומפט לתמונה</button><button type="button" data-t245dl="${c.kind}:${es(c.i)}">⬇ תמונת 8 הזוויות</button>`:''}
   <button type="button" class="mkp" data-t245up="${c.kind}:${es(c.i)}">${m?'🔄 להחליף':'📤 להעלות'}</button></span></div>`}
-const MAXW=10;let PICK=false;const SEL=new Set();
+const MAXW=10;let PICK=false,PMORE=false;const SEL=new Set();
 const txw=id=>(Array.isArray(itx(id).txw)?itx(id).txw:[]).filter(w=>w&&w.p);
 async function setW(id,L){try{await putItem(id,{txw:L.length?L:''})}catch(e){ERR('txw',e);toast_('לא הצלחתי לשמור. לנסות שוב');return false}return true}
 const picBtn=(c,attr)=>{const k=c.doc?key(c.doc):'';return k?`<button type="button" class="t245p" ${attr}><img alt="" data-t245k="${es(k)}" src=""><i class="c212h" aria-hidden="true">🔄 360</i></button>`:`<span class="t245p none"><i aria-hidden="true">🧕</i><small>עוד אין תמונה</small></span>`};
 // a tie in the picker: tap = pick it
 function pcard(c){const on=SEL.has(c.p),k=c.doc?key(c.doc):'';
- return `<div class="t245c t246c${on?' sel':''}"><button type="button" class="t245p${k?'':' none'}" data-t246sel="${es(c.p)}" aria-pressed="${on}" aria-label="לבחור: ${es(c.n)}">${k?`<img alt="" data-t245k="${es(k)}" src="">`:'<i aria-hidden="true">🧕</i><small>עוד אין תמונה</small>'}<i class="t246v" aria-hidden="true">✓</i></button>
+ return `<div class="t245c t246c${on?' sel':''}"><button type="button" class="t245p${k?'':' none'}" data-t246sel="${es(c.p)}" aria-pressed="${on}" aria-label="לבחור: ${es(c.n)}">${k?`<img alt="" data-t245k="${es(k)}" src="">`:'<i aria-hidden="true">🧕</i><small>עוד אין תמונה</small>'}<i class="t246v" aria-hidden="true">✓</i></button>${(()=>{const f=!!(window.STYORD&&STYORD.isFav&&STYORD.isFav('tie',c.p));return `<button type="button" class="t261f" data-t261f="${es(c.p)}" aria-pressed="${f}" aria-label="${f?'להוריד את הכוכבית':'לסמן בכוכבית'}: ${es(c.n)}">${f?'⭐':'☆'}</button>`})()}
   ${k?`<button type="button" class="t246r" data-t245spin aria-label="לסובב: ${es(c.n)}">🔄</button>`:''}<b class="t245n">${c.kind=='w'?c.no+'. ':''}${es(c.n)}</b>${c.he?`<small class="t245h">${es(c.he)}</small>`:''}</div>`}
 // a tie waiting for GPT: one by one still possible
 function wcard(id,c){const src=c.doc&&c.doc.src;
@@ -244,12 +247,18 @@ async function open(id){PID=id;pk();const L=txs(id),O=window.STYORD,rk=u=>O?O.ra
  // the window shows only her ties of this cover and the ones waiting for GPT; "➕ לבחור קשירות" opens only the ties she hasn't picked yet
  const all=[...pics,...pre],W=txw(id).map(w=>all.find(c=>c.p==w.p)).filter(Boolean),made=c=>L.some(x=>x.p==c.p||x.n==c.n),free=c=>!made(c)&&!W.some(w=>w.p==c.p),room=Math.max(0,MAXW-W.length);
  const head=`<div class="mkh"><h3 id="tie202t">🧕 הקשירות של ${es(nm(id).split(' ').slice(0,5).join(' '))}</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>`;
- if(PICK){const fp=pics.filter(free),fr=pre.filter(free);
+ if(PICK){let fp=pics.filter(free),fr=pre.filter(free);
+  // v261 (Sara 20:59 "סימנו בכוכבית את כל הכיסויים שאני אוהבת? למה אני לא רואה אותם פה?"): only her ⭐ ties; "☆ עוד" opens the rest, and what she adds from there gets a ⭐
+  const fv=c=>!!(O&&O.isFav&&O.isFav('tie',c.p)),hf=!!(O&&O.hasFav&&O.hasFav('tie')),FV=[...fp,...fr].filter(fv);let favH='';
+  if(hf){fp=fp.filter(c=>!fv(c));fr=fr.filter(c=>!fv(c));const n=fp.length+fr.length;
+   favH=`<h4 class="t228h">⭐ הקשירות שסימנת <small>${FV.length}</small></h4>${FV.length?`<div class="t245g">${FV.map(pcard).join('')}</div>`:'<p class="tie202p">כל הקשירות שסימנת כבר באוסף של הכיסוי הזה.</p>'}`
+    +(PMORE?`<button type="button" class="t261m" data-t261less>⭐ רק מה שסימנתי</button>`:n?`<button type="button" class="t261m" data-t261more>☆ עוד ${n} קשירות – לבחור ולסמן ⭐</button>`:'');
+   if(!PMORE){fp=[];fr=[]}}
   PK.innerHTML=`<div class="mk">${head}<div class="t246top" role="group" aria-label="בחירת קשירות"><span><b>בוחרים עד ${room}</b> · נבחרו <b data-t246n>${SEL.size}</b></span><button type="button" class="mkp" data-t246ok${SEL.size?'':' disabled'}>✓ להוסיף לאוסף</button><button type="button" data-t246no>ביטול</button></div>
    <p class="tie202p">נוגעים בקשירה כדי לבחור אותה (נגיעה נוספת מבטלת). עם עכבר היא מסתובבת, ובטלפון 🔄 מסובב.</p>
-   ${fp.length?`<h4 class="t228h">🆕 הקשירות שהבאת בתמונות <small>${fp.length}</small></h4><div class="t245g">${fp.map(pcard).join('')}</div>`:''}
+   ${favH}${fp.length?`<h4 class="t228h">🆕 הקשירות שהבאת בתמונות <small>${fp.length}</small></h4><div class="t245g">${fp.map(pcard).join('')}</div>`:''}
    ${fr.length?`<h4 class="t228h">📝 הקשירות מהרשימה <small>${fr.length}</small></h4><div class="t245g">${fr.map(pcard).join('')}</div>`:''}
-   ${!fp.length&&!fr.length?'<p class="tie202p">בחרת כבר את כל הקשירות 🙂</p>':''}</div>`}
+   ${!fp.length&&!fr.length&&!hf?'<p class="tie202p">בחרת כבר את כל הקשירות 🙂</p>':''}</div>`}
  else PK.innerHTML=`<div class="mk">${head}
   ${L.length?`<h4 class="t228h">הקשירות שהכנת לכיסוי הזה <small>${L.length}</small></h4><p class="tie202p">לוחצים על הכפתור "על האווטאר" והיא זו שעלייך. 🏠 שמה אותה בדף הראשי. 🔍 פותח את התקריב בגדול.</p>
   <div class="t245g">${LI.map(i=>[L[i],i]).map(([x,i])=>{const on=isOn(id,x);return `<div class="t245c mine${on?' on':''}">

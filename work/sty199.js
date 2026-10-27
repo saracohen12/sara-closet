@@ -32,7 +32,7 @@ const seen=set=>mine(set).filter(x=>!gone(x));
   HID=new Set(v&&Array.isArray(v.k)?v.k:[]);const od=sn.docs.find(y=>y.id=='ord'),ov=od&&od.data();if(ov&&!ORDT){ORDSETS.forEach(t=>ORD[t]=ordOk(ov[t]));if(!RS.tie.length&&!RS.hair.length)freeze();try{R()&&R().restyle&&R().restyle()}catch(_){}}push();paint()},e=>ERR('hsnap',e))}catch(e){ERR('hdb',e)}})();
 // v238 (Sara 27/10 10:00 "קשירות שאני יותר אוהבת, להעלות אותן קדימה" + 10:00 "הקשירות האחרונות שנבחרו – בהתחלה"): ties and hairstyles in her order –
 // ⭐ favourites first (she moves them ⬆), then the last ones she picked, then the rest. db 'stylehide'/'ord' {tie:{f:[],r:[]},hair:{f:[],r:[]}}; units are hidK keys.
-const ORDSETS=['tie','hair'];let ORD={tie:{f:[],r:[]},hair:{f:[],r:[]}},RS={tie:[],hair:[]},ORDT=null;
+const ORDSETS=['tie','hair','mk'];let ORD={tie:{f:[],r:[]},hair:{f:[],r:[]},mk:{f:[],r:[]}},RS={tie:[],hair:[],mk:[]},ORDT=null;   // v261: makeup has ⭐ too
 const ordOk=v=>v&&typeof v=='object'?{f:Array.isArray(v.f)?v.f.slice(0,60):[],r:Array.isArray(v.r)?v.r.slice(0,8):[]}:{f:[],r:[]};
 function freeze(){ORDSETS.forEach(t=>RS[t]=ORD[t].r.slice())}   // the recent order is taken when a screen opens, so a pick doesn't jump under her finger
 function rank(set,u){const o=ORD[set];if(!o||!u)return 1e4;const f=o.f.indexOf(u);if(f>=0)return f;const r=(RS[set]||[]).indexOf(u);return r>=0?100+r:1e4}
@@ -43,7 +43,14 @@ function ordChanged(){ordSave();try{R()&&R().restyle&&R().restyle()}catch(_){}}
 function fav(set,u){const o=ORD[set];if(!o||!u)return;const i=o.f.indexOf(u);if(i>=0)o.f.splice(i,1);else o.f.push(u);ordChanged();paint()}
 function favUp(set,u){const o=ORD[set];const i=o?o.f.indexOf(u):-1;if(i<=0)return;o.f.splice(i,1);o.f.splice(i-1,0,u);ordChanged();paint()}
 function rec(set,u){const o=ORD[set];if(!o||!u)return;o.r=[u,...o.r.filter(y=>y!=u)].slice(0,8);ordSave()}
-window.STYORD={rank,freeze,rec,unit:id=>unitOf(LIST.find(x=>x.id==id)),sort:ordSort};
+// v261 (Sara 27/10 20:59 "בכל מקום שאני רואה את הכיסויים ... אפשרות לסמן כוכבית ... ורק מה שעם כוכבית, זה יוצא ... אם אני רוצה להוסיף, זה נפתח לי, ואז זה מוסיף לי כוכבית"):
+// wherever ties, hairstyles or makeups are listed, a set with ⭐ shows only the ⭐ ones and "☆ עוד" opens the rest; picking one from the rest gives it a ⭐.
+// MORE[set] = the rest is open (on this screen); a set with no ⭐ yet shows everything
+const MORE={};
+const isFav=(set,u)=>!!(ORD[set]&&u&&ORD[set].f.includes(u));
+const hasFav=set=>!!(ORD[set]&&ORD[set].f.length);
+function star(set,u,on){const o=ORD[set];if(!o||!u)return;const i=o.f.indexOf(u);if(on===undefined)on=i<0;if(on&&i<0){if(!o.f.length)MORE[set]=true;o.f.push(u)}else if(!on&&i>=0)o.f.splice(i,1);else return;ordChanged();paint()}
+window.STYORD={rank,freeze,rec,unit:id=>unitOf(LIST.find(x=>x.id==id)),sort:ordSort,isFav,hasFav,star,reset:()=>Object.keys(MORE).forEach(k=>delete MORE[k]),more:(set,v)=>{if(v!==undefined)MORE[set]=v;return !!MORE[set]}};
 async function hide(k,on){if(!k)return;const was=new Set(HID);if(on)HID.add(k);else HID.delete(k);push();paint();
  try{if(!DB)throw new Error('db');await DB.collection('stylehide').doc('all').set({k:[...HID],t:Date.now()})}catch(e){ERR('hide',e);HID=was;push();paint();toast_('✗ '+ERRT.x);return false}
  return true}
@@ -75,7 +82,8 @@ function el(){if(DL)return DL;DL=document.createElement('dialog');DL.id='sty199'
  DL.addEventListener('pointerover',e=>{if(e.pointerType!='mouse'||still())return;const b=e.target.closest('.syrot');if(b&&!b._t&&!(e.relatedTarget&&b.contains(e.relatedTarget)))turn(b,true)});
  DL.addEventListener('pointerout',e=>{if(e.pointerType!='mouse')return;const b=e.target.closest('.syrot');if(b&&!(e.relatedTarget&&b.contains(e.relatedTarget)))stopRot(b,b._F)});
  DL.addEventListener('cancel',e=>{e.preventDefault();DL.close()});return DL}
-function open(tab){if(tab&&SETS.some(s=>s[0]==tab))TAB=tab;freeze();el();ED='';ADD=false;paint();if(!DL.open)DL.showModal();DL.scrollTop=0}
+function open(tab){if(!(DL&&DL.open))Object.keys(MORE).forEach(k=>delete MORE[k]);   // v261: each time it opens, only her ⭐ ones first
+ if(tab&&SETS.some(s=>s[0]==tab))TAB=tab;freeze();el();ED='';ADD=false;paint();if(!DL.open)DL.showModal();DL.scrollTop=0}
 const prompt=set=>{const p=P();if(!p)return '';const n=NAME[set].trim();return set=='hair'?p.hair(n):set=='tie'?p.tie(n):p.mkBoth?p.mkBoth(n,DESC.trim()):p.faceW?p.faceW(n,DESC.trim()):p.face(NUM)};   // v205: a new makeup from her words, only the doll
 function prompt2(set,pr){const p=P();if(!p||!pr)return '';return set=='tie'?p.tieW(pr.n,pr.d,pr.he):set=='hair'?(p.hairZ||p.hairW)(pr.n,pr.d,pr.he,pr.sp):p.mkBoth?p.mkBoth(pr.n,pr.d||pr.sub):p.faceW?p.faceW(pr.n,pr.d||pr.sub):p.face(pr.no)}   // v205: makeup from the words, only the doll attached
 function fill(){if(!DL)return;DL.querySelectorAll('textarea[data-syp]').forEach(t=>t.value=prompt(t.dataset.syp))}
@@ -102,7 +110,7 @@ setInterval(()=>{const im=document.querySelectorAll('img[data-sycu8]');if(!im.le
   if(!F){if(F===undefined&&window.cu8Frames){C8S[a]=null;cu8Frames(a).then(F=>{C8S[a]=F||false})}if(!i.src)i.src='/_blob/'+a;return}if(i.matches(':hover')&&i.dataset.st)return;i.src=F[C8I]})},650);
 const cuPrompt=x=>{if(x.set=='hair')return zipPrompt(x.id);const p=P();if(!p||!p.mkBoth)return '';const pr=x.p?preOf('mk',x.p):null;return p.mkBoth(x.n,pr?pr.d||pr.sub:'')};
 const faces=k=>[['c','עם כיסוי'],['h','עם פאה']].map(([h,t])=>`<span class="syfc"><img alt="${t}" data-syface="${es(k)}" data-h="${h}" src=""><small>${t}</small></span>`).join('');
-function card(set,pr,x){const k=pr?pr.k:x.id,b=busy()&&PROC.k==k,title=x?x.n:pr.n;   // her own name once she renamed it
+function card(set,pr,x){if(SKIP&&SKIP.has(hidK(pr,x)))return '';const k=pr?pr.k:x.id,b=busy()&&PROC.k==k,title=x?x.n:pr.n;   // her own name once she renamed it
  if(set=='hair'&&x&&x.cu&&x.cu8)return cardH(pr,x,b,title);
  // v204 (Sara 11:46 "אני אגע בתמונה ואז הבובה תסתובב ... אני צריכה לפחות את זה פי 3 בגודל"): one big picture that turns – touch it (or the mouse over it); ⋯ = all 8, name, replace
  const pic=x&&set!='mk'?`<span class="sycim tall"><button type="button" class="syrot" data-syrot aria-label="לסובב את הבובה: ${es(title)}"><img alt="" data-syf="${es(key(x))}" src=""></button><span class="sy8" aria-hidden="true">🔄 נגיעה מסובבת</span><button type="button" class="symore" data-syview="${es(x.id)}" aria-label="8 הזוויות, שם, החלפה: ${es(title)}">⋯</button></span>`
@@ -149,16 +157,23 @@ function turn(b,loop){const img=b&&b.querySelector('img[data-syf]');if(!img)retu
  R().styFrames(k,{rgb:x.set=='tie'?LIBC:null}).then(F=>{if(F.length<8)return;if(b._t)clearInterval(b._t);b._F=F;let i=0,n=0;
   b._t=setInterval(()=>{if(!img.isConnected){clearInterval(b._t);b._t=null;return}i=(i+1)%8;n++;img.src=F[i];if(!loop&&n>=8)stopRot(b,F)},loop?190:150)})}
 function grid(set,list){return `<div class="syg2${set=='mk'?' mk2':''}">${list.join('')}</div>`}
-function body(set){const ex=extras(set).map(x=>card(set,null,x));
+function body(set){const all=[...shown(set).map(pr=>({pr,x:doneOf(set,pr)})),...extras(set).map(x=>({pr:null,x}))],F=hasFav(set)?ORD[set].f.map(u=>all.find(e=>hidK(e.pr,e.x)==u)).filter(Boolean):[];
+ if(!F.length)return body0(set);const rest=all.length-F.length,nm_={tie:'קשירות',hair:'תסרוקות',mk:'איפורים'}[set];
+ const top=`<section class="sycat syfavs"><h4>⭐ ${set=='tie'?'הקשירות':set=='hair'?'התסרוקות':'האיפורים'} שבחרתי <small>${F.length}</small></h4>${grid(set,F.map(e=>card(set,e.pr,e.x)))}</section>`;
+ if(!MORE[set])return top+`<button type="button" class="symore2" data-symore2="1">☆ עוד ${rest} ${nm_} – לבחור ולסמן ⭐</button>`+grid(set,[addCard(set)]);
+ SKIP=new Set(F.map(e=>hidK(e.pr,e.x)));try{return top+`<button type="button" class="symore2" data-symore2="0">⭐ רק מה שבחרתי</button><h4 class="syrest">כל השאר – ☆ מסמנים מה שאוהבים</h4>`+body0(set)}finally{SKIP=null}}
+let SKIP=null;
+const shownS=set=>shown(set).filter(pr=>!SKIP||!SKIP.has(pr.k)),extrasS=set=>extras(set).filter(x=>!SKIP||!SKIP.has('id:'+x.id));
+function body0(set){const ex=extrasS(set).map(x=>card(set,null,x));
  // v207: her hairstyles in her 3 groups
- const p0=P();if(set=='hair'&&p0&&p0.HAIRG){const G=p0.HAIRG,sh=shown(set);
+ const p0=P();if(set=='hair'&&p0&&p0.HAIRG){const G=p0.HAIRG,sh=shownS(set);
   return G.map(([from,t],gi)=>{const to=gi+1<G.length?G[gi+1][0]:1e9,L=ordSort(set,sh.filter(pr=>pr.no-1>=from&&pr.no-1<to),pr=>pr.k);
    return L.length?`<section class="sycat"><h4>${es(t)} <small>${L.length}</small></h4>${grid(set,L.map(pr=>card(set,pr,doneOf(set,pr))))}</section>`:''}).join('')
    +(ex.length?`<section class="sycat"><h4>שלי</h4>${grid(set,ex)}</section>`:'')+grid(set,[addCard(set)])+hiddenHTML(set)}
- if(set=='tie'){const E=ordSort(set,[...shown(set).map(pr=>({pr,x:doneOf(set,pr)})),...extras(set).map(x=>({pr:null,x}))],e=>hidK(e.pr,e.x));   // v238: her order
+ if(set=='tie'){const E=ordSort(set,[...shownS(set).map(pr=>({pr,x:doneOf(set,pr)})),...extrasS(set).map(x=>({pr:null,x}))],e=>hidK(e.pr,e.x));   // v238: her order
   return grid(set,[...E.map(e=>card(set,e.pr,e.x)),addCard(set)])+'<p class="sytip">הקשירות כאן בצבע אחד לדוגמה. על כיסוי היא בצבע של הכיסוי.</p>'+hiddenHTML(set)}
- if(set!='mk')return grid(set,[...shown(set).map(pr=>card(set,pr,doneOf(set,pr))),...ex,addCard(set)])+(set=='tie'?'<p class="sytip">הקשירות כאן בצבע אחד לדוגמה. על כיסוי היא נצבעת בצבע של הכיסוי.</p>':'')+hiddenHTML(set);
- const p=P();if(!p)return '';const all=shown('mk');
+ if(set!='mk')return grid(set,[...shownS(set).map(pr=>card(set,pr,doneOf(set,pr))),...ex,addCard(set)])+(set=='tie'?'<p class="sytip">הקשירות כאן בצבע אחד לדוגמה. על כיסוי היא נצבעת בצבע של הכיסוי.</p>':'')+hiddenHTML(set);
+ const p=P();if(!p)return '';const all=shownS('mk');
  const H=mkHid(),mineN=c=>all.filter(pr=>pr.c==c&&doneOf('mk',pr)).length;
  return p.MKC.map(([c,t,L])=>H.has(c)?`<section class="sycat syoff"><h4><button type="button" class="sycatb" data-sycat="${c}" aria-expanded="false"><b>${es(t)}</b> <small>${all.filter(pr=>pr.c==c).length}${mineN(c)?' · '+mineN(c)+' שלך':''}</small><i aria-hidden="true">הצגה</i></button></h4></section>`:`<section class="sycat"><h4><button type="button" class="sycatb" data-sycat="${c}" aria-expanded="true"><b>${es(t)}</b> <small>${all.filter(pr=>pr.c==c).length}${mineN(c)?' · '+mineN(c)+' שלך':''}</small><i aria-hidden="true">הסתרה</i></button></h4>
   ${MKG[c]?`<span class="mkb"><button type="button" data-sylook="${c}">📋 פרומפט לרשת</button><button type="button" data-sygrid="${c}"${busy()?' disabled':''}>📷 להחליף את הרשת</button></span>`:''}
@@ -268,7 +283,7 @@ async function run(set,fs,re,pre){if(PROC&&!PROC.err){toast_('רגע, עוד ג�
  const last=LIST.find(x=>x.id==done[done.length-1]);
  if(CU&&last){try{await cuUp(last.id,CU,true,set=='hair')}catch(e){ERR('cu',e)}}
  toast_(done.length>1?`✓ ${done.length} ${SET(set)[2]} על האווטאר`:`✓ ${the} על האווטאר${CU&&last&&last.cu?' והתקריב בכרטיס':''}`)}   // v204: no action – the toast's button reads "ביטול"
-function wear(id){const x=LIST.find(y=>y.id==id);if(!x)return;const k=key(x);if(!k)return;if(ORD[x.set])rec(x.set,unitOf(x));try{if(DL&&DL.open)DL.close();R().wearStyle(k)}catch(e){ERR('wear',e)}}
+function wear(id){const x=LIST.find(y=>y.id==id);if(!x)return;const k=key(x);if(!k)return;if(ORD[x.set]){rec(x.set,unitOf(x));if(!isFav(x.set,unitOf(x)))star(x.set,unitOf(x),true)}try{if(DL&&DL.open)DL.close();R().wearStyle(k)}catch(e){ERR('wear',e)}}
 // v215: the 8-angle sheet (its shape, and the white line between its two rows) vs. the close-up
 async function isSheet(f){const u=URL.createObjectURL(f);try{const m=await new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=u});
   const q=m.naturalWidth/m.naturalHeight;if(q<1.25||q>1.42)return false;const w=240,h=Math.round(w/q),c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(m,0,0,w,h);
@@ -296,6 +311,7 @@ async function del(id){const x=LIST.find(y=>y.id==id);if(!x||!DB)return;const ke
 
 function click(e){if(e.target===DL)return DL.close();const b=e.target.closest('button');if(!b||!DL.contains(b))return;const d=b.dataset;
  if(d.syfav!=null){fav(TAB,d.syfav);return}
+ if(d.symore2!=null){MORE[TAB]=d.symore2=='1';paint();return}
  if(d.syfu!=null){favUp(TAB,d.syfu);return}
  if(d.sycat!=null){const H=mkHid(),c=d.sycat;H.has(c)?H.delete(c):H.add(c);try{localStorage.setItem('mkc227',JSON.stringify([...H]))}catch(_){}paint();return}   // v227: a makeup group folds (the same groups fold in the studio)
  if(b.classList.contains('mkx'))return DL.close();

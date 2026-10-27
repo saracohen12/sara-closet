@@ -487,3 +487,10 @@ dialog#g256::backdrop{background:rgba(30,20,15,.45)}
 #g256 .g256top input{min-height:38px;padding:4px 10px;border-radius:10px;border:1px solid var(--z-line,#d8cfc6);font:inherit;background:#fff;color:inherit}
 #g250 .g257bg{flex:0 0 auto;white-space:nowrap;font-size:.78rem;padding:4px 8px;min-height:32px}
 @media (max-width:480px){#g250 .g256pn span{flex-wrap:wrap}#g250 .g256pn input[data-g256pc]{flex:1 1 0}}
+/* v261: ⭐ only – her starred ties / hairstyles / makeups first, "☆ עוד" opens the rest */
+#tie202 .t246c .t261f{position:absolute;top:62px;inset-inline-start:16px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.92);font-size:1.05rem;cursor:pointer;color:#2a1d17}
+#tie202 .t246c .t261f[aria-pressed=true]{background:#fff4cc}
+#tie202 .t261m,#sty199 .symore2{display:block;width:100%;min-height:48px;margin:12px 0;padding:10px 16px;border-radius:24px;border:1.5px dashed var(--z-acc,#b4532c);background:var(--z-solid,#fff);color:var(--z-ink,#2a1d17);font:inherit;font-weight:600;cursor:pointer}
+#sty199 .syrest{margin:14px 4px 6px;font-size:.95rem}
+#sty199 .syfavs h4{margin:6px 4px}
+#r360 .r3styadd.r3more b{background:#fff4cc}
