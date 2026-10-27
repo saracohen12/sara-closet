@@ -419,7 +419,7 @@ document.addEventListener('click',async e=>{const d=e.target.closest&&e.target.c
  function show(i){const fs=document.querySelectorAll('.h73fig .h73f');fs.forEach((f,k)=>f.classList.toggle('on',k==i));document.querySelectorAll('.h73dots [data-av73]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.av73==i))}
  document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-av73]');if(!b)return;e.preventDefault();show(+b.dataset.av73);rot=Date.now()},true);
  const calm=matchMedia('(prefers-reduced-motion: reduce)');
- setInterval(()=>{try{if(calm.matches||document.hidden||Date.now()-rot<9000)return;if(document.querySelector('dialog[open]'))return;const on=document.querySelector('.h73fig .h73f.on');if(!on)return;const fs=[...document.querySelectorAll('.h73fig .h73f')];show((fs.indexOf(on)+1)%fs.length)}catch(_){}},4800);
+ (window.rawSetInterval||setInterval)(()=>{try{if(calm.matches||document.hidden||Date.now()-rot<9000)return;if(document.querySelector('dialog[open]'))return;const on=document.querySelector('.h73fig .h73f.on');if(!on)return;const fs=[...document.querySelectorAll('.h73fig .h73f')];show((fs.indexOf(on)+1)%fs.length)}catch(_){}},4800);
  build();setTimeout(build,400);setTimeout(build,1500);
  // the v71 emoji tidy-up only runs while html.d71 is set: the same tidy-up for html.d73 (leading emoji in labels are tucked away, the label stays)
  const RE=/^(\s*)((?:\p{Extended_Pictographic}|[←-⇿☀-➿⬀-⯿])(?:[️‍⃣]|\p{Emoji_Modifier}|\p{Extended_Pictographic})*)\s+(?=\S)/u;

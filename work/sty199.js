@@ -113,7 +113,7 @@ async function zipHair(k,b){const o=b.textContent;b.disabled=true;b.textContent=
   const {n}=hairOf(k);await R().saveFile(`hair-${String(n||k).replace(/[^\u0590-\u05FFA-Za-z0-9]+/g,'-').slice(0,30)}.zip`,await window.zip246(f));log('hair_zip',{k});
   b.textContent='✓ ירד. עכשיו ל-GPT'}catch(e){ERR('hzip',e);b.textContent='לא הצלחתי'}setTimeout(()=>{if(b.isConnected){b.textContent=o;b.disabled=false}},2600)}
 const C8S={};let C8I=0;
-setInterval(()=>{const im=document.querySelectorAll('img[data-sycu8]');if(!im.length)return;C8I=(C8I+1)%8;im.forEach(i=>{const a=i.dataset.sycu8;if(!a)return;const F=C8S[a];
+(window.rawSetInterval||setInterval)(()=>{const im=document.querySelectorAll('img[data-sycu8]');if(!im.length)return;C8I=(C8I+1)%8;im.forEach(i=>{const a=i.dataset.sycu8;if(!a)return;const F=C8S[a];
   if(!F){if(F===undefined&&window.cu8Frames){C8S[a]=null;cu8Frames(a).then(F=>{C8S[a]=F||false})}if(!i.src)i.src='/_blob/'+a;return}if(i.matches(':hover')&&i.dataset.st)return;i.src=F[C8I]})},650);
 const cuPrompt=x=>{if(x.set=='hair')return zipPrompt(x.id);const p=P();if(!p||!p.mkBoth)return '';const pr=x.p?preOf('mk',x.p):null;return p.mkBoth(x.n,pr?pr.d||pr.sub:'')};
 const faces=k=>[['c','עם כיסוי'],['h','עם פאה']].map(([h,t])=>`<span class="syfc"><img alt="${t}" data-syface="${es(k)}" data-h="${h}" src=""><small>${t}</small></span>`).join('');

@@ -53,13 +53,14 @@ const occNow=()=>{try{const o=window.occToday83&&occToday83();if(o)return o[0]}c
 const isReady=id=>!!READY[id];
 // ---------- v190: items the site cut itself from her 8-angle GPT picture (IT[id].a8 = [{s:slot, L:[8 asset ids], …}], see cut8.js + av188.js) ----------
 const DYN={},STATIC=new Set(Object.keys(READY));let DSIG='';
-const WHK=new Set();   // v202: an item cut whole (her exact scarf in a tie, kind 'tiex'): drawn on the head-less doll like a tie
+const WHK=new Set(),PK={};   // PK (v274): the kind each cut part was cut as (a sweater is an 'outer' part that can go into the skirt)
+   // v202: an item cut whole (her exact scarf in a tie, kind 'tiex'): drawn on the head-less doll like a tie
 function sync(){const a8={};try{Object.entries(IT||{}).forEach(([id,v])=>{if(v&&Array.isArray(v.a8)&&!STATIC.has(id)&&D[id])a8[id]=v.a8.filter(p=>p&&p.s&&Array.isArray(p.L)&&p.L.length==8)})}catch(_){}
  const sig=JSON.stringify(a8);if(sig==DSIG)return false;DSIG=sig;
  Object.keys(READY).forEach(id=>{if(!READY[id].dyn)return;READY[id].k.forEach(k=>{delete SLOT[k];delete KEYOF[k];for(let v=1;v<=8;v++){delete DYN['x'+k+v];delete IMG['x'+k+v]}});delete READY[id]});
  for(let i=HEADS.length-1;i>=0;i--)if(HEADS[i].dyn)HEADS.splice(i,1);
  Object.entries(a8).forEach(([id,ps])=>{if(!ps.length)return;const ks=[];let head=0;
-  ps.forEach((p,j)=>{const k='u'+id.replace(/[^A-Za-z0-9]/g,'')+(j?'p'+j:'');ks.push(k);KEYOF[k]=id;if(p.s=='head')head=1;else SLOT[k]=p.s;if(p.k=='tiex')WHK.add(k);else WHK.delete(k);p.L.forEach((a,v)=>DYN['x'+k+(v+1)]='/_blob/'+a)});
+  ps.forEach((p,j)=>{const k='u'+id.replace(/[^A-Za-z0-9]/g,'')+(j?'p'+j:'');ks.push(k);KEYOF[k]=id;PK[k]=p.k;if(p.s=='head')head=1;else SLOT[k]=p.s;if(p.k=='tiex')WHK.add(k);else WHK.delete(k);p.L.forEach((a,v)=>DYN['x'+k+(v+1)]='/_blob/'+a)});
   READY[id]={k:head?ks.slice(0,1):ks,head,dyn:1};if(head)HEADS.push({k:ks[0],id,src:DYN['x'+ks[0]+'1'],dyn:1})});
  Object.keys(ST.on||{}).forEach(k=>{if(/^u/.test(k)&&!KEYOF[k])delete ST.on[k]});if(/^u/.test(ST.head||'')&&!KEYOF[ST.head])ST.head='c';   // items taken off the avatar
  return true}
@@ -276,10 +277,16 @@ function paintCam(){const sw=dlg&&dlg.querySelector('.r3cam .r3sw');if(!sw)retur
   +CAM.map(c=>`<button type="button" role="radio" data-r3cam="${c.k}" aria-label="${c.n}"><i style="background:${c.c?`rgb(${c.c})`:'linear-gradient(135deg,#e9c3a6,#c99476)'}"></i><span>${c.n}</span></button>`).join('');thl(T)}
 const ORDER=['shoes','base','body','bottom','top','outer','belt','coat','wrist','bag','neck'];   // what covers what, from the floor up (tucked: the top under the skirt)
 function layersFor(v,s){const on=s.on||{},L=[];const x=k=>({s:'x'+k+(v+1),k});const of=sl=>Object.keys(SLOT).filter(k=>on[k]&&SL(k)==sl);
- let ord=s.tuck?ORDER.map(o=>o=='bottom'?'top':o=='top'?'bottom':o):ORDER;
+ // v274 (Sara 23:35–23:36 "אפשרות להכניס סוודר בתוך החצאית", "גם החולצות נעלם האופציה"): with a skirt and no dress, a top, a base shirt and a sweater
+ // all go into the skirt when she ticks it (drawn under the skirt, and what would stick out below its waist is taken off in paint()); not ticked, all are over the skirt
+ const swk=k=>SL(k)=='outer'&&(PK[k]=='sweater'||(!PK[k]&&KEYOF[k]&&kindOf(KEYOF[k])=='sweater'));
+ const skirt=of('bottom').length&&!of('body').length,tin=skirt&&s.tuck;let ord=ORDER;
+ if(skirt){const IN=['base','top','sweater'];ord=ORDER.filter(o=>o!='base'&&o!='top');ord.splice(ord.indexOf(tin?'body':'bottom')+(tin?0:1),0,...IN)}
+ const of0=of;const ofs=sl=>sl=='sweater'?of0('outer').filter(swk):sl=='outer'&&skirt?of0('outer').filter(k=>!swk(k)):of0(sl);
  if(s.under){ord=ord.filter(o=>o!='top');ord.splice(ord.indexOf('body'),0,'top')}   // v255 (Sara 18:58 "איך אני שמה גופיית בסיס לשמלה"): any top worn under the dress
  const bs=of('base').length;   // v210: her base shirt under a lace dress shows through the lace, instead of the plain colour
- ord.forEach(sl=>{if(sl=='body'&&!bs)Object.keys(LACE).forEach(k=>{if(on[k])L.push({s:'x'+k+'u'+(v+1),t:camOf(s.cam),ref:LACE[k]})});of(sl).forEach(k=>L.push(x(k)))});
+ const TK=tin?['base','top','sweater']:[];
+ ord.forEach(sl=>{if(sl=='body'&&!bs)Object.keys(LACE).forEach(k=>{if(on[k])L.push({s:'x'+k+'u'+(v+1),t:camOf(s.cam),ref:LACE[k]})});ofs(sl).forEach(k=>L.push(TK.includes(sl)?Object.assign(x(k),{tk:1}):sl=='bottom'?Object.assign(x(k),{bt:1}):x(k)))});
  // v255 (Sara 27/10 18:58 "בשמלות ארוכות אתה עולה על הנעליים"): a long dress or skirt was cut from GPT's sheet together with the doll's beige flats under its hem,
  // so it covered the shoes she chose. The shoes are drawn once more over the dress, skirt and coat (the shoe layer is only the shoe, at the floor)
  const shs=of('shoes');if(shs.length&&(of('body').length||of('bottom').length||of('coat').length))shs.forEach(k=>L.push(x(k)));
@@ -370,9 +377,28 @@ async function paint(cv,v,s,pad){s=headOf(s);const bg=s.bg||'';const hw=whole(s.
   const g=c.createRadialGradient(FX[v],FY+3,2,FX[v],FY+3,52);g.addColorStop(0,'rgba(40,28,20,.30)');g.addColorStop(1,'rgba(40,28,20,0)');c.save();c.translate(FX[v],FY+3);c.scale(1,.16);c.translate(-FX[v],-FY-3);c.fillStyle=g;c.fillRect(FX[v]-60,FY-60,120,126);c.restore()}
  c.drawImage(base,0,0);if(E){for(let i=0;i<8;i++){c.globalAlpha=(i+1)/8;c.drawImage(E,0,0,2,1,0,BH-8+i,BW,1)}c.globalAlpha=1}
  const HTv=!s.rawHead&&hw?((await headT(s.head))||[])[v]:null;
- ms.forEach((m,i)=>{if(!m)return;const l=L[i],im=l.t?tinted(m,l.t,l.ref):m;if(l.hd&&HTv)drawHead(c,im,HTv);else c.drawImage(im,0,l.k?JY(l.k):0)});if(L.fit)await mkFit(c,v,s.head,L.fit,pt,L.fitId);if(pt||pb)c.restore();
+ const BT=ms.filter((m,i)=>m&&L[i].bt),BTK=L.filter(l=>l.bt).map(l=>l.s).join(',');const doll=BT.length&&L.some(l=>l.tk)?await im('c'+(v+1)):null;
+ ms.forEach((m,i)=>{if(!m)return;const l=L[i];if(l.tk&&BT.length)m=tuckCut(m,BT,doll,l.s+'|'+BTK);const im=l.t?tinted(m,l.t,l.ref):m;if(l.hd&&HTv)drawHead(c,im,HTv);else c.drawImage(im,0,l.k?JY(l.k):0)});if(L.fit)await mkFit(c,v,s.head,L.fit,pt,L.fitId);if(pt||pb)c.restore();
  const miss=ms.some(m=>!m);if(cv._pg!==my)return !miss;if(cv.width!=BW||cv.height!=BH+pt+pb){cv.width=BW;cv.height=BH+pt+pb}const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);g.drawImage(oc,0,0);
  if(pad){if(miss)again(cv,v,s,pad,my);else cv._rt=0}return !miss}   // a layer missing: not kept as a finished picture (frames, thumbs), the stage tries again
+// v274: a top, base shirt or sweater tucked into the skirt. Under the skirt it is hidden already; what is left is what sticks out below the skirt's waist –
+// the hem at the hips (outside her body: the sweater stood out boxy in the side view) and below a short skirt. Her arms and sleeves at the sides stay
+const TUCK=new Map();
+function tuckCut(m,BT,doll,key){if(TUCK.has(key))return TUCK.get(key);const W=m.naturalWidth||m.width,H=m.naturalHeight||m.height;
+ const rd=x=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(x,0,0,W,H);return [c,g,g.getImageData(0,0,W,H)]};
+ const [oc,og,od]=rd(m),p=od.data,sk=new Uint8Array(W*H);BT.forEach(b=>{const d=rd(b)[2].data;for(let i=0;i<W*H;i++)if(d[i*4+3]>100)sk[i]=1});
+ const bd=new Uint8Array(W*H);if(doll){const d=rd(doll)[2].data;for(let i=0;i<W*H;i++)if(d[i*4+3]>100)bd[i]=1}
+ const top=new Float32Array(W).fill(NaN),r0=Math.floor(H*.3),r1=Math.floor(H*.75);let lo=W,hi=-1;
+ for(let x=0;x<W;x++)for(let y=r0;y<r1;y++)if(sk[y*W+x]){top[x]=y;if(x<lo)lo=x;if(x>hi)hi=x;break}
+ if(hi<0){TUCK.set(key,m);return m}
+ const ys=[...top].filter(y=>!isNaN(y)).sort((a,b)=>a-b),mid=ys[ys.length>>1];
+ for(let x=0;x<W;x++)if(isNaN(top[x])){let a=x,b=x;while(a>=0&&isNaN(top[a]))a--;while(b<W&&isNaN(top[b]))b++;top[x]=a>=0&&b<W?Math.max(top[a],top[b]):a>=0?top[a]:b<W?top[b]:mid}
+ // the skirt's lowest row in each column: below a short skirt the tucked top must not show over her legs either
+ const bot=new Int32Array(W).fill(-1);for(let x=lo;x<=hi;x++)for(let y=H-1;y>=r0;y--)if(sk[y*W+x]){bot[x]=y;break}
+ const bd2=new Uint8Array(W*H);for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){const i=y*W+x;if(bd[i]||bd[i-1]||bd[i+1]||bd[i-W]||bd[i+W]||bd[i-2]||bd[i+2])bd2[i]=1}
+ let n=0;for(let x=0;x<W;x++){const t=Math.round(top[x])+3;for(let y=t;y<H;y++){const i=y*W+x,q=i*4;if(!p[q+3]||sk[i])continue;
+  const below=x>=lo&&x<=hi&&bot[x]>=0&&y>bot[x];if(!doll||!bd2[i]||below){p[q+3]=0;n++}}}
+ if(n){og.putImageData(od,0,0)}const out=n?oc:m;if(TUCK.size>60)TUCK.clear();TUCK.set(key,out);return out}
 const JYT={},JYN={neck:'📿 שרשרת',ears:'✨ עגילים',wrist:'⌚ צמיד',belt:'➰ חגורה'};
 // v266 (Sara 23:34 "לא כל הזמן על המסך – עיגול קטן, פותחת, מזיזה, סוגרת"): the rows live in a small panel over the avatar, opened by 📿 and closed by ✓
 let JYOPEN=false;
@@ -437,7 +463,7 @@ function build(){
    <div class="r3hd"><span class="r3lbl">על הראש</span><div class="r3heads" role="radiogroup" aria-label="על הראש"></div></div>
    <div class="r3styr"></div>
    <label class="r3tuck r3wb"><input type="checkbox"> שיער מאחורי הכתפיים (רואים צווארון ושרשרת)</label>
-   <label class="r3tuck r3tk"><input type="checkbox"> חולצה בתוך החצאית</label>
+   <label class="r3tuck r3tk"><input type="checkbox"> בתוך החצאית (חולצה, חולצת בסיס או סוודר)</label>
    <label class="r3tuck r3un"><input type="checkbox"> החולצה מתחת לשמלה (כמו חולצת בסיס)</label>
    <div class="r3cam" hidden><span class="r3lbl">גופיית בסיס מתחת לתחרה <small>הגופיות שלך, או צבע</small></span><div class="r3sw" role="radiogroup" aria-label="צבע גופיית הבסיס"></div></div>
    <div class="r3bgw"><span class="r3lbl">רקע <small class="r3bgn"></small></span><div class="r3bgs" role="radiogroup" aria-label="רקע"></div></div>
@@ -559,7 +585,7 @@ function paintRoom(){if(!dlg)return;
  const fx=ids.filter(id=>READY[id]&&READY[id].dyn&&window.acts197).map(id=>`<div class="r3fx"><span>${esc(nm(id).split(' ').slice(0,3).join(' '))}</span>${acts197(id)}</div>`).join('');
  wv.innerHTML=(chips.join('')||'<p class="r3note">עוד לא לבשת כלום. בוחרים למטה מהארון.</p>')+fx;thl(ids);
  dlg.querySelector('.r3cnt').textContent=ids.length?`${ids.length} פריטים`:'';
- const t=dlg.querySelector('.r3tk');const sl=x=>Object.keys(ST.on).some(k=>ST.on[k]&&SLOT[k]&&SL(k)==x);t.hidden=!(sl('top')&&sl('bottom'));t.querySelector('input').checked=!!ST.tuck;   // v225 (Sara 19:22 "איפה מכניסים את החולצה"): any top with any skirt, not only the first two items
+ const t=dlg.querySelector('.r3tk');const sl=x=>Object.keys(ST.on).some(k=>ST.on[k]&&SLOT[k]&&SL(k)==x);t.hidden=!((sl('top')||sl('base')||Object.keys(ST.on).some(k=>ST.on[k]&&SLOT[k]=='outer'&&PK[k]=='sweater'))&&sl('bottom')&&!sl('body'));t.querySelector('input').checked=!!ST.tuck;   // v225 (Sara 19:22 "איפה מכניסים את החולצה"): any top with any skirt, not only the first two items
  paintJY();
  const un=dlg.querySelector('.r3un');un.hidden=!(sl('top')&&sl('body'));un.querySelector('input').checked=!!ST.under;
  const w=dlg.querySelector('.r3wb');w.hidden=ST.head!='w';w.querySelector('input').checked=!!ST.wb;

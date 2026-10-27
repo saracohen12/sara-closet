@@ -198,8 +198,8 @@ function palette(m,bs,ds,diff,dbg,o){const conf=erode(m,2),Ld=lab3(ds),X=[];for(
  for(const i of add)m[i]=1}
 // her notes for the cut (v233, Sara 07:07 "שנרשום לך אם יש משהו מיוחד כדי שתשים לב כשאתה חותך ... לבן, שקוף, שמנת"): the words the site understands
 const NOTEW={light:/לבן|לבנה|שמנת|קרם|או?ף[ -]?וו?יט|שנהב|ניוד|בז['׳]|בהיר|פנינה|פודרה|white|cream|ivory|beige|nude/i,
- sheer:/שקו?ף|שקופה|שקיפות|שיפון|תחרה|רשת|טול|אוורירי|sheer|lace|mesh|chiffon|tulle/i};
-const NOTET={light:'בגד בהיר (לבן, שמנת, בז׳): גוזרת עדין יותר ליד הבובה',sheer:'בגד שקוף: משאירה גם את מה שרואים דרכו'};
+ sheer:/שקו?ף|שקופה|שקיפות|שיפון|תחרה|רשת|טול|אוורירי|sheer|lace|mesh|chiffon|tulle/i,chain:/שרשרת|שרשראות|chain/i};
+const NOTET={light:'בגד בהיר (לבן, שמנת, בז׳): גוזרת עדין יותר ליד הבובה',sheer:'בגד שקוף: משאירה גם את מה שרואים דרכו',chain:'שרשרת: גוזרת דק, גם מה שמשתלשל'};
 function flags(t){t=String(t||'');const f={};for(const k in NOTEW)if(NOTEW[k].test(t))f[k]=1;return f}
 const says=t=>Object.keys(flags(t)).map(k=>NOTET[k]);
 // the same move as cv2.warpAffine(turn.json) in norm.py (pixel centres → +.5(1-s)); the canvas keeps the alpha premultiplied, like norm.py
@@ -291,6 +291,23 @@ function maskFace(b,d,v){const A=new Float32Array(N),e=FACE[v];if(!e)return A;co
  for(let r=Math.max(0,cy-ry);r<=Math.min(H-1,cy+ry);r++)for(let c=Math.max(0,cx-rx);c<=Math.min(W-1,cx+rx);c++){const q=((c-cx)/rx)**2+((r-cy)/ry)**2;if(q>1)continue;
   const i=r*W+c,k=i*3;let s=0;for(let z=0;z<3;z++){const a=ds[k+z]-bs[k+z];s+=a*a}const a=Math.min(1,Math.max(0,(Math.sqrt(s)-10)/14));A[i]=a*(q>.7?(1-q)/.3:1)}
  return gauss(A,1,1)}
+// v274 (Sara 23:29 "השקוף לא עובד"): a clear belt differs from the doll under it only by its shine and stones, so the normal cut kept a few torn bits.
+// The belt is the band of rows where most of the body changed a little; in it the shine and stones keep their own colour, and the clear part is a thin white veil
+function maskClear(b,d){const bs=gauss(b,3,1.2),ds=gauss(d,3,1.2),df=new Float32Array(N),body=new Uint8Array(N);
+ const bgr=new Float32Array(H*3),col=[];for(let c=0;c<10;c++)col.push(c);for(let c=W-10;c<W;c++)col.push(c);
+ for(let r=0;r<H;r++)for(let z=0;z<3;z++){const vs=col.map(c=>b[(r*W+c)*3+z]).sort((x,y)=>x-y);bgr[r*3+z]=(vs[9]+vs[10])/2}
+ for(let i=0;i<N;i++){const k=i*3,r=(i/W)|0;let s=0,u=0;for(let z=0;z<3;z++){const a=ds[k+z]-bs[k+z],f=b[k+z]-bgr[r*3+z];s+=a*a;u+=f*f}df[i]=Math.sqrt(s);body[i]=Math.sqrt(u)>30&&!(b[k+2]-b[k]>22&&b[k+2]>150)?1:0}   // the doll, not her blue backdrop
+ const r0=Math.floor(H*.28),r1=Math.floor(H*.62),fr=new Float32Array(H);
+ for(let r=r0;r<r1;r++){let n=0,c=0;for(let x=8;x<W-8;x++){const i=r*W+x;if(!body[i])continue;n++;if(df[i]>20)c++}fr[r]=n>20?c/n:0}   // GPT's light changes the whole body a little; the belt changes it a lot
+ let best=[0,0],a=-1,gap=0;for(let r=r0;r<=r1;r++){if(r<r1&&fr[r]>.3){if(a<0)a=r;gap=0}else if(a>=0&&++gap>2){const z=r-gap;if(z-a>best[1]-best[0])best=[a,z];a=-1;gap=0}}
+ const A=new Float32Array(N);if(best[1]-best[0]<4)return A;const nb=dilate(body,4);
+ best[0]=Math.max(r0,best[0]-1);best[1]=Math.min(r1,best[1]+1);
+ // across: the columns where the belt is (her arms at the waist change only a little) – the longest run of them
+ let xa=0,xz=W-1;{const cf=new Uint8Array(W);for(let x=8;x<W-8;x++){let n=0,c=0;for(let r=best[0];r<=best[1];r++){const i=r*W+x;if(!body[i])continue;n++;if(df[i]>20)c++}cf[x]=n>3&&c>.35*n?1:0}
+  let bl=0,s0=-1,g=0;for(let x=0;x<=W;x++){if(x<W&&cf[x]){if(s0<0)s0=x;g=0}else if(s0>=0&&(++g>3||x==W)){const e=x-g;if(e-s0>bl){bl=e-s0;xa=s0;xz=e}s0=-1;g=0}}if(bl<10)return A}
+ for(let r=best[0];r<=best[1];r++){const e=r==best[0]||r==best[1]?.6:1;for(let x=Math.max(8,xa-1);x<=Math.min(W-9,xz+1);x++){const i=r*W+x;if(!body[i]&&(df[i]<40||!nb[i]))continue;const k=i*3;
+  if(df[i]<=14){d[k]=d[k+1]=d[k+2]=245;A[i]=.16*e}else A[i]=Math.min(1,.25+(df[i]-14)/35)*e}}
+ return A}
 function layerA(d,A){const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),im=g.createImageData(W,H),p=im.data;let px=0;
  for(let i=0;i<N;i++){const k=i*3,q=i*4;p[q]=d[k];p[q+1]=d[k+1];p[q+2]=d[k+2];p[q+3]=Math.round(255*Math.min(1,A[i]));if(A[i]>.3)px++}
  g.putImageData(im,0,0);c.px=px;return c}
@@ -323,6 +340,8 @@ async function run(src,kind,onStep,opt){const img=await toImg(src);const S=sheet
  for(let v=0;v<8;v++){onStep&&onStep(v);await tick();const b=await base(v);const s=shift(S,v,b,o.mode=='head'||o.mode=='whole');shifts.push(s);const d=panel(BM?S0:S,v,s[0],s[1]);if(BM)unBlack(d,b,panelM(BM,v,s[0],s[1]));
   if(o.mode=='whole'){const [m,f,l]=maskWhole(b,d,v,o.fab,kind=='tiex');views.push(kind=='hair'?await snug(turn(layerA(d,m.A),v),v):turn(layerA(d,m.A),v));if(f){fab.push(turn(layer(d,f),v));lum.push(...l)}}
   else if(o.mode=='face')views.push(turn(layerA(d,maskFace(b,d,v)),v));
+  else if(kind=='belt'&&o.chain)views.push(turn(layer(d,mask(b,d,Object.assign({},o,{mode:'small',low:1,warm:1,rows:[.28,.8],one:1,rim:0}))),v));
+  else if(kind=='belt'&&o.sheer)views.push(turn(layerA(d,maskClear(b,d)),v));
   else{let m=mask(b,d,o);if(TOPK.includes(kind)){const r=slide(d,m,b);m=r[1];views.push(turn(layer(r[0],m),v))}else views.push(turn(layer(d,m),v))}}
  lum.sort((x,y)=>x-y);
  return {views,shifts,px:views.map(c=>c.px),fab:fab.length?fab:null,lum:lum.length?Math.round(lum[lum.length>>1]):0,black:!!BM}}

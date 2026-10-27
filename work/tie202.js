@@ -373,7 +373,7 @@ document.addEventListener('pointerout',e=>{if(e.pointerType=='touch')return;cons
 if(typeof galList=='function'){const _gl=galList;galList=function(id){const L=_gl.apply(this,arguments);try{const x=cuOf(id);if(!x)return L;
   let u='/_blob/'+x.cu;if(x.cu8){const F=C8R[x.cu];if(F)u=F[0];else cu8Frames(x.cu).then(F=>{if(F&&!C8R[x.cu]){C8R[x.cu]=F;try{if(typeof CUR!='undefined'&&CUR==id)paintGal(id)}catch(_){}}})}
   return [{u,n:'מקרוב',cu248:x.cu},...L]}catch(e){ERR('gal248',e)}return L}}
-{let f=0;setInterval(()=>{try{const d=document.getElementById('dlg');if(!d||!d.open||typeof CUR=='undefined'||!CUR||document.hidden||still())return;if(typeof PREV!='undefined'&&PREV[CUR])return;
+{let f=0;(window.rawSetInterval||setInterval)(()=>{try{const d=document.getElementById('dlg');if(!d||!d.open||typeof CUR=='undefined'||!CUR||document.hidden||still())return;if(typeof PREV!='undefined'&&PREV[CUR])return;
   const e=galList(CUR)[GI[CUR]||0],F=e&&e.cu248&&C8R[e.cu248];if(!F)return;const im=document.querySelector('#dlbody .mwrap img.main');if(!im)return;f=(f+1)%8;im.src=F[f]}catch(_){}},650)}
 // v247 (Sara 13:15 "אני רוצה את התקריב מהכיסוי ... שיהיה לי את זה בראשי ... את הכיסוי שזז לי מקדימה"): the home avatar's cover → its close-up turns next to it
 let HC={k:'',el:null,t:null};
