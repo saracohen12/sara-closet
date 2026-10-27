@@ -5,7 +5,7 @@
 const LOG=(w,e)=>{try{(window.ERRS=window.ERRS||[]).push('orders123 '+w+': '+(e&&e.message||e))}catch(_){}};
 const q=s=>document.querySelector(s);
 const H=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const ACC={t1:'טמו 1',t2:'טמו 2',sh:'שיין',ae:'עלי'};const ACCN={t1:'חשבון 8711309',t2:'חשבון 9285464',sh:'',ae:''};
+const ACC={t1:'טמו 1',t2:'טמו 2',t3:'טמו 3',sh:'שיין',ae:'עלי'};const ACCN={t1:'חשבון 8711309',t2:'חשבון 9285464',t3:'החשבון החדש',sh:'',ae:''};
 const V={acc:'',flt:'',q:'',ord:'',hl:'',scroll:0};
 const dl=r=>{try{return r?daysLeft(r):null}catch(_){return null}};
 const dnum=d=>{const m=/(\d+)\/(\d+)/.exec(d||'');return m?(+m[2])*100+(+m[1]):0};
@@ -113,7 +113,7 @@ function renderList(){const b=body(),all=orders();
  const ids=Object.keys(D);const rp=ids.filter(retP).length,rs=ids.filter(retS).length;
  const oosL=ids.filter(id=>(IT[id]||{}).oos),oosN=oosL.length,oosR=oosL.filter(id=>!IT[id].refunded).length;
  const qq=V.q.trim().toLowerCase().replace(/[-\s]/g,'').replace(/^po(?=\d)/,'p0'); // v144: Temu shows PO-…, our keys are P0-…
- const cnt={'':0,t1:0,t2:0,sh:0,ae:0};all.forEach(o=>{cnt['']++;cnt[o.src]++});
+ const cnt={'':0,t1:0,t2:0,t3:0,sh:0,ae:0};all.forEach(o=>{cnt['']++;cnt[o.src]++});
  let L=all.filter(o=>!V.acc||o.src==V.acc);
  if(V.flt&&!['fabq','rp','rs','fix'].includes(V.flt))L=L.filter(o=>{const c=osum(o);if(V.flt=='pnd'||V.flt=='pdd'){const ps=picSum(o);return V.flt=='pdd'?ps.done:!ps.done}if(V.flt=='anl'||V.flt=='and')return avDone(o)==(V.flt=='and');return V.flt=='u'?c.u:V.flt=='m'?c.m:V.flt=='n'?c.n:V.flt=='mb'?c.mb:V.flt=='oos'?c.c:ostate(c)=='y'});
  if(qq){L=L.filter(o=>{if(o.k.toLowerCase().replace(/[-\s]/g,'').includes(qq)||oname(o).replace(/\s/g,'').includes(qq))return true;
@@ -126,7 +126,7 @@ function renderList(){const b=body(),all=orders();
  if(V.af)L=L.filter(o=>avDone(o)==(V.af=='done'));
  const afRow=`<div class="o3pf o3af"><span>🧍</span>${[['','הכל'],['need',`עוד צריך אווטאר <small>${afN.need}</small>`],['done',`✅ סיימתי אווטאר <small>${afN.done}</small>`]].map(([k,n])=>`<button data-o3af="${k}" aria-pressed="${V.af==k}">${n}</button>`).join('')}</div>`;
  const pfRow=`<div class="o3pf"><span>📸</span>${[['','הכל'],['need',`עוד צריך תמונות <small>${pfN.need}</small>`],['done',`✅ כבר העליתי <small>${pfN.done}</small>`]].map(([k,n])=>`<button data-o3pf="${k}" aria-pressed="${V.pf==k}">${n}</button>`).join('')}</div>`;
- const tabs=[['','הכל'],['t1','טמו 1'],['t2','טמו 2'],['sh','שיין'],['ae','עלי']].filter(([k])=>!k||cnt[k]).map(([k,n])=>`<button data-o3acc="${k}" aria-pressed="${V.acc==k}">${n} <small>${cnt[k]}</small></button>`).join('');
+ const tabs=[['','הכל'],['t1','טמו 1'],['t2','טמו 2'],['t3','טמו 3'],['sh','שיין'],['ae','עלי']].filter(([k])=>!k||cnt[k]).map(([k,n])=>`<button data-o3acc="${k}" aria-pressed="${V.acc==k}">${n} <small>${cnt[k]}</small></button>`).join('');
  const chip=(f,cls,txt)=>`<button class="${cls}" data-o3f="${f}" aria-pressed="${V.flt==f}">${txt}</button>`;
  b.innerHTML=`<div class="o3sum">${chip('y','y',`✅ <b>${tot.y}</b> הגיעו`)}${chip('m','m',`❌ <b>${tot.m}</b> חסרים`)}${chip('n','n',`⏳ <b>${tot.n}</b> בדרך`)}${chip('u','u',`⚪ <b>${tot.u}</b> לא סימנתי`)}${chip('rp','r',`↩ <b>${rp}</b> להחזיר`)}${chip('rs','rs',`📮 <b>${rs}</b> הוחזרו`)}${oosN?chip('oos','oos',`🚫 <b>${oosN}</b> בוטלו${oosR?` · 💰 ${oosR} מחכים להחזר`:''}`):''}${chip('pnd','pnd',`📸 <b>${orders().filter(o=>!(ORD[o.k]||{}).pd).length}</b> הזמנות בלי וי תמונות`)}${chip('anl','anl',`🧍 <b>${orders().filter(o=>!avDone(o)).length}</b> הזמנות בלי אווטאר`)}</div>
  <label class="o3cam"><input type="file" accept="image/*" data-o3cam><span class="ic">📷</span><span><b>צילמתי מוצר שהגיע</b><small>אמצא מאיזו הזמנה הוא, ואראה לך את כל ההזמנה</small></span></label>
@@ -247,7 +247,7 @@ async function onClick(e){const t=e.target.closest('button,[data-o3cam],.o3sbd')
  if(t.dataset.o3f!=null){const f=t.dataset.o3f;V.flt=V.flt==f&&!V.sheet?'':f;V.sheet=false;V.tag='';render();return}
  if(t.dataset.o3sentall){const o=orders().find(o=>o.k==t.dataset.o3sentall);if(o){for(const id of o.ids.filter(retP))await putItem(id,{rsent:1});toast('סימנתי שהחבילה נשלחה 📮')}refresh();return}
  if(t.dataset.o3open){V.scroll=body().scrollTop;V.ord=t.dataset.o3open;V.hl='';render();return}
- if(t.dataset.o3shop){const k=t.dataset.o3shop,o=orders().find(o=>o.k==k);const num=o&&(o.src=='t1'||o.src=='t2')?k.replace(/^P0/,'PO'):k;
+ if(t.dataset.o3shop){const k=t.dataset.o3shop,o=orders().find(o=>o.k==k);const num=o&&(o.src=='t1'||o.src=='t2'||o.src=='t3')?k.replace(/^P0/,'PO'):k;
   try{await navigator.clipboard.writeText(num)}catch(_){}
   const u=o&&o.src=='ae'?'https://www.aliexpress.com/p/order/detail.html?orderId='+encodeURIComponent(num):o&&o.src=='sh'?'https://m.shein.com/il/user/orders/detail/'+encodeURIComponent(num):'https://www.temu.com/bgt_order_detail.html?parent_order_sn='+encodeURIComponent(num); // v137: straight to the order page
   toast('פותחת את ההזמנה. המספר גם הועתק: '+num);try{window.open(u,'_blank','noopener')}catch(_){}return}

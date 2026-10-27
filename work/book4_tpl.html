@@ -263,7 +263,7 @@ dialog#alerts,dialog#cmp2,dialog#ssave,dialog.cmpdlg{overflow-y:auto;max-height:
 </style>
 <div dir="rtl" lang="he">
 <header class="top wrap" id="top"><h1>הארון של שרה <button type="button" class="helpb" id="helpb">❓ איך משתמשים</button> <button type="button" class="ver" id="ver" title="עודכן %%VDATE%%">גרסה %%VER%%</button></h1>
-<p class="stats"><span><b>%%N%%</b> פריטים</span><span>טמו 1: <b>%%NT1%%</b></span><span>טמו 2: <b>%%NT2%%</b></span><span>שיין: <b>%%NSH%%</b></span><span>כפולים: <b>%%NDUP%%</b></span></p>
+<p class="stats"><span><b>%%N%%</b> פריטים</span><span>טמו 1: <b>%%NT1%%</b></span><span>טמו 2: <b>%%NT2%%</b></span><span>טמו 3: <b>%%NT3%%</b></span><span>שיין: <b>%%NSH%%</b></span><span>כפולים: <b>%%NDUP%%</b></span></p>
 <p class="stats"><span>שולם בטמו: <b>%%TT%%</b></span><span>שולם בשיין: <b>%%TS%%</b></span></p>
 <div id="prog" class="prog"></div><div id="urgent"></div><div id="recent"></div>
 <details class="sum"><summary>סיכום הוצאות לפי סוג</summary>%%SUMM%%</details><details class="sum"><summary>הוצאות לפי חנות וחודש</summary><div id="bystore"></div></details><details class="sum"><summary>כפילויות: מה כדאי להחזיר</summary>%%DUPT%%</details>
@@ -272,7 +272,7 @@ dialog#alerts,dialog#cmp2,dialog#ssave,dialog.cmpdlg{overflow-y:auto;max-height:
 <div class="groups" role="group" aria-label="קבוצות"><button data-g="all" aria-pressed="true">הכל</button>%%GROUPS%%</div>
 <nav class="subs" aria-label="קטגוריות">%%NAV%%</nav>
 <div class="tools"><button id="bell" aria-label="דברים חשובים">🔔 חשוב<i></i></button><button class="studiotop" id="studiobtn">👗 בניית לוק</button><button class="hubbtn" id="hubbtn">🧰 לוקים וכלים</button><input id="q" type="search" placeholder="חיפוש: שם, צבע, מידה…" aria-label="חיפוש"><button id="mic" title="חיפוש קולי" aria-label="חיפוש קולי">🎤</button>
-<select id="src" aria-label="מקור"><option value="all">כל החנויות</option><option value="t1">טמו 1</option><option value="t2">טמו 2</option><option value="sh">שיין</option><option value="ae">עלי אקספרס</option><option value="dup">רק כפולים</option></select>
+<select id="src" aria-label="מקור"><option value="all">כל החנויות</option><option value="t1">טמו 1</option><option value="t2">טמו 2</option><option value="t3">טמו 3</option><option value="sh">שיין</option><option value="ae">עלי אקספרס</option><option value="dup">רק כפולים</option></select>
 <select id="sort" aria-label="מיון"><option value="">מיון: רגיל</option><option value="av">🟢 מוכן לאווטאר קודם</option><option value="ph">מחיר: יקר ← זול</option><option value="pl">מחיר: זול ← יקר</option><option value="col">לפי צבע</option><option value="sim">דברים דומים יחד</option><option value="dn">חדש ← ישן</option><option value="do">ישן ← חדש</option><option value="disc">הנחה הכי גדולה</option><option value="ret">להחזרה בקרוב</option></select><button class="fbtn" id="fb" aria-expanded="false" aria-controls="panel">סינון</button><div class="seg sizes" role="group" aria-label="גודל תמונות"><button data-s="s" title="קטן">S</button><button data-s="m" title="בינוני">M</button><button data-s="l" title="גדול">L</button></div></div>
 <div class="panel hide" id="panel">
 <div class="row"><label>מידה</label><select id="szf"><option value="">כל המידות</option>%%SZ%%</select>
@@ -325,7 +325,7 @@ window.VER='%%VER%%';window.VDATE='%%VDATE%%';window.ERRS=[];window.addEventList
 async function imgA(id){let u=img(id);if(u)return u;const x=D[id];if(x&&x.hi)await thLoad(x.cat);return img(id)}
 function openItem(id){const x=D[id];let rows=[['מאיפה',x.srcl],[x.src=='sh'||x.src=='ae'?'מספר הזמנה':'קובץ קבלה',x.src=='sh'||x.src=='ae'?x.order:x.file+' · '+x.order],['תאריך הזמנה',x.date||'—']];
  if(x.color)rows.push(['צבע',x.color]); if(x.size)rows.push(['מידה',x.size]);
- if(x.src=='t1'||x.src=='t2'){rows.push(['מחיר בקבלה',m(x.price)+(x.qty>1?` × ${x.qty}`:'')]);rows.push(['שילמת בפועל',`<b>${m(x.paid)}</b>`]);
+ if(x.src=='t1'||x.src=='t2'||x.src=='t3'){rows.push(['מחיר בקבלה',m(x.price)+(x.qty>1?` × ${x.qty}`:'')]);rows.push(['שילמת בפועל',`<b>${m(x.paid)}</b>`]);
   rows.push(['סך ההזמנה',`${m(x.osub)}`]); if(x.refund)rows.push(['החזרים וקרדיט על ההזמנה',m(x.refund)+' (כבר הורד)']); if(x.credit)rows.push(['שולם מקרדיט קודם',m(x.credit)]);}
  else{if(x.orig)rows.push(['מחיר מקורי (לפני הנחה)',m(x.orig)+(x.qty>1?` × ${x.qty}`:'')]);rows.push(['מחיר בחשבונית',m(x.price)+(x.qty>1?` × ${x.qty}`:'')]);rows.push(['שילמת בפועל',`<b>${m(x.paid)}</b>`]);rows.push(['סך החשבונית',`${m(x.ototal)} · ${x.on} שורות`]);}
  let h=`${img(id)||(D[id]||{}).hi?`<img data-th="${id}" class="main" src="${img(id)||TPH}" alt="">`:''}<div><h3>${esc(x.short)}</h3>${x.full&&x.full!=x.short?`<p class="full">${esc(x.full)}</p>`:''}<table>${rows.map(r=>`<tr><th>${r[0]}</th><td>${r[1]}</td></tr>`).join('')}</table>${x.onote?`<p class="note">${esc(x.onote)}</p>`:''}${!img(id)&&!x.hi?'<p class="note">למוצר הזה אין תמונה באף מייל של שיין (המיילים מציגים עד 6–12 פריטים להזמנה).</p>':''}</div>`;
