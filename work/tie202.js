@@ -285,7 +285,7 @@ const CF={};function cropFrames(ids){const ck=ids.join(',');if(CF[ck])return CF[
 // v247: GPT's close-up in 8 angles (2 rows of 4, like the doll) → 8 frames that turn like the avatar
 const C8={};function cu8Frames(a){if(C8[a])return C8[a];return C8[a]=new Promise(res=>{const m=new Image();m.onload=()=>{try{const W=m.naturalWidth,H=m.naturalHeight,pw=W/4,ph=H/2,ix=pw*.025,iy=ph*.02,w=Math.round(pw-2*ix),h=Math.round(ph-2*iy),k=Math.min(1,520/w),c=document.createElement('canvas');
   c.width=Math.round(w*k);c.height=Math.round(h*k);const g=c.getContext('2d');const F=[];for(let r=0;r<2;r++)for(let q=0;q<4;q++){g.drawImage(m,q*pw+ix,r*ph+iy,w,h,0,0,c.width,c.height);F.push(c.toDataURL('image/jpeg',.88))}res(F)}catch(_){res(null)}};m.onerror=()=>res(null);m.src='/_blob/'+a})}
-window.cu8Frames=cu8Frames;
+window.cu8Frames=cu8Frames;window.sheetKind247=f=>sheetKind(f);
 async function framesFor(img){if(img._F)return img._F;if(img.dataset.t247c8){const F=await cu8Frames(img.dataset.t247c8);if(F)img._F=F;return img._F||null}if(img.dataset.t245l){const F=await cropFrames(img.dataset.t245l.split(','));img._F=F||img.dataset.t245l.split(',').map(a=>'/_blob/'+a);return img._F}
  const F=await framesOf(img.dataset.t245k);if(F&&F.length==8&&F[0])img._F=F;return img._F||null}
 async function spin245(img,once){if(img._t)return;const F=await framesFor(img);if(!F||img._t)return;let i=0;

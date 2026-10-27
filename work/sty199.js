@@ -77,16 +77,33 @@ function el(){if(DL)return DL;DL=document.createElement('dialog');DL.id='sty199'
  DL.addEventListener('cancel',e=>{e.preventDefault();DL.close()});return DL}
 function open(tab){if(tab&&SETS.some(s=>s[0]==tab))TAB=tab;freeze();el();ED='';ADD=false;paint();if(!DL.open)DL.showModal();DL.scrollTop=0}
 const prompt=set=>{const p=P();if(!p)return '';const n=NAME[set].trim();return set=='hair'?p.hair(n):set=='tie'?p.tie(n):p.mkBoth?p.mkBoth(n,DESC.trim()):p.faceW?p.faceW(n,DESC.trim()):p.face(NUM)};   // v205: a new makeup from her words, only the doll
-function prompt2(set,pr){const p=P();if(!p||!pr)return '';return set=='tie'?p.tieW(pr.n,pr.d,pr.he):set=='hair'?p.hairW(pr.n,pr.d,pr.he,pr.sp):p.mkBoth?p.mkBoth(pr.n,pr.d||pr.sub):p.faceW?p.faceW(pr.n,pr.d||pr.sub):p.face(pr.no)}   // v205: makeup from the words, only the doll attached
+function prompt2(set,pr){const p=P();if(!p||!pr)return '';return set=='tie'?p.tieW(pr.n,pr.d,pr.he):set=='hair'?(p.hairZ||p.hairW)(pr.n,pr.d,pr.he,pr.sp):p.mkBoth?p.mkBoth(pr.n,pr.d||pr.sub):p.faceW?p.faceW(pr.n,pr.d||pr.sub):p.face(pr.no)}   // v205: makeup from the words, only the doll attached
 function fill(){if(!DL)return;DL.querySelectorAll('textarea[data-syp]').forEach(t=>t.value=prompt(t.dataset.syp))}
 function status(){if(!PROC)return '';if(PROC.err)return `<p class="syst no" role="alert">✗ ${es(PROC.err)}</p>`;
  return `<p class="syst" aria-live="polite">✂ ${PROC.n0?es(PROC.n0)+': ':''}${PROC.v<9?`גוזרת ומתאימה לבובה… זווית ${PROC.v} מתוך 8`:'שומרת…'}${PROC.n>1?` · תמונה ${PROC.i} מתוך ${PROC.n}`:''}</p>`}
 const busy=()=>!!(PROC&&!PROC.err);
 // v213 (Sara 15:44–15:45): makeup = two faces of hers, close up – with a cover and with her wig (a hairstyle of hers)
 const cuRow=x=>`<span class="sycu"><small>${x.cu?'🔄 לעשות שוב (שתי התמונות)':'🔍 עוד אין תקריב חד'}</small><button type="button" data-sycp="${es(x.id)}">📋 פרומפט</button><button type="button" data-sycu="${es(x.id)}"${busy()?' disabled':''}>📤 להעלות</button></span>`;
-const cuPrompt=x=>{const p=P();if(!p||!p.mkBoth)return '';const pr=x.p?preOf('mk',x.p):null;return p.mkBoth(x.n,pr?pr.d||pr.sub:'')};
+// v251 (Sara 16:53 "תסרוקות … וגם תקריב ב-8 זוויות"): a hairstyle gets its close-up of her face in 8 angles, which turns on the card
+const cuRowH=x=>`<span class="sycu"><small>${x.cu?'🔄 לעשות שוב (שתי התמונות)':'🔍 עוד אין תקריב'}</small><button type="button" data-syzip="${es(x.id)}">⬇ ZIP</button><button type="button" data-sycp="${es(x.id)}">📋 פרומפט</button><button type="button" data-sycu="${es(x.id)}"${busy()?' disabled':''}>📤 להעלות</button></span>`;
+function cardH(pr,x,b,title){const hk=hidK(pr,x),sub=pr&&pr.sub?pr.sub:x.sub||'';
+ const howT=pr?`<details class="sycd"><summary>איך זה נראה</summary>${pr.he?`<p>${es(pr.he)}</p>`:''}<button type="button" class="syread" data-syread="${es(pr.k)}">📄 לקרוא את כל הפרומפט</button></details>`:'';
+ return `<div class="syc up${b?' busy':''}"><span class="sycim tall c8"><img alt="תקריב: ${es(title)}" data-sycu8="${es(x.cu)}" src=""><span class="sy8" aria-hidden="true">🔄 מקרוב</span><button type="button" class="symore" data-syview="${es(x.id)}" aria-label="הבובה ב-8 זוויות, שם, החלפה: ${es(title)}">⋯</button></span><button type="button" class="syrm" data-syrm="${es(hk)}" aria-label="להסיר מהרשימה: ${es(title)}" title="להסיר"${b?' disabled':''}>🗑</button>${ORD.hair?favBtns('hair',hk,title):''}<b class="sycn">${pr?pr.no+'. ':''}${es(title)}</b>${sub?`<small class="sycs">${es(sub)}</small>`:''}${howT}${cuRowH(x)}<span class="sycb">${b?'<span class="sycw">✂ גוזרת…</span>':`<button type="button" class="mkp" data-sywear="${es(x.id)}">👗 ללבוש</button>`}</span></div>`}
+const hairOf=k=>{const x=LIST.find(y=>y.id==k);const pr=x?(x.p?preOf('hair',x.p):null):preOf('hair',k);return {n:x?x.n:pr?pr.n:'',pr}};
+const zipPrompt=k=>{const p=P();if(!p||!p.hairZ)return '';const {n,pr}=hairOf(k);return p.hairZ(n,pr?pr.d:'',pr?pr.he:'',pr?pr.sp:'')};
+async function zipHair(k,b){const o=b.textContent;b.disabled=true;b.textContent='מכינה…';
+ try{const f=[],get=async u=>(await fetch(u)).blob();
+  f.push({name:'wig-8.jpg',blob:await get('a8/wig_ref.jpg'+V)});f.push({name:'face-8.jpg',blob:await get('/_blob/f020f71d608d2da7304cdb0161c87206')});f.push({name:'doll-8.jpg',blob:await get('a8/sheet.jpg'+V)});
+  f.push({name:'prompt.txt',blob:new Blob(['\ufeff'+zipPrompt(k)],{type:'text/plain;charset=utf-8'})});
+  const {n}=hairOf(k);await R().saveFile(`hair-${String(n||k).replace(/[^\u0590-\u05FFA-Za-z0-9]+/g,'-').slice(0,30)}.zip`,await window.zip246(f));log('hair_zip',{k});
+  b.textContent='✓ ירד. עכשיו ל-GPT'}catch(e){ERR('hzip',e);b.textContent='לא הצלחתי'}setTimeout(()=>{if(b.isConnected){b.textContent=o;b.disabled=false}},2600)}
+const C8S={};let C8I=0;
+setInterval(()=>{const im=document.querySelectorAll('img[data-sycu8]');if(!im.length)return;C8I=(C8I+1)%8;im.forEach(i=>{const a=i.dataset.sycu8;if(!a)return;const F=C8S[a];
+  if(!F){if(F===undefined&&window.cu8Frames){C8S[a]=null;cu8Frames(a).then(F=>{C8S[a]=F||false})}if(!i.src)i.src='/_blob/'+a;return}if(i.matches(':hover')&&i.dataset.st)return;i.src=F[C8I]})},650);
+const cuPrompt=x=>{if(x.set=='hair')return zipPrompt(x.id);const p=P();if(!p||!p.mkBoth)return '';const pr=x.p?preOf('mk',x.p):null;return p.mkBoth(x.n,pr?pr.d||pr.sub:'')};
 const faces=k=>[['c','עם כיסוי'],['h','עם פאה']].map(([h,t])=>`<span class="syfc"><img alt="${t}" data-syface="${es(k)}" data-h="${h}" src=""><small>${t}</small></span>`).join('');
 function card(set,pr,x){const k=pr?pr.k:x.id,b=busy()&&PROC.k==k,title=x?x.n:pr.n;   // her own name once she renamed it
+ if(set=='hair'&&x&&x.cu&&x.cu8)return cardH(pr,x,b,title);
  // v204 (Sara 11:46 "אני אגע בתמונה ואז הבובה תסתובב ... אני צריכה לפחות את זה פי 3 בגודל"): one big picture that turns – touch it (or the mouse over it); ⋯ = all 8, name, replace
  const pic=x&&set!='mk'?`<span class="sycim tall"><button type="button" class="syrot" data-syrot aria-label="לסובב את הבובה: ${es(title)}"><img alt="" data-syf="${es(key(x))}" src=""></button><span class="sy8" aria-hidden="true">🔄 נגיעה מסובבת</span><button type="button" class="symore" data-syview="${es(x.id)}" aria-label="8 הזוויות, שם, החלפה: ${es(title)}">⋯</button></span>`
   :x&&set=='mk'&&x.cu?`<button type="button" class="sycim cu" data-syview="${es(x.id)}" aria-label="לראות גדול: ${es(title)}"><img alt="תקריב: ${es(title)}" src="/_blob/${es(x.cu)}"><span class="sy8">🔍 להגדיל</span></button>`
@@ -96,11 +113,11 @@ function card(set,pr,x){const k=pr?pr.k:x.id,b=busy()&&PROC.k==k,title=x?x.n:pr.
   :set=='mk'?`<span class="sycim fc2 none">${faces('')}<i>עוד אין תמונה</i></span>`
   :`<span class="sycim none${set!='mk'?' tall':''}"><img alt="" data-sycb="${set}" src=""><i>עוד אין תמונה</i></span>`;
  const btn=b?'<span class="sycw">✂ גוזרת…</span>':x?`<button type="button" class="mkp" data-sywear="${es(x.id)}">👗 ללבוש</button>`
-  :`<button type="button" data-syp2="${es(pr.k)}">📋 פרומפט</button><button type="button" class="mkp" data-syup2="${es(pr.k)}"${busy()?' disabled':''}>📤 להעלות</button>`;
+  :`${set=='hair'?`<button type="button" data-syzip="${es(pr.k)}">⬇ ZIP</button>`:''}<button type="button" data-syp2="${es(pr.k)}">📋 פרומפט</button><button type="button" class="mkp" data-syup2="${es(pr.k)}"${busy()?' disabled':''}>📤 להעלות</button>`;
  const sub=pr&&pr.sub?pr.sub:x&&x.sub?x.sub:!pr&&oldTie(x)?'מהרשימה הקודמת':'',hk=hidK(pr,x);
  // v207 (Sara 13:47 "אני רוצה גם לבדוק שהפרומט של התסרוקות ממש טובות וברורות"): every preset card can show its whole prompt
  const howT=pr?`<details class="sycd"><summary>${set=='tie'?'איך קושרים':set=='hair'?'איך זה נראה':'הפרומפט'}</summary>${pr.he?`<p>${es(pr.he)}</p>`:''}<button type="button" class="syread" data-syread="${es(pr.k)}">📄 לקרוא את כל הפרומפט</button></details>`:'';
- return `<div class="syc${x?' up':''}${b?' busy':''}">${pic}<button type="button" class="syrm" data-syrm="${es(hk)}" aria-label="להסיר מהרשימה: ${es(title)}" title="להסיר"${b?' disabled':''}>🗑</button>${ORD[set]?favBtns(set,hk,title):''}<b class="sycn">${pr?pr.no+'. ':''}${es(title)}</b>${sub?`<small class="sycs">${es(sub)}</small>`:''}${howT}${x&&set=='mk'?cuRow(x):''}<span class="sycb">${btn}</span></div>`}
+ return `<div class="syc${x?' up':''}${b?' busy':''}">${pic}<button type="button" class="syrm" data-syrm="${es(hk)}" aria-label="להסיר מהרשימה: ${es(title)}" title="להסיר"${b?' disabled':''}>🗑</button>${ORD[set]?favBtns(set,hk,title):''}<b class="sycn">${pr?pr.no+'. ':''}${es(title)}</b>${sub?`<small class="sycs">${es(sub)}</small>`:''}${howT}${x&&set=='mk'?cuRow(x):x&&set=='hair'?cuRowH(x):''}<span class="sycb">${btn}</span></div>`}
 function favBtns(set,u,title){const f=ORD[set].f,i=f.indexOf(u);return `<button type="button" class="syfav" data-syfav="${es(u)}" aria-pressed="${i>=0}" aria-label="${i>=0?'להוריד מהאהובות':'לאהובות, קדימה'}: ${es(title)}" title="${i>=0?'אהובה – להוריד':'לאהובות, קדימה'}">${i>=0?'⭐':'☆'}</button>${i>0?`<button type="button" class="syfu" data-syfu="${es(u)}" aria-label="להזיז קדימה: ${es(title)}" title="קדימה">⬆</button>`:''}`}
 // v206: what she removed, to bring back
 function hiddenList(set){const L=[];presets(set).forEach(pr=>{if(HID.has(pr.k))L.push({k:pr.k,n:(pr.no?pr.no+'. ':'')+pr.n,pic:!!doneOf(set,pr)})});
@@ -110,7 +127,7 @@ function hiddenHTML(set){const L=hiddenList(set);if(!L.length)return '';
 const addCard=set=>{const one=SET(set)[3];return `<button type="button" class="syc sycadd" data-syadd aria-expanded="${ADD}"><span class="sycim"><b aria-hidden="true">＋</b></span><b class="sycn">להוסיף ${one}</b><small class="sycs">${set=='mk'?'לפי מה שתכתבי':'לפי תמונה שלך'}</small></button>`};
 function how(set){const sheet='<button type="button" data-sydl="sheet">⬇ הבובה ב-8 זוויות</button>';
  if(set=='tie')return `<div class="syhow"><p><b>בכל קשירה:</b> 📋 מעתיקים, ב-GPT בשיחה חדשה מצרפים את הבובה ומדביקים, ואת מה שחזר 📤 מעלים באותה משבצת. מיד רואים אותה עלייך.</p><p><small>☆ על קשירה שאת אוהבת – היא עוברת להתחלה (גם בסטודיו), ו-⬆ מזיז אותה עוד קדימה. אחרי האהובות באות הקשירות שבחרת לאחרונה. 🗑 מסיר דגם מהרשימה, ו"↩ מה שהסרתי" למטה מחזיר.</small></p><span class="mkb">${sheet}</span></div>`;
- if(set=='hair')return `<div class="syhow"><p><b>בכל תסרוקת:</b> 📋 מעתיקים, ב-GPT בשיחה חדשה מצרפים את הפאה שלך ואת הבובה ומדביקים, ואת מה שחזר 📤 מעלים באותה משבצת.</p><p><small>🗑 על דגם שלא אהבת – מסיר אותו מהרשימה. אפשר להחזיר ב"↩ מה שהסרתי" למטה.</small></p><span class="mkb">${sheet}<button type="button" data-sydl="wig">⬇ הפאה שלי</button></span></div>`;
+ if(set=='hair')return `<div class="syhow"><p><b>בכל תסרוקת:</b> ⬇ ZIP – קובץ אחד עם הפאה, הפנים שלך מקרוב, הבובה והפרומפט. ב-GPT בשיחה חדשה מצרפים את ה-ZIP ומדביקים את הפרומפט (📋). GPT מחזיר שתי תמונות: תקריב ב-8 זוויות והבובה ב-8 זוויות. 📤 מעלים את שתיהן יחד באותה משבצת, והתקריב מסתובב בכרטיס.</p><p><small>🗑 על דגם שלא אהבת – מסיר אותו מהרשימה. אפשר להחזיר ב"↩ מה שהסרתי" למטה.</small></p><span class="mkb">${sheet}<button type="button" data-sydl="wig">⬇ הפאה שלי</button></span></div>`;
  // v215 (Sara 16:20 "אני לא הבנתי מה אני אמורה לעלות פה ... תעשה לי סדר"): three steps, what she sees after
  return `<div class="syhow"><p><b>איך עושים איפור</b> (פעם אחת לכל איפור):</p>
   <ol class="systeps"><li><b>⬇ שומרים</b> את הבובה ב-8 זוויות ואת הפאה שלך (פעם אחת, לכל האיפורים).<span class="mkb">${sheet}<button type="button" data-sydl="wig">⬇ הפאה שלי</button></span></li>
@@ -169,10 +186,10 @@ function vw(){if(!VW){VW=document.createElement('dialog');VW.id='sty204v';VW.dir
   VW.addEventListener('cancel',e=>{e.preventDefault();VW.close()});VW.addEventListener('click',vclick)}return VW}
 // v207: the whole prompt of a preset, to read before copying
 function readP(k){const pr=preOf(TAB,k);if(!pr)return;vw();VW.dataset.id='';VW.classList.remove('w213');const [,,,,the]=SET(TAB);
- const att=TAB=='hair'?'מצרפים: הפאה שלך (⬇ הפאה שלי) ואת הבובה (⬇ הבובה ב-8 זוויות), ומדביקים':'מצרפים: רק את הבובה (⬇ הבובה ב-8 זוויות), ומדביקים';
+ const att=TAB=='hair'?'מצרפים את ה-ZIP (⬇ ZIP), ומדביקים. GPT מחזיר שתי תמונות – מעלים את שתיהן יחד':'מצרפים: רק את הבובה (⬇ הבובה ב-8 זוויות), ומדביקים';
  VW.innerHTML=`<div class="mk"><div class="mkh"><h3 id="sty204vt">${pr.no?pr.no+'. ':''}${es(pr.n)}</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
   <p class="sytip">${att} – בשיחה חדשה ב-GPT. את מה שחזר 📤 מעלים כאן.</p><div class="syrd" tabindex="0" aria-label="הפרומפט של ${es(the)}">${es(prompt2(TAB,pr))}</div>
-  <span class="mkb"><button type="button" class="mkp" data-syp2="${es(k)}">📋 להעתיק</button><button type="button" data-syup2="${es(k)}"${busy()?' disabled':''}>📤 להעלות</button></span></div>`;
+  <span class="mkb">${TAB=='hair'?`<button type="button" data-syzip="${es(k)}">⬇ ZIP</button>`:''}<button type="button" class="mkp" data-syp2="${es(k)}">📋 להעתיק</button><button type="button" data-syup2="${es(k)}"${busy()?' disabled':''}>📤 להעלות</button></span></div>`;
  if(!VW.open)VW.showModal();VW.scrollTop=0}
 function view(id){const x=LIST.find(y=>y.id==id);if(!x)return;vw();
  VW.dataset.id=id;VW.innerHTML=`<div class="mk"><div class="mkh"><h3 id="sty204vt">${es(x.n)}</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
@@ -189,7 +206,8 @@ function vclick(e){if(e.target===VW)return VW.close();const b=e.target.closest('
  if(d.syup2){const pr=preOf(TAB,d.syup2);VW.close();if(pr)pick(TAB,'',pr);return}
  if(d.syre){VW.close();return pick(TAB,d.syre)}
  if(d.sycp){const x=LIST.find(y=>y.id==d.sycp);if(x)copy(b,cuPrompt(x));return}
- if(d.sycu){VW.close();return pick('mk',d.sycu)}
+ if(d.syzip)return zipHair(d.syzip,b);
+ if(d.sycu){VW.close();const x=LIST.find(y=>y.id==d.sycu);return pick(x&&x.set=='hair'?'hair':'mk',d.sycu)}
  if(d.sydl)return dl(d.sydl);
  if(d.syren){const i=VW.querySelector('.syren');return rename(d.syren,i&&i.value).then(()=>{const h=VW.querySelector('h3');if(h&&i)h.textContent=i.value.trim()})}
  if(d.sydel){if(typeof sure=='function'&&!sure(b,'בטוח? לחצי שוב'))return;VW.close();return del(d.sydel)}}
@@ -204,7 +222,7 @@ async function dl(what){try{const u=what=='wig'?'a8/wig_ref.jpg':'a8/sheet.jpg';
 // ---------- upload → cut → keep ----------
 let FI=null,FSET='',FRE='',FPRE=null,FG='';
 function pick(set,re,pre,g){FSET=set;FRE=re||'';FPRE=pre||null;FG=g||'';if(!FI){FI=document.createElement('input');FI.type='file';FI.accept='image/*';FI.hidden=true;document.body.appendChild(FI);
- FI.addEventListener('change',()=>{const fs=[...FI.files];FI.value='';if(!fs.length)return;if(FG)return grid1(FG,fs[0]).catch(e=>ERR('grid',e));run(FSET,fs,FRE,FPRE).catch(e=>ERR('run',e))})}FI.multiple=!g&&(set=='mk'||!re&&!pre);FI.click()}
+ FI.addEventListener('change',()=>{const fs=[...FI.files];FI.value='';if(!fs.length)return;if(FG)return grid1(FG,fs[0]).catch(e=>ERR('grid',e));run(FSET,fs,FRE,FPRE).catch(e=>ERR('run',e))})}FI.multiple=!g&&(set=='mk'||set=='hair'||!re&&!pre);FI.click()}
 // makeup step 1: the grid GPT returned for one category → every look of it shows its square (db 'stylegrid' {src}, one per category)
 async function grid1(c,f){let a=null;try{a=await claude.use('assets')}catch(_){}if(!a||!DB){PROC={err:ERRT[a?'db':'assets']};paint();return}
  toast_('שומרת את הרשת…');try{const src=(await put1(a,f)).id;await DB.collection('stylegrid').doc(c).set({src,t:Date.now()});MKG[c]=src;Object.keys(CELL).forEach(k=>{if(k.startsWith('m:'+c+':'))delete CELL[k]});paint();
@@ -230,6 +248,8 @@ async function run(set,fs,re,pre){if(PROC&&!PROC.err){toast_('רגע, עוד ג�
  if(!a||!DB){PROC={err:ERRT[a?'db':'assets']};paint();return}
  let CU=null;if(set=='mk'){const S=[];for(const f of fs){if(!CU&&!(await isSheet(f)))CU=f;else S.push(f)}fs=S;   // v215: the two pictures GPT returned, in any order
   if(!fs.length){await cuOnly(CU,re,pre);return}}
+ if(set=='hair'&&fs.length>1&&window.sheetKind247){const K=await Promise.all(fs.map(f=>sheetKind247(f)));const S=[];fs.forEach((f,i)=>{if(!CU&&K[i].grid&&K[i].close)CU=f;else S.push(f)});fs=S;   // v251: the close-up and the doll, in any order
+  if(!fs.length){await cuOnly(CU,re,pre,'hair');return}}
  const [,,,one,the]=SET(set),base=pre?pre.n:NAME[set].trim(),done=[],pk=pre?pre.k:(re||'add');
  for(let i=0;i<fs.length;i++){PROC={v:1,i:i+1,n:fs.length,k:pk,n0:base};paint();const t0=Date.now();
   try{const r=await cut8.run(fs[i],KIND[set],v=>{PROC={v:v+1,i:i+1,n:fs.length,k:pk,n0:base};const s=DL&&DL.querySelector('.syst');if(s)s.outerHTML=status()});
@@ -246,7 +266,7 @@ async function run(set,fs,re,pre){if(PROC&&!PROC.err){toast_('רגע, עוד ג�
   catch(e){ERR('cut',e);log('sty_fail',{set,code:String(e&&(e.code||e.message)||e).slice(0,60)});PROC={err:ERRT[e&&e.code]||ERRT.x};paint();toast_('✗ '+PROC.err);return}}
  PROC=null;if(!re&&!pre&&NAME[set].trim()==base){NAME[set]='';ADD=false}ED='';paint();   // a name she typed meanwhile for the next one stays
  const last=LIST.find(x=>x.id==done[done.length-1]);
- if(CU&&last){try{await cuUp(last.id,CU,true)}catch(e){ERR('cu',e)}}
+ if(CU&&last){try{await cuUp(last.id,CU,true,set=='hair')}catch(e){ERR('cu',e)}}
  toast_(done.length>1?`✓ ${done.length} ${SET(set)[2]} על האווטאר`:`✓ ${the} על האווטאר${CU&&last&&last.cu?' והתקריב בכרטיס':''}`)}   // v204: no action – the toast's button reads "ביטול"
 function wear(id){const x=LIST.find(y=>y.id==id);if(!x)return;const k=key(x);if(!k)return;if(ORD[x.set])rec(x.set,unitOf(x));try{if(DL&&DL.open)DL.close();R().wearStyle(k)}catch(e){ERR('wear',e)}}
 // v215: the 8-angle sheet (its shape, and the white line between its two rows) vs. the close-up
@@ -255,16 +275,17 @@ async function isSheet(f){const u=URL.createObjectURL(f);try{const m=await new P
   const d=g.getImageData(0,0,w,h).data;let best=0;for(let y=Math.round(h*.46);y<=Math.round(h*.54);y++){let n=0;for(let x=Math.round(w*.03);x<w*.97;x++){const k=(y*w+x)*4;if(d[k]*.299+d[k+1]*.587+d[k+2]*.114>225)n++}best=Math.max(best,n/(w*.94))}
   return best>.7}catch(_){return true}finally{URL.revokeObjectURL(u)}}
 // only a close-up: onto the makeup she already has; a new one waits for its sheet (no layers yet)
-async function cuOnly(f,re,pre){if(!f)return;let x=re?LIST.find(y=>y.id==re):pre?doneOf('mk',pre):null;
+async function cuOnly(f,re,pre,set){if(!f)return;set=set||'mk';let x=re?LIST.find(y=>y.id==re):pre?doneOf(set,pre):null;
+ if(set=='hair'){if(!x){toast_('זה רק התקריב. מעלים אותו יחד עם הבובה ב-8 זוויות');return}await cuUp(x.id,f,true,true);toast_('✓ התקריב בכרטיס');return}
  if(!x){const id='s'+Date.now().toString(36)+'c',doc={set:'mk',n:pre?pre.n:(NAME.mk.trim()||'איפור'),t:Date.now(),L:['','','','','','','',''],cv:cut8.CV||1};if(pre)doc.p=pre.k;
   await DB.collection('styles').doc(id).set(doc);x=Object.assign({},doc,{id});LIST.push(x);push()}
  await cuUp(x.id,f,true);toast_(x.L.some(Boolean)?'✓ התקריב בכרטיס':'✓ התקריב בכרטיס. כדי לראות את האיפור על האווטאר, מעלים גם את הבובה ב-8 זוויות')}
 // v214: her close-up from GPT (one picture, two faces) → the makeup's doc gets cu (an asset id)
-async function cuUp(id,f,quiet){const x=LIST.find(y=>y.id==id);if(!x)return;let a=null;try{a=await claude.use('assets')}catch(_){}if(!a||!DB){toast_('✗ '+ERRT[a?'db':'assets']);return}
+async function cuUp(id,f,quiet,c8){const x=LIST.find(y=>y.id==id);if(!x)return;let a=null;try{a=await claude.use('assets')}catch(_){}if(!a||!DB){toast_('✗ '+ERRT[a?'db':'assets']);return}
  if(!quiet)toast_('שומרת את התקריב…');const u=URL.createObjectURL(f);let bl=f;
  try{const m=await new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=u});const s=Math.min(1,1600/m.naturalWidth,1600/m.naturalHeight),c=document.createElement('canvas');
   c.width=Math.round(m.naturalWidth*s);c.height=Math.round(m.naturalHeight*s);c.getContext('2d').drawImage(m,0,0,c.width,c.height);bl=await new Promise(r=>c.toBlob(r,'image/jpeg',.9))||f}catch(_){}finally{URL.revokeObjectURL(u)}
- const cu=(await put1(a,bl)).id,doc=Object.assign({},x,{cu});delete doc.id;await DB.collection('styles').doc(id).set(doc);x.cu=cu;paint();log('sty_cu',{id});if(!quiet)toast_('✓ התקריב בכרטיס')}
+ const cu=(await put1(a,bl)).id,doc=Object.assign({},x,{cu});if(c8)doc.cu8=1;else delete doc.cu8;delete doc.id;await DB.collection('styles').doc(id).set(doc);x.cu=cu;if(c8)x.cu8=1;else delete x.cu8;paint();log('sty_cu',{id});if(!quiet)toast_('✓ התקריב בכרטיס')}
 async function rename(id,n){const x=LIST.find(y=>y.id==id);n=String(n||'').trim().slice(0,40);if(!x||!n||!DB)return;
  const doc=Object.assign({},x,{n});delete doc.id;try{await DB.collection('styles').doc(id).set(doc)}catch(e){ERR('ren',e);toast_(ERRT.x);return}
  x.n=n;push();ED='';paint()}
@@ -294,7 +315,8 @@ function click(e){if(e.target===DL)return DL.close();const b=e.target.closest('b
  if(d.syp2){const pr=preOf(TAB,d.syp2);if(pr)copy(b,prompt2(TAB,pr));return}
  if(d.syup2){const pr=preOf(TAB,d.syup2);if(pr)pick(TAB,'',pr);return}
  if(d.sycp){const x=LIST.find(y=>y.id==d.sycp);if(x)copy(b,cuPrompt(x));return}
- if(d.sycu){if(busy())return toast_('רגע, עוד גוזרת');return pick('mk',d.sycu)}
+ if(d.syzip)return zipHair(d.syzip,b);
+ if(d.sycu){if(busy())return toast_('רגע, עוד גוזרת');const x=LIST.find(y=>y.id==d.sycu);return pick(x&&x.set=='hair'?'hair':'mk',d.sycu)}
  if(d.syup)return pick(d.syup)}
 window.STY199={open,list:()=>LIST.slice(),gone:x=>gone(x)};
 })();
