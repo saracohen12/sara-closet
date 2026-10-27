@@ -100,7 +100,7 @@ function prompt(id,np){const k=kd(id),x=D[id]||{},O=outs(id),ME=(R()&&R().ME)||'
  P.push(`החזירי ${O.length} תמונות נפרדות, בדיוק בסדר הזה:\n`+O.map((o,i)=>`${i+1}. `+retText(o,sheets,k)+bgNote(id,k,o)).join('\n'));
  P.push(...rulesOf(id,k,sheets));
  P.push(`כל תמונה היא גיליון אחד של 8 משבצות (2 שורות של 4), באותו יחס גובה-רוחב כמו הקובץ שערכת, בלי טקסט ובלי מספרים. סך הכול ${O.length} תמונות. אם אי אפשר את כולן בתשובה אחת, עשי כמה שאפשר, ואני אכתוב "המשך".`);
- return P.join('\n\n')}
+ return (window.zipAsk||String)(P.join('\n\n'))}
 const extraFiles=cus=>(cus.some(o=>!o.half)?'\n• face-8.jpg – תקריב של הפנים שלי ב-8 זוויות מסביב (ראש וכתפיים), באותו סדר.':'')+(cus.some(o=>o.half)?'\n• half-8.jpg – תקריב של חצי הגוף העליון שלי ב-8 זוויות מסביב (מהראש עד הירכיים), באותו סדר.':'');
 function retText(o,sheets,k){return (o.role=='whole'?'ערכי את doll-8.jpg: הדמות לובשת את כל הסט ביחד.':o.role=='cu'&&o.half?'ערכי את half-8.jpg (חצי הגוף העליון שלי, מהראש עד הירכיים): התיק עליי, בדיוק כמו בגיליון של הגוף המלא – אותו תיק, אותו גודל ביחס לגוף, אותה רצועה באותו אורך, באותו מקום. רואים בבירור את התיק, הרצועה, הסגירה והפרטים. אותן 8 משבצות באותו סדר ובאותן זוויות, אותם פנים בדיוק, אותו כיסוי ראש, אותה שמלה, אותו רקע.':o.role=='cu'?`ערכי את face-8.jpg: ${o.cuOf=='earrings'?'העגילים על שתי האוזניים. השיער מאחורי האוזן כך שהעגיל נראה היטב.':'השרשרת על הצוואר, כמו במציאות, רואים את כל השרשרת והתליון.'} רק ה${TN[o.cuOf]}, בלי תכשיטים אחרים. אותן 8 משבצות באותו סדר ובאותן זוויות, אותם פנים בדיוק, אותו שיער${o.cuOf=='earrings'?' (רק מסודר מאחורי האוזן)':''}, אותה חולצה, אותו רקע.`:`ערכי את doll-8.jpg: הדמות לובשת רק את ${o.role=='sheet'&&sheets.length>1?o.n:'ה'+(TN[o.kind]||'פריט')}${sheets.length>1?', בלי ה'+(k=='jw'?'תכשיטים':'פריטים')+' האחרים':''}.`)}
 function rulesOf(id,k,sheets){const P=[],ME=(R()&&R().ME)||'';
@@ -162,7 +162,7 @@ function bPrompt(ids,np){const all=ids.flatMap(id=>outs(id)),cus=all.filter(o=>o
  P.push(`לכל המוצרים: כל תמונה היא עריכה של הקובץ שכתוב לידה (doll-8.jpg, ובתקריבים face-8.jpg או half-8.jpg), אל תציירי אותו מחדש. אותו פריט בדיוק בכל 8 הזוויות: אותו צבע, אותו בד או חומר, אותה גזרה, אותו גודל.`+(cloth?`\nהמידות שלי: ${ME}. הדמות כבר בנויה לפי המידות האלה, אל תשני את הגוף. שמרי על אותו אורך ביחס לגוף כמו בתמונת המוצר, ואותו אורך בכל 8 הזוויות. הבגד צריך להיראות אמיתי על הגוף: קפלים, צללים, הבד נופל לפי התנוחה.\nאם בתמונת המוצר יש עוד בגדים או אביזרים שלא כתבתי, הם לא שלי: אל תוסיפי אותם.`:''));
  P.push(`אל תשני שום דבר אחר – אותו גיליון, אותו סדר זוויות, אותו מיקום ואותו גודל של הדמות בכל משבצת, אותם פנים בדיוק, אותה תנוחה, אותם קווים לבנים בין המשבצות. כל מה שהדמות כבר לובשת בגיליון (כיסוי ראש בז׳, שמלה בצבע עור) נשאר בדיוק אותו דבר בכל מקום שהפריט לא מכסה. בכל גיליון רק המוצר שלו, בלי המוצרים האחרים.`);
  P.push(`כל תמונה היא גיליון אחד של 8 משבצות (2 שורות של 4), באותו יחס גובה-רוחב כמו הקובץ שערכת, בלי טקסט ובלי מספרים. סך הכול ${g} תמונות, בסדר של המספרים. אם אי אפשר את כולן בתשובה אחת, עשי כמה שאפשר, ואני אכתוב "המשך".`);
- return P.join('\n\n')}
+ return (window.zipAsk||String)(P.join('\n\n'))}
 window.bprompt252=bPrompt;
 async function bZip(b){const ids=B.sel.slice(),o=b.textContent;b.disabled=true;b.textContent='מכינה את הקובץ…';
  try{const files=[],np=[];try{await thLoad(B.cat)}catch(_){}
@@ -197,6 +197,7 @@ function paintB(){const d=dlg();ID='';const c=B.cat,title=(()=>{try{return docum
    <details class="g250pr"><summary>לקרוא את הפרומפט</summary><textarea readonly rows="12">${es(bPrompt(B.sel))}</textarea></details></div>`}
  if(!d.open)d.showModal()}
 window.g252open=bOpen;
+window.g250assign=(ids,fs)=>assign(ids,fs);
 window.g256={npOf,namesOf,colsOf,asked,kd,ensurePieces,MULTI,TN};
 // ---------- pieces (fix85 parts) ----------
 const subId=(id,k)=>id+'~'+k;
@@ -206,7 +207,7 @@ async function ensurePieces(id){const O=outs(id).filter(o=>o.pk),old=Array.isArr
  const nu=[...keep,...mine];if(JSON.stringify(nu)!=JSON.stringify(old))await putItem(id,{parts:nu.length?nu:null});try{window.syncParts85&&syncParts85()}catch(_){}}
 // ---------- upload: she picks every picture GPT returned; the site shows which is which (by order), she can change it, then ✓ ----------
 let UP=null;
-function pick(ids){ids=[].concat(ids);const f=document.createElement('input');f.type='file';f.accept='image/*';f.multiple=true;f.hidden=true;document.body.appendChild(f);
+function pick(ids){ids=[].concat(ids);const f=document.createElement('input');f.type='file';f.accept='image/*,.zip,application/zip,application/x-zip-compressed';f.multiple=true;f.hidden=true;document.body.appendChild(f);
  f.addEventListener('change',()=>{const fs=[...f.files];f.remove();if(fs.length)assign(ids,fs)});f.click()}
 function cuKind(f){return new Promise(res=>{const u=URL.createObjectURL(f),m=new Image();m.onload=()=>{try{const W=m.naturalWidth,H=m.naturalHeight,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(m,0,0);
   // a close-up: the bottom of every square is her top (beige) right to the edge; on a body sheet it is floor and two feet
@@ -214,6 +215,14 @@ function cuKind(f){return new Promise(res=>{const u=URL.createObjectURL(f),m=new
    d=g.getImageData(px+Math.round(pw*.05),py+Math.round(ph*.88),Math.round(pw*.9),Math.max(1,Math.round(ph*.06))).data;for(let k=0;k<d.length;k+=16){tot++;if(Math.abs(d[k]-bg[0])+Math.abs(d[k+1]-bg[1])+Math.abs(d[k+2]-bg[2])>70)cov++}}
   res(tot>0?cov/tot:0)}catch(_){res(0)}URL.revokeObjectURL(u)};m.onerror=()=>{URL.revokeObjectURL(u);res(0)};m.src=u})}
 const targets=ids=>ids.flatMap((id,p)=>outs(id).map(o=>({id,o,p})));
+const COLS=[[/שחור|black/i,[28,28,30]],[/לבן|white/i,[236,236,234]],[/שמנת|קרם|אופ.?וויט|ivory|cream/i,[238,228,206]],[/קאמל|camel/i,[180,135,90]],[/בז|beige|nude|ניוד/i,[205,180,150]],
+ [/חאקי|khaki/i,[150,140,95]],[/זית|olive/i,[110,108,45]],[/קפה|שוקו|חום|brown|coffee/i,[92,58,40]],[/ירוק|green/i,[25,85,60]],[/נייבי|navy/i,[30,36,70]],[/תכלת/i,[150,190,228]],[/כחול|blue/i,[45,75,150]],
+ [/בורדו|יין|burgundy/i,[100,25,38]],[/אדום|red/i,[185,35,45]],[/ורוד|pink/i,[228,160,180]],[/סגול|purple/i,[100,60,130]],[/חרדל|mustard/i,[200,150,40]],[/צהוב|yellow/i,[230,205,70]],[/כתום|orange/i,[230,120,45]],[/אפור|grey|gray/i,[128,128,130]]];
+const colRGB=t=>{t=String(t||'');for(const [r,c] of COLS)if(r.test(t))return c;return null};
+const cdist=(a,b)=>Math.sqrt(2*(a[0]-b[0])**2+4*(a[1]-b[1])**2+3*(a[2]-b[2])**2);
+// the garment's colour: the median of the middle of the body in the front view (top-left square), chest to waist
+function garmentRGB(f){return new Promise(res=>{const u=URL.createObjectURL(f),m=new Image();m.onload=()=>{try{const W=m.naturalWidth/4,H=m.naturalHeight/2,c=document.createElement('canvas');c.width=40;c.height=40;const g=c.getContext('2d',{willReadFrequently:true});
+  g.drawImage(m,W*.42,H*.27,W*.16,H*.14,0,0,40,40);const d=g.getImageData(0,0,40,40).data,R=[],G=[],B=[];for(let k=0;k<d.length;k+=4){R.push(d[k]);G.push(d[k+1]);B.push(d[k+2])}const md=a=>a.sort((x,y)=>x-y)[a.length>>1];res([md(R),md(G),md(B)])}catch(_){res(null)}URL.revokeObjectURL(u)};m.onerror=()=>{URL.revokeObjectURL(u);res(null)};m.src=u})}
 async function assign(ids,fs){fs=fs.slice().sort((a,b)=>(a.lastModified-b.lastModified)||String(a.name).localeCompare(String(b.name),undefined,{numeric:true}));
  const T=targets(ids),sc=await Promise.all(fs.map(cuKind));
  // close-ups go to the close-up outputs, sheets to the sheet outputs, each in order. The close-ups = the pictures that cover the bottom of their squares most
@@ -221,6 +230,12 @@ async function assign(ids,fs){fs=fs.slice().sort((a,b)=>(a.lastModified-b.lastMo
  const si=T.map((t,i)=>t.o.role!='cu'?i:-1).filter(i=>i>=0),ci=T.map((t,i)=>t.o.role=='cu'?i:-1).filter(i=>i>=0);
  const isCu=new Array(fs.length).fill(false);fs.map((f,j)=>j).filter(j=>sc[j]>.3).sort((a,b)=>sc[b]-sc[a]).slice(0,ci.length).forEach(j=>isCu[j]=true);let a=0,c=0;
  const map=fs.map((f,j)=>isCu[j]&&c<ci.length?ci[c++]:a<si.length?si[a++]:-1);
+ // v259 (Sara 27/10 20:10 "התבלבלת בצבעים, קאמל שמת שחור"): GPT doesn't keep the order of the pictures. When every sheet has a colour (packs: "חולצה בצבע קאמל"),
+ // each picture goes to the sheet whose colour is nearest to the garment in it (its middle, front view); equal colours keep GPT's order
+ try{const sh=fs.map((f,j)=>map[j]>=0&&T[map[j]].o.role=='sheet'?j:-1).filter(j=>j>=0),tg=sh.map(j=>map[j]),cols=tg.map(i=>colRGB(T[i].o.col||T[i].o.n));
+  if(sh.length>1&&cols.every(Boolean)){const fc=await Promise.all(sh.map(j=>garmentRGB(fs[j])));if(fc.every(Boolean)){
+   const C=[];sh.forEach((j,x)=>tg.forEach((i,y)=>C.push([cdist(fc[x],cols[y])+6*Math.abs(x-y),x,y])));C.sort((p,q)=>p[0]-q[0]);
+   const ux=new Set(),uy=new Set();for(const [,x,y] of C){if(ux.has(x)||uy.has(y))continue;ux.add(x);uy.add(y);map[sh[x]]=tg[y]}}}}catch(e){ERR('bycol',e)}
  UP={ids,T,fs,map,urls:fs.map(f=>URL.createObjectURL(f))};paintUp()}
 function paintUp(){const d=dlg();const {ids,T,fs,map,urls}=UP,many=ids.length>1,lab=t=>(many?`מוצר ${t.p+1} · `:'')+t.o.n;
  d.innerHTML=`<div class="mk"><div class="mkh"><h3 id="g250t">📤 מה GPT החזיר – ${many?ids.length+' מוצרים':es(nm(ids[0]))}</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>

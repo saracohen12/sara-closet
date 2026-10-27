@@ -13,14 +13,17 @@ const sub=(id,k)=>id+'~'+k;
 const ready=s=>{try{return !!(R()&&R().isReady(s))}catch(_){return false}};
 const photo=id=>{try{return img(id)||TPH}catch(_){return ''}};
 const FR={};   // the piece on her, front angle (and the 8 angles for a turn on hover)
-function still(s,v){const k=s+'|'+v;if(!FR[k])FR[k]=(async()=>{try{const c=R()&&R().still?await R().still(s,v):null;if(!c||!c.width)throw 0;
+function still(s,v){const k=s+'|'+v+'|'+a8sig(s);if(!FR[k])FR[k]=(async()=>{try{try{R()&&R().sync&&R().sync()}catch(_){}const c=R()&&R().still?await R().still(s,v):null;if(!c||!c.width)throw 0;
   const o=document.createElement('canvas');o.width=300;o.height=Math.round(c.height*300/c.width);o.getContext('2d').drawImage(c,0,0,o.width,o.height);return o.toDataURL('image/webp',.86)}catch(_){delete FR[k];return ''}})();return FR[k]}
 function folderH(id,p,i,n){const s=sub(id,p.k),ok=ready(s),own=!!(it(s).a8||it(s).p5g||it(s).a8up);
  return `<div class="pk256" role="button" tabindex="0" data-pk256="${es(s)}" data-of="${es(id)}" aria-label="${es(p.n)} – תיקייה ${i+1} מתוך ${n}">
   <span class="ph"><img alt="" loading="lazy" src="${es(photo(id))}"${ok?` data-pk256v="${es(s)}"`:''}><span class="pk256f">📁 ${i+1} מתוך ${n}</span>
   <span class="ind247" aria-hidden="true"><i class="p${own||ok?' on':''}">📷</i><i class="r${ok?' on':''}">360</i></span></span>
   <span class="t">${es(p.n)}</span><span class="m">${p.color?es(p.color)+' · ':''}מתוך החבילה</span></div>`}
-function sig(id){return JSON.stringify(gps(id))+gps(id).map(p=>ready(sub(id,p.k))?1:0).join('')}
+// v259 (Sara 20:37 "עדיין אין התאמה בגופיות"): a piece re-cut while the page was open kept its old picture – the folder only redrew on a name/ready change.
+// Now the folder (and its picture) follows the piece's own 8-angle picture (a8 src + time)
+const a8sig=s=>{const a=it(s).a8;return Array.isArray(a)?a.map(x=>x&&(x.src||'')+':'+(x.t||'')).join(','):''};
+function sig(id){return JSON.stringify(gps(id))+gps(id).map(p=>(ready(sub(id,p.k))?1:0)+a8sig(sub(id,p.k))).join('|')}
 function tick(){if(typeof IT!='object'||typeof D!='object')return;
  const packs=Object.keys(IT).filter(id=>D[id]&&!String(id).includes('~')&&gps(id).length);
  document.querySelectorAll('.pk256[data-of]').forEach(f=>{if(!packs.includes(f.dataset.of))f.remove()});
@@ -67,7 +70,7 @@ function openF(s){SID=s;const d=dlg(),[id,k]=s.split('~'),ps=gps(id),i=ps.findIn
  if(!d.open)d.showModal()}
 window.g256folder=openF;
 // one sheet GPT returned for only this piece (e.g. redoing one shirt)
-function upOne(s){const f=document.createElement('input');f.type='file';f.accept='image/*';f.hidden=true;document.body.appendChild(f);
+function upOne(s){const f=document.createElement('input');f.type='file';f.accept='image/*,.zip,application/zip,application/x-zip-compressed';f.hidden=true;document.body.appendChild(f);
  f.addEventListener('change',async()=>{const fs=[...f.files];f.remove();if(!fs.length)return;
   try{if(typeof window.av188up!='function')throw new Error('av188');const id=s.split('~')[0],G=window.g256;window.av188kind(s,G?G.kd(id):'top');toast_('מעלה…');await window.av188up(s,fs);toast_('✓ עלה');if(DL&&DL.open)openF(s)}
   catch(e){ERR('up',e);toast_('לא הצלחתי להעלות. לנסות שוב')}});f.click()}

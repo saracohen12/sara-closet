@@ -96,7 +96,7 @@ window.mkst188=mkst;
 
 // ---------- upload, then cut on the site ----------
 let FI=null,FID='';const WH=new Set();
-function picker(id){FID=id;if(!FI){FI=document.createElement('input');FI.type='file';FI.accept='image/*';FI.multiple=true;FI.hidden=true;document.body.appendChild(FI);FI.addEventListener('change',()=>{const fs=[...FI.files];FI.value='';if(fs.length)up(FID,fs)})}FI.click()}
+function picker(id){FID=id;if(!FI){FI=document.createElement('input');FI.type='file';FI.accept='image/*,.zip,application/zip,application/x-zip-compressed';FI.multiple=true;FI.hidden=true;document.body.appendChild(FI);FI.addEventListener('change',()=>{const fs=[...FI.files];FI.value='';if(fs.length)up(FID,fs)})}FI.click()}
 let BUSY=false;
 // v245: the cover window (tie202) hands over the 8-angle file itself – she picks the sheet and the close-up together there
 // v250: the GPT window says which kind each returned sheet is (a piece of a pack, a part of a set)

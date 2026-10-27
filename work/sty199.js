@@ -221,7 +221,7 @@ async function dl(what){try{const u=what=='wig'?'a8/wig_ref.jpg':'a8/sheet.jpg';
 
 // ---------- upload → cut → keep ----------
 let FI=null,FSET='',FRE='',FPRE=null,FG='';
-function pick(set,re,pre,g){FSET=set;FRE=re||'';FPRE=pre||null;FG=g||'';if(!FI){FI=document.createElement('input');FI.type='file';FI.accept='image/*';FI.hidden=true;document.body.appendChild(FI);
+function pick(set,re,pre,g){FSET=set;FRE=re||'';FPRE=pre||null;FG=g||'';if(!FI){FI=document.createElement('input');FI.type='file';FI.accept='image/*,.zip,application/zip,application/x-zip-compressed';FI.hidden=true;document.body.appendChild(FI);
  FI.addEventListener('change',()=>{const fs=[...FI.files];FI.value='';if(!fs.length)return;if(FG)return grid1(FG,fs[0]).catch(e=>ERR('grid',e));run(FSET,fs,FRE,FPRE).catch(e=>ERR('run',e))})}FI.multiple=!g&&(set=='mk'||set=='hair'||!re&&!pre);FI.click()}
 // makeup step 1: the grid GPT returned for one category → every look of it shows its square (db 'stylegrid' {src}, one per category)
 async function grid1(c,f){let a=null;try{a=await claude.use('assets')}catch(_){}if(!a||!DB){PROC={err:ERRT[a?'db':'assets']};paint();return}
@@ -235,7 +235,7 @@ async function put1(a,b){let last;for(const w of [0,1500,4000]){if(w)await new P
 // is cut again from her own GPT picture, once, quietly in the background; the old pictures stay in the store
 const RC=new Set();let RCB=false;
 async function recut(){if(RCB||!window.cut8||!cut8.CVW||!DB||(PROC&&!PROC.err))return;
- const due=y=>y.src&&!((y.cv||0)>=cut8.CVW)&&!RC.has(y.id),x=LIST.find(y=>y.set=='hair'&&due(y))||LIST.find(y=>y.set=='tie'&&due(y));if(!x)return;RC.add(x.id);RCB=true;   // v214: hairstyles first
+ const due=y=>y.src&&!((y.cv||0)>=(y.set=='hair'&&cut8.CVH||cut8.CVW))&&!RC.has(y.id),x=LIST.find(y=>y.set=='hair'&&due(y))||LIST.find(y=>y.set=='tie'&&due(y));if(!x)return;RC.add(x.id);RCB=true;   // v214: hairstyles first
  try{let a=null;try{a=await claude.use('assets')}catch(_){}if(!a)return;
   const r=await cut8.run('/_blob/'+x.src,KIND[x.set]);if(r.px.filter(p=>p>150).length<5)throw new Error('empty');
   const L=[];for(let v=0;v<8;v++)L.push((await put1(a,await blobOf(r.views[v]))).id);

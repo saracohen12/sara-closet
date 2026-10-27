@@ -104,7 +104,7 @@ async function save(what){try{let bl;if(what=='face'){bl=await (await fetch(FACE
   else{try{await thLoad(D[PID].cat)}catch(_){}bl=await (await fetch(R().ph(PID))).blob()}
   await R().saveFile(what=='sheet'?'avatar-8-angles.jpg':'scarf-'+PID+'.jpg',bl)}catch(e){ERR('save',e);toast_(what=='sheet'?'לא הצלחתי לשמור':'לא הצלחתי. אפשר צילום מסך של המטפחת')}}
 async function copyP(b,i){const p=P(),t=p&&p.TIES[i];if(!t)return;return copyTxt(b,p.exact(itemTxt(PID),t[0],t[1]).replace('החזירי תמונה אחת: אותו גיליון','הגיליון של כל הגוף: אותו גיליון')+CUASK)}
-async function copyTxt(b,text){let ok=false;
+async function copyTxt(b,text){let ok=false;text=(window.zipAsk||String)(text);
  try{await navigator.clipboard.writeText(text);ok=true}catch(_){}
  if(!ok){try{const ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;opacity:0';PK.appendChild(ta);ta.select();ok=document.execCommand('copy');ta.remove()}catch(_){}}
  const o=b.textContent;b.textContent=ok?'✓ הועתק – עכשיו ל-GPT':'לא הצלחתי להעתיק';setTimeout(()=>{if(b.isConnected)b.textContent=o},2600)}
@@ -220,7 +220,7 @@ async function maskOf(src,doll){const u=typeof src=='string'?src:URL.createObjec
    o[i]=e>60&&f>70?1:0}
   o.d=d;return o}finally{if(typeof src!='string')URL.revokeObjectURL(u)}}
 const iou=(a,b)=>{let i=0,u=0;for(let k=0;k<a.length;k++){if(a[k]||b[k])u++;if(a[k]&&b[k])i++}return u?i/u:0};
-let FA246=null;function pickAll(id){if(!FA246){FA246=document.createElement('input');FA246.type='file';FA246.accept='image/*';FA246.multiple=true;FA246.hidden=true;document.body.appendChild(FA246);
+let FA246=null;function pickAll(id){if(!FA246){FA246=document.createElement('input');FA246.type='file';FA246.accept='image/*,.zip,application/zip,application/x-zip-compressed';FA246.multiple=true;FA246.hidden=true;document.body.appendChild(FA246);
   FA246.addEventListener('change',()=>{const fs=[...FA246.files];FA246.value='';if(fs.length)upAll(FA246._id,fs).catch(e=>{ERR('upall',e);toast_('משהו נעצר. מה שכבר עלה נשמר')})})}FA246._id=id;FA246.click()}
 async function upAll(id,fs){const L=wList(id);if(!L.length)return;if(typeof window.av188up!='function'){toast_('לא הצלחתי להעלות. לרענן את הדף');return}
  toast_('בודקת את התמונות…');fs=fs.slice().sort((a,b)=>(a.lastModified-b.lastModified)||String(a.name).localeCompare(String(b.name),undefined,{numeric:true}));
@@ -309,7 +309,7 @@ async function cuBlob(f){const u=URL.createObjectURL(f);try{const m=await new Pr
 async function upCu(f){let a=null;try{a=await claude.use('assets')}catch(_){}if(!a){toast_('לא הצלחתי לשמור את התקריב');return {}}
  try{const k=await sheetKind(f);toast_('שומרת את התקריב…');const r=await a.upload(await cuBlob(f));return r&&r.id?{cu:r.id,cu8:k.grid&&k.close?1:0}:{}}catch(e){ERR('cu',e);toast_('התקריב לא עלה. לנסות שוב');return {}}}
 let FI245=null,UP245=null;
-function pick245(what){UP245=what;if(!FI245){FI245=document.createElement('input');FI245.type='file';FI245.accept='image/*';FI245.multiple=true;FI245.hidden=true;document.body.appendChild(FI245);
+function pick245(what){UP245=what;if(!FI245){FI245=document.createElement('input');FI245.type='file';FI245.accept='image/*,.zip,application/zip,application/x-zip-compressed';FI245.multiple=true;FI245.hidden=true;document.body.appendChild(FI245);
   FI245.addEventListener('change',()=>{const fs=[...FI245.files];FI245.value='';if(fs.length&&UP245)got245(UP245,fs).catch(e=>ERR('up245',e))})}FI245.click()}
 async function got245(w,fs){const id=w.id;
  if(w.cuOnly!=null){const L=txs(id),x=L[w.cuOnly];if(!x)return;const c8=await upCu(fs[0]);if(!c8.cu)return;
@@ -378,4 +378,21 @@ function homeCu(){const av=document.querySelector('.z-av');if(!av)return;let T=n
 function tick(){try{home();closet();covers();barBtn();pkTick();thumbs();homeCu()}catch(e){ERR('tick',e)}}
 if(typeof afterOpen=='function'){const _ao=afterOpen;afterOpen=function(){const r=_ao.apply(this,arguments);setTimeout(barBtn,0);setTimeout(barBtn,350);return r}}
 setInterval(tick,700);setTimeout(tick,500);
+// v259 (Sara 27/10 20:35 "יש לי הרבה כיסויים כאלה. ואני לא רוצה שהבעיה הזאת תחזור על עצמה"): when the whole-head cutter gets better (cut8.CVX),
+// every tie of her own covers (IT.tx, and the one on the avatar) is cut again from her own GPT picture – once, one at a time, quietly in the background
+const RCX=new Set();let RXB=false;
+const blobOf=c=>new Promise(r=>c.toBlob(b=>{if(b&&b.type=='image/webp')return r(b);c.toBlob(r,'image/png')},'image/webp',.92));
+async function put1(a,b){let last;for(const w of [0,1500,4000]){if(w)await new Promise(r=>setTimeout(r,w));try{return await a.upload(b)}catch(e){last=e}}throw last}
+async function recutTx(){if(RXB||!window.cut8||!cut8.CVX||typeof IT!='object'||!IT)return;const due=x=>x&&x.src&&x.k=='tiex'&&(x.cv||0)<cut8.CVX;
+ let id=null,x=null;for(const k of Object.keys(IT)){if(!D[k])continue;const L=[...(Array.isArray(IT[k].tx)?IT[k].tx:[]),...(Array.isArray(IT[k].a8)?IT[k].a8:[])];
+  x=L.find(y=>due(y)&&!RCX.has(k+'|'+y.src));if(x){id=k;break}}
+ if(!x)return;RCX.add(id+'|'+x.src);RXB=true;
+ try{let a=null;try{a=await claude.use('assets')}catch(_){}if(!a)return;
+  const r=await cut8.run('/_blob/'+x.src,'tiex');if(r.px.filter(p=>p>150).length<5)throw new Error('empty');
+  const L=[];for(const c of r.views)L.push((await put1(a,await blobOf(c))).id);
+  const fix=y=>due(y)&&y.src==x.src?Object.assign({},y,{L,cv:cut8.CVX,sh:r.shifts.some(q=>q[0]||q[1])?r.shifts:null}):y,it=IT[id],pa={};
+  if(Array.isArray(it.tx))pa.tx=it.tx.map(fix);if(Array.isArray(it.a8)&&it.a8.some(y=>due(y)&&y.src==x.src))pa.a8=it.a8.map(fix);
+  await putItem(id,pa);try{R().sync()}catch(_){}}
+ catch(e){ERR('recutx',e)}finally{RXB=false;setTimeout(recutTx,2000)}}
+setTimeout(recutTx,15000);
 })();

@@ -690,7 +690,7 @@ function prompt(id){const K=KIND[kindOf(id)];const [t,how,body,len,n=1,g='cloth'
  if(body)P.push(`המידות שלי: ${ME}. הדמות כבר בנויה לפי המידות האלה, אל תשני את הגוף. המידות הן כדי שהפריט יישב נכון, צמוד או רחב כמו במציאות.`+(len?'\nשמרי על אותו אורך ביחס לגוף כמו בתמונת המוצר, ואותו אורך בכל 8 הזוויות.':''));
  if(g=='cloth')P.push('הבגד צריך להיראות אמיתי על הגוף: קפלים, צללים, הבד נופל לפי התנוחה. לבן בבגד נשאר לבן.');
  P.push(n>1?`החזירי ${n} תמונות נפרדות, אחת לכל ${g=='jw'?'תכשיט':'חלק'}. כל תמונה היא אותו גיליון של 8 משבצות (2 שורות של 4), באותו יחס גובה-רוחב, בלי טקסט ובלי מספרים.`:'החזירי תמונה אחת: אותו גיליון של 8 משבצות (2 שורות של 4), באותו יחס גובה-רוחב, בלי טקסט ובלי מספרים.');
- return P.join('\n\n')}
+ return (window.zipAsk||String)(P.join('\n\n'))}
 let MK=null,MKID='';
 function mkDlg(){
  if(!MK){MK=document.createElement('dialog');MK.id='r3mk';MK.dir='rtl';MK.setAttribute('aria-labelledby','r3mkt');document.body.appendChild(MK);

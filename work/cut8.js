@@ -40,6 +40,49 @@ function deBlack(S){const cw=SW/4,ch=SHH/2,lum=q=>S[q]*.299+S[q+1]*.587+S[q+2]*.
   const q=i*4,mx=Math.max(S[q],S[q+1],S[q+2]),mn=Math.min(S[q],S[q+1],S[q+2]);if(lum(q)<150&&mx-mn<45)add.push(i)}add.forEach(i=>M[i]=1)}
  for(let i=0;i<M.length;i++)if(M[i]){const q=i*4;S[q]=160;S[q+1]=185;S[q+2]=218}
  return M}
+// v259 (Sara 27/10 20:08 "רואים את החור השחור … והגופייה השחורה צבעת אותה בלבן"): the black backdrop is put back to the doll per view, knowing where the doll's own
+// backdrop is (its light blue, DB):
+// · black left INSIDE the doll's backdrop – the gap between the arm on the hip and the body, closed off from the edge – is backdrop too (no more black holes)
+// · a dark garment that GPT still put on black: the flood from the edge ran into it; where the doll is body (not backdrop) the dark pixels are the garment and stay
+// v259 (Sara 20:10 "לא גזרת טוב, רואים את החלק של הגוף"): GPT often draws the back / side torso a little to the side of the doll's (the sheet is aligned by the head),
+// so the doll's own beige sleeve showed beside the shirt. A top is slid sideways so its shoulders-to-waist part sits centred on the doll's body (≤28 px)
+const TOPK=['top','base','sweater'];
+// GPT's back/side shoulders often sit lower than the doll's: the top is stretched up (hem stays) so its shoulder line meets hers
+function lift(d,m,isB){const w=(f,r)=>{let a=-1,z=-1;for(let c=0;c<W;c++)if(f(r*W+c)){if(a<0)a=c;z=c}return a<0?0:z-a};
+ const rB=[],rM=[];for(let r=0;r<Math.floor(H*.4);r++){rB.push(w(isB,r));rM.push(w(i=>m[i],r))}
+ const T=rB[Math.round(H*.24)]*.75;if(T<30)return [d,m];
+ const st=L=>{for(let r=Math.floor(H*.12);r<L.length;r++)if(L[r]>=T)return r;return -1};const sB=st(rB),sM=st(rM);
+ if(sB<0||sM<0||sM-sB<2||sM-sB>25)return [d,m];let gb=-1;for(let r=Math.floor(H*.75);r>0&&gb<0;r--)for(let c=0;c<W;c++)if(m[r*W+c]){gb=r;break}if(gb<=sM+10)return [d,m];
+ const d2=new Float32Array(N*3),m2=new Uint8Array(N);d2.set(d.subarray(gb*W*3),gb*W*3);m2.set(m.subarray(gb*W),gb*W);
+ for(let r=0;r<gb;r++){const sr=Math.round(gb-(gb-r)*(gb-sM)/(gb-sB));if(sr<0||sr>=H)continue;for(let c=0;c<W;c++){const i=r*W+c,j=sr*W+c;m2[i]=m[j];d2[i*3]=d[j*3];d2[i*3+1]=d[j*3+1];d2[i*3+2]=d[j*3+2]}}
+ return [d2,m2]}
+function slide(d,m,b){const isB=i=>{const k=i*3;return !(b[k+2]-b[k]>22&&b[k+2]>150)};[d,m]=lift(d,m,isB);
+ // only a top that covers her arms too (long sleeves): a tank leaves her arms outside it, and stretching it to her edges pulled its hem out sideways
+ {let gm=0,gb=0;for(let r=Math.floor(H*.28);r<Math.floor(H*.34);r++){let a=-1,z=-1,p=-1,q=-1;for(let c=0;c<W;c++){const i=r*W+c;if(m[i]){if(a<0)a=c;z=c}if(isB(i)){if(p<0)p=c;q=c}}if(a>=0&&p>=0){gm+=z-a;gb+=q-p}}if(!gb||gm<gb*.85)return [d,m]}
+ // row by row: the top's left/right edges are stretched onto the doll's left/right edges at that row (arms included on both), smoothed over 15 rows
+ const A=new Float32Array(H).fill(NaN),Z=new Float32Array(H).fill(NaN),P=new Float32Array(H),Q=new Float32Array(H);
+ for(let r=Math.floor(H*.15);r<Math.floor(H*.62);r++){let a=-1,z=-1,p=-1,q=-1;for(let c=0;c<W;c++){const i=r*W+c;if(m[i]){if(a<0)a=c;z=c}if(isB(i)){if(p<0)p=c;q=c}}
+  if(a<0||p<0)continue;const wm=z-a,wb=q-p;if(wm<30||wb<30||wm<wb*.6||wm>wb*1.35)continue;A[r]=a;Z[r]=z;P[r]=p;Q[r]=q}
+ const sm=(X,r)=>{let s=0,n=0;for(let t=r-7;t<=r+7;t++)if(t>=0&&t<H&&!isNaN(A[t])){s+=X[t];n++}return n>4?s/n:NaN};
+ const d2=new Float32Array(d),m2=new Uint8Array(m);let moved=0;
+ for(let r=0;r<H;r++){const a=sm(A,r),z=sm(Z,r),p=sm(P,r),q=sm(Q,r);if(isNaN(a)||isNaN(p))continue;const k=(q-p)/(z-a);if(k<.85||k>1.3)continue;
+  if(Math.abs(p-a)<1.5&&Math.abs(q-z)<1.5)continue;moved++;
+  for(let c=0;c<W;c++){const sc=Math.round(a+(c-p)/k),i=r*W+c;if(sc<0||sc>=W){m2[i]=0;continue}const j=r*W+sc;m2[i]=m[j];d2[i*3]=d[j*3];d2[i*3+1]=d[j*3+1];d2[i*3+2]=d[j*3+2]}}
+ // a few px of her shoulder/arm still beside a top that covers her whole shoulder line: the top's edge colour is carried out to her edge (≤10 px; not for a tank – her sleeves are outside it)
+ for(let r=Math.floor(H*.15);r<Math.floor(H*.32);r++){let a=-1,z=-1,p=-1,q=-1;for(let c=0;c<W;c++){const i=r*W+c;if(m2[i]){if(a<0)a=c;z=c}if(isB(i)){if(p<0)p=c;q=c}}
+  if(a<0||p<0||z-a<(q-p)*.85)continue;const cp=(c,s)=>{const i=r*W+c,j=r*W+s;m2[i]=1;d2[i*3]=d2[j*3];d2[i*3+1]=d2[j*3+1];d2[i*3+2]=d2[j*3+2];moved++};
+  if(a-p>0&&a-p<=10)for(let c=p;c<a;c++)cp(c,Math.min(W-1,a+2));if(q-z>0&&q-z<=10)for(let c=z+1;c<=q;c++)cp(c,Math.max(0,z-2))}
+ return moved?[d2,m2]:[d,m]}
+function unBlack(d,b,pm){const DB=new Uint8Array(N);for(let i=0;i<N;i++){const k=i*3;DB[i]=b[k+2]-b[k]>22&&b[k+2]>150?1:0}
+ const DBd=dilate(DB,1);let area=0,ins=0;for(let i=0;i<N;i++)if(!DBd[i]){area++;if(pm[i])ins++}
+ const dark=area>0&&ins>area*.04;
+ const lum=k=>d[k]*.299+d[k+1]*.587+d[k+2]*.114,sat=k=>Math.max(d[k],d[k+1],d[k+2])-Math.min(d[k],d[k+1],d[k+2]);
+ const M=new Uint8Array(N);
+ for(let i=0;i<N;i++){const k=i*3;if(pm[i]){if(!(dark&&!DBd[i]))M[i]=1}else if(DB[i]&&lum(k)<70&&sat(k)<40)M[i]=1}
+ // the dark-grey rim where the black meets the garment, inside the doll's backdrop
+ for(let pass=0;pass<2;pass++){const add=[];for(let i=W;i<N-W;i++){if(M[i]||!DBd[i])continue;if(!(M[i-1]||M[i+1]||M[i-W]||M[i+W]))continue;const k=i*3;if(lum(k)<150&&sat(k)<45)add.push(i)}add.forEach(i=>M[i]=1)}
+ for(let i=0;i<N;i++)if(M[i]){const k=i*3;d[k]=b[k];d[k+1]=b[k+1];d[k+2]=b[k+2]}
+ return dark}
 function panelM(M,v,ex,ey){const [x0,y0]=OFFS[v],[dx,dy]=SH[v],o=new Uint8Array(N);
  for(let r=0;r<H;r++){const sy=Math.min(SHH-1,Math.max(0,y0+dy+ey+r));for(let c=0;c<W;c++){const sx=Math.min(SW-1,Math.max(0,x0+dx+ex+c));o[r*W+c]=M[sy*SW+sx]}}
  return o}
@@ -207,6 +250,12 @@ const bs=gauss(b,3,1.2),ds=gauss(d,3,1.2),diff=new Float32Array(N),dbg=new Float
    const r0=Math.max(0,r-7),r1=Math.min(H-1,r+7),c0=Math.max(0,c-7),c1=Math.min(W-1,c+7),n=bx(T[3],r0,c0,r1,c1);if(n<12)continue;
    let q=0;for(let z=0;z<3;z++)q+=(d[k+z]-bx(T[z],r0,c0,r1,c1)/n)**2;if(q<34*34){m[i]=2;add++}}
   for(let i=0;i<N;i++)if(m[i]==2)m[i]=1;if(!add)break}
+ // v259 (Sara 27/10 20:18 "רואים את הבד של החולצה" through her tie's tail): a scarf's tail is one piece of cloth – below the neck small gaps are closed
+ // and every hole inside it is filled (hair keeps its gaps between strands)
+ // v259b (Sara 20:35 "יש חלק גם מהכיסוי שהוא קצת שקוף … יש לי הרבה כיסויים כאלה"): light flowers printed on a dark scarf look like the beige dress to the
+// doll test, so bites were taken out of the tail's edge. Within 7 px of the tail anything GPT changed at all (not the doll as it was) is the scarf too
+if(grow){const cl=erode(dilate(m,7),7);for(let i=(nk+6)*W;i<N;i++)if(cl[i]&&!m[i]&&diff[i]>16&&dbg[i]>22&&!blue(i*3))m[i]=1;
+ const c2=erode(dilate(m,3),3),f=fillHoles(c2);for(let i=(nk+6)*W;i<N;i++)if(f[i])m[i]=1}
  const A=Float32Array.from(m);for(let r=nk-3;r<nk;r++)for(let c=0;c<W;c++){const i=r*W+c,k=i*3;if(A[i]&&diff[i]<40&&d[k]*.299+d[k+1]*.587+d[k+2]*.114>150)A[i]*=(nk-r)/4}
  // v218 (Sara 17:28 "צל צהוב, לא גזור טוב"): below the neck the hair's edge kept a beige rim of GPT's body/top. An edge pixel (4 px) lighter than the hair inside it (6 px around) fades out
  // v220 (17:52 "עדיין צל צהוב בשיער"): an edge pixel whose colour is nearer to what was there before (GPT's beige top, the backdrop) than to the hair inside takes the hair's colour and fades
@@ -260,11 +309,11 @@ const MODE={cover:{mode:'head'},scarf:{mode:'head'},necklace:{mode:'small',rows:
 const tick=()=>new Promise(r=>setTimeout(r,0));
 // src: a File/Blob or a url · kind: KIND key · onStep(i): progress · opt.note: her notes for the cut (v233) → {views:[canvas×8], shifts, px}
 async function run(src,kind,onStep,opt){const img=await toImg(src);const S=sheetData(img);if(!S)throw Object.assign(new Error('shape'),{code:'shape',w:img.naturalWidth,h:img.naturalHeight});
- const o=Object.assign({},MODE[kind]||{},flags(opt&&opt.note)),views=[],shifts=[],fab=[],lum=[];const BM=deBlack(S);
- for(let v=0;v<8;v++){onStep&&onStep(v);await tick();const b=await base(v);const s=shift(S,v,b,o.mode=='head'||o.mode=='whole');shifts.push(s);const d=panel(S,v,s[0],s[1]);if(BM){const pm=panelM(BM,v,s[0],s[1]);for(let i=0;i<N;i++)if(pm[i]){const k=i*3;d[k]=b[k];d[k+1]=b[k+1];d[k+2]=b[k+2]}}
+ const o=Object.assign({},MODE[kind]||{},flags(opt&&opt.note)),views=[],shifts=[],fab=[],lum=[];const S0=S.slice(),BM=deBlack(S);
+ for(let v=0;v<8;v++){onStep&&onStep(v);await tick();const b=await base(v);const s=shift(S,v,b,o.mode=='head'||o.mode=='whole');shifts.push(s);const d=panel(BM?S0:S,v,s[0],s[1]);if(BM)unBlack(d,b,panelM(BM,v,s[0],s[1]));
   if(o.mode=='whole'){const [m,f,l]=maskWhole(b,d,v,o.fab,kind=='tiex');views.push(kind=='hair'?await snug(turn(layerA(d,m.A),v),v):turn(layerA(d,m.A),v));if(f){fab.push(turn(layer(d,f),v));lum.push(...l)}}
   else if(o.mode=='face')views.push(turn(layerA(d,maskFace(b,d,v)),v));
-  else views.push(turn(layer(d,mask(b,d,o)),v))}
+  else{let m=mask(b,d,o);if(TOPK.includes(kind)){const r=slide(d,m,b);m=r[1];views.push(turn(layer(r[0],m),v))}else views.push(turn(layer(d,m),v))}}
  lum.sort((x,y)=>x-y);
  return {views,shifts,px:views.map(c=>c.px),fab:fab.length?fab:null,lum:lum.length?Math.round(lum[lum.length>>1]):0,black:!!BM}}
 // test helper: the panel, the doll and the masks of one view of a sheet (window.cut8dbg(url,v))
@@ -272,5 +321,5 @@ window.cut8dbg=async(src,v)=>{const img=await toImg(src),S=sheetData(img),b=awai
  const im=a=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),x=g.createImageData(W,H);for(let i=0;i<N;i++){const on=a.length==N?a[i]:0;x.data[i*4]=on?255:0;x.data[i*4+1]=on?255:0;x.data[i*4+2]=on?255:0;x.data[i*4+3]=255}g.putImageData(x,0,0);return c.toDataURL()};
  const rgb=a=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),x=g.createImageData(W,H);for(let i=0;i<N;i++){x.data[i*4]=a[i*3];x.data[i*4+1]=a[i*3+1];x.data[i*4+2]=a[i*3+2];x.data[i*4+3]=255}g.putImageData(x,0,0);return c.toDataURL()};
  return {d:rgb(d),b:rgb(b),raw:im(CUT8D.raw),morph:im(CUT8D.morph),fin:im(m)}};
-window.cut8={run,MODE,W,H,CV:2,CVW:8,flags,says};   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
+window.cut8={run,MODE,W,H,CV:2,CVW:9,CVH:8,CVX:3,flags,says};   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
 })();

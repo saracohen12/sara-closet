@@ -261,6 +261,11 @@ Maintain 100% face identity: eyes, nose, lips, facial structure, skin texture, e
 
 החזירי את שתי התמונות יחד, באותה תשובה: קודם הגיליון (תמונה 1), ואחריו התקריב (תמונה 2).`}
 const P={hair,hairW,hairZ,HAIRS,HAIRG,tie,tieW,exact,batch,TIES,look,face,faceW,faceCU,mkBoth,MKC,GRID};
+// v259: every prompt ends with the ZIP line (zip259.js)
+// v259 (Sara 20:35 "מה צריך לקרוא כדי שהכיסוי ייגזר בצורה טובה … חלק מהכיסוי קצת שקוף"): every tie prompt says the cloth is solid all the way down
+const OPQ=`הבד של הכיסוי אטום ומלא לכל האורך – גם השובלים, הקצוות, הסלסולים והפרנזים: בלי שקיפות ובלי שרואים דרכו את השמלה או את הגוף. הדפס (פרחים וכו׳) מודפס על הבד עצמו ולא חורים בבד. השובל שיורד על הכתף או על החזה מונח מעל השמלה, והשמלה מסביבו נשארת בדיוק כמו בגיליון המקורי.`;
+for(const k of ['tie','tieW','exact','batch']){const f=P[k];P[k]=function(){const t=f.apply(this,arguments);return typeof t=='string'?t+'\n\n'+OPQ:t}}
+for(const k in P)if(typeof P[k]=='function'){const f=P[k];P[k]=function(){const t=f.apply(this,arguments);return typeof window!='undefined'&&window.zipAsk?window.zipAsk(t):t}}
 if(typeof window!='undefined')window.STYP=P;
 if(typeof module!='undefined')module.exports=P;
 })();
