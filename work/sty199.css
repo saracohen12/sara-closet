@@ -350,3 +350,25 @@ dialog#t245v{width:min(1400px,100vw);max-width:100vw;max-height:100dvh;padding:0
 dialog#t245v::backdrop{background:rgba(0,0,0,.8)}
 #t245v img{display:block;width:100%;height:auto;max-width:none}
 #t245v .mkx{position:sticky;top:8px;float:left;margin:8px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:#222;font-size:1rem;cursor:pointer;z-index:1}
+/* v246: her collection of ties for a cover – pick up to 10, one ZIP to GPT, one upload back (tie202.js) */
+#tie202 .t246top{position:sticky;top:66px;z-index:1;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;margin:4px 0 8px;border-radius:16px;background:var(--z-surface,#f6f2ee);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+#tie202 .t246top span{flex:1 1 160px;font-size:.92rem}
+#tie202 .t246top button{font:inherit;font-size:.88rem;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--z-line,#ddd);background:var(--z-solid,#fff);color:var(--z-ink,#2a1d17);cursor:pointer}
+#tie202 .t246top .mkp{background:var(--z-pri,#2a1d17);color:var(--z-pri-ink,#fff);border:0;font-weight:600}
+#tie202 .t246c{position:relative}
+#tie202 .t246c .t246v{position:absolute;top:8px;inset-inline-end:8px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:700;background:rgba(255,255,255,.9);color:transparent;border:2px solid rgba(0,0,0,.25)}
+#tie202 .t246c.sel{border-color:var(--z-acc,#b4532c);box-shadow:0 0 0 3px var(--z-acc-soft,#f3d9cc)}
+#tie202 .t246c.sel .t246v{background:var(--z-acc,#b4532c);color:#fff;border-color:var(--z-acc,#b4532c)}
+#tie202 .t246c .t246r{position:absolute;top:16px;inset-inline-start:16px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.9);font-size:1rem;cursor:pointer}
+#tie202 .t245c.wait{background:var(--z-surface,#f6f2ee)}
+#tie202 .t246bar{margin:4px 0 12px}
+#tie202 .t246add{margin:18px 0 6px;display:flex;justify-content:center}
+#tie202 .t246add button{font:inherit;font-size:1rem;font-weight:600;min-height:52px;padding:0 26px;border-radius:999px;border:0;background:var(--z-pri,#2a1d17);color:var(--z-pri-ink,#fff);cursor:pointer}
+#tie202 .t246add small{font-size:.86rem;opacity:.8;text-align:center}
+#tie202 .t246one{margin-top:14px;font-size:.86rem}
+#tie202 .t246one summary{cursor:pointer;min-height:36px;display:flex;align-items:center;opacity:.8}
+/* v247: GPT's 8-angle close-up turns on her tie card; and next to the home avatar (the cover that is on home) */
+#tie202 .t245p.c8 img{object-fit:cover;object-position:50% 6%}
+#h180 .z-av .z-cu247{position:absolute;z-index:3;top:8px;inset-inline-end:0;width:clamp(96px,30%,150px);aspect-ratio:3/4;padding:0;border:3px solid #fff;border-radius:18px;overflow:hidden;background:#efe7df;box-shadow:0 6px 18px rgba(60,40,30,.28);cursor:zoom-in}
+#h180 .z-av .z-cu247 img{width:100%;height:100%;object-fit:cover;object-position:50% 6%;display:block}
+#h180 .z-av .z-cu247 span{position:absolute;inset-inline:0;bottom:0;padding:3px 0 4px;font:700 .72rem/1 system-ui,sans-serif;color:#fff;background:linear-gradient(transparent,rgba(40,25,15,.65));text-align:center}

@@ -36,7 +36,7 @@ function addMine(id,m){if(!m||D[id])return;try{
  Object.assign(k.dataset,{id,src:'my',q:[id,m.short,m.color,catName(c),'שלי הוספתי'].join(' '),d:'0',p:'0',o:'0',c:'',ck:'99',sk:'',z:'',i:'99999',tg:'',ss:'',ord:'',rdl:''});delete k.dataset.dup;delete k.dataset.orig;
  const p=k.querySelector('.ph');if(p){$a('img',p).forEach((x,i)=>i?x.remove():0);let im=p.querySelector('img');if(!im){im=document.createElement('img');p.prepend(im)}
   im.removeAttribute('loading');im.dataset.th=id;delete im.dataset.s79;im.src=m.img?'/_blob/'+m.img:TPH;
-  $a('.dups,.dupb,.avd,.ms123,.new83,.av83,.dt',p).forEach(x=>x.remove());const sb=p.querySelector('.sb');if(sb){sb.className='sb my';sb.textContent='שלי'}}
+  $a('.dups,.dupb,.avd,.ind247,.ms123,.new83,.av83,.dt',p).forEach(x=>x.remove());const sb=p.querySelector('.sb');if(sb){sb.className='sb my';sb.textContent='שלי'}}
  const set=(s,h)=>{const e=k.querySelector(s);if(e)e.innerHTML=h};
  set('.t',es(m.short||'בגד שלי'));set('.m',es(m.color||''));set('.pr','<b>הוספתי בעצמי</b>');set('.ret','');set('.st','');
  g.prepend(k);try{CARDM.delete(id)}catch(_){}

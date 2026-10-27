@@ -58,6 +58,31 @@ ${det}`:' מהתמונה השלישית: אותו נפח ואותו גובה, א
 כיסוי הבז׳ נעלם לגמרי. אותה קשירה בדיוק בכל 8 הזוויות. בצד ובגב צרי את הקשר, הקפלים והשובלים כמו שהם נראים באמת מהכיוון הזה.
 
 ${KEEP}`}
+// v246 (Sara 27/10 13:11 "אני בוחרת עד 10 קשירות … מוריד לי את כולן בבת אחת … מעלה ל-GPT כקובץ זיפ … מעלה לך ואתה מסדר"): one prompt for a ZIP with the scarf, the doll and up to 10 tie sheets
+// v247 (Sara 27/10 13:22): the ZIP also holds her face close-up in 8 angles (face-8.jpg) and every picture she has of the scarf (scarf-1.jpg…);
+// for every tie GPT returns TWO pictures – first the close-up (face-8 edited), then the whole doll (doll-8 edited) – so 5 ties = 10 pictures.
+function batch(item,L,ns){const n=L.length,pad=i=>String(i+1).padStart(2,'0');ns=Math.max(1,ns||1);
+ const sc=ns>1?`scarf-1.jpg עד scarf-${ns}.jpg`:'scarf-1.jpg';
+ return `מצורף קובץ ZIP. בתוכו:
+• ${sc} – המטפחת שקניתי: ${item}.${ns>1?' כל התמונות הן אותה מטפחת.':''}
+• face-8.jpg – תקריב של הפנים שלי ב-8 זוויות מסביב (ראש וכתפיים), שתי שורות של 4 משבצות.
+• doll-8.jpg – הדמות שלי, כל הגוף, ב-8 זוויות מסביב, באותו סדר.
+${L.some(x=>x.file)?'• tie-01.jpg ועד הסוף – כל קובץ הוא הבובה ב-8 זוויות עם קשירה אחת.\n':''}
+${n} הקשירות, לפי הסדר:
+${L.map((x,i)=>`${pad(i)} – ${x.n}${x.file?` (הקובץ ${x.file})`:''}${!x.file&&x.det?`: ${x.det}`:''}`).join('\n')}
+
+לכל קשירה החזירי בדיוק שתי תמונות, בסדר הזה:
+1. התקריב – ערכי את face-8.jpg, אל תציירי אותו מחדש. השיער נעלם לגמרי מתחת למטפחת, ובמקומו המטפחת מ-${sc} קשורה בקשירה הזו. אותן 8 משבצות באותו סדר ובאותן זוויות, אותו חיתוך של ראש וכתפיים, אותה חולצה, אותו רקע.
+2. הגוף המלא – ערכי את doll-8.jpg, אל תציירי אותו מחדש. במקום כיסוי הראש הבז׳ אותה מטפחת באותה קשירה בדיוק. כיסוי הבז׳ נעלם לגמרי.
+
+בשתי התמונות: אותו נפח ואותו גובה, אותו קשר, אותם קפלים ואותם שובלים כמו בקובץ של הקשירה, ואותה קשירה בדיוק בכל 8 הזוויות. בצד ובגב צרי את הקשר, הקפלים והשובלים כמו שהם נראים באמת מהכיוון הזה.
+המטפחת בדיוק כמו ב-${sc}: אותו בד, אותו הדפס, אותם צבעים, אותו ברק. ההדפס ממשיך גם בקפלים, בקשר ובשובל. אם בתמונה יש עוד דברים (בגדים, תכשיטים, דוגמנית), הם לא שלי.
+
+הפנים לא משתנים בכלל: אותם פנים, אותה הבעה, אותו חיוך, אותו עור. הראש באותו גודל ובאותו מקום בדיוק בכל משבצת.
+אל תשני שום דבר אחר: אותו גיליון, אותו סדר זוויות, אותו מיקום ואותו גודל בכל משבצת, אותה תנוחה, אותו רקע, אותם קווים לבנים בין המשבצות. בגוף המלא השמלה בצבע עור נשארת.
+כל תמונה היא גיליון אחד של 8 משבצות (2 שורות של 4), באותו יחס גובה-רוחב כמו הקובץ שערכת, בלי טקסט ובלי מספרים.
+
+סך הכול ${2*n} תמונות: לכל קשירה קודם התקריב ואחריו הגוף המלא. תתחילי בקשירה 01 ותמשיכי לפי הסדר. אם אי אפשר את כולן בתשובה אחת, עשי כמה שאפשר, ואני אכתוב "המשך".`}
 // v206 (Sara 26/10 13:33 "הפרומט ... נותן לי כמה כיסויים אותו דבר ... הנה פרומטים חדשים"): her 20 new detailed ties – [name, English details, how to tie it (her Hebrew)].
 // Dropped from her text only what fights editing the doll sheet: "transparent background / isolated asset / jawline cut / 8k"; #12 "sheer" → light, soft;
 // #13 "Dual-Pattern" → Dual-Tail (one colour); #14 "glossy … high silk sheen" (the library tie is matte so the site can paint it; a real satin scarf keeps its shine in exact()).
@@ -213,7 +238,7 @@ ${en?`\n${det}\n\n`:''}האיפור נראה אמיתי, כמו של מאפרת 
 Maintain 100% face identity: eyes, nose, lips, facial structure, skin texture, expression. Photorealistic.
 
 החזירי את שתי התמונות יחד, באותה תשובה: קודם הגיליון (תמונה 1), ואחריו התקריב (תמונה 2).`}
-const P={hair,hairW,HAIRS,HAIRG,tie,tieW,exact,TIES,look,face,faceW,faceCU,mkBoth,MKC,GRID};
+const P={hair,hairW,HAIRS,HAIRG,tie,tieW,exact,batch,TIES,look,face,faceW,faceCU,mkBoth,MKC,GRID};
 if(typeof window!='undefined')window.STYP=P;
 if(typeof module!='undefined')module.exports=P;
 })();
