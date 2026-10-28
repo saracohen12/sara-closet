@@ -1,0 +1,36 @@
+/* v283 redesign, screen 2: the closet tab */
+#z6{display:none}
+html[data-d180=z50] body[data-z50=closet] #z6{display:block;padding:4px 16px 8px}
+html[data-d180=z50] body[data-z50=closet] #top>.h9tiles,html[data-d180=z50] body[data-z50=closet] #top>.h9sec,
+html[data-d180=z50] body[data-z50=closet] #top>#urgent,html[data-d180=z50] body[data-z50=closet] #top>#hol83,
+html[data-d180=z50] body[data-z50=closet] #top>#wk83,html[data-d180=z50] body[data-z50=closet] #top>#old79,
+html[data-d180=z50] body[data-z50=closet] #top>#recent,html[data-d180=z50] body[data-z50=closet] #ix83{display:none!important}
+html[data-d180=z50] #z6 .z6q{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+html[data-d180=z50] #z6 .z6q button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:74px;padding:8px 4px;border-radius:16px;border:1px solid var(--z-line);background:var(--z-surface);color:var(--z-ink);font:500 .76rem/1.2 var(--z-body);text-align:center;cursor:pointer;box-shadow:none}
+html[data-d180=z50] #z6 .z6q button i{font-style:normal;font-size:1.35rem;line-height:1}
+html[data-d180=z50] #z6 .z6q button[aria-pressed=true]{background:var(--z-ink);color:#fff;border-color:var(--z-ink)}
+html[data-d180=z50] #z6 .z6u{display:flex;align-items:center;gap:8px;width:100%;margin-top:8px;min-height:44px;padding:8px 14px;border-radius:14px;border:0;background:#fbe9e3;color:#8f2f12;font:600 .86rem var(--z-body);text-align:start;cursor:pointer}
+html[data-d180=z50] #z6 .z6u[hidden]{display:none}html[data-d180=z50] #z6 .z6u b{margin-inline-start:auto;font-size:1.1rem}
+/* the categories strip in the sticky bar */
+.z6c{display:none}
+html[data-d180=z50] body[data-z50=closet] .ctrl .z6c{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:8px 2px 6px;margin:0 -2px}
+html[data-d180=z50] .ctrl .z6c::-webkit-scrollbar{display:none}
+html[data-d180=z50] .ctrl .z6c button{flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;width:64px;padding:0;border:0;background:none;color:var(--z-ink);font:500 .72rem/1.15 var(--z-body);cursor:pointer}
+html[data-d180=z50] .ctrl .z6c .z6ci{display:grid;place-items:center;width:56px;height:56px;border-radius:50%;overflow:hidden;background:var(--z-tile);border:2px solid transparent;font-size:.8rem;font-weight:600}
+html[data-d180=z50] .ctrl .z6c .z6ci img{width:100%;height:100%;object-fit:cover}
+html[data-d180=z50] .ctrl .z6c .z6all .z6ci{background:var(--z-ink);color:#fff}html[data-d180=z50] .ctrl .z6c .z6all b{display:none}
+html[data-d180=z50] .ctrl .z6c b{font-weight:500;max-width:64px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-d180=z50] .ctrl .z6c small{font-size:.66rem;color:var(--z-muted)}
+html[data-d180=z50] .ctrl .z6c button[aria-pressed=true] .z6ci{border-color:var(--z-acc);box-shadow:0 0 0 2px #fff inset}
+html[data-d180=z50] .ctrl .z6c button[aria-pressed=true] b{color:var(--z-acc);font-weight:700}
+/* the sheet that shows the week / long-time-not-worn / urgent */
+#z6s{width:min(560px,100vw);max-width:100vw;max-height:88svh;margin:auto auto 0;padding:0 16px 20px;border:0;border-radius:24px 24px 0 0;background:#f6f5f3;color:#17161a;overflow-y:auto;box-sizing:border-box}
+#z6s::backdrop{background:rgba(20,18,22,.45)}
+#z6s .z6sh{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:16px 0 8px;background:#f6f5f3}
+#z6s h2{margin:0;font-size:1.2rem}#z6s .z6sx{width:44px;height:44px;border-radius:50%;border:1px solid #e6e3df;background:#fff;font-size:1.05rem;cursor:pointer}
+#z6s .z6sb>*{display:block!important;margin:0!important}
+@media (min-width:860px){#z6s{margin:auto;border-radius:24px}html[data-d180=z50] #z6 .z6q{grid-template-columns:repeat(8,1fr)}}
+html[data-d180=z50] .ctrl.z6min .z6c{padding:4px 2px 2px}html[data-d180=z50] .ctrl.z6min .z6c .z6ci{width:38px;height:38px}
+html[data-d180=z50] .ctrl.z6min .z6c button{width:44px}html[data-d180=z50] .ctrl.z6min .z6c small,html[data-d180=z50] .ctrl.z6min .z6c b{display:none}
+/* the old row of category words is the same as the strip of pictures */
+html[data-d180=z50] body[data-z50=closet] .ctrl nav.subs{display:none!important}
