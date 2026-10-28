@@ -244,5 +244,5 @@ document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.c
  }catch(err){ERR('click',err);toast_('משהו השתבש, נסי שוב')}});
 document.addEventListener('change',e=>{const t=e.target;if(!t.matches||!t.matches('#wr234 [data-wr234cam]'))return;const f=[...(t.files||[])];const more=t.dataset.wr234cam=='add';t.value='';if(f.length)scan(f,more)});
 let qT;document.addEventListener('input',e=>{if(!e.target||e.target.id!='q234')return;clearTimeout(qT);const el=e.target;qT=setTimeout(()=>{V.q=el.value;V.n=60;render();const n=W.querySelector('#q234');if(n){n.focus();try{n.setSelectionRange(n.value.length,n.value.length)}catch(_){}}},250)});
-window.WR234={open,addMine,setWorn};
+window.WR234={open,addMine,setWorn,dayLook};   // v306: dayLook for the diary's "לבשתי את הלוק של היום"
 })();

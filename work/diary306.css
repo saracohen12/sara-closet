@@ -1,0 +1,84 @@
+/* v306 "מה לבשתי": today + the month diary + today/week/month lists (diary306.js); the window reuses the #wr234 look */
+#dy306{width:min(640px,100vw);max-width:100vw;max-height:92dvh;margin:auto auto 0;padding:0;border:0;border-radius:24px 24px 0 0;overflow:hidden;background:var(--z-solid,var(--bg,#faf7f2));color:var(--z-ink,var(--fg,#2b211b));box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+#dy306[open]{display:flex;flex-direction:column}
+@media(min-width:701px){#dy306{margin:auto;border-radius:24px}}
+#dy306::backdrop{background:rgba(20,12,8,.45)}
+#dy306 button{font:inherit;color:inherit}
+#dy306 .w234b{min-height:0}
+.dys306{padding:4px 0 16px;border-bottom:1px solid var(--z-line,#e6dcd2);margin-bottom:12px}
+.dys306:last-child{border-bottom:0;margin-bottom:0}
+.dyg306{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(min-width:520px){.dyg306{grid-template-columns:repeat(5,1fr)}}
+.dyme306 img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:50% 20%;border-radius:14px;display:block;border:2px solid var(--z-acc,#b5562f)}
+.dyt306>small{font-size:.7rem;color:var(--z-muted,#7a6a5e);padding:0 2px}
+.dya306{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.dya306 button{flex:1 1 auto;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--z-line-strong,#cfc4b8);background:var(--z-surface,#fff);cursor:pointer;font-weight:600;font-size:.9rem}
+#dy306 .dya306 button.pri{background:var(--z-pri,#17161a);color:var(--z-pri-ink,#fff);border-color:transparent}
+.dya306 button small{font-weight:400;opacity:.8}
+.dym306{display:flex;align-items:center;gap:8px}
+.dym306 .h234{flex:1;text-align:center;margin:6px 0}
+.dym306 button{flex:none;width:40px;height:40px;border-radius:50%;border:1px solid var(--z-line,#e0d4c8);background:none;font-size:1.3rem;line-height:1;cursor:pointer}
+.dym306 button:disabled{opacity:.3;cursor:default}
+.dyst306{display:flex;gap:8px;margin:4px 0 10px;flex-wrap:wrap}
+p.dyst306{display:block}
+div.dyst306>*{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:8px 6px;border-radius:14px;background:var(--z-acc-soft,#f6e7df);font-size:.74rem;color:var(--z-muted,#6a6670);text-align:center;border:0}
+div.dyst306 b{font-size:1.1rem;color:var(--z-ink,#17161a)}
+div.dyst306 button{flex-direction:row;gap:8px;cursor:pointer}
+div.dyst306 button img{width:34px;height:44px;object-fit:cover;border-radius:8px;flex:none}
+div.dyst306 button span{display:flex;flex-direction:column;align-items:flex-start}
+.dyw306,.dycal306{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.dyw306{margin-bottom:4px}
+.dyw306 span{text-align:center;font-size:.72rem;color:var(--z-muted,#7a6a5e)}
+.dyc306{position:relative;aspect-ratio:3/4;min-width:0;padding:0;border-radius:10px;border:1px solid var(--z-line,#e6e3df);background:var(--z-surface,#fff);cursor:pointer;overflow:hidden}
+.dyc306.e{border:0;background:none}
+.dyc306:disabled{opacity:.35;cursor:default}
+.dyc306>b{position:absolute;top:2px;inset-inline-start:4px;z-index:2;font-size:.7rem;font-weight:600;line-height:1.2;padding:0 3px;border-radius:6px;background:rgba(255,255,255,.85);color:#17161a}
+.dyc306.td{border:2px solid var(--z-acc,#b5562f)}
+.dyc306.td>b{background:var(--z-acc,#b5562f);color:#fff}
+.dyp306,.dyp306 img{position:absolute;inset:0;width:100%;height:100%}
+.dyp306 img{object-fit:cover;object-position:50% 20%}
+.dyc306>i{position:absolute;bottom:2px;inset-inline-end:2px;z-index:2;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--z-pri,#17161a);color:#fff;font:600 .66rem/18px system-ui,sans-serif;text-align:center;font-style:normal}
+.dytb306{margin:2px 0 8px}
+#dy306 .dytb306 button{flex:1 1 0;min-height:44px}
+#dy306 .dytb306 button[aria-selected=true]{background:var(--z-pri,#2d211b);color:var(--z-pri-ink,#fff6ee);border-color:transparent;font-weight:600}
+.dysum306{margin:0 0 8px}
+.dyl306{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.dyl306 button{display:flex;align-items:center;gap:10px;width:100%;padding:6px;border:1px solid var(--z-line,#e6e3df);border-radius:14px;background:var(--z-surface,#fff);text-align:start;cursor:pointer}
+.dyl306 img{width:46px;height:60px;object-fit:cover;border-radius:10px;flex:none;background:#f1e8de}
+.dyl306 span{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.dyl306 b{font-size:.86rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dyl306 small{font-size:.74rem;color:var(--z-muted,#7a6a5e);line-height:1.3}
+.dyl306 em{flex:none;font-style:normal;font-weight:700;font-size:.95rem;padding:0 6px;color:var(--z-acc,#b5562f)}
+/* the home card: the title opens the diary; "📅 מה לבשתי היום" sits next to "הצעה אחרת" */
+#h180 .z-lkh b[data-dy306]{cursor:pointer;text-decoration:underline;text-decoration-color:var(--z-line-strong,#cfc4b8);text-underline-offset:4px}
+#h180 .z-lkh b[data-dy306]::after{content:" 📅";font-size:.85em}
+#h180 .z-lkh b[data-dy306]:focus-visible{outline:2px solid var(--z-acc,#b5562f);outline-offset:3px;border-radius:4px}
+html[data-d180=z50] #h180 .z-lka.dy306{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+html[data-d180=z50] #h180 .z-lka.dy306 .z-lkw{grid-column:1/-1}
+html[data-d180=z50] #h180 .z-lka.dy306 button{padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 📝 past days, ⭐ useful, ♥ loved, 💡 tips, 🧺 out of use */
+.dyps306{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+@media(min-width:520px){.dyps306{grid-template-columns:repeat(6,1fr)}}
+.dyps306 button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 4px;border-radius:14px;border:1px dashed var(--z-line-strong,#cfc4b8);background:var(--z-surface,#fff);cursor:pointer;min-height:64px}
+.dyps306 button.on{border-style:solid;border-color:var(--z-acc,#b5562f);background:var(--z-acc-soft,#f6e7df)}
+.dyps306 b{font-size:.84rem}.dyps306 small{font-size:.7rem;color:var(--z-muted,#7a6a5e)}
+.dyps306 i{font-style:normal;font-size:.74rem;font-weight:600;color:var(--z-acc,#b5562f)}
+.dyl306 li{display:flex;align-items:center;gap:6px}
+.dyl306 li>button:first-child{flex:1;min-width:0}
+.dyr306{flex:none;width:22px;text-align:center;font-style:normal;font-weight:700;font-size:.85rem;color:var(--z-muted,#7a6a5e)}
+#dy306 .dyh306{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--z-line,#e6e3df);background:var(--z-surface,#fff);font-size:1.25rem;line-height:1;color:var(--z-acc,#b5562f);cursor:pointer}
+#dy306 .dyh306.on{background:var(--z-acc-soft,#f6e7df);border-color:var(--z-acc,#b5562f)}
+#dy306 .dyun306{flex:none;width:auto;min-height:40px;padding:0 12px;border-radius:999px;border:1px solid var(--z-line-strong,#cfc4b8);background:var(--z-surface,#fff);font-size:.8rem;cursor:pointer;white-space:nowrap}
+.dytip306 ul{margin:0;padding:0 18px 0 0;display:flex;flex-direction:column;gap:6px;font-size:.88rem;line-height:1.45}
+.dyoh306{margin:12px 0 6px;font-size:.9rem}.dyoh306 small{font-weight:400;color:var(--z-muted,#7a6a5e)}
+.dyow306{display:flex;gap:12px;align-items:center;margin-bottom:8px}
+.dyow306 img{width:84px;height:110px;object-fit:cover;border-radius:14px;flex:none;background:#f1e8de}
+.dyow306 div{display:flex;flex-direction:column;gap:4px;min-width:0}.dyow306 small{color:var(--z-muted,#7a6a5e);font-size:.8rem}
+.dywy306{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#dy306 .dywy306 button{min-height:48px;padding:0 10px;border-radius:14px;border:1px solid var(--z-line-strong,#cfc4b8);background:var(--z-surface,#fff);text-align:start;cursor:pointer;font-size:.9rem}
+#dy306 .dywy306 button[aria-checked=true]{background:var(--z-pri,#17161a);color:var(--z-pri-ink,#fff);border-color:transparent}
+.dynt306{display:flex;flex-direction:column;gap:4px;margin:12px 0;font-size:.82rem;color:var(--z-muted,#7a6a5e)}
+.dynt306 input{font:inherit;font-size:16px;color:var(--z-ink,#17161a);padding:10px 14px;border-radius:12px;border:1px solid var(--z-line-strong,#cfc4b8);background:var(--z-surface,#fff)}
+#dy306 .ft234 .pri:disabled{opacity:.45}
+#dy306 .ps234 input{font-size:16px}
+#dy306 .ft234 .pri{background:linear-gradient(135deg,#b5562f,#d27a4c);color:#fff;border:0}
