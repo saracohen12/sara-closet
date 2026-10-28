@@ -23,12 +23,25 @@ function setup(d){dlg=d;if(d.querySelector('#z9'))return;const stage=d.querySele
  ['.r3hd','.r3styr','.r3cam','.r3bgw'].forEach(s=>{const x=now.querySelector(s);if(x){const w=document.createElement('div');w.className='z9s';inn.appendChild(w);w.appendChild(x)}});
  now.classList.add('z9gone');   // the rest (the worn chips and the three checkboxes) stays in place, hidden – the buttons above drive them
  paintFr();
- btn.addEventListener('click',()=>show(pan.hidden));
+ btn.addEventListener('click',()=>{show(pan.hidden);setTimeout(()=>{try{const r=pan.getBoundingClientRect();if(!pan.hidden&&(r.height<20||r.bottom<0||r.top>innerHeight)&&window.errlog290)errlog290('z9show',new Error(`r=${Math.round(r.top)},${Math.round(r.height)} vw=${innerWidth}x${innerHeight}`),'')}catch(_){}},400)});   // v292: she said a tap did nothing
  pan.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;if(t.classList.contains('z9x'))return show(false);if(t.dataset.z9fr)return frSet(t.dataset.z9fr)});
  d.addEventListener('keydown',e=>{if(e.key=='Escape'&&pan&&!pan.hidden){e.preventDefault();e.stopPropagation();show(false)}},true);
  // the studio repaints these blocks (heads, styles, backgrounds): keep them unfolded here
  let q=0;new MutationObserver(()=>{if(q||pan.hidden)return;q=requestAnimationFrame(()=>{q=0;unfold()})}).observe(pan,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
 }
-const t=setInterval(()=>{const d=document.getElementById('r360');if(d&&d.querySelector('.r3now')&&d.querySelector('#z7')){clearInterval(t);try{setup(d)}catch(e){ERR('setup',e)}}},700);
+// v292 (Sara 15:46 "איפה … בפנים בחוץ? … איך אני מזיזה את השיער?"): the three switches also sit right under the avatar, whenever they mean something –
+// shirt in / out of the skirt, shirt under the dress, hair in front of / behind the shoulders – so they never depend on opening a window
+const Q=[['.r3tk','👚','החולצה בפנים','החולצה בחוץ'],['.r3un','👗','החולצה מתחת לשמלה','החולצה מעל השמלה'],['.r3wb','💇‍♀️','השיער מאחורי הכתפיים','השיער מקדימה']];
+let qb=null,qk='';
+function paintQ(){if(!dlg||!qb)return;try{const h=Q.map(([s,i,on,off],n)=>{const l=dlg.querySelector(s);if(!l||l.hidden)return '';const c=!!(l.querySelector('input')||{}).checked;
+  return `<button type="button" data-z9q="${n}" aria-pressed="${c}"><i aria-hidden="true">${i}</i><span>${c?on:off}</span><b aria-hidden="true">${c?'✓':'⇄'}</b></button>`}).join('');
+ if(h!=qk){qk=h;qb.innerHTML=h;qb.hidden=!h}}catch(e){ERR('q',e)}}
+function setupQ(d){const st=d.querySelector('.r3stage'),ctl=st&&st.querySelector('.r3ctl');if(!st||st.querySelector('.z9q'))return;
+ qb=document.createElement('div');qb.className='z9q';qb.setAttribute('role','group');qb.setAttribute('aria-label','לסדר את הלוק');qb.hidden=true;
+ if(ctl)ctl.before(qb);else st.appendChild(qb);
+ qb.addEventListener('click',e=>{const b=e.target.closest('[data-z9q]');if(!b)return;const l=d.querySelector(Q[+b.dataset.z9q][0]),i=l&&l.querySelector('input');if(!i)return;i.checked=!i.checked;i.dispatchEvent(new Event('change',{bubbles:true}));setTimeout(paintQ,30);try{window.Z284&&Z284.paint()}catch(_){}});
+ const now=d.querySelector('.r3now');if(now)new MutationObserver(()=>requestAnimationFrame(paintQ)).observe(now,{subtree:true,attributes:true,attributeFilter:['hidden']});
+ d.addEventListener('change',()=>setTimeout(paintQ,30));setInterval(()=>{if(d.open)paintQ()},900);paintQ()}
+const t=setInterval(()=>{const d=document.getElementById('r360');if(d&&d.querySelector('.r3now')&&d.querySelector('#z7')){clearInterval(t);try{setup(d)}catch(e){ERR('setup',e)}try{setupQ(d)}catch(e){ERR('setupQ',e)}}},700);
 window.Z291={show:o=>show(o!==false)};
 })();

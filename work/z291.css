@@ -26,3 +26,13 @@
 #r360[data-z9f=none] .r3s{border-radius:0;box-shadow:none;background:transparent}
 #r360[data-z9f=none] .r3fig{border:0!important;box-shadow:none!important;background:transparent!important}
 #r360 #z9 .z9s:has(> [hidden]),#r360 #z9 .z9s:empty{display:none}
+/* v292 – in / out, under the dress, hair behind: right under the avatar */
+#r360 .z9q{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:6px auto 2px;max-width:420px}
+#r360 .z9q[hidden]{display:none}
+#r360 .z9q button{display:inline-flex;align-items:center;gap:5px;min-height:40px;padding:4px 12px;border-radius:999px;border:1.5px solid var(--z-acc,#b4532a);background:var(--z-surface,#fff);color:var(--z-ink,#2b211b);font:inherit;font-size:.82rem;font-weight:600;cursor:pointer}
+#r360 .z9q button[aria-pressed=true]{background:var(--z-acc,#b4532a);color:#fff}
+#r360 .z9q button i{font-style:normal}
+#r360 .z9q button b{font-size:.8rem;opacity:.85}
+#r360 .z9q button:focus-visible{outline:3px solid var(--z-acc,#b4532a);outline-offset:2px}
+/* the buttons on the avatar slide under the sticky top bar, not over it */
+#r360 .r3h{z-index:6}

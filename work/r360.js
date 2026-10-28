@@ -275,11 +275,12 @@ function chinFade(m){try{const W=m.naturalWidth,H=m.naturalHeight,c=document.cre
  if(!n)return m;x.putImageData(d,0,0);c.naturalWidth=W;c.naturalHeight=H;c.src=(m.src||'')+'#chin';return c}catch(_){return m}}
 // v288: "hair behind the shoulders" = her wig with the hair taken away wherever her body is (the hair falls behind the neck and shoulders).
 // The old wb*.webp layers were cut for the first wig and ended in a straight line above the shoulders – Sara 28/10 15:10 "עושה לי שיער באוויר".
-async function hairBack(n){const w=await im('w'+n),b=await im('ch'+n);if(!w||!b)return w;try{
+async function hairBack(n,k){const w=await im((k||'w')+n),b=await im('ch'+n);if(!w||!b)return w;try{
  const W=w.naturalWidth||w.width,H=w.naturalHeight||w.height,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
  x.drawImage(w,0,0);x.globalCompositeOperation='destination-out';x.filter='blur(1.2px)';x.drawImage(b,0,0);x.filter='none';x.globalCompositeOperation='source-over';
  const i=new Image();i.src=c.toDataURL('image/png');await i.decode();return i}catch(e){(window.ERRS=window.ERRS||[]).push('v288 hairBack: '+(e&&e.message||e));return w}}
 function im(src){if(/^wbx\d$/.test(src)){if(!IMG[src])IMG[src]=hairBack(src.slice(3));return IMG[src]}
+ const hb=/^hb_(\w+)(\d)$/.exec(src);if(hb){if(!IMG[src])IMG[src]=hairBack(hb[2],hb[1]);return IMG[src]}   // v292: a hairstyle behind the shoulders too (Sara 15:46 "איך אני מזיזה את השיער?")
  if(!IMG[src])IMG[src]=(async()=>{for(let n=0;n<3;n++){if(n)await new Promise(z=>setTimeout(z,500*n*n));const i=await imLoad(DYN[src]||('a8/'+src+'.webp'+V));if(i)return /^(w|yh\w+|yt\w+)\d$/.test(src)?chinFade(i):i}
   delete IMG[src];(window.ERRS=window.ERRS||[]).push('v230 img: '+src);return null})();return IMG[src]}
 // a base shirt under lace: the arm's own light and shade, in the shirt's colour
@@ -313,7 +314,7 @@ function layersFor(v,s){const on=s.on||{},L=[];const x=k=>({s:'x'+k+(v+1),k});co
  // so it covered the shoes she chose. The shoes are drawn once more over the dress, skirt and coat (the shoe layer is only the shoe, at the floor)
  const shs=of('shoes');if(shs.length&&(of('body').length||of('bottom').length||of('coat').length))shs.forEach(k=>L.push(x(k)));
  const st=STY[s.head],z=st&&'z'+s.head.slice(1)+(v+1);
- const head=s.head=='w'?[{s:(s.wb&&WB[v]?'wbx':'w')+(v+1),hd:1}]:st?[DYN[s.head+(v+1)]&&{s:s.head+(v+1),hd:1},st.set=='tie'&&DYN[z]&&{s:z,t:s.tc||GREY,ref:st.lum}].filter(Boolean):(s.head&&s.head!='c')?[x(s.head)]:[];
+ const head=s.head=='w'?[{s:(s.wb&&WB[v]?'wbx':'w')+(v+1),hd:1}]:st?[DYN[s.head+(v+1)]&&{s:(s.wb&&WB[v]&&st.set=='hair'?'hb_':'')+s.head+(v+1),hd:1},st.set=='tie'&&DYN[z]&&{s:z,t:s.tc||GREY,ref:st.lum}].filter(Boolean):(s.head&&s.head!='c')?[x(s.head)]:[];
  // v199 makeup: over a whole head (tie, hairstyle) right after it; with a cover under everything (a cover item is drawn over it). Her first wig is another drawing of the face: no makeup on it
  const mk=s.mk&&STY[s.mk]&&DYN[s.mk+(v+1)]?{s:s.mk+(v+1)}:null;if(mk){if(st||whole(s.head))L.fit=s.mk;else if([0,1,7].includes(v)&&!s.mkraw){L.fit=s.mk;L.fitId=1}else L.unshift(mk)}   // v226 (Sara 19:23 "רושם איפור 5 דקות, בבובה לא רואים"): a head-cover item made from a whole-head sheet (tiex) brings its own face – the makeup is fitted on it too;
    // on her own face (cover, scarf items) the front and half-turns get the same delta in place (fitId), so faint makeup is strengthened there as well   // v216: on a whole head paint() fits it (mkFit)
@@ -616,7 +617,7 @@ function paintRoom(){if(!dlg)return;
  const t=dlg.querySelector('.r3tk');const sl=x=>Object.keys(ST.on).some(k=>ST.on[k]&&SLOT[k]&&SL(k)==x);t.hidden=!((sl('top')||sl('base')||Object.keys(ST.on).some(k=>ST.on[k]&&SLOT[k]=='outer'&&PK[k]=='sweater'))&&sl('bottom')&&!sl('body'));t.querySelector('input').checked=!!ST.tuck;   // v225 (Sara 19:22 "איפה מכניסים את החולצה"): any top with any skirt, not only the first two items
  paintJY();
  const un=dlg.querySelector('.r3un');un.hidden=!(sl('top')&&sl('body'));un.querySelector('input').checked=!!ST.under;
- const w=dlg.querySelector('.r3wb');w.hidden=ST.head!='w';w.querySelector('input').checked=!!ST.wb;
+ const w=dlg.querySelector('.r3wb');w.hidden=!(ST.head=='w'||(STY[ST.head]&&STY[ST.head].set=='hair'));w.querySelector('input').checked=!!ST.wb;
  paintSty();
  const bn=bgList().find(b=>b.k==(ST.bg||''));dlg.querySelector('.r3bgn').textContent=bn?bn.n:'';
  dlg.querySelectorAll('.r3bgs [data-bg]').forEach(b=>b.setAttribute('aria-checked',b.dataset.bg==(ST.bg||'')));
