@@ -51,7 +51,8 @@ function todayHtml(by){const k=today(),L=by[k]||[],p=DAYS[k]&&DAYS[k].ph,lk=look
  <div class="act234 dya306">
  ${lk.length&&miss.length?`<button type="button" class="pri" data-dy306look>✓ לבשתי את הלוק של היום <small>(${miss.length==lk.length?lk.length+' בגדים':'עוד '+miss.length})</small></button>`:''}
  <button type="button" ${lk.length&&miss.length?'':'class="pri"'} data-dy306pick>👗 ${L.length?'לשנות / להוסיף מהארון':'לבחור מהארון מה לבשתי'}</button>
- <button type="button" data-dy306day="${k}">📸 לצלם – אמצא את הבגדים לבד</button></div></section>`}
+ <button type="button" data-dy306day="${k}">📸 לצלם – אמצא את הבגדים לבד</button>
+ ${L.length&&window.SC185?'<button type="button" data-dy306wash>🧺 בסוף היום: לכביסה או חזרה למקום</button>':''}</div></section>`}
 
 // 📝 the days before: yesterday, the day before… (what she remembers) – each opens the closet picker for that day
 function pastHtml(by){const ks=last7().slice(0,6).reverse();
@@ -171,6 +172,7 @@ document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.c
   toast_(`🧺 "${nm(id).slice(0,30)}" יצא משימוש (${whyName(S.r).replace(/^\S+\s/,'')})`);S.v='main';render(false);const o=W.querySelector('#dyh306o');if(o)o.scrollIntoView({block:'start'});return}
  if(d.dy306unout){const id=d.dy306unout;await putItem(id,{gen:'',out:''});try{window.sync161&&sync161(true)}catch(_){}toast_(`↩ "${nm(id).slice(0,30)}" חזר לארון`);return render()}
  if(d.dy306pick!=null)return day(today(),'pick');
+ if(d.dy306wash!=null){W.close();return SC185.open('now')}
  if(d.dy306m){const m=addM(S.m,+d.dy306m);if(m>curM())return;S.m=m;if(S.tab!='m'&&m!=curM())S.tab='m';return render()}
  if(d.dy306tab){S.tab=d.dy306tab;render();const x=W.querySelector(`[data-dy306tab="${S.tab}"]`);if(x)x.focus();return}
  if(d.dy306look!=null){const k=today(),L=byDay()[k]||[],ids=lookIds().filter(id=>!L.includes(id));if(!ids.length||!window.WR234)return;
@@ -195,5 +197,15 @@ function paintBtn(){const h=$1('#h180 .z-lkh b');if(h&&!h.dataset.dy306){h.datas
  const n=(byDay()[today()]||[]).length,s=n?`✓ לבשתי היום · ${n}`:'📅 מה לבשתי היום';if(b.textContent!=s)b.textContent=s;a.classList.add('dy306');return true}
 (function go(n=0){if(!paintBtn()&&n<60)setTimeout(()=>go(n+1),400)})();
 setInterval(()=>{if(!document.hidden)try{paintBtn()}catch(e){ERR('btn',e)}},4000);
+// v308: a reminder in 🔔 – in the evening when today is still empty, in the morning for yesterday (once she uses the diary); its button opens the diary
+const ALRX=/לסמן ביומן/;
+function wrapAl(){if(typeof getAlerts!='function'||getAlerts.__dy308)return typeof getAlerts=='function';const g=getAlerts;
+ getAlerts=function(){const A=g.apply(this,arguments)||[];try{const by=byDay(),h=new Date().getHours(),k=today(),y=last7()[5];
+  const used=last7().concat(Object.keys(by).filter(x=>x>=iso(new Date(Date.now()-14*864e5)))).some(x=>(by[x]||[]).length);
+  if(h>=18&&!(by[k]||[]).length)A.push({lvl:1,txt:'👗 עוד לא סימנת מה לבשת היום. לסמן ביומן?',ids:[]});
+  else if(h<14&&used&&!(by[y]||[]).length)A.push({lvl:1,txt:'👗 מה לבשת אתמול? לסמן ביומן?',ids:[]})}catch(e){ERR('alerts',e)}return A};getAlerts.__dy308=1;return true}
+function paintAl(){const b=document.getElementById('albody');if(!b)return;b.querySelectorAll(':scope>.al').forEach(r=>{if(r.querySelector('[data-dy306]')||!ALRX.test(r.textContent))return;
+ r.insertAdjacentHTML('beforeend','<div class="k300"><button type="button" data-dy306>📅 לפתוח את היומן</button></div>')})}
+const wA=setInterval(()=>{if(!wrapAl())return;clearInterval(wA);const b=document.getElementById('albody');if(b)new MutationObserver(()=>{try{paintAl()}catch(e){ERR('paintAl',e)}}).observe(b,{childList:true})},800);
 window.DY306={open};
 })();
