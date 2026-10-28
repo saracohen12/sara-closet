@@ -339,15 +339,26 @@ function defringe(c,b){const g=c.getContext('2d'),im=g.getImageData(0,0,W,H),p=i
   const dd=(a,o,k)=>(a[o]-k[0])**2+(a[o+1]-k[1])**2+(a[o+2]-k[2])**2;
   const G=[];let bo=0,bk=0;for(let i=0;i<N;i++){const q=i*4;if(p[q+3]<200)continue;const P=[p[q],p[q+1],p[q+2]],near=dd(P,0,K)<36*36&&P[2]-P[0]>K[2]-K[0]-22;if(near)G.push(i);if(dd(b,i*3,K)>=26*26){bo++;if(near)bk++}}
   if(bk<.03*bo||G.length<.12*(bo+G.length))for(const i of G){p[i*4+3]=0;gap++}
+  // v297 (her 💬 15:44 "הזקט לא חתוך טוב", "רואים את הגוף"): a band of her beige body left along the edge of an open jacket or a scarf's tails –
+  // a pixel near the edge that is the bare doll's own colour there, on a garment that is not that colour itself, is the doll: out.
+  {let fr=0,fg=0,fb=0,fn=0;const so0=new Uint8Array(N),on0=new Uint8Array(N);for(let i=0;i<N;i++){const a=p[i*4+3];on0[i]=a>20?1:0;so0[i]=a>=250?1:0}
+   const cr=erode(so0,3),dp=erode(on0,7);for(let i=0;i<N;i++)if(cr[i]){fr+=p[i*4];fg+=p[i*4+1];fb+=p[i*4+2];fn++}
+   if(fn>500){const F=[fr/fn,fg/fn,fb/fn];for(let i=0;i<N;i++){if(!on0[i]||dp[i])continue;const q=i*4,k=i*3,e=(p[q]-b[k])**2+(p[q+1]-b[k+1])**2+(p[q+2]-b[k+2])**2,f=(F[0]-b[k])**2+(F[1]-b[k+1])**2+(F[2]-b[k+2])**2;
+    if(e<22*22&&f>50*50&&dd(b,k,K)>=26*26){p[q+3]=0;gap++}}}}
   if(gap){const m=new Uint8Array(N);for(let i=0;i<N;i++)m[i]=p[i*4+3]>40?1:0;const [Lb,nl]=label(m),sz=new Int32Array(nl+1);for(let i=0;i<N;i++)if(m[i])sz[Lb[i]]++;for(let i=0;i<N;i++)if(m[i]&&sz[Lb[i]]<25)p[i*4+3]=0}}   // what is left of the backdrop: specks   // over her body the garment is that light blue too: it is the garment's own colour – keep it
  for(let i=0;i<N;i++){const a=p[i*4+3];on[i]=a>20?1:0;so[i]=a>=250?1:0}
- const core=erode(so,2),deep=erode(on,3),R=5,I=new Float64Array((W+1)*(H+1)*4);
+ const core=erode(so,b?3:2),deep=erode(on,3),deep7=b?erode(on,7):deep,R=b?8:5,I=new Float64Array((W+1)*(H+1)*4);
  for(let r=0;r<H;r++)for(let x=0;x<W;x++){const i=r*W+x,q=((r+1)*(W+1)+x+1)*4,u=(r*(W+1)+x+1)*4,l=((r+1)*(W+1)+x)*4,ul=(r*(W+1)+x)*4,k=core[i];
   for(let z=0;z<3;z++)I[q+z]=(k?p[i*4+z]:0)+I[u+z]+I[l+z]-I[ul+z];I[q+3]=k+I[u+3]+I[l+3]-I[ul+3]}
  const Q=(y,x)=>(y*(W+1)+x)*4,L=(a,b,d)=>.299*a+.587*b+.114*d;let n=0;
- for(let r=0;r<H;r++)for(let x=0;x<W;x++){const i=r*W+x;if(!on[i]||deep[i]||core[i])continue;
+ for(let r=0;r<H;r++)for(let x=0;x<W;x++){const i=r*W+x;if(!on[i]||deep7[i]||core[i])continue;
   const r0=Math.max(0,r-R),r1=Math.min(H,r+R+1),c0=Math.max(0,x-R),c1=Math.min(W,x+R+1),S=z=>I[Q(r1,c1)+z]-I[Q(r0,c1)+z]-I[Q(r1,c0)+z]+I[Q(r0,c0)+z],m=S(3);if(m<4)continue;
-  const F=[S(0)/m,S(1)/m,S(2)/m],q=i*4,d=L(p[q],p[q+1],p[q+2])-L(F[0],F[1],F[2]);if(d<14)continue;
+  const F=[S(0)/m,S(1)/m,S(2)/m],q=i*4;
+  // v297: up to 7 px in, a pixel that is a mix of the garment and the bare doll under it (her beige body inside an open jacket) is un-mixed like a belt (matte)
+  if(b){const k=i*3;let fb=0,db=0;for(let z=0;z<3;z++){const e=F[z]-b[k+z];fb+=e*e;db+=(p[q+z]-b[k+z])*e}
+   if(fb>50*50){const a=db/fb;let rs=0;for(let z=0;z<3;z++)rs+=(p[q+z]-(b[k+z]+a*(F[z]-b[k+z])))**2;
+    if(rs<30*30&&a<.9){if(a<.15)p[q+3]=0;else{for(let z=0;z<3;z++)p[q+z]=Math.round(F[z]);p[q+3]=Math.round(p[q+3]*Math.min(1,a))}n++;continue}}}
+  if(deep[i])continue;const d=L(p[q],p[q+1],p[q+2])-L(F[0],F[1],F[2]);if(d<14)continue;
   const t=Math.min(1,(d-14)/50+.35);for(let z=0;z<3;z++)p[q+z]=Math.round(p[q+z]*(1-t)+F[z]*t);p[q+3]=Math.round(p[q+3]*(1-.45*t));n++}
  if(n||gap)g.putImageData(im,0,0);c.fr=n;return c}
 // v290 (Sara 28/10 15:22 "שיעשה אותם בצבע שחור, ככה תדע להוציא את זה"): gold, silver, clear and chain belts are made by GPT on the doll dressed in a plain
@@ -401,7 +412,7 @@ async function snug(c,v){const dir=BACK[v];if(!dir)return c;let A;try{A=await bo
 // how each kind of item is cut (KIND keys in r360.js)
 const MODE={cover:{mode:'head'},scarf:{mode:'head'},necklace:{mode:'small',rows:[.1,.55],one:1},earrings:{mode:'small',rows:[.03,.2]},bracelet:{mode:'small',low:1},ring:{mode:'small',low:1},
  belt:{rows:[.28,.62],nohem:1,rim:1},shoes:{rows:[.8,1],nohem:1},hair:{mode:'whole'},tie:{mode:'whole',fab:1},tiex:{mode:'whole'},makeup:{mode:'face'}};
-const FRK=['cover','scarf'];   // v296: cut with defringe() besides the tops
+const FRK=['cover','scarf','jacket','coat','vest'];   // v296: cut with defringe() besides the tops
 const tick=()=>new Promise(r=>setTimeout(r,0));
 // src: a File/Blob or a url · kind: KIND key · onStep(i): progress · opt.note: her notes for the cut (v233) → {views:[canvas×8], shifts, px}
 async function run(src,kind,onStep,opt){const img=await toImg(src);const S=sheetData(img);if(!S)throw Object.assign(new Error('shape'),{code:'shape',w:img.naturalWidth,h:img.naturalHeight});
@@ -424,5 +435,5 @@ window.cut8dbg=async(src,v)=>{const img=await toImg(src),S=sheetData(img),b=awai
  const im=a=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),x=g.createImageData(W,H);for(let i=0;i<N;i++){const on=a.length==N?a[i]:0;x.data[i*4]=on?255:0;x.data[i*4+1]=on?255:0;x.data[i*4+2]=on?255:0;x.data[i*4+3]=255}g.putImageData(x,0,0);return c.toDataURL()};
  const rgb=a=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),x=g.createImageData(W,H);for(let i=0;i<N;i++){x.data[i*4]=a[i*3];x.data[i*4+1]=a[i*3+1];x.data[i*4+2]=a[i*3+2];x.data[i*4+3]=255}g.putImageData(x,0,0);return c.toDataURL()};
  return {d:rgb(d),b:rgb(b),raw:im(CUT8D.raw),morph:im(CUT8D.morph),fin:im(m)}};
-window.cut8={run,MODE,W,H,CV:2,CVT:3,TOPK,cvOf:k=>TOPK.includes(k)?4:k=='belt'||FRK.includes(k)?3:2,CVW:9,CVH:8,CVX:4,flags,says};   // CVT/cvOf (v271): tops, base shirts and sweaters cut before the no-tear slide are cut again by av188.js   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
+window.cut8={run,MODE,W,H,CV:2,CVT:3,TOPK,cvOf:k=>TOPK.includes(k)?5:k=='belt'?3:FRK.includes(k)?4:2,CVW:9,CVH:8,CVX:5,flags,says};   // CVT/cvOf (v271): tops, base shirts and sweaters cut before the no-tear slide are cut again by av188.js   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
 })();
