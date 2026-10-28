@@ -21,26 +21,31 @@ function srcs(o,out){if(!o||typeof o!='object')return;if(Array.isArray(o))return
 const swap=(v,o,n)=>JSON.parse(JSON.stringify(v).split(o).join(n));
 const busy=()=>document.hidden||document.querySelector('dialog[open]#g250,dialog[open]#tie202,dialog[open]#fix237,dialog[open]#cl262,dialog[open]#sty199')||(typeof BUSY!='undefined'&&BUSY);
 let RUN=false,DONE=false;
+// v279: a light copy this script uploaded but could not use or delete is remembered on the phone and deleted on a later run (only if nothing points at it)
+const ORK='slim279orph',orG=()=>{try{return JSON.parse(localStorage.getItem(ORK)||'[]')}catch(_){return []}},orP=l=>{try{l.length?localStorage.setItem(ORK,JSON.stringify(l)):localStorage.removeItem(ORK)}catch(_){}};
 async function run(max){if(RUN||DONE)return;RUN=true;let n=0;try{const a=await claude.use('assets'),db=await claude.use('db');if(!a||!db||typeof IT!='object'||!IT||typeof putItem!='function')return;
  const L=await a.list(),A={};for(const x of L.assets)A[x.id]=x;const u=L.usage||{};if(u.maxFiles&&u.files>=u.maxFiles-2)return;   // no room for even one light copy: 🧹 first
  const big=id=>A[id]&&/^image\/(png|jpeg|bmp)$/.test(A[id].contentType||'')&&(A[id].sizeBytes||0)>600e3&&!SKIP.has(id);
  const jobs=[];for(const id in IT){const it=IT[id];if(!it)continue;const S=new Set();for(const k of KEYS)srcs(it[k],S);S.forEach(s=>{if(big(s))jobs.push({col:'items',id,s})})}
  try{const sn=await db.collection('styles').limit(1000).get();sn.docs.forEach(d=>{const v=d.data()||{};if(typeof v.src=='string'&&big(v.src))jobs.push({col:'styles',id:d.id,s:v.src})})}catch(e){ERR('styles',e)}
+ const drop=id=>a.delete(id).catch(e=>{ERR('drop',e);const l=orG();if(!l.includes(id)){l.push(id);orP(l)}});
+ try{const l=orG();if(l.length){const R=new Set();for(const id in IT){const it=IT[id];if(it)for(const k of KEYS)srcs(it[k],R)}const sn=await db.collection('styles').limit(1000).get();sn.docs.forEach(d=>{const v=d.data()||{};if(typeof v.src=='string')R.add(v.src)});
+  const left=[];for(const id of l){if(R.has(id)||!A[id])continue;try{await a.delete(id)}catch(_){left.push(id)}}orP(left)}}catch(e){ERR('orph',e)}
  if(!jobs.length){DONE=true;return}
  const seen=new Set();for(const j of jobs){if(n>=max)break;if(seen.has(j.s)){continue}seen.add(j.s);while(busy())await sleep(4000);
-  try{const r=await fetch('/_blob/'+j.s);if(!r.ok)throw new Error('http '+r.status);const f=await r.blob(),bm0=await createImageBitmap(f),W=bm0.width,H=bm0.height;try{bm0.close()}catch(_){}
+  let up=null,used=0;try{const r=await fetch('/_blob/'+j.s);if(!r.ok)throw new Error('http '+r.status);const f=await r.blob(),bm0=await createImageBitmap(f),W=bm0.width,H=bm0.height;try{bm0.close()}catch(_){}
    const g=await window.slim272(new File([f],'sheet.png',{type:f.type||'image/png'}));if(g===f||!g||g.size>=f.size*.6||W>2400||H>2400){skip(j.s);continue}
-   const up=await a.upload(g);let ok=false;try{const b2=await (await fetch('/_blob/'+up.id)).blob(),bm=await createImageBitmap(b2);ok=bm.width==W&&bm.height==H;try{bm.close()}catch(_){}}catch(_){}
-   if(!ok){try{await a.delete(up.id)}catch(_){}skip(j.s);continue}
+   up=await a.upload(g);let ok=false;try{const b2=await (await fetch('/_blob/'+up.id)).blob(),bm=await createImageBitmap(b2);ok=bm.width==W&&bm.height==H;try{bm.close()}catch(_){}}catch(_){}
+   if(!ok){await drop(up.id);skip(j.s);continue}
    // every place that points at the old picture, re-read fresh
-   let used=0;for(const x of jobs.filter(y=>y.s==j.s)){
+   for(const x of jobs.filter(y=>y.s==j.s)){
     if(x.col=='items'){const d=await db.collection('items').doc(x.id).get();const v=d&&d.exists?d.data():null;if(!v)continue;const patch={};
      for(const k of KEYS)if(v[k]!=null&&JSON.stringify(v[k]).includes(j.s))patch[k]=swap(v[k],j.s,up.id);if(!Object.keys(patch).length)continue;
      Object.assign(IT[x.id]||{},v);await putItem(x.id,patch);used++}
     else{const ref=db.collection('styles').doc(x.id),d=await ref.get();const v=d&&d.exists?d.data():null;if(!v||v.src!=j.s)continue;await ref.update({src:up.id});used++}}
-   if(!used){try{await a.delete(up.id)}catch(_){}continue}
+   if(!used){await drop(up.id);continue}
    try{await db.collection('slim272').doc(j.s).set({n:up.id,t:Date.now(),from:A[j.s].sizeBytes||0,to:g.size})}catch(e){ERR('map',e)}n++}
-  catch(e){ERR('one',e);if(e&&/quota|full|limit/i.test(String(e.code||e.message)))break;skip(j.s)}
+  catch(e){ERR('one',e);if(up&&!used)await drop(up.id);if(e&&/quota|full|limit/i.test(String(e.code||e.message)))break;skip(j.s)}
   await sleep(1500)}}
  catch(e){ERR('run',e)}finally{RUN=false}}
 window.SLIM273={run};setTimeout(()=>run(12).catch(()=>{}),90e3);setInterval(()=>run(12).catch(()=>{}),6*60e3);

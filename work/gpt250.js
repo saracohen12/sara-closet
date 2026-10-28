@@ -291,11 +291,11 @@ async function check(U){const say=t=>{if(UP!==U)return;U.chk=t;const e=dlg().que
   paintUp()}
  catch(e){ERR('check',e);say('לא הצלחתי לבדוק את ההתאמה – כדאי להסתכל על כל תמונה מול המוצר')}}
 // v276: one picture uploaded in the item's own window – the same check, for that one product (av188.js shows the answer on the item)
-window.g276one=async(id,f)=>{let S=null;try{S=await TOp(claude.use('sample'),12000,null)}catch(_){}const lim=S?await TOp(S.limits().catch(()=>null),8000,null):null;
+window.g276one=async(id,f,tie)=>{let S=null;try{S=await TOp(claude.use('sample'),12000,null)}catch(_){}const lim=S?await TOp(S.limits().catch(()=>null),8000,null):null;
  if(!S||!lim||!lim.images||lim.images.maxCount<2)return null;const u=URL.createObjectURL(f);
  try{const ph=await photoCell(prodPh(id)),sh=await sheetCell(u);if(!ph||!sh)return null;const A=await grid([ph],300,340,()=>'1'),B_=await grid([sh],220,330,()=>'A');const x=D[id]||{};
   const r=await TOp(S.json(`Image 1 = the shop photo of a product: "${nm(id)}"${x.color?', shop colour: '+x.color:''}. Image 2 = a picture made by an image AI of a woman who should be wearing exactly this product (front view). `+
-   `Is it the same item (kind, colour, pattern, details)? Answer JSON only: {"same":true,"colour_ok":true,"problem":"short note in Hebrew for the owner, empty when all is fine"}`,{images:[A,B_],modelTier:'default'}),90000,null);
+   (tie?'It is a head covering, and in image 2 it may be tied in a different style than in the shop photo: judge only the fabric – colour, pattern and material. ':'')+`Is it the same item (kind, colour, pattern, details)? Answer JSON only: {"same":true,"colour_ok":true,"problem":"short note in Hebrew for the owner, empty when all is fine"}`,{images:[A,B_],modelTier:'default'}),90000,null);
   return r&&typeof r=='object'?r:null}catch(e){ERR('one',e);return null}finally{URL.revokeObjectURL(u)}};
 const prodPh=id=>{try{return (photos(id)[0]||{}).u||R().ph(id)||''}catch(_){return ''}};
 function paintUp(){const d=dlg();const {ids,T,fs,map,urls}=UP,many=ids.length>1,lab=t=>(many?`מוצר ${t.p+1} · `:'')+t.o.n;

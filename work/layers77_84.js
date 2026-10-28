@@ -323,13 +323,14 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 {const _p=putItem;putItem=function(id,patch){try{if(patch&&'wear' in patch){const it=IT[id]||{};const old=it.wear||0;const wl=(it.wl||[]).slice();
   if(patch.wear>old)wl.push(tIso());else if(patch.wear<old){const i=wl.lastIndexOf(tIso());if(i>=0)wl.splice(i,1);else wl.pop()}
   patch=Object.assign({},patch,{wl:wl.slice(-120)})}}catch(e){ERR('wl',e)}return _p.call(this,id,patch)}}
-function weekDays(){const now=new Date();const s=new Date(now);s.setDate(now.getDate()-now.getDay());const a=[];for(let i=0;i<7;i++){const d=new Date(s);d.setDate(s.getDate()+i);a.push(iso(d))}return a}
+// v279: the last 7 days up to today (on Sunday last Shabbat is still there to fill in)
+function weekDays(){const now=new Date();const s=new Date(now);s.setDate(now.getDate()-6);const a=[];for(let i=0;i<7;i++){const d=new Date(s);d.setDate(s.getDate()+i);a.push(iso(d))}return a}
 function paintWeek(){const top=document.querySelector('header.top');if(!top||typeof D=='undefined')return;let b=$('#wk83');
  const days=weekDays(),td=tIso();const by={};Object.keys(D).forEach(id=>{((IT[id]||{}).wl||[]).forEach(x=>{if(days.includes(x))(by[x]=by[x]||[]).includes(id)||(by[x]=by[x]||[]).push(id)})});
  if(!b){b=document.createElement('div');b.id='wk83';top.appendChild(b)}
  const n=Object.values(by).reduce((s,a)=>s+a.length,0);const L='אבגדהוש';
- b.innerHTML=`<div class="w83h"><h3>השבוע שלי</h3><small>${n?`${n} בגדים סומנו השבוע`:'לוחצים "לבשתי היום" ומתמלא כאן'}</small></div><div class="w83r">${days.map((d,i)=>{const ids=by[d]||[];
-  return `<button class="w83d${d==td?' td':''}${ids.length?' on':''}" ${ids.length?`data-open="${ids[0]}"`:'disabled'} aria-label="יום ${L[i]}${ids.length?': '+ids.length+' בגדים':''}"><span class="w83c">${ids.length?thumb(ids[0]):''}${ids.length>1?`<i>+${ids.length-1}</i>`:''}</span><span class="w83l">${L[i]}׳</span></button>`}).join('')}</div>`;
+ b.innerHTML=`<div class="w83h"><h3>השבוע שלי</h3><small>${n?`${n} בגדים סומנו ב-7 הימים האחרונים`:'לוחצים "לבשתי היום" ומתמלא כאן'}</small></div><div class="w83r">${days.map((d,i)=>{const ids=by[d]||[];
+  return `<button class="w83d${d==td?' td':''}${ids.length?' on':''}" ${ids.length?`data-open="${ids[0]}"`:'disabled'} aria-label="יום ${L[new Date(d+'T12:00').getDay()]}${ids.length?': '+ids.length+' בגדים':''}"><span class="w83c">${ids.length?thumb(ids[0]):''}${ids.length>1?`<i>+${ids.length-1}</i>`:''}</span><span class="w83l">${L[new Date(d+'T12:00').getDay()]}׳</span></button>`}).join('')}</div>`;
  lz(b)}
 
 // ---- 45. return deadline tomorrow / today – banner on the home screen (and in the bell, below)

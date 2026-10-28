@@ -40,6 +40,14 @@ for i,(x,p) in enumerate(zip(r,P)):
     items.append(dict(id=f'T{i}',src=acc,cat=c,short=nm,color=col,size=Z[i]['size'],full=clean(x['title']),file=fname(x['file']),order=PO.get(f,f),date=TD.get(f),
         price=p['price'],qty=p['qty'],paid=round(real,2),img=timg('thumbs3/'+x['img'])))
 
+# v279: names the receipt OCR garbled (Latin letters read as Hebrew, lines cut in the middle) – written again from what can be read
+NFIX={'T7':'תכשיטים 3 חלקים לנשים: שרשרת ועגילים','T8':'צמיד מצופה זהב 18 קראט, עם בד ניקוי','T13':'6 תחתונים בחבילה, צבעים מעורבים',
+ 'T23':'מטען טעינה מהירה עם תצוגה','T66':'מתאם 3 פינים','T80':'מטען לרכב 6 ב-1, טעינה מהירה לטלפון','T100':'5 קליפסים פרחוניים לשיער (קטנים)',
+ 'T105':'שמלת נשים אלגנטית שחורה','T119':'מטען קיר מהיר עם 2 יציאות','T155':'שמלת נשים אלגנטית שחורה עם צווארון','T162':'צעיף צוואר דק, פרחוני רטרו',
+ 'T246':'סט קטיפה פרימיום לנשים','T277':'סט 2 חלקים לבנים לסתיו, עם הדפס','T297':'קרדיגן רפוי ורך לסתיו/חורף','T330':'סט חצאית וחולצה לסתיו/חורף'}
+for it in items:
+    if it['id'] in NFIX: it['short']=it['full']=NFIX[it['id']]
+
 exec(open('shein/inv_all.py').read().replace("'inv_4oct.py'","'shein/inv_4oct.py'"))
 UA=json.load(open('shein/allurls.json')); ASG=json.load(open('shein/ship/assign.json'))
 import hashlib,os

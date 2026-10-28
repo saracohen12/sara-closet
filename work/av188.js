@@ -116,8 +116,10 @@ async function up(id,fs){if(BUSY){toast_('רגע, עוד שומרת');return fal
  BUSY=false;
  const at=AT[id];delete AT[id];let ok=!upFail&&add.length>0;for(let i=0;i<add.length;i++){if(!(await cut(id,fs[i],add[i].a,add[i].t,i==0&&at!=null&&parts(id)[at]?at:undefined)))ok=false}
  // v276 (Sara 23:32 "לאמת מול הקובץ שהכל מתאים"): Claude compares what she uploaded here with the product photo; a mismatch is written on the item, in red, until she decides
- if(ok&&add.length&&!window.G276SKIP&&window.g276one&&!parts(id).some(p=>p.k=='tiex'))g276one(id,fs[0]).then(async r=>{if(!r)return;const bad=r.same===false||r.colour_ok===false;
-  try{await putItem(id,{a8chk:{t:Date.now(),ok:!bad,m:String(r.problem||'').slice(0,200)}})}catch(e){ERR('chk',e)}rebox(id);if(bad)toast_('✗ התמונה לא נראית כמו המוצר – כתבתי בחלון של הפריט')}).catch(e=>ERR('chk',e));
+ // v279: every file is checked (a set or a two-file sheet, not only the first), and a cover tied in a style too – by its fabric
+ if(ok&&add.length&&!window.G276SKIP&&window.g276one){const tie=parts(id).some(p=>p.k=='tiex');(async()=>{const rs=[];for(let i=0;i<fs.length;i++){const r=await g276one(id,fs[i],tie);if(r)rs.push([i,r])}if(!rs.length)return;
+  const B=rs.filter(([,r])=>r.same===false||r.colour_ok===false),bad=B.length>0,m=(bad?B:rs).map(([i,r])=>r.problem?(fs.length>1?`תמונה ${i+1}: `:'')+r.problem:'').filter(Boolean).join(' · ');
+  try{await putItem(id,{a8chk:{t:Date.now(),ok:!bad,m:m.slice(0,200)}})}catch(e){ERR('chk',e)}rebox(id);if(bad)toast_(fs.length>1?`✗ ${B.length} מתוך ${fs.length} התמונות לא נראות כמו המוצר – כתבתי בחלון של הפריט`:'✗ התמונה לא נראית כמו המוצר – כתבתי בחלון של הפריט')})().catch(e=>ERR('chk',e))}
  return ok}
 async function del(id,i){const old=ups(id);const x=old[i];if(!x)return;const nu=old.filter((_,k)=>k!=i);await putItem(id,{a8up:nu.length?nu:''});rebox(id);repaint(id);
  toast_('התמונה הוסרה',async()=>{await putItem(id,{a8up:[...ups(id).slice(0,i),x,...ups(id).slice(i)]});rebox(id);repaint(id)})}

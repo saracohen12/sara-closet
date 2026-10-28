@@ -80,5 +80,5 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 setTimeout(()=>daily().catch(()=>{}),60000);setInterval(()=>daily().catch(()=>{}),60*60e3);
 setTimeout(()=>banner().catch(()=>{}),8000);setInterval(()=>banner().catch(()=>{}),10*60e3);
 // admin panel: a button with the tools
-setInterval(()=>{const d=document.querySelector('.ad172h');if(!d||d.querySelector('[data-cl262]'))return;d.insertAdjacentHTML('beforeend','<button type="button" class="cl262a" data-cl262>🧹 לפנות מקום לתמונות</button>')},1500);
+setInterval(()=>{const d=document.querySelector('#ad172 .ad172h');/* v279: only the admin panel's header (it went into the tasks window and pushed it sideways) */if(!d||d.querySelector('[data-cl262]'))return;d.insertAdjacentHTML('beforeend','<button type="button" class="cl262a" data-cl262>🧹 לפנות מקום לתמונות</button>')},1500);
 })();

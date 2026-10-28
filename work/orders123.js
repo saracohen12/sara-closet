@@ -8,7 +8,8 @@ const H=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>
 const ACC={t1:'טמו 1',t2:'טמו 2',t3:'טמו 3',sh:'שיין',ae:'עלי'};const ACCN={t1:'חשבון 8711309',t2:'חשבון 9285464',t3:'חשבון smart20.mortgage',sh:'',ae:''};
 const V={acc:'',flt:'',q:'',ord:'',hl:'',scroll:0};
 const dl=r=>{try{return r?daysLeft(r):null}catch(_){return null}};
-const dnum=d=>{const m=/(\d+)\/(\d+)/.exec(d||'');return m?(+m[2])*100+(+m[1]):0};
+// v279: dates are day/month (sometimes /year); a month later than next month is last year, so January sorts above December
+const dnum=d=>{const m=/(\d+)\/(\d+)(?:\/(\d{2,4}))?/.exec(d||'');if(!m)return 0;const n=new Date();let y=m[3]?+m[3]:n.getFullYear();if(y<100)y+=2000;if(!m[3]&&+m[2]>n.getMonth()+2)y--;return y*10000+(+m[2])*100+(+m[1])};
 const cat=id=>{try{return curCat(id)}catch(_){return D[id].cat}};
 const catName=id=>{const c=cat(id);try{const x=(CATS||[]).find(a=>a[0]==c);if(x)return x[1]}catch(_){}return c};
 

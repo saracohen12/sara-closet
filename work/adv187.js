@@ -24,6 +24,7 @@ const TO=(p,ms,v)=>Promise.race([p,new Promise(r=>setTimeout(()=>r(v),ms))]);
 // what can go with a new item: her clothes and accessories (not kids, men, nightwear, makeup)
 const KEEP=new Set(['dresses','tops','base','sweaters','skirts','sets','outer','scarves','shoes','belts','jewelry','bags','hosiery']);
 const pool=()=>Object.keys(D).filter(id=>live(id)&&KEEP.has(cat(id)));
+const poolAll=()=>Object.keys(D).filter(id=>live(id));   // v279: "do I already have it" looks at everything she owns (kids, night, hair, makeup too); looks stay with her clothes
 const STORES=['שיין','טמו','עלי אקספרס','חנות','אחר'];
 const VD={yes:['✅','כדאי','ye187'],maybe:['🤔','אולי','mb187'],no:['✋','לא כדאי','no187']};
 const SS=[['think','🤔','עוד חושבת'],['buy','🛍','קניתי'],['skip','✕','ויתרתי']];const SI=Object.fromEntries(SS.map(s=>[s[0],s]));
@@ -33,18 +34,20 @@ const ME=()=>{const m=Object.assign({h:156,b:94,w:73,hp:96,sh:45},(typeof SET=='
 const LK='shop187';let ARC=[],SUB=null,LOCAL=false;
 const lsGet=()=>{try{return JSON.parse(localStorage.getItem(LK)||'[]')}catch(_){return []}};
 const lsPut=()=>{try{localStorage.setItem(LK,JSON.stringify(ARC))}catch(e){ERR('ls',e)}};
+let UPB=0;const lsKeep=f=>{try{const l=lsGet().filter(f);if(l.length)localStorage.setItem(LK,JSON.stringify(l));else localStorage.removeItem(LK)}catch(_){}};
 const sortA=()=>ARC.sort((a,b)=>String(b.t).localeCompare(String(a.t)));
 function load(){if(SUB)return;
  try{if(typeof DB!='undefined'&&DB){let first=true;SUB=DB.collection(LK).onSnapshot(sn=>{const a=[];sn.docs.forEach(d=>{const v=d.data();if(v)a.push(Object.assign({},v,{id:d.id}))});
    // checks saved in this browser before the db was there go up once
-   if(first){first=false;const have=new Set(a.map(x=>x.id)),up=lsGet().filter(x=>x&&x.id&&!have.has(x.id));if(up.length){up.forEach(x=>a.push(x));Promise.all(up.map(x=>{const {id,...v}=x;return DB.collection(LK).doc(id).set(v)})).then(()=>{try{localStorage.removeItem(LK)}catch(_){}}).catch(e=>ERR('up',e));/* v278: removed from the phone only after all are in the database */}}
+   // v279: also checks whose save failed (kept on the phone by put) – they stay on the list and go up again; each leaves the phone only once it is in the database
+   {const have=new Set(a.map(x=>x.id)),up=lsGet().filter(x=>x&&x.id&&!have.has(x.id));if(up.length){up.forEach(x=>a.push(x));if(!UPB){UPB=1;Promise.allSettled(up.map(x=>{const {id,...v}=x;return DB.collection(LK).doc(id).set(v)})).then(rs=>{const bad=new Set(up.filter((x,i)=>rs[i].status!='fulfilled').map(x=>x.id));lsKeep(x=>bad.has(x.id));if(bad.size)ERR('up',bad.size+' not saved');UPB=0})}}else if(first)lsKeep(()=>false);first=false}
    ARC=a;sortA();const f=document.activeElement;if(!(W&&f&&W.contains(f)&&/^(TEXTAREA|INPUT|SELECT)$/.test(f.tagName)))render();homeBtn()},e=>ERR('snap',e));return}}catch(e){ERR('load',e)}
  if(!LOCAL){LOCAL=true;ARC=lsGet();sortA()}}
 [1200,4000,9000].forEach(ms=>setTimeout(()=>{load();homeBtn()},ms));
 async function put(r){const i=ARC.findIndex(x=>x.id==r.id);if(i>=0)ARC[i]=r;else ARC.unshift(r);sortA();
- try{if(SUB&&DB){const {id,...v}=r;await DB.collection(LK).doc(id).set(v)}else lsPut()}catch(e){ERR('put',e);toast_('לא הצלחתי לשמור, נסי שוב')}
+ try{if(SUB&&DB){const {id,...v}=r;await DB.collection(LK).doc(id).set(v)}else lsPut()}catch(e){ERR('put',e);if(SUB){try{const l=lsGet().filter(x=>x&&x.id!=r.id);l.push(r);localStorage.setItem(LK,JSON.stringify(l))}catch(_){}}toast_('לא הצלחתי לשמור עכשיו. הבדיקה שמורה בטלפון ותעלה שוב לבד')}
  homeBtn()}
-async function del(id){ARC=ARC.filter(x=>x.id!=id);CMP.delete(id);try{if(SUB&&DB)await DB.collection(LK).doc(id).delete();else lsPut()}catch(e){ERR('del',e)}homeBtn()}
+async function del(id){ARC=ARC.filter(x=>x.id!=id);CMP.delete(id);try{if(SUB&&DB){lsKeep(x=>x&&x.id!=id);await DB.collection(LK).doc(id).delete()}else lsPut()}catch(e){ERR('del',e)}homeBtn()}
 const rec=id=>ARC.find(x=>x.id==id);
 
 // ---------- pictures ----------
@@ -67,21 +70,23 @@ const STOP=new Set(['לנשים','נשים','עם','של','חדש','חדשה','�
 const FAMW={'שחור':['שחור'],'לבן':['לבן'],'חום':['חום','קפה'],'בז׳':['בז','חאקי','שמפניה','קרם'],'כחול':['כחול','נייבי','גינס','ג׳ינס'],'ירוק':['ירוק','זית'],'אדום':['אדום','בורדו','בורגונדי'],'ורוד':['ורוד'],'סגול':['סגול'],'אפור':['אפור']};
 function localSim(txt){const ws=norm(txt).split(' ').filter(w=>w.length>1&&!STOP.has(w));if(!ws.length)return [];
  const f=Object.keys(FAMW).find(k=>FAMW[k].some(w=>txt.includes(w)))||'';
- return pool().map(id=>{const x=D[id]||{};const h=' '+norm([x.short,x.full,x.color,catName(cat(id)),(x.tags||[]).join(' ')].filter(Boolean).join(' '))+' ';
+ return poolAll().map(id=>{const x=D[id]||{};const h=' '+norm([x.short,x.full,x.color,catName(cat(id)),(x.tags||[]).join(' ')].filter(Boolean).join(' '))+' ';
   let s=ws.filter(w=>h.includes(w)).length;if(f&&fam(id)==f)s+=1.5;return [id,s]}).filter(([,s])=>s>=(ws.length>1?2:1)).sort((a,b)=>b[1]-a[1]).slice(0,8).map(x=>x[0])}
 
 // ---------- asking Claude ----------
-function catalog(){return pool().map(id=>{const x=D[id]||{},i=it(id);
+function catalog(L){return (L||pool()).map(id=>{const x=D[id]||{},i=it(id);
  return [id,catName(cat(id)),nm(id).slice(0,44),(x.color||fam(id)||'').slice(0,18),i.fav?'♥':'',i.wear?'w'+i.wear:'',i.loc=='כביסה'?'🧺':''].map(v=>String(v).replace(/[|\n]+/g,' / ').trim()).join('|').replace(/\|+$/,'')}).join('\n')}
 function prompt1(f,hasPh){const m=ME();
  return `You are a warm, honest personal stylist. My client is deciding whether to buy ONE item.${hasPh?' The attached image shows it (a product photo or a screenshot from a shopping site; it may include a size chart).':''}${f.txt?` She wrote about it: "${f.txt.slice(0,300)}".`:''}${f.price?` Price: ${f.price} ₪.`:''}${f.store?` Store: ${f.store}.`:''}
 About her: a religious woman who dresses modestly (her closet: long skirts and dresses, tops with sleeves, head coverings and a wig). Her body: height ${m.h} cm, bust ${m.b}, waist ${m.w}, hips ${m.hp}, shoulders ${m.sh}.
 Her closet right now (only what she owns), one item per line: id|category|name|colour|♥ = a favourite|wN = worn N times|🧺 = in the wash
 ${catalog()}
+Also in her home – ONLY for the "nearly the same" check (kids, nightwear, men, hair, makeup and more), never in looks:
+${catalog(poolAll().filter(id=>!KEEP.has(cat(id))))}
 
 Think about: does she already own something nearly the same (same kind of item AND similar colour and style, so she would not need both)? Which of her items go with it for full outfits (prefer favourites and items she wears)? Which size fits her body (use the size chart in the image if there is one; Shein and Temu sizes run small)? Is it modest enough for her (length, sleeves, neckline, tight or see-through)? How often would she really wear it?
 Reply in Hebrew, speaking to her as "את", with ONLY this JSON:
-{"what":"what the item is, at most 7 Hebrew words","cat":"dresses|tops|sweaters|skirts|sets|outer|scarves|shoes|belts|jewelry|bags|other","colour":"main colour in Hebrew",
+{"what":"what the item is, at most 7 Hebrew words","cat":"dresses|tops|sweaters|skirts|sets|outer|scarves|shoes|belts|jewelry|bags|kids|night|hair|makeup|other","colour":"main colour in Hebrew",
 "similar":["ids of items she owns that are nearly the same, at most 6, [] if none"],
 "looks":[{"name":"short Hebrew name for the outfit","ids":["2 to 5 ids from her closet that complete the outfit with the new item"],"why":"one short Hebrew sentence"}],
 "size":"the size to order, or \\"\\" if you cannot tell","sizeWhy":"one short Hebrew sentence",
@@ -94,7 +99,7 @@ const errMsg=e=>e&&e.code=='not_granted'?'צריך לאשר לאתר לשאול 
 const ids_=(a,n)=>[...new Set((Array.isArray(a)?a:[]).filter(id=>typeof id=='string'&&D[id]&&live(id)))].slice(0,n);
 function clean(r){r=r&&typeof r=='object'?r:{};const s=v=>typeof v=='string'?v.trim().slice(0,400):'';
  return {what:s(r.what).slice(0,60),cat:s(r.cat),colour:s(r.colour).slice(0,30),similar:ids_(r.similar,6),
-  looks:(Array.isArray(r.looks)?r.looks:[]).map(l=>({name:s(l&&l.name).slice(0,40)||'לוק',ids:ids_(l&&l.ids,5),why:s(l&&l.why).slice(0,160)})).filter(l=>l.ids.length).slice(0,3),
+  looks:(Array.isArray(r.looks)?r.looks:[]).map(l=>({name:s(l&&l.name).slice(0,40)||'לוק',ids:ids_(l&&l.ids,5).filter(id=>KEEP.has(cat(id))),why:s(l&&l.why).slice(0,160)})).filter(l=>l.ids.length).slice(0,3),
   size:s(r.size).slice(0,20),sizeWhy:s(r.sizeWhy),modest:s(r.modest),missing:s(r.missing),wears:Math.max(0,Math.min(200,Math.round(+r.wears||0))),
   verdict:VD[r.verdict]?r.verdict:'maybe',why:s(r.why)}}
 let BUSY='',F={file:null,url:'',txt:'',price:'',store:''},CUR=null,TB='new',FLT='',CMP=new Set(),VIEW='',DEL='';

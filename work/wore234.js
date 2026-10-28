@@ -10,7 +10,7 @@ const toast_=m=>(window.toast||(()=>{}))(m);
 const TO=(p,ms,v)=>Promise.race([p,new Promise(r=>setTimeout(()=>r(v),ms))]);
 const iso_=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const today=()=>iso_(new Date());
-const weekDays=()=>{const n=new Date(),s=new Date(n);s.setDate(n.getDate()-n.getDay());return [...Array(7)].map((_,i)=>{const d=new Date(s);d.setDate(s.getDate()+i);return iso_(d)})};
+const weekDays=()=>{const n=new Date(),s=new Date(n);s.setDate(n.getDate()-6);/* v279: the last 7 days, like the circles */return [...Array(7)].map((_,i)=>{const d=new Date(s);d.setDate(s.getDate()+i);return iso_(d)})};
 const DN=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
 const dayName=k=>{const d=new Date(k+'T12:00');return k==today()?'היום':'יום '+DN[d.getDay()]};
 const dm=k=>{const d=new Date(k+'T12:00');return d.getDate()+'/'+(d.getMonth()+1)};

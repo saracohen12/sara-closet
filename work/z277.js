@@ -84,6 +84,9 @@ function avCtl(n=0){const c=document.querySelector('#h180 .z-avc');if(!c){if(n<4
  if(c.querySelector('.z5sp'))return;const b=document.createElement('button');b.type='button';b.className='z5sp';b.setAttribute('aria-label','מהירות הסיבוב');b.setAttribute('aria-expanded','false');b.innerHTML=svg('speed');
  b.onclick=()=>{const o=c.classList.toggle('z5spo');b.setAttribute('aria-expanded',o)};c.insertBefore(b,c.querySelector('.z-spd'))}
 avCtl();
+// v279: the small item pictures (דומים, recent, urgent, strips in the tools) are buttons with only a picture – give each its item's name for the screen reader
+{let q=0;const lab=()=>{q=0;try{document.querySelectorAll('button.mini[data-open]:not([aria-label])').forEach(b=>{const id=b.dataset.open,n=(typeof IT=='object'&&IT&&IT[id]&&IT[id].nm)||(typeof D=='object'&&D[id]&&D[id].short)||'';if(n)b.setAttribute('aria-label',n)})}catch(e){ERR('lab',e)}};
+ new MutationObserver(()=>{if(!q)q=setTimeout(lab,400)}).observe(B,{childList:true,subtree:true});lab()}
 // the head on the home avatar is one round button showing the head she has now; a tap moves to the next one (cover → wig → …)
 document.addEventListener('click',e=>{if(!on())return;const b=e.target.closest&&e.target.closest('#h180 .z-hds [data-zh]');if(!b||b.getAttribute('aria-checked')!='true')return;
  const all=[...b.parentNode.querySelectorAll('[data-zh]')];if(all.length<2)return;e.stopPropagation();all[(all.indexOf(b)+1)%all.length].click()},true);

@@ -13,5 +13,7 @@ dialog#cl262::backdrop{background:rgba(30,20,15,.45)}
 #cl262b{position:fixed;top:calc(8px + env(safe-area-inset-top,0px));left:12px;right:12px;z-index:9000;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;border-radius:18px;background:#fff3e6;color:#5a2d14;border:1px solid #f0c9a4;box-shadow:0 6px 24px rgba(60,30,10,.18);font-size:.92rem;direction:rtl}
 #cl262b button,.cl262a{min-height:44px;padding:0 16px;border-radius:22px;border:0;background:#b4532a;color:#fff;font:inherit;font-weight:600;cursor:pointer}
 .cl262a{margin:6px 4px}
+/* v279: the round 42px header buttons rule squeezed it; in the admin header it gets its own line */
+#ad172 .ad172h{flex-wrap:wrap}#ad172 .ad172h .cl262a{width:auto;height:auto;min-height:40px;border-radius:22px;border:0;font-size:.9rem;white-space:nowrap;order:3;margin:0}
 #cl262b .cl262bb{display:flex;gap:6px}
 #cl262b .cl262no{background:transparent;color:#5a2d14;border:1px solid #e3b48c;font-weight:500}

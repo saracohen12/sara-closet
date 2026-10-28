@@ -383,6 +383,7 @@ async function paint(cv,v,s,pad){s=headOf(s);const bg=s.bg||'';const hw=whole(s.
  if(pad){if(miss)again(cv,v,s,pad,my);else cv._rt=0}return !miss}   // a layer missing: not kept as a finished picture (frames, thumbs), the stage tries again
 // v274: a top, base shirt or sweater tucked into the skirt. Under the skirt it is hidden already; what is left is what sticks out below the skirt's waist –
 // the hem at the hips (outside her body: the sweater stood out boxy in the side view) and below a short skirt. Her arms and sleeves at the sides stay
+// v279: with no doll frame to tell body from sleeve, only the columns of the skirt itself are cut, so the sleeves at the sides stay
 const TUCK=new Map();
 function tuckCut(m,BT,doll,key){if(TUCK.has(key))return TUCK.get(key);const W=m.naturalWidth||m.width,H=m.naturalHeight||m.height;
  const rd=x=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(x,0,0,W,H);return [c,g,g.getImageData(0,0,W,H)]};
@@ -397,7 +398,7 @@ function tuckCut(m,BT,doll,key){if(TUCK.has(key))return TUCK.get(key);const W=m.
  const bot=new Int32Array(W).fill(-1);for(let x=lo;x<=hi;x++)for(let y=H-1;y>=r0;y--)if(sk[y*W+x]){bot[x]=y;break}
  const bd2=new Uint8Array(W*H);for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){const i=y*W+x;if(bd[i]||bd[i-1]||bd[i+1]||bd[i-W]||bd[i+W]||bd[i-2]||bd[i+2])bd2[i]=1}
  let n=0;for(let x=0;x<W;x++){const t=Math.round(top[x])+3;for(let y=t;y<H;y++){const i=y*W+x,q=i*4;if(!p[q+3]||sk[i])continue;
-  const below=x>=lo&&x<=hi&&bot[x]>=0&&y>bot[x];if(!doll||!bd2[i]||below){p[q+3]=0;n++}}}
+  const below=x>=lo&&x<=hi&&bot[x]>=0&&y>bot[x];if(doll?(!bd2[i]||below):(x>=lo&&x<=hi)){p[q+3]=0;n++}}}
  if(n){og.putImageData(od,0,0)}const out=n?oc:m;if(TUCK.size>16)TUCK.delete(TUCK.keys().next().value);TUCK.set(key,out);return out}
 const JYT={},JYN={neck:'📿 שרשרת',ears:'✨ עגילים',wrist:'⌚ צמיד',belt:'➰ חגורה'};
 // v266 (Sara 23:34 "לא כל הזמן על המסך – עיגול קטן, פותחת, מזיזה, סוגרת"): the rows live in a small panel over the avatar, opened by 📿 and closed by ✓
