@@ -258,7 +258,22 @@ const IMG={},TINT={};
 const IMQ=[];let IMN=0;
 function imPump(){while(IMN<6&&IMQ.length){const [u,r]=IMQ.shift();IMN++;const i=new Image();i.decoding='async';const done=x=>{IMN--;r(x);imPump()};i.onload=()=>done(i);i.onerror=()=>done(null);i.src=u}}
 const imLoad=u=>new Promise(r=>{IMQ.push([u,r]);imPump()});
-function im(src){if(!IMG[src])IMG[src]=(async()=>{for(let n=0;n<3;n++){if(n)await new Promise(z=>setTimeout(z,500*n*n));const i=await imLoad(DYN[src]||('a8/'+src+'.webp'+V));if(i)return i}
+// v284 (Sara 28/10 10:19 "השיער חתוך על הפנים, לא טוב"): the wig, her hairstyles and the whole-head ties bring their own face, cut straight across
+// under the chin – a hard line with the doll's neck in another shade below it. The last rows of skin above that straight cut now fade out into the neck
+function chinFade(m){try{const W=m.naturalWidth,H=m.naturalHeight,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(m,0,0);
+ const d=x.getImageData(0,0,W,H),p=d.data,K=4,skin=i=>{const r=p[i],g=p[i+1],b=p[i+2];return (r+g+b)/3>100&&r>g&&g>=b&&r-b>25},
+  neck=i=>{const r=p[i],g=p[i+1],b=p[i+2];return (r+g+b)/3>138&&r>g&&g>=b&&r-b>35&&g>.6*r};let n=0;
+ for(let y=K;y<H-8;y++){let run=[];for(let x0=0;x0<=W;x0++){const i=(y*W+x0)*4,ok=x0<W&&p[i+3]>200&&p[i+8*W+3]<60&&skin(i);if(ok){run.push(x0);continue}
+  if(run.length>=8){n++;const a=run[0],z=run[run.length-1];
+   for(const xx of run)for(let t=0;t<K;t++){const j=((y-t)*W+xx)*4;if(p[j+3]<120||!skin(j))break;p[j+3]=Math.round(p[j+3]*(.15+.85*t/K))}
+   // and under the chin a soft shadow on her neck, as in a photo (the doll's neck under the wig's chin was light, so the face looked pasted on)
+   const cx=(a+z)/2,hw2=(z-a)/2+6;if(z-a>=14)for(let t=1;t<=12;t++){const yy=y+t;if(yy>=H)break;const half=hw2*(1-t/16);for(let xx=Math.round(cx-half);xx<=Math.round(cx+half);xx++){if(xx<0||xx>=W)continue;const j=(yy*W+xx)*4;if(p[j+3]>40)continue;
+     const e=Math.min(1,(half-Math.abs(xx-cx))/7),al=.24*Math.min(1,t/3)*(1-t/13)*e;p[j]=96;p[j+1]=58;p[j+2]=42;p[j+3]=Math.round(255*al)}}
+   // beside that cut GPT's own neck goes on down (lighter, with a straight side): the neck comes from the doll, so it goes, fading in from the cut
+   for(let yy=y-2;yy<Math.min(H,y+60);yy++)for(let xx=Math.max(0,a-30);xx<=Math.min(W-1,z+30);xx++){if(xx>=a&&xx<=z&&yy<=y)continue;const j=(yy*W+xx)*4;if(p[j+3]&&neck(j))p[j+3]=Math.round(p[j+3]*Math.max(0,Math.min(1,(y+1-yy)/4)))}}
+  run=[]}}
+ if(!n)return m;x.putImageData(d,0,0);c.naturalWidth=W;c.naturalHeight=H;c.src=(m.src||'')+'#chin';return c}catch(_){return m}}
+function im(src){if(!IMG[src])IMG[src]=(async()=>{for(let n=0;n<3;n++){if(n)await new Promise(z=>setTimeout(z,500*n*n));const i=await imLoad(DYN[src]||('a8/'+src+'.webp'+V));if(i)return /^(w|yh\w+|yt\w+)\d$/.test(src)?chinFade(i):i}
   delete IMG[src];(window.ERRS=window.ERRS||[]).push('v230 img: '+src);return null})();return IMG[src]}
 // a base shirt under lace: the arm's own light and shade, in the shirt's colour
 function tinted(m,rgb,ref){const key=m.src+'|'+rgb;if(TINT[key])return TINT[key];
@@ -376,6 +391,7 @@ async function paint(cv,v,s,pad){s=headOf(s);const bg=s.bg||'';const hw=whole(s.
  if(bg){if(bc)c.drawImage(bc,FX[v]-210,FY-615);else{c.fillStyle='#f6efe6';c.fillRect(0,-pt,oc.width,oc.height)}
   const g=c.createRadialGradient(FX[v],FY+3,2,FX[v],FY+3,52);g.addColorStop(0,'rgba(40,28,20,.30)');g.addColorStop(1,'rgba(40,28,20,0)');c.save();c.translate(FX[v],FY+3);c.scale(1,.16);c.translate(-FX[v],-FY-3);c.fillStyle=g;c.fillRect(FX[v]-60,FY-60,120,126);c.restore()}
  c.drawImage(base,0,0);if(E){for(let i=0;i<8;i++){c.globalAlpha=(i+1)/8;c.drawImage(E,0,0,2,1,0,BH-8+i,BW,1)}c.globalAlpha=1}
+ if(hw&&!bg){const nk=await im('ch'+(v+1));if(nk)c.drawImage(nk,0,0)}   // v284: under a wig or hairstyle, her real neck (the no-head picture has a blurred stump there with a second chin shadow)
  const HTv=!s.rawHead&&hw?((await headT(s.head))||[])[v]:null;
  const BT=ms.filter((m,i)=>m&&L[i].bt),BTK=L.filter(l=>l.bt).map(l=>l.s).join(',');const doll=BT.length&&L.some(l=>l.tk)?await im('c'+(v+1)):null;
  ms.forEach((m,i)=>{if(!m)return;const l=L[i];if(l.tk&&BT.length)m=tuckCut(m,BT,doll,l.s+'|'+(m.src||'')+'|'+BTK+'|'+BT.map(b=>b.src||'').join(','));const im=l.t?tinted(m,l.t,l.ref):m;if(l.hd&&HTv)drawHead(c,im,HTv);else c.drawImage(im,0,l.k?JY(l.k):0)});if(L.fit)await mkFit(c,v,s.head,L.fit,pt,L.fitId);if(pt||pb)c.restore();
@@ -920,7 +936,7 @@ function styFrame0(k,o){o=o||{};const st=STY[k];if(!st)return Promise.resolve(''
   const c=document.createElement('canvas');if(!await paint(c,0,s))return '';const f=document.createElement('canvas');f.width=176;f.height=240;f.getContext('2d').drawImage(c,70,0,220,300,0,0,176,240);
   const u=f.toDataURL('image/jpeg',.84);KV.put(k0,u);return u})().catch(()=>'').then(u=>{if(!u)delete FR0[ck];return u})}
 setTimeout(()=>{try{KV.tidy(KVV)}catch(_){}},9000);   // pictures of older versions go
-window.R360={dbgFrames:(h,mk,on,raw)=>frames8("#dbg|"+h+"|"+mk+"|"+JSON.stringify(on||{})+(raw?"r":""),Object.assign(clone(DEF),{on:on||{},bg:"",head:h,mk:mk||"",tc:null,rawHead:raw?1:0})),open,close,make,prompts,openWith,styCard,styFace,styFrames,styFrame0,headFrames,restyle:()=>{try{if(dlg&&dlg.open)paintSty()}catch(_){}},Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
+window.R360={dbgPaint:async(h,mk,v,on)=>{const c=document.createElement("canvas");if(!await paint(c,v,Object.assign(clone(DEF),{on:on||{},bg:"",head:h,mk:mk||"",tc:null})))return "";return c.toDataURL("image/png")},dbgFrames:(h,mk,on,raw)=>frames8("#dbg|"+h+"|"+mk+"|"+JSON.stringify(on||{})+(raw?"r":""),Object.assign(clone(DEF),{on:on||{},bg:"",head:h,mk:mk||"",tc:null,rawHead:raw?1:0})),open,close,make,prompts,openWith,styCard,styFace,styFrames,styFrame0,headFrames,restyle:()=>{try{if(dlg&&dlg.open)paintSty()}catch(_){}},Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
  ready:()=>Object.keys(READY).filter(id=>D[id]),isReady,kind:kindOf,KIND,ME,prompt1:prompt,sync:resync,dyn:id=>!!(READY[id]&&READY[id].dyn),names:NAMES,show:v=>{if(big){big.stop();big.show(v)}},
  still:async(id,v)=>{if(!READY[id])return null;const s=stateFrom([id],{head:ST.head=='w'?'w':'c',cam:ST.cam,bg:''});
   if((await Promise.all(layersFor(v||0,s).map(l=>im(l.s)))).some(m=>!m))return null;   // a layer that did not load would show the bare doll
