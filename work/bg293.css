@@ -1,0 +1,8 @@
+/* v295 – ⬛ / ⬜ the backdrop GPT paints, on every hairstyle / tie card and in her cover's ties window */
+.bg293b{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:0;min-height:40px;padding:3px 12px;border-radius:12px;border:1.5px solid #cfc3b8;background:#f4f1ee;color:#2b211b;font:inherit;font-size:.82rem;font-weight:700;line-height:1.15;cursor:pointer}
+.bg293b small{font-size:.66rem;font-weight:500;opacity:.75}
+.bg293b[aria-pressed=true]{background:#17161a;border-color:#17161a;color:#fff}
+.bg293b:focus-visible{outline:3px solid #b4532a;outline-offset:2px}
+.bg293r{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:6px 0 10px;font-size:.9rem}
+#sty199 .sycb .bg293b{flex:1 1 100%;border-radius:12px;white-space:normal;font-size:.8rem;font-weight:700}
+#sty199 .sycb .bg293b[aria-pressed=true],#tie202 .bg293b[aria-pressed=true],#sty199 .bg293b[aria-pressed=true]{background:#17161a;border-color:#17161a;color:#fff}

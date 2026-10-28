@@ -504,3 +504,5 @@ dialog#g256::backdrop{background:rgba(30,20,15,.45)}
 #g250 .g250pair img.g250pp{aspect-ratio:3/4;object-fit:cover}
 #g250 .g250f.bad{outline:2px solid #c0262d;outline-offset:3px;border-radius:10px}
 #g250 .g250fl{color:#a3141c;font-size:.85rem;line-height:1.3}
+/* v295 – the 🗑 / ☆ on the cards slid over the sticky title and tabs while scrolling */
+#sty199 .mkh{z-index:5}#sty199 .syt{z-index:4}#tie202 .mkh{z-index:5}#tie202 .t246top{z-index:4}

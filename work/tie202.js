@@ -332,7 +332,7 @@ async function got245(w,fs){const id=w.id;
 // its own toast says what was saved
 {const _bp=window.beforePut;if(typeof _bp=='function')beforePut=function(id,patch){const k=patch&&Object.keys(patch);if(k&&k.length&&k.every(x=>x=='tie'||x=='tc'||x=='tx'||x=='txw'||x=='a8'||x=='a8up'))return;return _bp.apply(this,arguments)}}
 window.tie202open=id=>{PICK=false;SEL.clear();try{window.STYORD&&STYORD.freeze()}catch(_){}return open(id).catch(e=>ERR('open',e))};
-window.tie228={txs,set:async(id,i)=>{const ok=await setTx(id,i);barBtn();return ok}};
+window.tie228={txs,pid:()=>PID,set:async(id,i)=>{const ok=await setTx(id,i);barBtn();return ok}};
 // the tie's picture is a whole 8-angle frame with a small head: show the head itself, cropped to what was cut
 const TH={};
 function headThumb(a){if(TH[a])return TH[a];return TH[a]=new Promise(res=>{const m=new Image();m.onload=()=>{try{const W=m.naturalWidth,H=m.naturalHeight,k=Math.min(1,120/W),w=Math.round(W*k),h=Math.round(H*k);
