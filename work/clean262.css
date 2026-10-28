@@ -17,3 +17,7 @@ dialog#cl262::backdrop{background:rgba(30,20,15,.45)}
 #ad172 .ad172h{flex-wrap:wrap}#ad172 .ad172h .cl262a{width:auto;height:auto;min-height:40px;border-radius:22px;border:0;font-size:.9rem;white-space:nowrap;order:3;margin:0}
 #cl262b .cl262bb{display:flex;gap:6px}
 #cl262b .cl262no{background:transparent;color:#5a2d14;border:1px solid #e3b48c;font-weight:500}
+/* v303 the "clean by itself every day" switch */
+#cl262 .cl302{display:flex;gap:10px;align-items:flex-start;margin:16px 0 4px;padding:12px 14px;border-radius:14px;background:#f3efe9;cursor:pointer;line-height:1.45}
+#cl262 .cl302 input{width:22px;height:22px;flex:none;margin:2px 0 0;accent-color:#2e7d4f}
+#cl262 .cl302 small{display:block;color:#6b6460;font-size:.85em}

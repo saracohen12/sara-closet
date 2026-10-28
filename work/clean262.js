@@ -54,28 +54,49 @@ async function open(){if(RUN)return show('<p class="cl262p">מוחקת… <b dat
  show(`<p class="cl262p">שמורות עכשיו <b>${u.files||SC.all}</b> תמונות מתוך <b>${u.maxFiles||'?'}</b> (${mb(u.bytes||0)} מתוך ${mb(u.maxBytes||0)} MB).</p>
   ${SC.free.length?`<p class="cl262p"><b>${SC.free.length}</b> מהן ישנות ואף אחד כבר לא משתמש בהן – גזירות קודמות שהוחלפו, העלאות שלא נשמרו (${mb(SC.bytes)} MB).<br>כל מה שמופיע באתר נשאר: בגדים, אווטאר, קשירות, תסרוקות, איפורים, רקעים ולוקים.</p>
   <span class="mkb"><button type="button" class="mkp" data-go>🧹 למחוק ${SC.free.length} תמונות ישנות</button><button type="button" data-x>לא עכשיו</button></span>`
-  :'<p class="cl262p">אין תמונות ישנות למחוק – הכול בשימוש. אפשר לבקש עוד מקום ("Request a higher limit").</p>'}`)}
+  :'<p class="cl262p">אין תמונות ישנות למחוק – הכול בשימוש. אפשר לבקש עוד מקום ("Request a higher limit").</p>'}${autoRow()}`)}
 async function go(){if(RUN||!SC||!SC.free.length)return;RUN=true;let L=SC.free;const a=SC.a;if(SC.rn){const keep=await bkFix(SC);if(keep.size)L=L.filter(x=>!keep.has(x.id))}let n=0,bad=0,wait=0;show(`<p class="cl262p">מוחקת… <b data-n>0</b> מתוך ${L.length}. לא לסגור את הדף.</p><progress max="${L.length}" value="0"></progress>`);
  for(const x of L){for(let t=0;t<4;t++){try{await a.delete(x.id);n++;break}catch(e){if(e&&e.code=='rate_limited'||e&&e.code=='store_unavailable'){wait=Math.min(8000,(wait||800)*2);await new Promise(r=>setTimeout(r,wait));continue}bad++;ERR('del',e);break}}
   wait=Math.max(0,wait-200);const c=DL.querySelector('[data-n]');if(c)c.textContent=n;const p=DL.querySelector('progress');if(p)p.value=n+bad}
  RUN=false;SC=null;show(`<p class="cl262p">✓ נמחקו <b>${n}</b> תמונות ישנות. עכשיו יש מקום להעלות שוב.${bad?` (${bad} לא נמחקו)`:''}</p><span class="mkb"><button type="button" class="mkp" data-x>סגירה</button></span>`);
  toast_(`✓ פיניתי ${n} תמונות`);try{const x=document.getElementById('cl262b');if(x)x.remove();banner()}catch(_){}}
+// ===== v303 (Sara 28/10 15:38 "אני לא יכולה כל פעם להיות בלחץ שנגמר לי המקום"): a switch she turns on once – "🔁 לנקות לבד כל יום". While it is on,
+// the daily check (and any moment the store is full or nearly full, at most once an hour) deletes by itself exactly what "🧹 למחוק" would delete:
+// files no item, style, look, setting or backup points at, older than 3 hours, after the backups are renamed (bkFix). Turning it on is her own
+// press; it is kept in db 'cl302' doc 'auto' so it holds on every device, and the last run is written to doc 'last'.
+let AUTO=null;const lsA=()=>{try{return localStorage.getItem('cl302')=='1'}catch(_){return false}};
+async function autoOn(){if(AUTO!=null)return AUTO;AUTO=lsA();try{const db=await claude.use('db');if(db){const d=await db.collection('cl302').doc('auto').get();AUTO=!!(d.exists&&d.data()&&d.data().on);try{localStorage.setItem('cl302',AUTO?'1':'0')}catch(_){}}}catch(_){}return AUTO}
+async function setAuto(on){AUTO=!!on;try{localStorage.setItem('cl302',on?'1':'0')}catch(_){}try{const db=await claude.use('db');if(db)await db.collection('cl302').doc('auto').set({on:!!on,t:Date.now()})}catch(e){ERR('auto',e)}
+ toast_(on?'✓ מעכשיו האתר מפנה מקום לבד כל יום':'הניקוי האוטומטי כבוי');if(on)setTimeout(()=>autoRun(true).catch(()=>{}),1500)}
+const autoRow=()=>`<label class="cl302"><input type="checkbox" data-cl302 ${(AUTO==null?lsA():AUTO)?'checked':''}> <span><b>🔁 לנקות לבד כל יום</b><small>האתר ימחק בעצמו רק תמונות ישנות שאף אחד לא משתמש בהן – בלי שתצטרכי לזכור</small></span></label>`;
+let LASTAUTO=0;
+async function autoRun(force){if(RUN||!(await autoOn()))return false;if(!force&&Date.now()-LASTAUTO<60*60e3)return false;LASTAUTO=Date.now();
+ let r=null;try{r=await scan()}catch(e){if(e&&e.code!='not_granted')ERR('auto-scan',e);return false}
+ if(!r||!r.free.length)return false;RUN=true;let L=r.free,n=0,bad=0,wait=0;
+ try{if(r.rn){const keep=await bkFix(r);if(keep.size)L=L.filter(x=>!keep.has(x.id))}
+  for(const x of L){for(let t=0;t<4;t++){try{await r.a.delete(x.id);n++;break}catch(e){if(e&&(e.code=='rate_limited'||e.code=='store_unavailable')){wait=Math.min(8000,(wait||800)*2);await new Promise(q=>setTimeout(q,wait));continue}bad++;ERR('auto-del',e);break}}wait=Math.max(0,wait-200)}}
+ finally{RUN=false;SC=null}
+ try{const db=await claude.use('db');if(db)await db.collection('cl302').doc('last').set({t:Date.now(),n,bad,before:r.usage&&r.usage.files||0})}catch(_){}
+ if(n){window.STOREFULL=0;toast_(`🧹 פיניתי לבד ${n} תמונות ישנות`)}try{const x=document.getElementById('cl262b');if(x)x.remove();banner()}catch(_){}return n>0}
+document.addEventListener('change',e=>{const t=e.target;if(t&&t.matches&&t.matches('[data-cl302]'))setAuto(t.checked)});
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-cl302on]');if(!b)return;e.preventDefault();setAuto(true)},true);
 window.clean262=open;window.clean262b=()=>banner().catch(()=>{});
 // a line at the top when the store is (nearly) full, and in the admin panel
 async function banner(){let u=null;try{const a=await claude.use('assets');if(!a)return;u=(await a.list()).usage}catch(_){return}
- const full=u&&((u.maxFiles&&u.files>=u.maxFiles-150)||(u.maxBytes&&u.bytes>=u.maxBytes*.93));let b=document.getElementById('cl262b');
+ const full=u&&((u.maxFiles&&u.files>=u.maxFiles-300)||(u.maxBytes&&u.bytes>=u.maxBytes*.93));let b=document.getElementById('cl262b');
  if(!full){if(b&&!b.dataset.d)b.remove();return}
  if(!b){b=document.createElement('div');b.id='cl262b';b.setAttribute('role','status');document.body.appendChild(b)}
- delete b.dataset.d;b.innerHTML=`<span>📦 המקום לתמונות ${u.files>=u.maxFiles?'מלא':'כמעט מלא'} (${u.files} מתוך ${u.maxFiles})</span><button type="button" data-cl262>🧹 לפנות מקום</button>`}
+ if(await autoOn()&&!RUN){autoRun(false).catch(()=>{})}
+ delete b.dataset.d;b.innerHTML=`<span>📦 המקום לתמונות ${u.files>=u.maxFiles?'מלא':'כמעט מלא'} (${u.files} מתוך ${u.maxFiles})${RUN?' – מפנה מקום לבד…':''}</span><span class="cl262bb"><button type="button" data-cl262>🧹 לפנות מקום</button>${AUTO?'':'<button type="button" data-cl302on>🔁 שינקה לבד כל יום</button>'}</span>`}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-cl262]');if(!b)return;e.preventDefault();open()},true);
 // v263 (Sara 22:21 "מנגנון כל יום לבדוק האם יש קובץ מיותר ולהוריד אותם"): once a day, a minute after the site opens, it checks by itself (reading only).
 // When it finds files nothing uses, a bar offers "🧹 לנקות" – the delete itself always waits for her press (deleting is final).
 const today=()=>new Date().toISOString().slice(0,10);
 const lsG=k=>{try{return localStorage.getItem(k)}catch(_){return null}},lsS=(k,v)=>{try{localStorage.setItem(k,v)}catch(_){}};
-async function daily(){if(RUN||lsG('cl262d')==today())return;let r=null;try{r=await scan()}catch(e){if(e&&e.code!='not_granted')ERR('daily',e);return}lsS('cl262d',today());
+async function daily(){if(RUN)return;if(await autoOn()){if(lsG('cl262d')!=today()){lsS('cl262d',today());await autoRun(true)}return}if(lsG('cl262d')==today())return;let r=null;try{r=await scan()}catch(e){if(e&&e.code!='not_granted')ERR('daily',e);return}lsS('cl262d',today());
  if(!r||r.free.length<10)return;if(!SC)SC=r;let b=document.getElementById('cl262b');if(b&&!b.dataset.d)return;
  if(!b){b=document.createElement('div');b.id='cl262b';b.dataset.d='1';b.setAttribute('role','status');document.body.appendChild(b)}
- b.innerHTML=`<span>🧹 הבדיקה היומית: ${r.free.length} קבצים ישנים שאף אחד לא משתמש בהם</span><span class="cl262bb"><button type="button" data-cl262>🧹 לנקות</button><button type="button" class="cl262no" data-cl262no>אחר כך</button></span>`}
+ b.innerHTML=`<span>🧹 הבדיקה היומית: ${r.free.length} קבצים ישנים שאף אחד לא משתמש בהם</span><span class="cl262bb"><button type="button" data-cl262>🧹 לנקות</button><button type="button" data-cl302on>🔁 שינקה לבד כל יום</button><button type="button" class="cl262no" data-cl262no>אחר כך</button></span>`}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-cl262no]');if(!b)return;const x=document.getElementById('cl262b');if(x)x.remove()});
 setTimeout(()=>daily().catch(()=>{}),60000);setInterval(()=>daily().catch(()=>{}),60*60e3);
 setTimeout(()=>banner().catch(()=>{}),8000);setInterval(()=>banner().catch(()=>{}),10*60e3);
