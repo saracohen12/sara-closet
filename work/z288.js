@@ -1,3 +1,4 @@
+// v288b (15:18): smaller, all of them in view (wrap to rows, two-word names one above the other), smaller 📌 ♡, and ↺ איפוס.
 // v288: category buttons in the studio's top bar (Sara 28/10 15:12 "כפתורים קטנים… בלחיצת כפתור להגיע… קבוע על המסך… באותה שורה").
 // The bar is already sticky. Small chips that scroll sideways sit between ✕ and the save buttons; a tap picks the category
 // through the studio's own .r3cats buttons and jumps to the closet grid. On a phone the title and the long button words hide to make room.
@@ -7,7 +8,8 @@ let dlg=null,row=null,KEY='';
 function paint(){if(!dlg||!row)return;try{
  const bs=[...dlg.querySelectorAll('.r3cats button[data-cat]')];
  const html=bs.map(b=>{const k=b.dataset.cat,c=b.cloneNode(true);c.querySelectorAll('small').forEach(x=>x.remove());const n=c.textContent.replace(/\s+/g,' ').trim().replace(/^✓(?=\S)/,'✓ ');
-   return `<button type="button" data-z8="${k}" aria-pressed="${b.getAttribute('aria-pressed')=='true'}">${n.replace(/[&<>"]/g,'')}</button>`}).join('');
+   const w=n.replace(/[&<>"]/g,'').replace(/^✓?\s*כבר על /,'על ').split(' '),lb=w.length<2?w[0]:w.length==2?w.join('<br>'):w.slice(0,2).join(' ')+'<br>'+w.slice(2).join(' ');
+   return `<button type="button" data-z8="${k}" aria-label="${w.join(' ')}" aria-pressed="${b.getAttribute('aria-pressed')=='true'}">${lb}</button>`}).join('');
  if(html!=KEY){KEY=html;row.innerHTML=html;const on=row.querySelector('[aria-pressed=true]');if(on&&on.scrollIntoView)on.scrollIntoView({block:'nearest',inline:'nearest'})}}catch(e){ERR('paint',e)}}
 function go(k){try{
  const tab=dlg.querySelector('.r3tabs [data-t="closet"]');if(tab&&tab.getAttribute('aria-selected')!='true')tab.click();
@@ -18,6 +20,7 @@ function setup(d){dlg=d;const h=d.querySelector('.r3h');if(!h||h.querySelector('
  row=document.createElement('nav');row.className='z8c';row.setAttribute('aria-label','לקפוץ לסוג בגד');
  const tt=h.querySelector('.r3tt');(tt||h.firstChild).after(row);h.classList.add('z8h');
  row.addEventListener('click',e=>{const b=e.target.closest('[data-z8]');if(b)go(b.dataset.z8)});
+ const ha=h.querySelector('.r3ha');if(ha&&!ha.querySelector('.z8r')){const r=document.createElement('button');r.type='button';r.className='z8r';r.setAttribute('aria-label','איפוס – להוריד הכול מהאווטאר');r.title='איפוס';r.innerHTML='<i aria-hidden="true">🔄</i><span>איפוס</span>';r.onclick=()=>{try{if(window.R360&&R360.reset)R360.reset()}catch(e){ERR('reset',e)}};ha.prepend(r)}   // v288b
  const pin=h.querySelector('.r3pin'),sv=h.querySelector('.r3save');if(pin)pin.title='לשים את הלוק בדף הראשי';if(sv)sv.title='שמירת הלוק';
  const cats=d.querySelector('.r3cats');if(cats)new MutationObserver(()=>requestAnimationFrame(paint)).observe(cats,{childList:true,subtree:true,attributes:true,attributeFilter:['aria-pressed']});
  paint()}

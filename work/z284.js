@@ -18,7 +18,7 @@ function paint(){if(!dlg||!box)return;try{
  const items=chips.map(c=>{const id=c.dataset.off,im=c.querySelector('img'),src=im&&im.getAttribute('src')||'',n=((c.querySelector('span')||{}).textContent||'').trim();
    return `<li><img alt="" src="${esc(src)}"><span>${esc(n)}</span><div>${!HEADS.has(id)&&hasA8(id)?`<button type="button" data-fix237="${esc(id)}" aria-label="לתקן ב-GPT: ${esc(n)}">✨ לתקן</button>`:''}<button type="button" data-z7off="${esc(id)}" aria-label="להוריד: ${esc(n)}">✕ להוריד</button></div></li>`});
  const ub=dlg.querySelector('.r3worn .r3undo'),un=ub?((ub.querySelector('span')||{}).textContent||'').replace(/^להחזיר:\s*/,''):'';   // v288: undo for an item taken off by mistake
- const html=`<div class="z7h"><h3>✏ לסדר את הלוק</h3><button type="button" class="z7tell" data-z7="tell">💬 משהו לא יושב טוב?</button></div>
+ const html=`<div class="z7h"><h3>✏ לסדר את הלוק</h3><span class="z7hb"><button type="button" class="z7tell" data-z7="reset">🔄 לאפס הכול</button><button type="button" class="z7tell" data-z7="tell">💬 משהו לא יושב טוב?</button></span></div>
   ${pills.join('')?`<div class="z7p">${pills.join('')}</div>`:'<p class="z7n">כשלובשים חולצה עם חצאית, או חולצה עם שמלה, יופיעו כאן כפתורים להכניס אותה פנימה.</p>'}
   ${ub?`<button type="button" class="z7u" data-z7="undo"><i aria-hidden="true">↩</i><span>הורדת בטעות? להחזיר את <b>${esc(un)}</b></span></button>`:''}
   ${items.length?`<p class="z7s">מה שעלייך עכשיו (${items.length})</p><ul class="z7i">${items.join('')}</ul>`:''}`;
@@ -28,6 +28,7 @@ function setup(d){dlg=d;const side=d.querySelector('.r3side');if(!side)return;
  box.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;try{
   const k=b.dataset.z7;
   if(k=='tell'){if(window.openTell282)openTell282();return}
+  if(k=='reset'){if(window.R360&&R360.reset)R360.reset();setTimeout(paint,80);return}
   if(k=='undo'){const u=dlg.querySelector('.r3worn .r3undo');if(u)u.click();setTimeout(paint,60);return}
   if(k=='jy'){const j=dlg.querySelector('.r3jyb');if(j){j.click();j.scrollIntoView({block:'nearest'})}return}
   const p=P.find(x=>x[0]==k);if(p){const i=dlg.querySelector(p[1]+' input');if(i){i.checked=!i.checked;i.dispatchEvent(new Event('change',{bubbles:true}))}setTimeout(paint,60);return}
