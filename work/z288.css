@@ -22,3 +22,10 @@
 /* the same chips used to be under the search too – they are up in the bar now */
 #r360 .r3pane[data-p="closet"] .r3cats{display:none}
 @media (min-width:761px){#r360 .r3h.z8h{grid-template-columns:auto auto minmax(160px,320px) 1fr auto;grid-template-areas:"x t q . a" "c c c c c"}}
+/* v292 – a button of something she has on is lit; the three extra buttons (פאה / כיסוי, תסרוקות, איפור) open the ✏ window there */
+#r360 .r3h .z8c button[data-on]:not([aria-pressed=true]){background:#fbe6d9;border-color:var(--z-acc,#b4532a);color:#7a3416;font-weight:700;box-shadow:inset 0 0 0 1px var(--z-acc,#b4532a)}
+#r360 .r3h .z8c button[data-on]::after{content:"";display:block;width:5px;height:5px;margin:1px auto 0;border-radius:50%;background:currentColor}
+#r360 .r3h .z8c .z8x{border-style:dashed}
+#r360 .z8fl{animation:z8fl 1.4s ease-out}
+@keyframes z8fl{0%{background:#fbe6d9;box-shadow:0 0 0 3px var(--z-acc,#b4532a)}100%{box-shadow:0 0 0 0 transparent}}
+@media (prefers-reduced-motion:reduce){#r360 .z8fl{animation:none;outline:3px solid var(--z-acc,#b4532a)}}
