@@ -6,7 +6,7 @@
 const V='?v='+(window.A8V||window.VER||'');   // v245: the a8 pictures' own version – stays the same across site versions
 const NAMES=['חזית','חצי ימין','צד ימין','גב ימין','גב','גב שמאל','צד שמאל','חצי שמאל'];
 const BACK=[0,0,0,1,1,1,0,0];            // views where the head covers the ears: earrings go under the hair/scarf
-const WB=[1,1,0,0,0,0,0,1];              // views with a 'hair behind the shoulders' wig layer (wb*.webp)
+const WB=[1,1,0,0,0,0,0,1];              // views where 'hair behind the shoulders' changes the wig (front and the two half views; v288: built from the wig, see hairBack)
 // closet items that already have a 360 sheet → their layer keys (a8/x<key><view>.webp). Every new sheet: cut the layers, then add one line here.
 const READY={
  'S1100_0':{k:['d']},        // Omancia שמלת קטיפה ירוקה עם תחרה (25/10 20:53) – lace sleeves, see LACE
@@ -32,7 +32,7 @@ const CATS=[['all','הכל'],['ready','✓ כבר על האווטאר'],['dresse
 const CATIDS=new Set(CATS.slice(2).map(c=>c[0]));
 const DEF={on:{b:1,s:1,n:1,g:1,j:1,e:1},head:'c',tuck:0,under:0,wb:0,cam:'black',bg:'',mk:'',tf:'',tc:null};   // v199: mk = makeup, tf/tc = the cover a tie is made of and its colour
 const clone=o=>JSON.parse(JSON.stringify(o));
-let ST=load();
+let ST=load();let UNDO=null;
 // 21:19 she asked to leave the wig until it is redone: start once on the cover
 try{if(!localStorage.getItem('r3w181')){localStorage.setItem('r3w181','1');if(ST.head=='w'){ST.head='c';localStorage.setItem('r360',JSON.stringify(ST))}}}catch(_){}
 function load(){try{const s=JSON.parse(localStorage.getItem('r360')||'null');if(s&&s.on)return Object.assign(clone(DEF),s,{on:Object.assign({},s.on)})}catch(_){}return clone(DEF)}
@@ -273,7 +273,14 @@ function chinFade(m){try{const W=m.naturalWidth,H=m.naturalHeight,c=document.cre
    for(let yy=y-2;yy<Math.min(H,y+60);yy++)for(let xx=Math.max(0,a-30);xx<=Math.min(W-1,z+30);xx++){if(xx>=a&&xx<=z&&yy<=y)continue;const j=(yy*W+xx)*4;if(p[j+3]&&neck(j))p[j+3]=Math.round(p[j+3]*Math.max(0,Math.min(1,(y+1-yy)/4)))}}
   run=[]}}
  if(!n)return m;x.putImageData(d,0,0);c.naturalWidth=W;c.naturalHeight=H;c.src=(m.src||'')+'#chin';return c}catch(_){return m}}
-function im(src){if(!IMG[src])IMG[src]=(async()=>{for(let n=0;n<3;n++){if(n)await new Promise(z=>setTimeout(z,500*n*n));const i=await imLoad(DYN[src]||('a8/'+src+'.webp'+V));if(i)return /^(w|yh\w+|yt\w+)\d$/.test(src)?chinFade(i):i}
+// v288: "hair behind the shoulders" = her wig with the hair taken away wherever her body is (the hair falls behind the neck and shoulders).
+// The old wb*.webp layers were cut for the first wig and ended in a straight line above the shoulders – Sara 28/10 15:10 "עושה לי שיער באוויר".
+async function hairBack(n){const w=await im('w'+n),b=await im('ch'+n);if(!w||!b)return w;try{
+ const W=w.naturalWidth||w.width,H=w.naturalHeight||w.height,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+ x.drawImage(w,0,0);x.globalCompositeOperation='destination-out';x.filter='blur(1.2px)';x.drawImage(b,0,0);x.filter='none';x.globalCompositeOperation='source-over';
+ const i=new Image();i.src=c.toDataURL('image/png');await i.decode();return i}catch(e){(window.ERRS=window.ERRS||[]).push('v288 hairBack: '+(e&&e.message||e));return w}}
+function im(src){if(/^wbx\d$/.test(src)){if(!IMG[src])IMG[src]=hairBack(src.slice(3));return IMG[src]}
+ if(!IMG[src])IMG[src]=(async()=>{for(let n=0;n<3;n++){if(n)await new Promise(z=>setTimeout(z,500*n*n));const i=await imLoad(DYN[src]||('a8/'+src+'.webp'+V));if(i)return /^(w|yh\w+|yt\w+)\d$/.test(src)?chinFade(i):i}
   delete IMG[src];(window.ERRS=window.ERRS||[]).push('v230 img: '+src);return null})();return IMG[src]}
 // a base shirt under lace: the arm's own light and shade, in the shirt's colour
 function tinted(m,rgb,ref){const key=m.src+'|'+rgb;if(TINT[key])return TINT[key];
@@ -306,7 +313,7 @@ function layersFor(v,s){const on=s.on||{},L=[];const x=k=>({s:'x'+k+(v+1),k});co
  // so it covered the shoes she chose. The shoes are drawn once more over the dress, skirt and coat (the shoe layer is only the shoe, at the floor)
  const shs=of('shoes');if(shs.length&&(of('body').length||of('bottom').length||of('coat').length))shs.forEach(k=>L.push(x(k)));
  const st=STY[s.head],z=st&&'z'+s.head.slice(1)+(v+1);
- const head=s.head=='w'?[{s:(s.wb&&WB[v]?'wb':'w')+(v+1),hd:1}]:st?[DYN[s.head+(v+1)]&&{s:s.head+(v+1),hd:1},st.set=='tie'&&DYN[z]&&{s:z,t:s.tc||GREY,ref:st.lum}].filter(Boolean):(s.head&&s.head!='c')?[x(s.head)]:[];
+ const head=s.head=='w'?[{s:(s.wb&&WB[v]?'wbx':'w')+(v+1),hd:1}]:st?[DYN[s.head+(v+1)]&&{s:s.head+(v+1),hd:1},st.set=='tie'&&DYN[z]&&{s:z,t:s.tc||GREY,ref:st.lum}].filter(Boolean):(s.head&&s.head!='c')?[x(s.head)]:[];
  // v199 makeup: over a whole head (tie, hairstyle) right after it; with a cover under everything (a cover item is drawn over it). Her first wig is another drawing of the face: no makeup on it
  const mk=s.mk&&STY[s.mk]&&DYN[s.mk+(v+1)]?{s:s.mk+(v+1)}:null;if(mk){if(st||whole(s.head))L.fit=s.mk;else if([0,1,7].includes(v)&&!s.mkraw){L.fit=s.mk;L.fitId=1}else L.unshift(mk)}   // v226 (Sara 19:23 "רושם איפור 5 דקות, בבובה לא רואים"): a head-cover item made from a whole-head sheet (tiex) brings its own face – the makeup is fitted on it too;
    // on her own face (cover, scarf items) the front and half-turns get the same delta in place (fitId), so faint makeup is strengthened there as well   // v216: on a whole head paint() fits it (mkFit)
@@ -520,7 +527,8 @@ function build(){
  dlg.addEventListener('click',e=>{const t=e.target.closest('button');if(!t||!dlg.contains(t))return;
   if(t.dataset.cat){CAT=t.dataset.cat;SHOWN=60;paintGrid();return}
   if(t.dataset.it){const id=t.dataset.it;if(coverTie(id)){if(/^yt/.test(ST.head)&&tfId()==id){ST.head='c';ST.tf=''}else wearCover(id);keep();redraw();return}if(isReady(id)){wearItem(id);keep();redraw()}else make(id);return}
-  if(t.dataset.off){const o=t.dataset.off;if(o=='w')ST.head='c';else if(o=='yh')ST.head='w';else if(o=='yt')ST.head=ST.tf&&(ST.tf=='c'||KEYOF[ST.tf])?ST.tf:'c';else if(o=='ym')ST.mk='';else if(o==tfId()&&/^yt/.test(ST.head)){ST.head='c';ST.tf=''}else takeOff(o);keep();redraw();return}
+  if(t.dataset.undo!=null){if(UNDO&&JSON.stringify(ST)===UNDO.bj){ST=clone(UNDO.a);UNDO=null;keep();redraw()}return}   // v288: ↩ puts back what she took off by mistake (Sara 28/10 15:08 "בטעות הורדתי")
+  if(t.dataset.off){UNDO={a:clone(ST),n:((t.querySelector('span')||{}).textContent||'').trim()};const o=t.dataset.off;if(o=='w')ST.head='c';else if(o=='yh')ST.head='w';else if(o=='yt')ST.head=ST.tf&&(ST.tf=='c'||KEYOF[ST.tf])?ST.tf:'c';else if(o=='ym')ST.mk='';else if(o==tfId()&&/^yt/.test(ST.head)){ST.head='c';ST.tf=''}else takeOff(o);UNDO.bj=JSON.stringify(ST);keep();redraw();return}
   if(t.dataset.r3more!=null||t.dataset.r3less!=null){try{window.STYORD.more(t.dataset.r3more||t.dataset.r3less,t.dataset.r3more!=null)}catch(_){}paintSty();return}
   if(t.dataset.syh!=null){if(t.dataset.syh){recSty(t.dataset.syh);starSty(t.dataset.syh)}ST.head=t.dataset.syh||'w';keep();redraw();return}
   if(t.dataset.sytfm!=null){SCALL=!SCALL;paintSty();return}
@@ -600,6 +608,8 @@ function paintRoom(){if(!dlg)return;
   chips.unshift(`<button type="button" class="r3wc" data-off="${o}" aria-label="להוריד: ${esc(STY[k].n)}"><img alt="" data-sth="${k}" src="${STH[k]||''}"><span>${esc(STY[k].n)}</span><b aria-hidden="true">✕</b></button>`)});
  // v197: an item she cut herself can be replaced or deleted right here (Sara 08:29 "גם אם לחצתי מדוד עלי שיהיה לי אפשרות למחוק ולהחליף")
  const fx=ids.filter(id=>READY[id]&&READY[id].dyn&&window.acts197).map(id=>`<div class="r3fx"><span>${esc(nm(id).split(' ').slice(0,3).join(' '))}</span>${acts197(id)}</div>`).join('');
+ if(UNDO&&JSON.stringify(ST)!==UNDO.bj)UNDO=null;   // v288: the undo is offered only until she changes something else
+ if(UNDO)chips.unshift(`<button type="button" class="r3wc r3undo" data-undo="1" aria-label="להחזיר: ${esc(UNDO.n)}"><b aria-hidden="true">↩</b><span>להחזיר: ${esc(UNDO.n)}</span></button>`);
  wv.innerHTML=(chips.join('')||'<p class="r3note">עוד לא לבשת כלום. בוחרים למטה מהארון.</p>')+fx;thl(ids);
  dlg.querySelector('.r3cnt').textContent=ids.length?`${ids.length} פריטים`:'';
  const t=dlg.querySelector('.r3tk');const sl=x=>Object.keys(ST.on).some(k=>ST.on[k]&&SLOT[k]&&SL(k)==x);t.hidden=!((sl('top')||sl('base')||Object.keys(ST.on).some(k=>ST.on[k]&&SLOT[k]=='outer'&&PK[k]=='sweater'))&&sl('bottom')&&!sl('body'));t.querySelector('input').checked=!!ST.tuck;   // v225 (Sara 19:22 "איפה מכניסים את החולצה"): any top with any skirt, not only the first two items

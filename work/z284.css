@@ -21,3 +21,7 @@
 #r360 #z7 .z7i button[data-fix237]{border-color:var(--z-acc,#b4532a);color:var(--z-acc,#b4532a)}
 #r360 #z7 button:focus-visible{outline:3px solid var(--z-acc,#b4532a);outline-offset:2px}
 /* the same three checkboxes stay in the folded list too; the worn list there is now a copy, so it is not needed open */
+/* v288 undo */
+#r360 #z7 .z7u{display:flex;align-items:center;gap:8px;width:100%;min-height:48px;margin:12px 0 0;padding:8px 14px;border-radius:14px;border:1.5px solid var(--z-acc,#b4532a);background:color-mix(in srgb,var(--z-acc,#b4532a) 10%,var(--z-surface,#fff));font:inherit;font-size:.92rem;color:var(--z-ink,#2b211b);text-align:start;cursor:pointer}
+#r360 #z7 .z7u i{font-style:normal;font-size:1.25rem;color:var(--z-acc,#b4532a)}
+#r360 #z7 .z7u b{font-weight:700}

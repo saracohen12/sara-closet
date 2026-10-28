@@ -1,0 +1,16 @@
+/* v288 – category chips in the studio's sticky top bar */
+#r360 .r3h .z8c{flex:1 1 auto;min-width:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px;scroll-padding-inline:8px;-webkit-overflow-scrolling:touch}
+#r360 .r3h .z8c::-webkit-scrollbar{display:none}
+#r360 .r3h .z8c button{flex:0 0 auto;min-height:34px;padding:0 11px;border-radius:999px;border:1px solid var(--z-line,#e6dcd2);background:var(--z-surface,#fff);font:inherit;font-size:.8rem;color:var(--z-ink,#2b211b);white-space:nowrap;cursor:pointer}
+#r360 .r3h .z8c button[aria-pressed=true]{background:var(--z-acc,#b4532a);border-color:var(--z-acc,#b4532a);color:#fff}
+#r360 .r3h .z8c button:focus-visible{outline:3px solid var(--z-acc,#b4532a);outline-offset:1px}
+#r360 .r3h.z8h .r3tt{flex:0 1 auto}
+#r360 .r3pane[data-p="closet"] .r3cats{scroll-margin-top:72px}
+@media (max-width:760px){
+ #r360 .r3h.z8h{gap:6px;padding-inline:8px}
+ #r360 .r3h.z8h .r3tt{display:none}
+ #r360 .r3h.z8h .r3x{width:40px;height:40px;min-width:40px;flex:none}
+ #r360 .r3h.z8h .r3pin,#r360 .r3h.z8h .r3save{width:42px;min-width:42px;height:42px;padding:0;font-size:0;flex:none;display:grid;place-items:center}
+ #r360 .r3h.z8h .r3pin::before{content:"📌";font-size:1rem}
+ #r360 .r3h.z8h .r3save::before{content:"♡";font-size:1.1rem}
+}

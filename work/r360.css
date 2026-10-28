@@ -228,3 +228,7 @@ dialog#r3cmp::backdrop,dialog#r3sh::backdrop{background:rgba(20,12,8,.55)}
 
 /* v267: jewellery panel buttons follow the theme (night: they were white with light text) */
 #r360 .r3jyo .r3jyr button{background:var(--z-tile,#f5ede6);color:var(--z-ink,#3a2418);border:1px solid var(--z-line,#e6dcd2)}
+
+/* v288 undo chip */
+#r360 .r3wc.r3undo{border-color:var(--z-acc,#b4532a);color:var(--z-acc,#b4532a);padding:3px 14px}
+#r360 .r3wc.r3undo b{font-size:1rem;color:inherit;font-weight:600}
