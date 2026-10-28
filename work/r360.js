@@ -576,7 +576,7 @@ function paintSty(){const box=dlg&&dlg.querySelector('.r3styr');if(!box)return;
  if(H&&hs.length)h+=`<span class="r3lbl">💇 תסרוקת</span><div class="r3heads r3sty" role="radiogroup" aria-label="תסרוקת">${chip('data-syh','','כמו שהיא',ST.head=='w','a8/t_w.webp'+V)}${hs.map(k=>chip('data-syh',k,nmS(k),ST.head==k)).join('')}${more('hair',hm)}${add('hair','להוסיף תסרוקת')}</div>`;
  // v204 (Sara 11:46 "גם שם זה קטן, תגדילי, וזה גם מתגלגל ... בצבע מטפחת, אני לא רוצה ... אני רוצה ... אחת המטפחות שנמצאות לי"): big tiles that wrap,
  // and instead of colours: her own scarves – the tie takes the colour of the one she picks; the exact one (with its print) is the 🎯 prompt
- if(!H&&ts.length){h+=`<span class="r3lbl">🧕 קשירה</span><div class="r3heads r3sty r3big" role="radiogroup" aria-label="קשירה">${ts.map(k=>chip('data-syt',k,nmS(k),ST.head==k)).join('')}${more('tie',tm)}${add('tie','להוסיף קשירה')}</div>`;
+ if(!H&&ts.length){if(!window.NOTIE291)h+=`<span class="r3lbl">🧕 קשירה</span><div class="r3heads r3sty r3big" role="radiogroup" aria-label="קשירה">${ts.map(k=>chip('data-syt',k,nmS(k),ST.head==k)).join('')}${more('tie',tm)}${add('tie','להוסיף קשירה')}</div>`;
   const own=KEYOF[ST.head]&&READY[KEYOF[ST.head]]&&READY[KEYOF[ST.head]].head?KEYOF[ST.head]:'',sel=own||tfId()||(/^yt/.test(ST.head)&&(!ST.tf||ST.tf=='c')?'c':'');
   let cv=Object.keys(D).filter(id=>isCover(id)&&!itOf(id).gen&&!itOf(id).oos&&itOf(id).s!='ret'&&itOf(id).s!='give');
   cv.sort((a,b)=>(b==sel)-(a==sel)||(isReady(b)-isReady(a)));const all=cv.length,show=SCALL?cv:cv.slice(0,11);

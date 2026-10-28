@@ -1,0 +1,28 @@
+/* v291 – the "✏ עריכה" window on the avatar */
+#r360 .z9b{position:absolute;top:26px;right:26px;z-index:4;display:flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--z-line,#e6dcd2);background:rgba(255,255,255,.94);font:inherit;font-size:.9rem;font-weight:700;color:var(--z-ink,#17161a);box-shadow:0 4px 14px rgba(40,20,10,.18);cursor:pointer}
+#r360 .z9b i{font-style:normal;font-size:1.05rem}
+#r360 .z9b[aria-expanded=true]{background:var(--z-acc,#b4532a);color:#fff;border-color:transparent}
+#r360 .z9b:focus-visible,#r360 #z9 button:focus-visible{outline:3px solid var(--z-acc,#b4532a);outline-offset:2px}
+#r360 #z9{position:fixed;z-index:30;inset-inline:0;bottom:0;max-height:52dvh;overflow:auto;overscroll-behavior:contain;background:var(--z-bg,#f6f5f3);border-radius:22px 22px 0 0;box-shadow:0 -10px 40px rgba(20,10,5,.28);padding:0 14px calc(16px + env(safe-area-inset-bottom,0px))}
+#r360 #z9[hidden]{display:none}
+@media (min-width:900px){#r360 #z9{inset-inline:auto 24px;bottom:24px;width:420px;max-height:calc(100dvh - 120px);border-radius:22px}}
+#r360 #z9 .z9h{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:12px 2px 10px;background:var(--z-bg,#f6f5f3)}
+#r360 #z9 .z9h h3{margin:0;font-size:1.1rem;font-weight:800;color:var(--z-ink,#17161a)}
+#r360 #z9 .z9x{width:40px;height:40px;border-radius:50%;border:1px solid var(--z-line,#e6dcd2);background:var(--z-surface,#fff);font-size:1rem;cursor:pointer}
+#r360 #z9 #z7{margin:0 0 12px}
+#r360 #z9 .z9s{margin:0 0 12px;padding:12px 14px;border-radius:18px;background:var(--z-surface,#fff);border:1px solid var(--z-line,#e6dcd2)}
+#r360 #z9 .z9s .r3lbl{display:block;margin:0 0 8px;font-weight:800;font-size:.95rem;color:var(--z-ink,#17161a)}
+#r360 #z9 .z9s .r3hd{margin:0}
+#r360 #z9 .z9fr{display:flex;gap:8px;flex-wrap:wrap}
+#r360 #z9 .z9fr button{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:64px;padding:8px 6px;border-radius:14px;border:1.5px solid var(--z-line,#e6dcd2);background:var(--z-tile,#faf6f2);font:inherit;font-size:.78rem;color:var(--z-ink,#17161a);cursor:pointer}
+#r360 #z9 .z9fr button[aria-checked=true]{border-color:var(--z-acc,#b4532a);background:color-mix(in srgb,var(--z-acc,#b4532a) 10%,#fff)}
+#r360 #z9 .z9fi{display:block;width:22px;height:34px;border:2px solid currentColor;opacity:.75}
+#r360 #z9 .z9fi-arch{border-radius:11px 11px 3px 3px}#r360 #z9 .z9fi-soft{border-radius:6px}#r360 #z9 .z9fi-rect{border-radius:0}#r360 #z9 .z9fi-none{border-style:dashed}
+/* the old block on the left side is now in the window */
+#r360 .r3now.z9gone{display:none}
+/* frames */
+#r360[data-z9f=soft] .r3s{border-radius:var(--z-r,20px)}
+#r360[data-z9f=rect] .r3s{border-radius:0}
+#r360[data-z9f=none] .r3s{border-radius:0;box-shadow:none;background:transparent}
+#r360[data-z9f=none] .r3fig{border:0!important;box-shadow:none!important;background:transparent!important}
+#r360 #z9 .z9s:has(> [hidden]),#r360 #z9 .z9s:empty{display:none}

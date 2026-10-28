@@ -35,7 +35,7 @@ function setup(d){dlg=d;const side=d.querySelector('.r3side');if(!side)return;
   const p=P.find(x=>x[0]==k);if(p){const i=dlg.querySelector(p[1]+' input');if(i){i.checked=!i.checked;i.dispatchEvent(new Event('change',{bubbles:true}))}setTimeout(paint,60);return}
   if(b.dataset.z7off!=null){const c=dlg.querySelector(`.r3worn [data-off="${CSS.escape(b.dataset.z7off)}"]`);if(c)c.click();setTimeout(paint,60)}}catch(er){ERR('click',er)}});
  let q=0;const mo=new MutationObserver(()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;paint()})});
- mo.observe(side,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','src']});const jy=d.querySelector('.r3jyb');if(jy)mo.observe(jy,{attributes:true,attributeFilter:['hidden']});
+ mo.observe(d,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','src']});   // v291: the dialog, not the side – the worn list may move into the ✏ windowconst jy=d.querySelector('.r3jyb');if(jy)mo.observe(jy,{attributes:true,attributeFilter:['hidden']});
  d.addEventListener('change',()=>setTimeout(paint,40));paint()}
 const t=setInterval(()=>{const d=document.getElementById('r360');if(d&&d.querySelector('.r3side')){clearInterval(t);setup(d)}},700);
 window.Z284={paint};
