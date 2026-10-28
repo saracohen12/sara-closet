@@ -40,7 +40,7 @@ const hub=t=>()=>{shut();openHub(t)};
 const gen=id=>typeof gen161=='function'&&gen161(id);
 const live=id=>{const s=(IT[id]||{}).s;return s!='ret'&&s!='give'};
 // show the closet with one filter of the site's "רק" filter
-function only(v){shut();try{FLF=v;const s=$1('#flf');if(s)s.value=v;G='all';C='';document.querySelectorAll('.groups button').forEach(o=>o.setAttribute('aria-pressed',false));const q=$1('#q');if(q)q.value='';apply();try{chips()}catch(_){}}catch(e){ERR('only',e)}
+function only(v){shut();window.zCloset&&zCloset();try{FLF=v;const s=$1('#flf');if(s)s.value=v;G='all';C='';document.querySelectorAll('.groups button').forEach(o=>o.setAttribute('aria-pressed',false));const q=$1('#q');if(q)q.value='';apply();try{chips()}catch(_){}}catch(e){ERR('only',e)}
  setTimeout(()=>{const el=$1('#cnt');if(el){const y=el.getBoundingClientRect().top+scrollY-140;try{LOCK=Date.now()+1200}catch(_){}window.scrollTo(0,Math.max(0,y))}},80)}
 
 function counts(){const ids=Object.keys(D);const r={};
@@ -93,7 +93,7 @@ function open172(){let d=$1('#ad172');if(!d){d=document.createElement('dialog');
   ${TOOLS.map(([g,L])=>`<div class="ad172g">${g}</div><div class="ad172t">${L.map(t=>{const lab=typeof t[1]=='function'?t[1]():t[1];return typeof t[2]=='string'?`<a href="${t[2]}" target="_blank" rel="noopener"><i>${t[0]}</i>${lab}</a>`:`<button data-ad172="${reg(t[2])}"><i>${t[0]}</i>${lab}</button>`}).join('')}</div>`).join('')}
   <div class="ad172f">${ver}</div></div>`;
  if(!d.open)d.showModal();d.scrollTop=0}
-window.openAdmin172=open172;window.TOOLS172=TOOLS;window.WAIT172=WAIT;   // v183: the one search lists these too
+window.openAdmin172=open172;window.TOOLS172=TOOLS;window.WAIT172=WAIT;window.COUNTS172=counts;   // v277: the home's "מה מחכה לך" uses the same numbers   // v183: the one search lists these too
 
 // ---- v173 "פיתוח": the task table (tasks.md, built into the page) and the development plan
 const st2=document.createElement('style');st2.textContent=`

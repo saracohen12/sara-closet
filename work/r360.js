@@ -862,7 +862,7 @@ const HOMEL=new Set();
 // it puts the look on the home avatar and jumps there, so she sees it happen
 function pinGo(s,name){HOME.pin=clone(s);HOME.head=s.head||'c';saveHome();close();
  document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(_){}});
- const hb=document.querySelector('.bnav [data-bn="home"]');if(hb)hb.click();else window.scrollTo({top:0,behavior:'smooth'});
+ if(window.zHome&&document.documentElement.dataset.d180=='z50')zHome();const hb=document.querySelector('.bnav [data-bn="home"]');if(hb)hb.click();else window.scrollTo({top:0,behavior:'smooth'});
  const av=document.querySelector('#h180 .z-av');if(av){av.classList.remove('z-pin185');void av.offsetWidth;av.classList.add('z-pin185');setTimeout(()=>av.classList.remove('z-pin185'),2600)}
  toast_(name?`📌 "${name}" בדף הראשי`:'📌 הלוק הזה בדף הראשי')}
 const pinB=(k,n)=>`<button type="button" class="r3lp" data-l3pin="${esc(k)}" aria-label="לשים את ${esc(n||'הלוק')} בדף הראשי">📌 לדף הראשי</button>`;

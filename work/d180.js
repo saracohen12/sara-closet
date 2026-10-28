@@ -3,13 +3,14 @@
 (function(){
 const H=document.documentElement;
 const DESIGNS=[
+ {k:'z50',n:'נקי (החדש)',d:'לבן ונקי, 4 לשוניות למטה ודף בית במסך אחד',sw:['#f6f5f3','#ffffff','#b4532a','#17161a']},
  {k:'pearl',n:'פנינה',d:'בהיר ואוורירי, כרטיסי זכוכית רכים וגוון אפרסק',sw:['#fbf7f3','#ffd9c4','#b4532c','#2a1d17']},
  {k:'night',n:'לילה',d:'במה כהה עם זרקור על האוותר ונגיעות זהב',sw:['#140f0c','#2a201b','#e9b886','#f7ede3']},
  {k:'terra',n:'טרה',d:'כמו מגזין: כותרות ענק, טרקוטה ורשימה ממוספרת',sw:['#f2e7da','#a8431f','#3a2216','#fffaf4']},
  {k:'',n:'העיצוב הקודם',d:'בלי שינוי, כמו עד היום',sw:['#faf6f1','#b08a5a','#151414','#ffffff']}];
 function get(){try{const v=localStorage.getItem('d180');return v===null?'pearl':v}catch(_){return 'pearl'}}
 function set(k){if(k)H.dataset.d180=k;else delete H.dataset.d180;try{localStorage.setItem('d180',k)}catch(_){}
- const m=document.querySelector('meta[name=theme-color]')||Object.assign(document.createElement('meta'),{name:'theme-color'});m.content=k=='night'?'#140f0c':k=='terra'?'#f2e7da':'#fbf7f3';document.head.appendChild(m)}
+ const m=document.querySelector('meta[name=theme-color]')||Object.assign(document.createElement('meta'),{name:'theme-color'});m.content=k=='night'?'#140f0c':k=='terra'?'#f2e7da':k=='z50'?'#f6f5f3':'#fbf7f3';document.head.appendChild(m)}
 set(get());
 
 // ---------- chooser ----------

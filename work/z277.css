@@ -1,0 +1,121 @@
+/* v277 redesign, screen 1: the clean look html[data-d180=z50] – tokens for the whole site, a one-screen home and the 4-tab bar (z277.js).
+   Later screens (הארון, item window, studio, orders) move to these tokens one by one. */
+
+/* ---------- tokens ---------- */
+html[data-d180=z50]{--z-r:20px;
+ --z-bg:#f6f5f3;--z-aurora:none;--z-surface:#fff;--z-solid:#fff;--z-bar:rgba(255,255,255,.86);--z-tile:#efedea;
+ --z-ink:#17161a;--z-muted:#6a6670;--z-line:#e6e3df;--z-line-strong:#cfcac4;
+ --z-acc:#b4532a;--z-acc-ink:#fff;--z-acc-soft:#f6e7df;--z-pri:#17161a;--z-pri-ink:#fff;
+ --z-shadow:0 1px 2px rgba(23,22,26,.04),0 6px 20px rgba(23,22,26,.05);--z-shadow-lg:0 18px 44px rgba(23,22,26,.12);--z-glow:0 6px 16px rgba(23,22,26,.16);
+ --z-display:"Rubik","Heebo",system-ui,sans-serif;--z-body:"Rubik","Heebo",system-ui,sans-serif;--z-dw:600;--z-hero:transparent;--z-onhero:#17161a;
+ --z-f1:1.6rem;--z-f2:.95rem;--z-f3:.8rem}
+html.d73.d78[data-d180=z50]{--card:#fff;--fg:#17161a;--ink:#17161a;--muted:#6a6670;--line:#e6e3df;--line2:#d9d5d0;--chip:#efedea;--soft:#f6e7df;--fig:#efedea;
+ --accent:#b4532a;--accent-2:#c9714d;--accent-ink:#8e3e1e;--pri:#17161a;--pri-fg:#fff;--rose:#b4532a;--price:#17161a;--dup:#a3401f;--accent-fg:#fff;--g1:#17161a;--g2:#b4532a}
+
+/* ---------- 4 tabs at the bottom (the old 5-button bar is hidden in this look) ---------- */
+.z5nav{display:none}
+html[data-d180=z50] .bnav{display:none!important}
+html[data-d180=z50] .z5nav{position:fixed;z-index:60;inset-inline:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:520px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:6px;
+ border-radius:24px;background:var(--z-bar);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border:1px solid var(--z-line);box-shadow:var(--z-shadow-lg)}
+html[data-d180=z50] .z5nav button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;border:0;border-radius:18px;background:none;color:var(--z-muted);font:500 var(--z-f3)/1.1 var(--z-body);cursor:pointer;-webkit-tap-highlight-color:transparent}
+html[data-d180=z50] .z5nav svg{width:24px;height:24px}
+html[data-d180=z50] .z5nav button[aria-current=page]{color:var(--z-ink);background:var(--z-tile);font-weight:600}
+html[data-d180=z50] .z5nav button[aria-current=page] svg{color:var(--z-acc)}
+html[data-d180=z50] .z5nav button:active{background:var(--z-tile)}
+html[data-d180=z50] .z5bd{position:absolute;top:4px;inset-inline-start:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--z-acc);color:#fff;font:700 .68rem/18px var(--z-body);text-align:center}
+html[data-d180=z50] body{padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))!important}
+html[data-d180=z50] #totop{bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}
+
+/* ---------- which parts each tab shows ---------- */
+html[data-d180=z50] body[data-z50=home] #top>:not(.h9bar):not(#h180),
+html[data-d180=z50] body[data-z50=home] .ctrl,html[data-d180=z50] body[data-z50=home] .wrap:not(#top),
+html[data-d180=z50] body[data-z50=home] #ix83,html[data-d180=z50] body[data-z50=home] #totop{display:none!important}
+html[data-d180=z50] body[data-z50=closet] #h180{display:none!important}
+
+/* ---------- home: one screen ---------- */
+html[data-d180=z50] body{background:var(--z-bg)!important;background-image:none!important}
+html[data-d180=z50] body[data-z50=home] #top{display:block!important;padding-bottom:0!important;margin-bottom:0!important}
+html[data-d180=z50] #h180{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"txt txt" "av lk" "chips chips" "wait wait";gap:12px;padding:4px 0 0;margin:0;
+ background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;color:var(--z-ink);border-radius:0;text-align:start}
+html[data-d180=z50] #h180 .z-txt{gap:2px;padding:0 4px}
+html[data-d180=z50] #h180 .z-hi,html[data-d180=z50] #h180 .z-hi *{font-size:var(--z-f3)!important;color:var(--z-muted)!important;opacity:1}
+html[data-d180=z50] #h180 .z-t{font-size:var(--z-f1);font-weight:600;line-height:1.15;letter-spacing:0}
+html[data-d180=z50] #h180 .z-sub{display:none}
+
+/* the avatar: a card of its own, controls on the picture */
+html[data-d180=z50] #h180 .z-av{gap:0;align-self:stretch;justify-content:flex-start}
+html[data-d180=z50] #h180 .z-stage{width:auto;height:clamp(230px,calc(100vh - var(--z5fix,548px)),310px);height:clamp(230px,calc(100svh - var(--z5fix,548px)),310px);aspect-ratio:360/637;animation:none}
+html[data-d180=z50] #h180 .z-stage .r3s{height:100%;width:auto;box-shadow:var(--z-shadow);border-radius:999px 999px var(--z-r) var(--z-r);background:#e9e6e2}
+html[data-d180=z50] #h180 .z-cap{display:none}
+html[data-d180=z50] #h180 .z-avc{position:absolute;bottom:6px;inset-inline:0;z-index:2;gap:3px;flex-wrap:nowrap}
+html[data-d180=z50] #h180 .z-pp,html[data-d180=z50] #h180 .z5sp{position:relative;width:40px;height:40px;flex:none;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:var(--z-ink);font-size:0;box-shadow:var(--z-shadow);display:grid;place-items:center;cursor:pointer;padding:0}
+html[data-d180=z50] #h180 .z-pp::before{content:"";width:20px;height:20px;background:currentColor;-webkit-mask:center/contain no-repeat;mask:center/contain no-repeat}
+html[data-d180=z50] #h180 .z5sp svg{width:20px;height:20px}
+html[data-d180=z50] #h180 .z-hds{padding:3px;gap:2px;border-radius:50%;background:rgba(255,255,255,.92);border:0;box-shadow:var(--z-shadow)}
+html[data-d180=z50] #h180 .z-hds button{min-height:40px;padding:0}
+html[data-d180=z50] #h180 .z-hds button[aria-checked=false]{display:none}   /* one button: a tap moves to the next head (z277.js) */
+html[data-d180=z50] #h180 .z-hds span{display:none}
+html[data-d180=z50] #h180 .z-hds img{width:34px;height:34px;display:block}
+html[data-d180=z50] #h180 .z-hds button[aria-checked=true]{background:var(--z-acc)}
+html[data-d180=z50] #h180 .z-spd{display:none;position:absolute;bottom:52px;inset-inline:-4px;justify-content:center;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#fff;box-shadow:var(--z-shadow-lg)}
+html[data-d180=z50] #h180 .z-avc.z5spo .z-spd{display:flex}
+html[data-d180=z50] #h180 .z-spd input{width:110px;accent-color:var(--z-acc)}
+
+/* the look of the day */
+html[data-d180=z50] #h180 .z-lkbox{contain:size;position:relative;align-self:stretch;gap:6px;padding:12px 12px 4px;border-radius:var(--z-r);background:var(--z-surface);border:1px solid var(--z-line);box-shadow:var(--z-shadow);min-height:0;overflow:hidden}
+html[data-d180=z50] #h180 .z-lk{flex:1 1 auto;min-height:0;max-width:none;padding:0;gap:8px;border-radius:0;background:none;border:0;box-shadow:none}
+html[data-d180=z50] #h180 .z-lkh b{font-size:var(--z-f2);font-weight:600;font-family:var(--z-body)}
+html[data-d180=z50] #h180 .z-lko{display:none}
+html[data-d180=z50] #h180 .z-lki{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 12px) / 3);gap:6px;overflow-x:auto;scrollbar-width:none;flex:none}
+html[data-d180=z50] #h180 .z-lki::-webkit-scrollbar{display:none}
+html[data-d180=z50] #h180 .z-lkc{width:auto;height:auto;aspect-ratio:5/6;border-radius:12px;background:var(--z-tile);border:0}
+html[data-d180=z50] #h180 .z-lka{flex-direction:column;gap:6px;margin-top:auto}
+html[data-d180=z50] #h180 .z-lka button{width:100%;min-height:44px;padding:0 10px;font:600 var(--z-f3) var(--z-body);font-size:.86rem}
+html[data-d180=z50] #h180 .z-lkw{background:var(--z-ink);color:#fff}
+html[data-d180=z50] #h180 .z-lkn{background:var(--z-surface);border:1px solid var(--z-line-strong);color:var(--z-ink)}
+html[data-d180=z50] #h180 .z-cta{margin:0;justify-content:center}
+html[data-d180=z50] #h180 .z-go,html[data-d180=z50] #h180 .z-rdy{display:none}
+html[data-d180=z50] #h180 .z-2{min-height:36px;padding:0 10px;border:0;background:none;color:var(--z-acc);font:500 .82rem var(--z-body);opacity:1;text-decoration:underline;text-underline-offset:3px}
+
+/* 3 quick actions */
+html[data-d180=z50] #h180 .z-chips{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px!important;overflow:visible;padding:0!important;margin:0!important}
+html[data-d180=z50] #h180 .z-chips>#ret152b,html[data-d180=z50] #h180 .z-chips>.h9adm{display:none!important}
+html[data-d180=z50] #h180 .z-chips>#ord123b,html[data-d180=z50] #h180 .z-chips>#sc185b,html[data-d180=z50] #h180 .z-chips>#sh187b{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:6px!important;
+ min-height:58px!important;width:auto!important;margin:0!important;padding:8px 6px!important;border-radius:var(--z-r)!important;background:var(--z-surface)!important;border:1px solid var(--z-line)!important;box-shadow:var(--z-shadow)!important;color:var(--z-ink)!important;order:0!important;text-align:center}
+html[data-d180=z50] #h180 .z-chips>#sc185b{order:1!important}html[data-d180=z50] #h180 .z-chips>#sh187b{order:2!important}
+html[data-d180=z50] #h180 .z-chips>*::before{content:"";flex:none;width:22px;height:22px;background:var(--z-acc);-webkit-mask:center/contain no-repeat;mask:center/contain no-repeat}
+html[data-d180=z50] #h180 .z-chips>*>span:first-child{display:none!important}
+html[data-d180=z50] #h180 .z-chips b{font-size:.8rem!important;font-weight:600;white-space:normal!important;line-height:1.2;text-align:start}
+html[data-d180=z50] #h180 .z-chips small{display:none!important}
+
+/* what is waiting for her */
+html[data-d180=z50] #h180 .z5w{grid-area:wait;padding:6px 14px 4px;border-radius:var(--z-r);background:var(--z-surface);border:1px solid var(--z-line);box-shadow:var(--z-shadow)}
+html[data-d180=z50] .z5wh{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:38px}
+html[data-d180=z50] .z5wh h2{margin:0;font:600 var(--z-f2) var(--z-body);color:var(--z-ink)}
+html[data-d180=z50] .z5wh button{display:flex;align-items:center;gap:2px;min-height:40px;padding:0 4px;border:0;background:none;color:var(--z-acc);font:500 .82rem var(--z-body);cursor:pointer}
+html[data-d180=z50] .z5wh button svg{width:16px;height:16px}
+html[data-d180=z50] .z5w ul{list-style:none;margin:0;padding:0}
+html[data-d180=z50] .z5w li+li{border-top:1px solid var(--z-line)}
+html[data-d180=z50] .z5w li button{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:3px 0;border:0;background:none;color:var(--z-ink);font:400 .88rem/1.3 var(--z-body);text-align:start;cursor:pointer}
+html[data-d180=z50] .z5w li i{flex:none;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:var(--z-tile);color:var(--z-muted)}
+html[data-d180=z50] .z5w li .hot i,html[data-d180=z50] .z5w li button.hot i{background:var(--z-acc-soft);color:var(--z-acc)}
+html[data-d180=z50] .z5w li i svg{width:18px;height:18px}
+html[data-d180=z50] .z5w li span{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html[data-d180=z50] .z5w li b{flex:none;min-width:28px;padding:2px 8px;border-radius:999px;background:var(--z-tile);font-weight:600;font-size:.8rem;text-align:center}
+html[data-d180=z50] .z5w li button.hot b{background:var(--z-acc);color:#fff}
+html[data-d180=z50] .z5ok{margin:0;padding:6px 0 12px;color:var(--z-muted);font-size:.88rem}
+
+/* the app bar on the home: lighter */
+html[data-d180=z50] #top>.h9bar{background:var(--z-bg)!important;box-shadow:none!important;border:0!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+
+/* wide screens: the avatar big on one side, everything else beside it */
+@media (min-width:860px){
+ html[data-d180=z50] body[data-z50=home] #top{max-width:1080px;margin-inline:auto}
+ html[data-d180=z50] #h180{grid-template-columns:auto minmax(0,1fr) minmax(0,1fr);grid-template-areas:"av txt txt" "av lk wait" "av chips wait";align-items:start;align-content:start;gap:16px 20px;padding:12px 0}
+ html[data-d180=z50] #h180 .z-stage{height:min(72vh,600px)}
+ html[data-d180=z50] #h180 .z-t{font-size:2.2rem}
+ html[data-d180=z50] #h180 .z5w{align-self:stretch}
+ html[data-d180=z50] #h180 .z-lkc{max-height:none}
+ html[data-d180=z50] #h180 .z-lkbox{contain:none}
+}
+@media (prefers-reduced-motion:reduce){html[data-d180=z50] .z5nav{-webkit-backdrop-filter:none;backdrop-filter:none;background:#fff}}

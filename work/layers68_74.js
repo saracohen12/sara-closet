@@ -155,7 +155,7 @@ const urg=$('#urgent'),rec=$('#recent');
 h1.replaceWith(bar);bar.after(hero);hero.after(tiles);tiles.after(cats);if(urg)cats.after(urg);if(rec&&urg)urg.after(rec);
 try{if(window.TH)thApply(TH)}catch(_){}
 // --- 4. actions
-const toCloset=()=>{const c=document.querySelector('.ctrl');const y=c?c.getBoundingClientRect().top+scrollY-0:0;window.scrollTo({top:Math.max(0,($('#top').offsetHeight||y)-4),behavior:'smooth'})};
+const toCloset=()=>{window.zCloset&&zCloset();const c=document.querySelector('.ctrl');const y=c?c.getBoundingClientRect().top+scrollY-0:0;window.scrollTo({top:Math.max(0,($('#top').offsetHeight||y)-4),behavior:'smooth'})};
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-h9],[data-h9cat]');if(!t)return;e.preventDefault();
  if(t.dataset.h9cat){const a=document.querySelector(`.ctrl .subs a[href="${t.dataset.h9cat}"]`);const g=a&&a.dataset.g;const gb=document.querySelector('.ctrl .groups button[data-g="all"]');if(gb&&gb.getAttribute('aria-pressed')!='true')gb.click();if(a)a.click();setTimeout(toCloset,60);return}
  const k=t.dataset.h9;

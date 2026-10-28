@@ -85,7 +85,7 @@ function paint(){if(!dlg)return;const box=dlg.querySelector('.gsb');const q=norm
  const cats=new Set([...live.slice(0,MORE.c?999:8),...other.slice(0,MORE.x?999:4)].map(cat));L.forEach(([id,l])=>Object.values(l.items).forEach(x=>cats.add(cat(x))));
  cats.forEach(c=>{try{thLoad(c).then(()=>thApply(TH)).catch(()=>{})}catch(_){}})}
 // the closet's own filter (what 🔍 did before), for "see them all"
-function filterCloset(q){const inp=document.getElementById('q');if(!inp)return;inp.value=q;inp.dispatchEvent(new Event('input',{bubbles:true}));
+function filterCloset(q){window.zCloset&&zCloset();const inp=document.getElementById('q');if(!inp)return;inp.value=q;inp.dispatchEvent(new Event('input',{bubbles:true}));
  try{const s=document.querySelector('.ctrl');if(s)window.scrollTo({top:s.getBoundingClientRect().top+scrollY-8,behavior:'smooth'})}catch(_){}}
 function open(q){if(!dlg)build();const inp=dlg.querySelector('input');if(q!=null){inp.value=q;Q=q}dlg.querySelector('.gsc').hidden=!Q;MORE={};
  if(!dlg.open)dlg.showModal();paint();setTimeout(()=>{inp.focus();inp.select()},60)}

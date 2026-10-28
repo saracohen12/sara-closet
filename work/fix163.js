@@ -54,7 +54,7 @@ function open163(){let d=document.getElementById('cl163');if(!d){d=document.crea
  if(!d.open){d.showModal();d.scrollTop=0;d.querySelector('.cl163b').scrollTop=0}}
 window.openCloset163=open163;
 
-function toGrid(sec){const hdr=document.querySelector('.h9bar,#h9')||null;const off=(()=>{let m=0;document.querySelectorAll('header,.qbar,.stickyq,#q77').forEach(e=>{const cs=getComputedStyle(e);if(cs.position=='sticky'||cs.position=='fixed'){const r=e.getBoundingClientRect();if(r.top<=1&&r.bottom>m)m=r.bottom}});return m})();
+function toGrid(sec){window.zCloset&&zCloset();const hdr=document.querySelector('.h9bar,#h9')||null;const off=(()=>{let m=0;document.querySelectorAll('header,.qbar,.stickyq,#q77').forEach(e=>{const cs=getComputedStyle(e);if(cs.position=='sticky'||cs.position=='fixed'){const r=e.getBoundingClientRect();if(r.top<=1&&r.bottom>m)m=r.bottom}});return m})();
  const el=sec||document.querySelector('.wrap #cnt')||document.querySelector('.grid');if(!el)return;const y=el.getBoundingClientRect().top+scrollY-Math.max(off,70)-8;
  try{LOCK=Date.now()+1200}catch(_){}document.documentElement.style.scrollBehavior='auto';window.scrollTo(0,Math.max(0,y));setTimeout(()=>{document.documentElement.style.scrollBehavior='';const y2=el.getBoundingClientRect().top+scrollY-Math.max(off,70)-8;if(Math.abs(y2-scrollY)>40)window.scrollTo(0,Math.max(0,y2))},350)}
 function pick(id,g){const q=document.getElementById('q');if(q&&q.value){q.value=''}
