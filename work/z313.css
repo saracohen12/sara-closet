@@ -48,3 +48,9 @@ html[data-d180=z50] body[data-z50=closet] .ctrl.z6min .z6c{padding:2px 0!importa
 @media (max-width:759px){html[data-d180=z50] body[data-z50=closet] .ctrl #z6 .z6q{display:grid!important;grid-template-columns:repeat(4,1fr)}
  html[data-d180=z50] body[data-z50=closet] .ctrl #z6 .z6q button{flex-direction:column!important;min-height:58px!important;padding:6px 2px!important;border-radius:16px!important;font-size:.7rem!important;line-height:1.15!important;gap:3px!important;text-align:center}
  html[data-d180=z50] body[data-z50=closet] .ctrl #z6 .z6q button i{font-size:1.1rem!important}}
+/* v315 (Sara 19:17 "הפס של שמלות… מסתיר לי חלק מהמסך"): the category title no longer hangs over the clothes while scrolling – a plain title above its clothes */
+html[data-d180=z50] body[data-z50=closet] section h2{position:static!important;top:auto!important;background:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important;border:0!important;padding:18px 2px 8px!important;margin:0 0 6px!important;font:600 1.35rem/1.2 var(--z-display)!important;color:var(--z-ink)!important}
+/* "↑ למעלה": one tap back to the top, shown as soon as she scrolls a little */
+html[data-d180=z50] #totop{width:auto!important;height:48px!important;min-height:0!important;padding:0 18px!important;border-radius:999px!important;background:var(--z-ink)!important;color:#fff!important;font:600 .9rem/48px var(--z-body)!important;opacity:1!important;box-shadow:0 8px 22px rgba(23,22,26,.25)!important;z-index:61!important}
+html[data-d180=z50] #totop::after{content:" למעלה"}
+@media (min-width:760px){html[data-d180=z50] #totop{inset-inline-start:24px!important;bottom:24px!important}}

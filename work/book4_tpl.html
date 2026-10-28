@@ -574,7 +574,7 @@ let FS=0;try{FS=+localStorage.getItem('fs')||0}catch(_){}document.body.dataset.f
 $('#fsm').addEventListener('click',()=>{FS=Math.max(-1,FS-1);document.body.dataset.fs=FS;try{localStorage.setItem('fs',FS)}catch(_){}});
 $('#fsp').addEventListener('click',()=>{FS=Math.min(2,FS+1);document.body.dataset.fs=FS;try{localStorage.setItem('fs',FS)}catch(_){}});
 // back to top
-window.addEventListener('scroll',()=>$('#totop').classList.toggle('hide',scrollY<900),{passive:true});$('#totop').addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
+window.addEventListener('scroll',()=>$('#totop').classList.toggle('hide',scrollY<300),{passive:true});$('#totop').addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
 // keyboard
 document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea,select'))return;if(e.key=='/'){e.preventDefault();$('#q').focus()}if(e.key=='Escape'&&!$('#zoom').classList.contains('hide'))$('#zoom').classList.add('hide')});
 // after open: recent, similar, wear, zoom
