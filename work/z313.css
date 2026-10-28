@@ -1,0 +1,50 @@
+/* v313 the closet tab, clean (z313.js) – on top of z283 */
+.z313h,.z313b{display:none}
+html[data-d180=z50] body[data-z50=closet] .ctrl{position:relative!important;top:auto!important;z-index:1;background:var(--z-bg)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border:0!important;box-shadow:none!important}
+html[data-d180=z50] body[data-z50=closet] .ctrl>.wrap{display:flex;flex-direction:column;gap:12px;padding:8px 16px 12px;max-width:1180px;margin:0 auto}
+html[data-d180=z50] body[data-z50=closet] #top{padding-bottom:0!important;margin-bottom:0!important}
+html[data-d180=z50] body[data-z50=closet] #top>#z6{display:none!important}
+/* order: title · tools · search · categories · show-all / colour · groups · colour row */
+html[data-d180=z50] body[data-z50=closet] .z313h{display:flex;align-items:baseline;gap:10px;order:1;padding:4px 2px 0}
+html[data-d180=z50] body[data-z50=closet] .z313h h2{margin:0;font:600 1.55rem/1.15 var(--z-display);color:var(--z-ink);letter-spacing:-.01em}
+html[data-d180=z50] body[data-z50=closet] .z313h small{color:var(--z-muted);font-size:.85rem}
+html[data-d180=z50] body[data-z50=closet] .ctrl #z6{display:block!important;order:2;padding:0!important}
+html[data-d180=z50] body[data-z50=closet] .ctrl .tools{order:3;display:flex;gap:8px;align-items:center;margin:0!important}
+html[data-d180=z50] body[data-z50=closet] .ctrl .z6c{order:4}
+html[data-d180=z50] body[data-z50=closet] .z313b{order:5;display:flex;flex-wrap:wrap;gap:8px}
+html[data-d180=z50] body[data-z50=closet] .ctrl .groups{order:6}
+html[data-d180=z50] body[data-z50=closet] .ctrl #q77{order:7;display:none!important}
+html[data-d180=z50] body.z313f[data-z50=closet] .ctrl #q77{display:flex!important;flex-wrap:wrap;gap:8px;align-items:center;padding:10px;border-radius:18px;background:var(--z-surface);border:1px solid var(--z-line)}
+html[data-d180=z50] body.z313f[data-z50=closet] .ctrl #q77 .q77c{flex-wrap:wrap;overflow:visible!important}
+/* tools: small pills that wrap */
+html[data-d180=z50] body[data-z50=closet] .ctrl #z6 .z6q{display:flex!important;flex-wrap:wrap;gap:6px}
+html[data-d180=z50] body[data-z50=closet] .ctrl #z6 .z6q button{flex-direction:row!important;min-height:36px!important;padding:6px 12px!important;border-radius:999px!important;font:500 .8rem/1 var(--z-body)!important;gap:6px!important;background:var(--z-surface)!important}
+html[data-d180=z50] body[data-z50=closet] .ctrl #z6 .z6q button i{display:inline!important;font-size:.95rem!important}
+html[data-d180=z50] body[data-z50=closet] .ctrl #z6 .z6u{margin-top:8px;min-height:40px;border-radius:999px;font-size:.82rem}
+/* search: one big field */
+html[data-d180=z50] body[data-z50=closet] .ctrl .tools .qw{flex:1;min-width:0}
+html[data-d180=z50] body[data-z50=closet] .ctrl .tools input#q{height:52px!important;border-radius:18px!important;border:1px solid var(--z-line-strong)!important;background:var(--z-surface)!important;font-size:1rem!important;box-shadow:var(--z-shadow)!important}
+html[data-d180=z50] body[data-z50=closet] .ctrl .tools #fb{height:52px!important;min-width:52px;border-radius:18px!important}
+/* categories: a grid, nothing hidden to the sides */
+html[data-d180=z50] body[data-z50=closet] .ctrl .z6c{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:10px 6px;overflow:visible!important;padding:2px 0!important;margin:0!important}
+html[data-d180=z50] body[data-z50=closet] .ctrl .z6c button{width:auto!important;min-width:0}
+html[data-d180=z50] body[data-z50=closet] .ctrl .z6c .z6ci{width:60px!important;height:60px!important;border-radius:20px!important}
+html[data-d180=z50] body[data-z50=closet] .ctrl .z6c b{max-width:100%!important;white-space:normal!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;text-align:center;font-size:.74rem;line-height:1.2}
+html[data-d180=z50] body[data-z50=closet] .ctrl .z6c .z6all b{display:block!important}
+html[data-d180=z50] body[data-z50=closet] .ctrl .z6c .z6all .z6ci{font-size:0}
+html[data-d180=z50] body[data-z50=closet] .ctrl .z6c .z6all .z6ci::after{content:"✦";font-size:1.3rem}
+@media (max-width:759px){html[data-d180=z50] body[data-z50=closet]:not(.z313c) .ctrl .z6c{grid-template-columns:repeat(4,1fr)}
+ html[data-d180=z50] body[data-z50=closet]:not(.z313c) .ctrl .z6c button:nth-child(n+9):not([aria-pressed=true]){display:none!important}}
+@media (min-width:760px){html[data-d180=z50] body[data-z50=closet] .z313all{display:none!important}}
+.z313b button{min-height:40px;padding:8px 16px;border-radius:999px;border:1px solid var(--z-line);background:var(--z-surface);color:var(--z-ink);font:500 .84rem var(--z-body);cursor:pointer}
+.z313b button[aria-expanded=true]{background:var(--z-ink);color:#fff;border-color:var(--z-ink)}
+.z313b .z313all{flex:1 1 auto;font-weight:600}
+/* groups: pills that wrap */
+html[data-d180=z50] body[data-z50=closet] .ctrl .groups{display:flex!important;flex-wrap:wrap!important;overflow:visible!important;gap:6px!important;margin:0!important;padding:0!important}
+html[data-d180=z50] body[data-z50=closet] .ctrl .groups button{min-height:38px!important;padding:6px 14px!important;border-radius:999px!important}
+/* the bar scrolls with the page (a sticky bar this tall hid the categories she was scrolling to) – z283's small strip while scrolling is off here */
+html[data-d180=z50] body[data-z50=closet] .ctrl.z6min .z6c b{display:-webkit-box!important}html[data-d180=z50] body[data-z50=closet] .ctrl.z6min .z6c small{display:block!important}
+html[data-d180=z50] body[data-z50=closet] .ctrl.z6min .z6c{padding:2px 0!important}
+@media (max-width:759px){html[data-d180=z50] body[data-z50=closet] .ctrl #z6 .z6q{display:grid!important;grid-template-columns:repeat(4,1fr)}
+ html[data-d180=z50] body[data-z50=closet] .ctrl #z6 .z6q button{flex-direction:column!important;min-height:58px!important;padding:6px 2px!important;border-radius:16px!important;font-size:.7rem!important;line-height:1.15!important;gap:3px!important;text-align:center}
+ html[data-d180=z50] body[data-z50=closet] .ctrl #z6 .z6q button i{font-size:1.1rem!important}}
