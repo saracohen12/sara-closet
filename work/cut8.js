@@ -141,6 +141,11 @@ function mask(b,d,o){const SMALL=o.mode=='small',HEAD=o.mode=='head'||SMALL,CUT=
   diff[i]=Math.sqrt(s);dbg[i]=Math.sqrt(t);bbg[i]=Math.sqrt(u)<=22?1:0;
   if(SMALL){m[i]=((diff[i]>30&&!bbg[i])||(diff[i]>16&&bbg[i]))&&!(d[k]-d[k+2]>18&&!o.warm)?1:0}
   else m[i]=diff[i]>40&&dbg[i]>22?1:0}
+ // v310 (the one-by-one check: a pink and a mauve scarf came out in pieces): a scarf near the beige of the doll's cap differs from it by less than 40.
+ // Over the cap itself (light, a little warm, at the top of her head – not her warmer face, not her dark hair) whatever GPT drew there is the scarf
+ if(o.mode=='head'){const cp=new Uint8Array(N),r1=Math.floor(H*.25);for(let i=0;i<r1*W;i++){if(bbg[i])continue;const k=i*3,R=b[k],G=b[k+1],B=b[k+2];if(R>=G&&G>=B&&.299*R+.587*G+.114*B>185&&R-B>=18&&R-B<=60)cp[i]=1}
+  const [Lc,nc]=label(cp);if(nc){const sc=new Int32Array(nc+1);for(let i=0;i<N;i++)if(cp[i])sc[Lc[i]]++;let bc=0;for(let i=0;i<r1*W&&!bc;i++)if(cp[i]&&sc[Lc[i]]>=150)bc=Lc[i];   // the cap is the piece at the very top of her head (her face and her shoulders are lower)
+   if(bc){const cap=dilate(erode(Uint8Array.from(Lc,l=>l==bc?1:0),1),3);for(let i=0;i<r1*W;i++)if(cap[i]&&diff[i]>12&&dbg[i]>22)m[i]=1}}}
  // v232 (Sara 00:33 "החולצה הלבנה לא חתך אותה טוב באתר"): a white or grey garment and the doll's light beige differ by less than 40 where the doll is lit,
  // so those parts were left out – beige holes in the blouse. Near the garment, a pixel that is neutral (white, grey, black) where the doll is warm beige is the garment too
  if(!SMALL&&!HEAD){const near=dilate(m,30),wm=(a,k)=>(a[k]-a[k+2])/((a[k]+a[k+1]+a[k+2])/3+1);
@@ -376,6 +381,19 @@ function defringe(c,b,open){const g=c.getContext('2d'),im=g.getImageData(0,0,W,H
   if(deep[i])continue;const d=L(p[q],p[q+1],p[q+2])-L(F[0],F[1],F[2]);if(d<14)continue;
   const t=Math.min(1,(d-14)/50+.35);for(let z=0;z<3;z++)p[q+z]=Math.round(p[q+z]*(1-t)+F[z]*t);p[q+3]=Math.round(p[q+3]*(1-.45*t));n++}
  if(n||gap)g.putImageData(im,0,0);c.fr=n;return c}
+// v310 (the one-by-one check of every garment): a dress or skirt kept pieces of the light-blue backdrop – in the gap between her arm and her waist in the back views
+// (GPT's arm is not where the doll's is) and the dress's shadow on the floor. Backdrop-coloured pixels, and the backdrop's own darker shade where the
+// doll has backdrop too, are not the dress: out (unless the dress itself is that light blue, as in defringe), then the specks left.
+function unBack(c,b){if(!b)return c;const g=c.getContext('2d'),im=g.getImageData(0,0,W,H),p=im.data;
+ let K=[0,0,0],kn=0;for(let r=0;r<12;r++)for(const x of [0,1,2,3,4,W-5,W-4,W-3,W-2,W-1]){const q=(r*W+x)*3;K[0]+=b[q];K[1]+=b[q+1];K[2]+=b[q+2];kn++}K=K.map(v=>v/kn);
+ const dd=(a,o,k)=>(a[o]-k[0])**2+(a[o+1]-k[1])**2+(a[o+2]-k[2])**2,sK=K[0]+K[1]+K[2],lK=.299*K[0]+.587*K[1]+.114*K[2];
+ const hueK=(R,G,B)=>{const s=R+G+B+1;return (R/s-K[0]/sK)**2+(G/s-K[1]/sK)**2+(B/s-K[2]/sK)**2};
+ const G=[];let bo=0,bk=0;for(let i=0;i<N;i++){const q=i*4;if(p[q+3]<=20)continue;const R=p[q],Gg=p[q+1],B=p[q+2],k=i*3,near=dd(p,q,K)<36*36&&B-R>K[2]-K[0]-22;
+  const lp=.299*R+.587*Gg+.114*B,shade=!near&&B-R>K[2]-K[0]-30&&hueK(R,Gg,B)<.03*.03&&lp>.45*lK&&lp<lK+8&&hueK(b[k],b[k+1],b[k+2])<.03*.03;   // the backdrop in shadow, where the doll stands on backdrop too
+  if(near||shade)G.push(i);if(dd(b,k,K)>=26*26){bo++;if(near)bk++}}
+ if(!(bk<.03*bo||G.length<.12*(bo+G.length)))return c;for(const i of G)p[i*4+3]=0;
+ const m=new Uint8Array(N);for(let i=0;i<N;i++)m[i]=p[i*4+3]>40?1:0;const [Lb,nl]=label(m),sz=new Int32Array(nl+1);for(let i=0;i<N;i++)if(m[i])sz[Lb[i]]++;for(let i=0;i<N;i++)if(m[i]&&sz[Lb[i]]<25)p[i*4+3]=0;
+ g.putImageData(im,0,0);c.ub=G.length;return c}
 // v310 (her 16:59 "הצוואר לא גזור מתחת לשמלה"): GPT draws her bare chest inside a V or open collar, a little warmer than the doll's beige bodysuit there,
 // so it stayed in the dress and hid the shirt worn under it. From the neck down to the chest (above her hand on the hip), skin-toned pixels (the doll's colour within 4 px, or her skin
 // in the collar's shadow) that touch the gap over her body are her, not the garment: out, growing in from the gap. A garment near her beige is left alone.
@@ -386,14 +404,17 @@ function neckSkin(c,b){if(!b)return c;const g=c.getContext('2d'),im=g.getImageDa
  const cr=erode(so,3);let F=[0,0,0],fn=0,DM=[0,0,0],dn=0;for(let i=0;i<N;i++)if(cr[i]){F[0]+=p[i*4];F[1]+=p[i*4+1];F[2]+=p[i*4+2];fn++}
  for(let r=Math.floor(H*.25);r<Math.floor(H*.6);r++)for(let x=0;x<W;x++){const j=r*W+x;if(bg(j))continue;const k=j*3;DM[0]+=b[k];DM[1]+=b[k+1];DM[2]+=b[k+2];dn++}
  if(fn<500||!dn)return c;F=F.map(x=>x/fn);DM=DM.map(x=>x/dn);if((F[0]-DM[0])**2+(F[1]-DM[1])**2+(F[2]-DM[2])**2<100*100)return c;
- const LF=.299*F[0]+.587*F[1]+.114*F[2],ok=new Uint8Array(N),dz=erode(on,16);
- for(let r=0;r<r1;r++)for(let x=0;x<W;x++){const i=r*W+x,q=i*4;if(!on[i]||dz[i]||bg(i))continue;const R=p[q],G=p[q+1],B=p[q+2];
+ const LF=.299*F[0]+.587*F[1]+.114*F[2],ok=new Uint8Array(N),dz=erode(on,16),bd=dollBody(b);
+ const skin=(R,G,B)=>{const hu=(G-B)/(R-B+1e-6),sa=(R-B)/(R+1);return R>G&&hu>.12&&hu<.7&&sa>.14&&sa<.62};   // her skin's own tone, lit or in the collar's shadow
+ {let t=0;for(let i=0;i<N;i++)if(cr[i]){const q=i*4;if(skin(p[q],p[q+1],p[q+2])&&.299*p[q]+.587*p[q+1]+.114*p[q+2]>LF+35)t++}if(t>.02*fn)return c}   // a print or velvet with light warm tones of its own: can't tell it from her skin
+ for(let r=0;r<r1;r++){let a=-1,z=-1;for(let x=0;x<W;x++)if(bd[r*W+x]){if(a<0)a=x;z=x}if(a<0)continue;const mid=(a+z)/2;   // only around the middle of her body: the neckline, never the shoulders
+ for(let x=Math.max(0,Math.round(mid-30));x<=Math.min(W-1,Math.round(mid+30));x++){const i=r*W+x,q=i*4;if(!on[i]||dz[i]||bg(i))continue;const R=p[q],G=p[q+1],B=p[q+2];
   if(!(R>=G&&G>=B-4&&R-B>12))continue;   // skin is warm
   const gf=(R-F[0])**2+(G-F[1])**2+(B-F[2])**2;if(gf<70*70)continue;const sp=R+G+B+1,lp=.299*R+.587*G+.114*B;let be=1e9,bc=1e9,bl=0;
   for(let y=Math.max(0,r-4);y<=Math.min(H-1,r+4);y++)for(let z=Math.max(0,x-4);z<=Math.min(W-1,x+4);z++){const j=y*W+z;if(bg(j))continue;const k=j*3,e=(R-b[k])**2+(G-b[k+1])**2+(B-b[k+2])**2;if(e<be)be=e;
    const sb=b[k]+b[k+1]+b[k+2]+1,ch=(R/sp-b[k]/sb)**2+(G/sp-b[k+1]/sb)**2+(B/sp-b[k+2]/sb)**2;if(ch<bc){bc=ch;bl=.299*b[k]+.587*b[k+1]+.114*b[k+2]}}
-  const hu=(G-B)/(R-B+1e-6),sa=(R-B)/(R+1),sk=R>G&&hu>.12&&hu<.7&&sa>.14&&sa<.62;   // her skin's own tone, lit or in the collar's shadow
-  if((be<34*34&&gf>4*be)||(sk&&lp>LF+35&&lp>60&&lp<1.1*bl))ok[i]=1}
+  const sk=skin(R,G,B);
+  if((be<34*34&&gf>4*be)||(sk&&lp>LF+35&&lp>60&&lp<1.1*bl))ok[i]=1}}
  const tr=j=>p[j*4+3]<=20&&!bg(j),st=[];let n=0;for(let i=0;i<N;i++)if(ok[i]){const r=(i/W)|0,x=i%W;if((x>0&&tr(i-1))||(x<W-1&&tr(i+1))||(r>0&&tr(i-W))||(r<H-1&&tr(i+W)))st.push(i)}
  while(st.length){const i=st.pop();if(!ok[i])continue;ok[i]=0;p[i*4+3]=0;n++;const r=(i/W)|0,x=i%W;if(x>0&&ok[i-1])st.push(i-1);if(x<W-1&&ok[i+1])st.push(i+1);if(r>0&&ok[i-W])st.push(i-W);if(r<H-1&&ok[i+W])st.push(i+W)}
  // the collar's rim that was a mix of the garment and her skin takes the garment's colour (2 px around what left)
@@ -467,7 +488,7 @@ async function run(src,kind,onStep,opt){const img=await toImg(src);const S=sheet
    {let br=-1,bw=0;for(let r=0;r<H;r++){let n=0;for(let c=0;c<W;c++)n+=m[r*W+c];if(n>bw){bw=n;br=r}}if(br>8)m.fill(0,0,(br-8)*W)}   // a chain hangs down from the waist line, never up   // a chain is gold or crystal: bright, not her nails or a dark edge
    views.push(turn(layer(d,m),v))}
   else if(kind=='belt'&&o.sheer)views.push(turn(layerA(d,maskClear(b,d)),v));
-  else{let m=mask(b,d,o);if(TOPK.includes(kind)){const r=slide(d,m,b);m=r[1];views.push(turn(neckSkin(defringe(layer(r[0],m),b),b),v))}else views.push(turn(kind=='belt'?matte(d,b,m):FRK.includes(kind)?defringe(layer(d,m),b,OPENK.includes(kind)):kind=='dress'?neckSkin(layer(d,m),b):layer(d,m),v))}}
+  else{let m=mask(b,d,o);if(TOPK.includes(kind)){const r=slide(d,m,b);m=r[1];views.push(turn(neckSkin(defringe(layer(r[0],m),b),b),v))}else views.push(turn(kind=='belt'?matte(d,b,m):FRK.includes(kind)?defringe(layer(d,m),b,OPENK.includes(kind)):kind=='dress'?neckSkin(unBack(layer(d,m),b),b):kind=='skirt'?unBack(layer(d,m),b):layer(d,m),v))}}
  lum.sort((x,y)=>x-y);
  return {views,shifts,px:views.map(c=>c.px),fab:fab.length?fab:null,lum:lum.length?Math.round(lum[lum.length>>1]):0,black:!!BM}}
 // test helper: the panel, the doll and the masks of one view of a sheet (window.cut8dbg(url,v))
@@ -475,5 +496,5 @@ window.cut8dbg=async(src,v)=>{const img=await toImg(src),S=sheetData(img),b=awai
  const im=a=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),x=g.createImageData(W,H);for(let i=0;i<N;i++){const on=a.length==N?a[i]:0;x.data[i*4]=on?255:0;x.data[i*4+1]=on?255:0;x.data[i*4+2]=on?255:0;x.data[i*4+3]=255}g.putImageData(x,0,0);return c.toDataURL()};
  const rgb=a=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),x=g.createImageData(W,H);for(let i=0;i<N;i++){x.data[i*4]=a[i*3];x.data[i*4+1]=a[i*3+1];x.data[i*4+2]=a[i*3+2];x.data[i*4+3]=255}g.putImageData(x,0,0);return c.toDataURL()};
  return {d:rgb(d),b:rgb(b),raw:im(CUT8D.raw),morph:im(CUT8D.morph),fin:im(m)}};
-window.cut8={run,MODE,W,H,CV:2,CVT:3,TOPK,cvOf:k=>TOPK.includes(k)?6:k=='dress'?3:k=='belt'?3:OPENK.includes(k)?6:FRK.includes(k)?4:2,CVW:9,CVH:8,CVX:5,flags,says};   // CVT/cvOf (v271): tops, base shirts and sweaters cut before the no-tear slide are cut again by av188.js   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
+window.cut8={run,MODE,W,H,CV:2,CVT:3,TOPK,cvOf:k=>TOPK.includes(k)?6:k=='dress'||k=='skirt'?3:k=='belt'?3:k=='scarf'?5:OPENK.includes(k)?6:FRK.includes(k)?4:2,CVW:9,CVH:8,CVX:5,flags,says};   // CVT/cvOf (v271): tops, base shirts and sweaters cut before the no-tear slide are cut again by av188.js   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
 })();
