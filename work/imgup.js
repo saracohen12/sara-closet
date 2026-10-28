@@ -70,8 +70,16 @@ async function autoCrop(file,nocrop){const bm=await loadBitmap(file);const W=bm.
   const bg=(y0>0&&rf[y0-1].flat&&rf[y0-1].col)||(y1<ah&&rf[y1].flat&&rf[y1].col)||null;
   if(bg){const ok=y=>!rf[y].flat||nr(rf[y].col,bg);let a=y0,b=y1;while(a>0&&ok(a-1))a--;while(b<ah&&ok(b))b++;
    const ui2=y=>{const f=rf[y];if(!f.flat)return false;const c=f.col;return .3*c[0]+.59*c[1]+.11*c[2]<70};/* the gallery view of Shein/Temu puts the photo between black bars */const dk=(y,d)=>{for(let k=0;k<4;k++){const z=y+d*k;if(z<0||z>=ah)return false;if(ui2(z))return true}return false};if(a>0&&b<ah&&dk(a-1,-1)&&dk(b,1)&&(b-a)<ah*.92&&(b-a)>(y1-y0)){y0=a;y1=b;p2=true}}}
- const cols=[];for(let i=0;i<aw;i++){const col=new Uint8ClampedArray((y1-y0)*4);for(let y=y0;y<y1;y++){const k=(y*aw+i)*4;col.set(d.subarray(k,k+4),(y-y0)*4)}const f=flatLine(col,y1-y0,4);cols.push(p2?ui(f):f.flat)}
- const c=bestRun(cols,Math.max(2,Math.round(aw*.01)));if(c&&(c[1]-c[0])>aw*.3){x0=c[0];x1=c[1]}
+ // v279 (Sara 28/10 "חותך לי את התמונה באמצע"): the sides are cut only where the phone's own plain colour is (black, white or the bars' colour),
+ // from each edge inward – never the longest busy run, which cut a photo in two where a black dress made whole columns plain
+ const lum=c=>.3*c[0]+.59*c[1]+.11*c[2],near=(a,b)=>Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])+Math.abs(a[2]-b[2])<30;
+ const bar=(y0>0&&rf[y0-1].flat&&rf[y0-1].col)||(y1<ah&&rf[y1]&&rf[y1].flat&&rf[y1].col)||null;
+ const uic=c=>{const l=lum(c);return l<40||l>242||!!(bar&&near(c,bar))};
+ const sideUI=i=>{const col=new Uint8ClampedArray((y1-y0)*4);for(let y=y0;y<y1;y++){const k=(y*aw+i)*4;col.set(d.subarray(k,k+4),(y-y0)*4)}const f=flatLine(col,y1-y0,4);return f.flat&&uic(f.col)};
+ while(x0<aw-1&&sideUI(x0))x0++;while(x1>x0+1&&sideUI(x1-1))x1--;if(x1-x0<aw*.3){x0=0;x1=aw}
+ // and the top and bottom grow back over rows that are still photo (not mostly the phone's plain colour), so a photo is never cut in the middle
+ const uiFrac=y=>{let n=0,t=0;for(let x=x0;x<x1;x+=2){const k=(y*aw+x)*4;if(uic([d[k],d[k+1],d[k+2]]))n++;t++}return t?n/t:1};
+ while(y0>0&&uiFrac(y0-1)<.8)y0--;while(y1<ah&&uiFrac(y1)<.8)y1++;
  // v159: the photo shown as a framed picture over a dimmed page (Shein dark gallery): find the picture by its straight edges and keep only it
  if(H>W*1.5){const rr=rect159(d,aw,ah);if(rr&&rr[0]>=x0-2&&rr[2]<=x1+2&&rr[1]>=y0-2&&rr[3]<=y1+2&&((rr[3]-rr[1])<(y1-y0)*.92||(rr[2]-rr[0])<(x1-x0)*.92)){[x0,y0,x1,y1]=rr}}
  const sx=W/aw;let X0=Math.round(x0*sx),X1=Math.round(x1*sx),Y0=Math.round(y0*sx),Y1=Math.round(y1*sx);
@@ -204,7 +212,7 @@ document.head.insertAdjacentHTML('beforeend','<style>#zoomd.zclean .zb,#zoomd.zc
 {const zd=document.querySelector('#zoomd');if(zd)zd.addEventListener('close',()=>{const zh=zd.querySelector('.zh');if(zh){zh.textContent='צביטה או גלגלת להגדלה · לחיצה כפולה מגדילה · גוררים כדי לזוז';zh.style.color='';zh.style.fontWeight=''}zd.classList.remove('zclean')})}
 
 async function routeUp(id,f,mode){if(!f)return;if(mode=='p5')await upP5(id,f);else if(mode=='add')await addPics(id,[f]);else if(mode=='cam')await addPics(id,[f],{label:'צילום שלי',nocrop:true});else await upItemImg(id,f)}
-const IMGUP_VER=28;
+const IMGUP_VER=29;
 // ---- שם לחיפוש בטמו / שיין: שם הבגד ללא מילה חתוכה, העתקה ופתיחת חיפוש
 function searchName(id){const x=D[id]||{};const t=((IT[id]||{}).tname||'').trim();return t||(x.full||x.short||'').trim()}
 function copyTxt(txt){return (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject()).catch(()=>{const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(_){}ta.remove();if(!ok)throw 0})}
@@ -326,3 +334,20 @@ async function upqPaint(st){let b=document.getElementById('upq129');const n=(awa
 setTimeout(upqPaint,2000);setTimeout(upqRun,6000);window.addEventListener('online',()=>setTimeout(upqRun,1500));
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(upqRun,1500)});
 window.upqRun=upqRun;
+// v279 (Sara 28/10): main photos the old cutter cut in the middle are cut again, once, from the uncut copy kept beside them (raw).
+// Only a main photo that is still the automatic cut of that copy; the new one becomes the main only when it is clearly bigger or differently shaped,
+// and the old one stays in "תמונות קודמות" (↩ החזירי). Runs quietly in the background, a few at a time.
+let RC279=false;
+async function recrop279(max){if(RC279||typeof IT!='object'||!IT||typeof putItem!='function')return;RC279=true;let n=0;
+ try{const a=await claude.use('assets');if(!a)return;const L=Object.keys(IT).filter(id=>{const it=IT[id];if(!it||!it.img||it.rc279)return false;const h=it.imgs||[],i=h.findIndex(e=>e.id==it.img);return i>=0&&h[i].c&&h.slice(i+1).some(e=>e.raw)});
+  for(const id of L){if(n>=max)break;while(document.hidden||document.querySelector('dialog[open]')||UPST[id]=='busy')await new Promise(r=>setTimeout(r,5000));
+   const it=IT[id],h=hist(id),i=h.findIndex(e=>e.id==it.img);const raw=i>=0&&h.slice(i+1).find(e=>e.raw);if(!raw){continue}
+   try{const rb=await (await fetch('/_blob/'+raw.id)).blob(),ob=await (await fetch('/_blob/'+it.img)).blob();const out=await autoCrop(new File([rb],'raw.jpg',{type:rb.type||'image/jpeg'}));
+    const A=await createImageBitmap(ob),B=await createImageBitmap(out.blob);const ra=A.width/A.height,rb2=B.width/B.height;try{A.close();B.close()}catch(_){}
+    if(out.cropped&&Math.abs(rb2/ra-1)>.06){   /* (an uncut whole screenshot never replaces a photo) both are scaled to 1400 px at most, so a different shape is what tells a different cut */const r=await upl(a,out.blob);const h2=hist(id).filter(e=>e.id!=r.id);h2.unshift({id:r.id,t:Date.now(),c:1,rc:279});
+     await putItem(id,{img:r.id,imgs:h2.slice(0,12),rc279:1});paintImg(id);n++}
+    else await putItem(id,{rc279:1})}
+   catch(e){try{(window.ERRS=window.ERRS||[]).push('recrop279 '+id+': '+(e&&(e.code||e.message)||e))}catch(_){}}
+   await new Promise(r=>setTimeout(r,1500))}}
+ catch(e){try{(window.ERRS=window.ERRS||[]).push('recrop279 '+(e&&e.message||e))}catch(_){}}finally{RC279=false}}
+window.recrop279=recrop279;setTimeout(()=>recrop279(15),75e3);setInterval(()=>recrop279(15),5*60e3);
