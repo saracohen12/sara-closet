@@ -59,6 +59,12 @@ const wbgOf=id=>{if(it(id).wbg!=null)return !!it(id).wbg;const c=(D[id]||{}).col
 // a dark piece keeps doll-8's own light backdrop (black on black can't be cut). IT.pb[i] = her choice per piece, else by the piece's colour
 const DARK=/שחור|שחורה|כהה|נייבי|כחול כהה|חום|שוקו|קפה|בורדו|זית|אפור כהה|פחם|black|navy|brown|charcoal/i;
 const pbOf=(id,i)=>{const b=it(id).pb;if(Array.isArray(b)&&b[i]!=null)return !!b[i];const c=(colsOf(id)[i]||namesOf(id)[i]||'');if(DARK.test(c))return false;return LIGHT.test(c)};
+// v290 (Sara 28/10 15:22 "שיעשה אותם בצבע שחור, ככה תדע להוציא את זה"): a gold, silver, clear, rhinestone or chain belt is made on the doll dressed in a
+// plain matte BLACK bodysuit – cut8 (keyBlack) then takes what is not black. A dark belt (black, brown) stays on her beige dress. IT.bb = her answer
+// (one value, or one per piece of a pack). A belt never gets the black BACKDROP – the backdrop is not where a belt is.
+const BBW=/זהב|זהוב|כסף|כסוף|שקוף|שקופה|שרשר|ריינסטון|יהלום|קריסטל|אבני חן|מתכת|נוצ|פנינ|לבן|לבנה|שמנת|בז|קש|gold|silver|clear|transparent|chain|rhinestone|crystal|metal|pearl|white|beige|straw/i;
+const bbOf=(id,i)=>{const b=it(id).bb;if(Array.isArray(b)&&i!=null&&b[i]!=null)return !!b[i];if(b!=null&&!Array.isArray(b))return !!b;
+ const c=i!=null?(colsOf(id)[i]||namesOf(id)[i]||''):((D[id]||{}).color||'');if(c&&DARK.test(c)&&!BBW.test(c))return false;return BBW.test(c+' '+txt(id))};
 // holes in the fabric (lace, eyelet, mesh): 'open' = through the holes you see what she wears under it (the cut leaves them see-through, a base shirt shows),
 // 'lined' = a lining is sewn under the holes and is part of the garment                                                        → IT.hol
 const HOLE=/תחרה|תחרת|רשת|חורים|אג'ור|אז'ור|קרושה|סרוג ביד|lace|mesh|eyelet|crochet|openwork/i;
@@ -74,10 +80,10 @@ function outs(id){const k=kd(id),O=[];
   if(J.includes('necklace'))O.push({role:'cu',n:'תקריב פנים עם השרשרת',cuOf:'necklace'});
   if(J.includes('earrings'))O.push({role:'cu',n:'תקריב פנים עם העגילים',cuOf:'earrings'});return O}
  if(k=='bag'){O.push({role:'sheet',kind:'bag',n:'התיק',pk:''});O.push({role:'cu',n:'תקריב חצי גוף עם התיק',cuOf:'bag',half:1});return O}
- const n=MULTI.includes(k)?npOf(id):1;if(n>1){const C=colsOf(id);namesOf(id).forEach((x,i)=>O.push({role:'sheet',kind:k,n:x,pk:'g'+(i+1),pn:x,col:C[i]||'',bk:pbOf(id,i)}));return O}
- O.push({role:'sheet',kind:k,n:TN[k]||'הפריט',pk:''});return O}
+ const n=MULTI.includes(k)?npOf(id):1;if(n>1){const C=colsOf(id);namesOf(id).forEach((x,i)=>O.push({role:'sheet',kind:k,n:x,pk:'g'+(i+1),pn:x,col:C[i]||'',bk:k=='belt'?false:pbOf(id,i),bb:k=='belt'?bbOf(id,i):false}));return O}
+ O.push({role:'sheet',kind:k,n:TN[k]||'הפריט',pk:'',bb:k=='belt'?bbOf(id):false});return O}
 // which sheets get a black backdrop (jewelry / shoes / bags never)
-function blk(id,k){if(['jw','shoes','bag'].includes(k))return {all:false,any:false,L:[]};const S=outs(id).filter(o=>o.role!='cu');
+function blk(id,k){if(['jw','shoes','bag','belt'].includes(k))return {all:false,any:false,L:[]};const S=outs(id).filter(o=>o.role!='cu');
  const L=S.map(o=>o.bk!=null?o.bk:(o.role=='whole'||o.role=='sheet')&&wbgOf(id));return {all:L.length&&L.every(Boolean),any:L.some(Boolean),L,S}}
 const bgNote=(id,k,o)=>{const b=blk(id,k);if(!b.any||b.all||o.role=='cu')return '';const i=b.S.findIndex(x=>x.n==o.n&&x.pk==o.pk&&x.role==o.role);if(i<0)return '';return b.L[i]?' ⬛ רקע שחור בגיליון הזה.':' ⬜ בגיליון הזה הרקע נשאר בדיוק כמו ב-doll-8 (בהיר) – לא שחור.'};
 // ---------- the prompt ----------
@@ -113,6 +119,8 @@ function rulesOf(id,k,sheets){const P=[],ME=(R()&&R().ME)||'';
  if(BELTK.includes(k)){const b=bltOf(id);P.push(b=='on'?'לבגד יש חגורה תפורה מאותו בד: היא חלק מהבגד ונשארת בדיוק כמו בתמונה.':b=='off'?'לבגד הגיעה חגורה נפרדת: הורידי אותה. בגיליון בלי שום חגורה, ורואים את הבגד במקום שהחגורה הייתה.':'בלי חגורה, גם אם בתמונה יש חגורה.')}
  if(cloth)P.push('אם בתמונת המוצר יש עוד בגדים או אביזרים שלא כתבתי, הם לא שלי: אל תוסיפי אותם.');
  if(cloth)P.push(`המידות שלי: ${ME}. הדמות כבר בנויה לפי המידות האלה, אל תשני את הגוף. שמרי על אותו אורך ביחס לגוף כמו בתמונת המוצר, ואותו אורך בכל 8 הזוויות.\nהבגד צריך להיראות אמיתי על הגוף: קפלים, צללים, הבד נופל לפי התנוחה.`);
+ const BB=sheets.filter(o=>o.bb);
+ if(BB.length){const all=BB.length==sheets.length;P.push(`חשוב מאוד, כדי שאפשר יהיה לגזור את החגורה בדיוק: ${all?'בכל הגיליונות':'בגיליונות של '+BB.map(o=>o.n).join(', ')+' (ורק בהם)'} הלבישי קודם את הדמות בבגד גוף שחור מט, חלק לגמרי, במקום השמלה בצבע עור: צווארון עגול צמוד בבסיס הצוואר, שרוולים ארוכים עד שורש כף היד, ומכנסיים צמודים עד הקרסוליים. בלי קפלים, בלי ברק, בלי הדפס ובלי תפרים בולטים – שחור אחיד. הפנים, כיסוי הראש, כפות הידיים, הנעליים והרקע נשארים בדיוק כמו ב-doll-8. רק אז שימי עליו את החגורה, בדיוק כמו בתמונת המוצר: אותו צבע, אותו אבזם, אותו רוחב, אותו מקום על המותן. שום חלק של החגורה לא נצבע בשחור. חלק שקוף בחגורה נשאר שקוף ורואים דרכו את השחור; זהב, כסף, אבנים וברק נשארים בצבע שלהם. שרשרת שמשתלשלת נשארת באורך שלה.`)}
  const B=blk(id,k);
  if(B.all)P.push('חשוב מאוד: הבגד לבן, שמנת או שקוף. כדי שאפשר יהיה לגזור אותו בדיוק, בכל הגיליונות של הדמות צבעי את הרקע מסביב לדמות בשחור אחיד, מכל הצדדים ועד הרצפה. הדמות, הבגד והקווים הלבנים בין המשבצות נשארים. הלבן בבגד נשאר לבן, ובד שקוף נשאר שקוף ורואים דרכו את הגוף (השמלה בצבע עור), לא את השחור.');
  else if(B.any)P.push(`חשוב מאוד – הרקע שונה בכל גיליון: רקע שחור אך ורק בגיליון של בגד לבן, שמנת או שקוף – כאן: ${B.S.filter((o,i)=>B.L[i]).map(o=>o.n).join(', ')}. שם צבעי את הרקע מסביב לדמות בשחור אחיד, מכל הצדדים ועד הרצפה; הלבן בבגד נשאר לבן, ובד שקוף נשאר שקוף ורואים דרכו את הגוף (השמלה בצבע עור), לא את השחור. בכל שאר הגיליונות – ${B.S.filter((o,i)=>!B.L[i]).map(o=>o.n).join(', ')} – הרקע נשאר בדיוק כמו ב-doll-8, בהיר. אף פעם לא רקע שחור מאחורי בגד שחור, חום, בז׳ או צבעוני – אי אפשר לגזור אותו.`);
@@ -325,7 +333,7 @@ async function cuJpeg(f){const u=URL.createObjectURL(f);try{const m=await new Pr
 function packQ(id,k){const n=npOf(id),A=asked(id),g=gOf(id),W=PLURAL[k]||'פריטים';
  return `<div class="g250q g256q${A?'':' ask'}"><b>${A?'2. ':'❓ קודם כל: '}כמה ${W} יש בחבילה?</b>${!A&&g?`<small>לפי השם: ${g.n}${g.cols.length?' ('+es(g.cols.join(', '))+')':''}. נכון?</small>`:''}
   <div class="g250cs">${[1,2,3,4,5,6].map(v=>chip(A&&n==v||!A&&g&&g.n==v,'data-g250n',v,v)).join('')}${!A&&g?`<button type="button" class="g250c g256ok" data-g250n="${g.n}">✓ נכון, ${g.n}</button>`:''}</div>
-  ${n>1?`<small>${A?`📁 יש ${n} תיקיות נפרדות בקטגוריה – כל אחת כמו מוצר שקנית לבד. שם וצבע לכל אחת:`:'כל אחת תהיה תיקייה נפרדת. שם וצבע לכל אחת:'}</small><div class="g250pn g256pn">${namesOf(id).map((x,i)=>`<span><i>${i+1}</i><input data-g250pn="${i}" value="${es(x)}" aria-label="שם ${i+1}"><input data-g256pc="${i}" value="${es(colsOf(id)[i]||'')}" placeholder="צבע" aria-label="צבע ${i+1}"><button type="button" class="g250c g257bg${pbOf(id,i)?' on':''}" data-g257bg="${i}" aria-pressed="${pbOf(id,i)}" title="הרקע ש-GPT יעשה בגיליון של ${es(x)}">${pbOf(id,i)?'⬛ רקע שחור':'⬜ רקע בהיר'}</button></span>`).join('')}</div><small>⬛ רקע שחור רק לבגד לבן, שמנת או שקוף · ⬜ כל צבע אחר – הרקע הרגיל. לחיצה מחליפה.</small>`:''}</div>`}
+  ${n>1?`<small>${A?`📁 יש ${n} תיקיות נפרדות בקטגוריה – כל אחת כמו מוצר שקנית לבד. שם וצבע לכל אחת:`:'כל אחת תהיה תיקייה נפרדת. שם וצבע לכל אחת:'}</small><div class="g250pn g256pn">${namesOf(id).map((x,i)=>`<span><i>${i+1}</i><input data-g250pn="${i}" value="${es(x)}" aria-label="שם ${i+1}"><input data-g256pc="${i}" value="${es(colsOf(id)[i]||'')}" placeholder="צבע" aria-label="צבע ${i+1}">${k=='belt'?`<button type="button" class="g250c g257bg${bbOf(id,i)?' on':''}" data-g290pb="${i}" aria-pressed="${bbOf(id,i)}" title="בגד גוף שחור מתחת ל${es(x)}">${bbOf(id,i)?'⬛ על בגד גוף שחור':'⬜ על השמלה הבהירה'}</button>`:`<button type="button" class="g250c g257bg${pbOf(id,i)?' on':''}" data-g257bg="${i}" aria-pressed="${pbOf(id,i)}" title="הרקע ש-GPT יעשה בגיליון של ${es(x)}">${pbOf(id,i)?'⬛ רקע שחור':'⬜ רקע בהיר'}</button>`}</span>`).join('')}</div><small>${k=='belt'?'⬛ זהב, כסף, שקוף, אבנים או שרשרת – GPT מלביש בגד גוף שחור ורק עליו את החגורה · ⬜ חגורה כהה – על השמלה הרגילה. לחיצה מחליפה.':'⬛ רקע שחור רק לבגד לבן, שמנת או שקוף · ⬜ כל צבע אחר – הרקע הרגיל. לחיצה מחליפה.'}</small>`:''}</div>`}
 // ---------- the window ----------
 let DL=null,ID='';
 function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';DL.dir='rtl';DL.setAttribute('aria-labelledby','g250t');document.body.appendChild(DL);
@@ -338,6 +346,8 @@ function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';
   if(q.g250k)return save({kd:q.g250k});
   if(q.g250b!=null)return save({blt:q.g250b});
   if(q.g250w!=null)return save({wbg:+q.g250w});
+  if(q.g290bb!=null)return save({bb:+q.g290bb});
+  if(q.g290pb!=null){const n=npOf(ID),L=Array.from({length:n},(_,i)=>bbOf(ID,i)?1:0),i=+q.g290pb;L[i]=L[i]?0:1;return save({bb:L})}
   if(q.g257h)return save({hol:q.g257h=='no'?'':q.g257h});
   if(q.g257bg!=null){const n=npOf(ID),L=Array.from({length:n},(_,i)=>pbOf(ID,i)?1:0),i=+q.g257bg;L[i]=L[i]?0:1;return save({pb:L})}
   if(q.g250n)return save({np:+q.g250n});
@@ -373,7 +383,8 @@ function open(id){ID=id;if(B&&!B.sel.includes(id))B.from=0;const d=dlg(),k=kd(id
  if(k=='jw'){const J=jwOf(id);q.push(`<div class="g250q"><b>2. אילו תכשיטים יש במוצר?</b> <small>(אפשר כמה)</small><div class="g250cs">${JW.map(([v,t])=>chip(J.includes(v),'data-g250j',v,t)).join('')}</div><small>כל תכשיט יוצא לבד${J.includes('necklace')||J.includes('earrings')?', ובנוסף תקריב של הפנים שלך עם השרשרת / עם העגילים':''}.</small></div>`)}
  if(MULTI.includes(k))q.push(packQ(id,k));
  if(BELTK.includes(k)){const b=bltOf(id);q.push(`<div class="g250q"><b>${q.length+1}. הגיע עם חגורה?</b><div class="g250cs">${chip(!b||b=='no','data-g250b','no','אין חגורה')}${chip(b=='off','data-g250b','off','חגורה נפרדת – להוריד')}${chip(b=='on','data-g250b','on','חגורה תפורה, מאותו בד – להשאיר')}</div></div>`)}
- if(k!='jw'&&k!='shoes'&&k!='bag'&&!(MULTI.includes(k)&&npOf(id)>1)){const w=wbgOf(id);q.push(`<div class="g250q"><b>${q.length+1}. הבגד לבן, שמנת או שקוף?</b><div class="g250cs">${chip(w,'data-g250w',1,'כן – רקע שחור')}${chip(!w,'data-g250w',0,'לא')}</div>${w?'<small>GPT יעשה רקע שחור, וכך האתר גוזר בדיוק בלי חורים.</small>':''}</div>`)}
+ if(k=='belt'&&npOf(id)<=1){const w=bbOf(id);q.push(`<div class="g250q"><b>${q.length+1}. זהב, כסף, שקופה, אבנים או שרשרת?</b><div class="g250cs">${chip(w,'data-g290bb',1,'כן – על בגד גוף שחור')}${chip(!w,'data-g290bb',0,'לא (חגורה כהה)')}</div>${w?'<small>GPT ילביש את הבובה בבגד גוף שחור ורק עליו את החגורה – כך גוזרים בדיוק, ושקוף נשאר שקוף.</small>':''}</div>`)}
+ else if(k!='jw'&&k!='shoes'&&k!='bag'&&!(MULTI.includes(k)&&npOf(id)>1)){const w=wbgOf(id);q.push(`<div class="g250q"><b>${q.length+1}. הבגד לבן, שמנת או שקוף?</b><div class="g250cs">${chip(w,'data-g250w',1,'כן – רקע שחור')}${chip(!w,'data-g250w',0,'לא')}</div>${w?'<small>GPT יעשה רקע שחור, וכך האתר גוזר בדיוק בלי חורים.</small>':''}</div>`)}
  if(k!='jw'&&k!='shoes'&&k!='bag'){const h=holOf(id);q.push(`<div class="g250q"><b>${q.length+1}. יש בבד חורים, תחרה או רשת?</b><div class="g250cs">${chip(!h,'data-g257h','no','אין')}${chip(h=='open','data-g257h','open','יש – רואים מה שמתחת')}${chip(h=='lined','data-g257h','lined','יש – עם בטנה תפורה')}</div>${h=='open'?'<small>GPT ישאיר את החורים פתוחים, והאתר גוזר אותם שקופים. בסטודיו לובשים מתחת חולצת בסיס, והיא נראית דרך החורים.</small>':h=='lined'?'<small>הבטנה היא חלק מהבגד ונשארת.</small>':''}</div>`)}
  const ps=(it(id).parts||[]).filter(x=>/^g\d+$/.test(x.k));
  d.innerHTML=`<div class="mk"><div class="mkh"><h3 id="g250t">🚀 ${es(nm(id))} – הכול ל-GPT</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
@@ -386,7 +397,7 @@ function open(id){ID=id;if(B&&!B.sel.includes(id))B.from=0;const d=dlg(),k=kd(id
  if(!d.open)d.showModal()}
 window.g250open=open;
 // her answers are saved quietly (no generic "נשמר: …" toast)
-{const _bp=typeof beforePut=='function'?beforePut:null;if(_bp)beforePut=function(id,patch){const k=patch&&Object.keys(patch);if(k&&k.length&&k.every(x=>['kd','blt','wbg','np','jw','sp','pn','pc','pb','hol','g250','parts','cus','whole'].includes(x)))return;return _bp.apply(this,arguments)}}
+{const _bp=typeof beforePut=='function'?beforePut:null;if(_bp)beforePut=function(id,patch){const k=patch&&Object.keys(patch);if(k&&k.length&&k.every(x=>['kd','blt','wbg','np','jw','sp','pn','pc','pb','bb','hol','g250','parts','cus','whole'].includes(x)))return;return _bp.apply(this,arguments)}}
 // ---------- the box in the item window, under the buttons ----------
 function box(){const d=document.getElementById('dlg');if(!d||!d.open)return;const bar=d.querySelector('#dlbody .it77');if(!bar)return;
  const ed=d.querySelector('#dlbody .ed[data-id]'),id=(ed&&ed.dataset.id)||(typeof CUR!='undefined'?CUR:'');let x=d.querySelector('.g250box');

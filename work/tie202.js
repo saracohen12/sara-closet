@@ -70,7 +70,7 @@ const isOn=(id,x)=>{const c=curTx(id);return !!c&&c.L[0]==x.L[0]};
 const part=x=>({s:'head',k:'tiex',L:x.L,src:x.src||'',t:x.t||Date.now(),cv:x.cv||1,sh:x.sh||null});
 const keyOf=id=>'u'+String(id).replace(/[^A-Za-z0-9]/g,'');
 async function setTx(id,i,quiet){const L=txs(id),x=L[i];if(!x)return false;try{if(x.p&&window.STYORD)STYORD.rec('tie',x.p)}catch(_){}
- try{await putItem(id,{a8:[part(x)],tx:L})}catch(e){ERR('settx',e);toast_('לא הצלחתי לשמור. לנסות שוב');return false}
+ try{await putItem(id,{a8:[part(x)],tx:L})}catch(e){ERR('settx',e);try{errlog290('settx',e,id)}catch(_){}toast_('לא הצלחתי לשמור. לנסות שוב');return false}
  try{R().sync()}catch(_){}if(!quiet)toast_(`✓ ${x.n} – על האווטאר`);return true}
 async function delTx(id,i){const L=txs(id),x=L[i];if(!x)return;const on=isOn(id,x),nu=L.filter((_,j)=>j!=i);
  const p={tx:nu.length?nu:''};if(on)p.a8=nu.length?[part(nu[0])]:'';
@@ -170,7 +170,7 @@ function card(id,c,L){const m=L.find(x=>x.p==c.p||x.n==c.n),k=c.doc?key(c.doc):'
   <button type="button" class="mkp" data-t245up="${c.kind}:${es(c.i)}">${m?'🔄 להחליף':'📤 להעלות'}</button></span></div>`}
 const MAXW=10;let PICK=false,PMORE=false;const SEL=new Set();
 const txw=id=>(Array.isArray(itx(id).txw)?itx(id).txw:[]).filter(w=>w&&w.p);
-async function setW(id,L){try{await putItem(id,{txw:L.length?L:''})}catch(e){ERR('txw',e);toast_('לא הצלחתי לשמור. לנסות שוב');return false}return true}
+async function setW(id,L){try{await putItem(id,{txw:L.length?L:''})}catch(e){ERR('txw',e);try{errlog290('txw',e,id)}catch(_){}toast_('לא הצלחתי לשמור. לנסות שוב');return false}return true}
 const picBtn=(c,attr)=>{const k=c.doc?key(c.doc):'';return k?`<button type="button" class="t245p" ${attr}><img alt="" data-t245k="${es(k)}" src=""><i class="c212h" aria-hidden="true">🔄 360</i></button>`:`<span class="t245p none"><i aria-hidden="true">🧕</i><small>עוד אין תמונה</small></span>`};
 // a tie in the picker: tap = pick it
 function pcard(c){const on=SEL.has(c.p),k=c.doc?key(c.doc):'';

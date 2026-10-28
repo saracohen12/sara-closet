@@ -382,13 +382,19 @@ function paintAll(){Object.keys(D).forEach(paint);const ks=[...new Set(Object.va
 function saveLocal(){try{localStorage.setItem('it',JSON.stringify(IT));localStorage.setItem('ord',JSON.stringify(ORD))}catch(_){}}
 // v267: a key that is gone (or a nested key that is gone) can only be written by replacing the whole doc
 function lostKeys(o,n){if(!o||typeof o!='object'||Array.isArray(o))return false;if(!n||typeof n!='object'||Array.isArray(n))return true;return Object.keys(o).some(k=>!(k in n)||lostKeys(o[k],n[k]))}
+// v290: errors that stop something she did are kept in the database (collection errlog), so they can be found without her screen
+function errlog290(w,e,id){try{const m=String(e&&(e.code||e.message)||e).slice(0,300),st=String(e&&e.stack||'').slice(0,900);(window.ERRS=window.ERRS||[]).push('v290 '+w+': '+m);
+ if(typeof DB!='undefined'&&DB){const k='e'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);DB.collection('errlog').doc(k).set({w,m,st,id:id||'',t:Date.now(),v:window.VER||'',ua:navigator.userAgent.slice(0,120)}).catch(()=>{})}}catch(_){}}
+window.errlog290=errlog290;
 async function putItem(id,patch){if(window.beforePut)beforePut(id,patch);const old=IT[id]||{},it=Object.assign({},old,patch);Object.keys(it).forEach(k=>{if(it[k]===''||it[k]===false||it[k]==null)delete it[k]});
- if(Object.keys(it).length)IT[id]=it;else delete IT[id];paint(id);apply();
+ if(Object.keys(it).length)IT[id]=it;else delete IT[id];
+ /* v290: a card or list that fails to repaint must never stop the save (Sara 28/10 15:27: ties "לא הצלחתי לשמור") */
+ try{paint(id)}catch(e){errlog290('paint',e,id)}try{apply()}catch(e){errlog290('apply',e,id)}
  if(DB){try{const d=DB.collection('items').doc(id);if(!IT[id]){await d.delete();return}
    // v267: write only the fields that changed, so a change made at the same time on another device (place, note, state…) is not overwritten by this device's older copy
    const ks=Object.keys(patch||{}),part=ks.every(k=>k in it&&!lostKeys(old[k],it[k]));
    if(part&&ks.length&&Object.keys(old).length){const up={};ks.forEach(k=>up[k]=it[k]);try{await d.update(up);return}catch(e){if(!(e&&e.code=='invalid_argument'))throw e}}
-   await d.set(IT[id])}catch(e){console.warn(e)}}else saveLocal()}
+   await d.set(IT[id])}catch(e){console.warn(e);errlog290('db',e,id)}}else saveLocal()}
 async function putOrd(o,v){ORD[o]=Object.assign({},ORD[o],v&&typeof v=='object'?v:{arrived:v});/* v139: merge, keeps pd */$$('.grid .card').forEach(c=>{if(c.dataset.ord==o)paint(c.dataset.id)});apply();
  if(DB){try{await DB.collection('orders').doc(o).set(ORD[o])}catch(e){console.warn(e)}}else saveLocal()}
 document.addEventListener('click',async e=>{const mdb=e.target.closest('[data-mode]');if(mdb){toggleMode(mdb.closest('.ed').dataset.id,mdb.dataset.mode);return}

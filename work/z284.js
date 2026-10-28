@@ -1,3 +1,4 @@
+// v290: "🚀 מחדש" opens the item's GPT window (new prompt, ZIP, upload) – for a result that came out bad (Sara 15:22).
 // v288: after "✕ להוריד" a "↩ להחזיר" button puts the item back (Sara 28/10 15:08 "בטעות הורדתי").
 // v284 redesign, screen 3 – the studio's edit buttons (Sara 28/10 10:19 "לבדוק איך אתה מוסיף לי כפתורים בעריכה… של הבגד, של החולצה בתוך החצאית").
 // The tuck / under-the-dress / hair-behind checkboxes were inside folded headings that start closed, so she could not find them.
@@ -16,7 +17,7 @@ function paint(){if(!dlg||!box)return;try{
  const jy=dlg.querySelector('.r3jyb');if(jy&&!jy.hidden)pills.push(`<button type="button" class="z7t z7a" data-z7="jy"><i aria-hidden="true">📿</i><span>גובה התכשיט</span></button>`);
  const chips=[...dlg.querySelectorAll('.r3worn .r3wc[data-off]')];
  const items=chips.map(c=>{const id=c.dataset.off,im=c.querySelector('img'),src=im&&im.getAttribute('src')||'',n=((c.querySelector('span')||{}).textContent||'').trim();
-   return `<li><img alt="" src="${esc(src)}"><span>${esc(n)}</span><div>${!HEADS.has(id)&&hasA8(id)?`<button type="button" data-fix237="${esc(id)}" aria-label="לתקן ב-GPT: ${esc(n)}">✨ לתקן</button>`:''}<button type="button" data-z7off="${esc(id)}" aria-label="להוריד: ${esc(n)}">✕ להוריד</button></div></li>`});
+   return `<li><img alt="" src="${esc(src)}"><span>${esc(n)}</span><div>${!HEADS.has(id)&&hasA8(id)?`<button type="button" data-fix237="${esc(id)}" aria-label="לתקן ב-GPT: ${esc(n)}">✨ לתקן</button>`:''}${!HEADS.has(id)&&typeof D=='object'&&D[id]?`<button type="button" data-g250="${esc(id)}" aria-label="להכין מחדש ב-GPT: ${esc(n)}">🚀 מחדש</button>`:''}<button type="button" data-z7off="${esc(id)}" aria-label="להוריד: ${esc(n)}">✕ להוריד</button></div></li>`});
  const ub=dlg.querySelector('.r3worn .r3undo'),un=ub?((ub.querySelector('span')||{}).textContent||'').replace(/^להחזיר:\s*/,''):'';   // v288: undo for an item taken off by mistake
  const html=`<div class="z7h"><h3>✏ לסדר את הלוק</h3><span class="z7hb"><button type="button" class="z7tell" data-z7="reset">🔄 לאפס הכול</button><button type="button" class="z7tell" data-z7="tell">💬 משהו לא יושב טוב?</button></span></div>
   ${pills.join('')?`<div class="z7p">${pills.join('')}</div>`:'<p class="z7n">כשלובשים חולצה עם חצאית, או חולצה עם שמלה, יופיעו כאן כפתורים להכניס אותה פנימה.</p>'}

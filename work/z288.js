@@ -14,12 +14,16 @@ function paint(){if(!dlg||!row)return;try{
 function go(k){try{
  const tab=dlg.querySelector('.r3tabs [data-t="closet"]');if(tab&&tab.getAttribute('aria-selected')!='true')tab.click();
  const b=dlg.querySelector(`.r3cats [data-cat="${CSS.escape(k)}"]`);if(b)b.click();
- const pane=dlg.querySelector('.r3pane[data-p="closet"]');if(pane){pane.hidden=false;const t=pane.querySelector('.r3cats')||pane;setTimeout(()=>t.scrollIntoView({block:'start'}),80)}
+ const pane=dlg.querySelector('.r3pane[data-p="closet"]');if(pane){pane.hidden=false;const t=pane;setTimeout(()=>t.scrollIntoView({block:'start'}),80)}
  setTimeout(paint,60)}catch(e){ERR('go',e)}}
 function setup(d){dlg=d;const h=d.querySelector('.r3h');if(!h||h.querySelector('.z8c'))return;
  row=document.createElement('nav');row.className='z8c';row.setAttribute('aria-label','לקפוץ לסוג בגד');
  const tt=h.querySelector('.r3tt');(tt||h.firstChild).after(row);h.classList.add('z8h');
  row.addEventListener('click',e=>{const b=e.target.closest('[data-z8]');if(b)go(b.dataset.z8)});
+ // v290 (Sara 15:24 "את הארון שלי ואת הלוקים שלי תעלה אותם למעלה, גם חיפוש… קטן"): the tabs and the search move up into the bar (same elements, same handlers)
+ const tabs=d.querySelector('.r3tabs'),q=d.querySelector('.r3q');
+ if(tabs){tabs.querySelectorAll('button[data-t]').forEach(b=>{const t=b.dataset.t=='closet'?'הארון שלי':'הלוקים שלי';b.setAttribute('aria-label',t);b.innerHTML=t.replace(' ','<br>')});h.appendChild(tabs)}
+ if(q){q.placeholder='🔍 חיפוש';h.appendChild(q);q.addEventListener('input',()=>{const tab=dlg.querySelector('.r3tabs [data-t="closet"]');if(tab&&tab.getAttribute('aria-selected')!='true')tab.click();const g=dlg.querySelector('.r3pane[data-p="closet"]');if(g)setTimeout(()=>g.scrollIntoView({block:'start'}),60)})}
  const ha=h.querySelector('.r3ha');if(ha&&!ha.querySelector('.z8r')){const r=document.createElement('button');r.type='button';r.className='z8r';r.setAttribute('aria-label','איפוס – להוריד הכול מהאווטאר');r.title='איפוס';r.innerHTML='<i aria-hidden="true">🔄</i><span>איפוס</span>';r.onclick=()=>{try{if(window.R360&&R360.reset)R360.reset()}catch(e){ERR('reset',e)}};ha.prepend(r)}   // v288b
  const pin=h.querySelector('.r3pin'),sv=h.querySelector('.r3save');if(pin)pin.title='לשים את הלוק בדף הראשי';if(sv)sv.title='שמירת הלוק';
  const cats=d.querySelector('.r3cats');if(cats)new MutationObserver(()=>requestAnimationFrame(paint)).observe(cats,{childList:true,subtree:true,attributes:true,attributeFilter:['aria-pressed']});

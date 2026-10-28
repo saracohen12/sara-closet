@@ -330,6 +330,22 @@ function matte(d,b,m){m=fillHoles(m);const core=erode(m,2),ring=dilate(m,1),A=ne
   const a=Math.max(0,Math.min(1,db/fb));A[i]=a<.08?0:a;
   for(let z=0;z<3;z++){const un=a>.5?b[k+z]+(d[k+z]-b[k+z])/a:F[z];o[k+z]=Math.max(0,Math.min(255,a>.5?.5*un+.5*F[z]:F[z]))}}
  return layerA(o,A)}
+// v290 (Sara 28/10 15:22 "שיעשה אותם בצבע שחור, ככה תדע להוציא את זה"): gold, silver, clear and chain belts are made by GPT on the doll dressed in a plain
+// matte BLACK bodysuit (gpt250 asks for it). Over black the belt is simply what is not black: no guessing against her beige dress.
+// A clear belt over black is its own shine – how bright a pixel is, is how much belt is there (so on the avatar the garment under it shows through).
+function blackBody(d,b){const bd=erode(dollBody(b),6);let n=0,k=0;const r0=Math.floor(H*.3),r1=Math.floor(H*.7);
+ for(let r=r0;r<r1;r++)for(let c=0;c<W;c++){const i=r*W+c;if(!bd[i])continue;n++;const q=i*3;if(Math.max(d[q],d[q+1],d[q+2])<62)k++}return n>200&&k>.45*n}
+function keyBlack(d,b,sheer){const body=dilate(dollBody(b),8),sk=dilate(dollSkin(b),5),A=new Float32Array(N),o=Float32Array.from(d),r0=Math.floor(H*.24),r1=Math.floor(H*.82);
+ let K=[0,0,0],kn=0;const bd=erode(dollBody(b),6);for(let r=Math.floor(H*.3);r<Math.floor(H*.7);r++)for(let c=0;c<W;c++){const i=r*W+c,q=i*3;if(bd[i]&&Math.max(d[q],d[q+1],d[q+2])<45){K[0]+=d[q];K[1]+=d[q+1];K[2]+=d[q+2];kn++}}
+ if(kn)K=K.map(x=>x/kn);const kl=Math.max(...K);
+ for(let r=r0;r<r1;r++)for(let c=0;c<W;c++){const i=r*W+c;if(!body[i])continue;const q=i*3,R=d[q],G=d[q+1],B=d[q+2],L=Math.max(R,G,B);
+  if(sk[i]&&R>G&&G>B&&R-B>18&&R-B<95&&G>.66*R&&L>95)continue;   // her own hand on the hip, not the belt
+  const a=sheer?Math.min(1,Math.max(0,(L-kl-22)/150)):Math.min(1,Math.max(0,(L-kl-28)/45));if(a<.05)continue;A[i]=a;
+  for(let z=0;z<3;z++)o[q+z]=Math.max(0,Math.min(255,K[z]+(d[q+z]-K[z])/a))}
+ // specks: a piece smaller than 10 px that is not near a bigger one is GPT's noise on the black
+ const m=new Uint8Array(N);for(let i=0;i<N;i++)m[i]=A[i]>.25?1:0;const [Lb,n]=label(dilate(m,2)),sz=new Int32Array(n+1);for(let i=0;i<N;i++)if(m[i])sz[Lb[i]]++;
+ for(let i=0;i<N;i++)if(A[i]&&sz[Lb[i]]<10)A[i]=0;
+ return layerA(o,A)}
 // the doll's own pixels (not her light-blue backdrop) of one view
 function dollBody(b){const bgr=new Float32Array(H*3),col=[],body=new Uint8Array(N);for(let c=0;c<10;c++)col.push(c);for(let c=W-10;c<W;c++)col.push(c);
  for(let r=0;r<H;r++)for(let z=0;z<3;z++){const vs=col.map(c=>b[(r*W+c)*3+z]).sort((x,y)=>x-y);bgr[r*3+z]=(vs[9]+vs[10])/2}
@@ -372,6 +388,7 @@ async function run(src,kind,onStep,opt){const img=await toImg(src);const S=sheet
  for(let v=0;v<8;v++){onStep&&onStep(v);await tick();const b=await base(v);const s=shift(S,v,b,o.mode=='head'||o.mode=='whole');shifts.push(s);const d=panel(BM?S0:S,v,s[0],s[1]);if(BM)unBlack(d,b,panelM(BM,v,s[0],s[1]));
   if(o.mode=='whole'){const [m,f,l]=maskWhole(b,d,v,o.fab,kind=='tiex');views.push(kind=='hair'?await snug(turn(layerA(d,m.A),v),v):turn(layerA(d,m.A),v));if(f){fab.push(turn(layer(d,f),v));lum.push(...l)}}
   else if(o.mode=='face')views.push(turn(layerA(d,maskFace(b,d,v)),v));
+  else if(kind=='belt'&&blackBody(d,b))views.push(turn(keyBlack(d,b,!!o.sheer),v));
   else if(kind=='belt'&&o.chain){const m=mask(b,d,Object.assign({},o,{mode:'small',low:1,warm:1,rows:[.28,.8],one:1,rim:0}));
    const inb=erode(dollBody(b),5),sk=dollSkin(b);   // v284: bits along her arm's outline (GPT's arm vs the doll's, over the backdrop) are not the chain
    for(let i=0;i<N;i++)if(m[i]){const k=i*3,l=.299*d[k]+.587*d[k+1]+.114*d[k+2];if(l<105||d[k+1]<.7*d[k]||!inb[i]||sk[i])m[i]=0}
