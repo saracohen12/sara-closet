@@ -27,7 +27,7 @@ const pool=()=>Object.keys(D).filter(id=>live(id)&&KEEP.has(cat(id)));
 const poolAll=()=>Object.keys(D).filter(id=>live(id));   // v279: "do I already have it" looks at everything she owns (kids, night, hair, makeup too); looks stay with her clothes
 const STORES=['שיין','טמו','עלי אקספרס','חנות','אחר'];
 const VD={yes:['✅','כדאי','ye187'],maybe:['🤔','אולי','mb187'],no:['✋','לא כדאי','no187']};
-const SS=[['think','🤔','עוד חושבת'],['buy','🛍','קניתי'],['skip','✕','ויתרתי']];const SI=Object.fromEntries(SS.map(s=>[s[0],s]));
+const SS=[['think','🛒','בעגלה, עוד חושבת'],['buy','🛍','קניתי'],['skip','✕','ויתרתי']];const SI=Object.fromEntries(SS.map(s=>[s[0],s]));
 const ME=()=>{const m=Object.assign({h:156,b:94,w:73,hp:96,sh:45},(typeof SET=='object'&&SET&&SET.me93&&SET.me91)||{});return m};
 
 // ---------- the archive ----------
@@ -186,8 +186,8 @@ function render(){if(!W||!W.open)return;const b=W.querySelector('.w187b');const 
  b.innerHTML=BUSY?`<div class="b187" role="status" aria-live="polite"><i aria-hidden="true"></i><span>${es(BUSY)}</span><small>זה לוקח בערך חצי דקה</small></div>`:VIEW=='cmp'?cmpView():r?resView(r):TB=='arc'?arcView():formView();
  if(!BUSY&&(r||VIEW))b.scrollTop=y;thl($a('[data-ad187open]',b).map(x=>x.dataset.ad187open))}
 function open(tab){load();if(!W){W=document.createElement('dialog');W.id='sh187';W.dir='rtl';W.setAttribute('aria-labelledby','sh187t');document.body.appendChild(W);
-  W.innerHTML=`<div class="w187h"><h3 id="sh187t">🛍 יועץ קניות<small>לפני שקונים: יש לי כבר? עם מה זה הולך? כדאי?</small></h3><button type="button" class="x187" aria-label="סגירה">✕</button></div>
-   <div class="w187t" role="tablist"><button type="button" role="tab" data-t="new">🔎 בדיקה חדשה</button><button type="button" role="tab" data-t="arc">🗂 הארכיון <b hidden></b></button></div><div class="w187b"></div>`}
+  W.innerHTML=`<div class="w187h"><h3 id="sh187t">🛒 העגלה ויועץ קניות<small>לפני שקונים: יש לי כבר? עם מה זה הולך? כדאי?</small></h3><button type="button" class="x187" aria-label="סגירה">✕</button></div>
+   <div class="w187t" role="tablist"><button type="button" role="tab" data-t="new">🔎 בדיקה חדשה</button><button type="button" role="tab" data-t="arc">🛒 העגלה והארכיון <b hidden></b></button></div><div class="w187b"></div>`}
  if(tab){TB=tab;CUR=null;VIEW=''}
  if(!W.open)W.showModal();render()}
 const closeAll=()=>$a('dialog[open]').forEach(x=>{try{x.close()}catch(_){}});
@@ -195,7 +195,7 @@ const closeAll=()=>$a('dialog[open]').forEach(x=>{try{x.close()}catch(_){}});
 // ---------- clicks and typing ----------
 document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.closest('button,[data-ad187open]');if(!t)return;const d=t.dataset;
  try{
- if(t.id=='sh187b'||d.ad187in!=null){e.preventDefault();e.stopPropagation();closeAll();return open(d.ad187in||'new')}
+ if(t.id=='sh187b'||d.ad187in!=null){e.preventDefault();e.stopPropagation();closeAll();if(t.id=='sh187b'&&ARC.some(r=>r.st=='think'))return cart();return open(d.ad187in||'new')}
  if(!W||!t.closest('#sh187'))return;
  if(t.classList.contains('x187'))return W.close();
  if(d.t){TB=d.t;CUR=null;VIEW='';return render()}
@@ -228,10 +228,12 @@ document.addEventListener('keydown',e=>{if(e.key=='Enter'&&e.target&&e.target.id
 function homeBtn(){try{const cta=$1('#h180 .z-chips')||$1('.h9cta')||$1('.h9hero');if(!cta)return;let e=$1('#sh187b');
  if(!e){e=document.createElement('button');e.id='sh187b';e.type='button';const s=$1('#sc185b');s&&s.parentNode==cta?s.after(e):cta.appendChild(e)}
  const n=ARC.filter(r=>r.st=='think').length;
- const h=`<span>🛍</span><span><b>יועץ קניות</b><small>${n?`🤔 ${n} עוד בהתלבטות`:'לפני שקונים'}</small></span>`;if(e.innerHTML!=h)e.innerHTML=h}catch(err){ERR('home',err)}}
+ // v281 (Sara 28/10 "איפה נמצאת עגלת קניות"): what she is still thinking about = her cart; the button says so and opens it
+ const h=`<span>🛒</span><span><b>העגלה שלי${n?` (${n})`:''}</b><small>${n?'ויועץ קניות':'יועץ קניות: לפני שקונים'}</small></span>`;if(e.innerHTML!=h)e.innerHTML=h}catch(err){ERR('home',err)}}
 setInterval(homeBtn,2000);setTimeout(homeBtn,1500);
 try{const T=window.TOOLS172,g=T&&T.find(x=>x[0]=='הזמנות וכסף');if(g&&!g[1].some(x=>String(x[1]).includes('יועץ קניות')))g[1].splice(0,0,['🛍','יועץ קניות: לפני שקונים',()=>{closeAll();open('new')}])}catch(e){ERR('tools',e)}
 {const _rh=renderHub;renderHub=function(){const r=_rh.apply(this,arguments);const add=()=>{try{const b=$1('#hbody');if(typeof TAB!='undefined'&&TAB=='check'&&b&&!b.querySelector('.in187'))b.insertAdjacentHTML('afterbegin','<button type="button" class="in187" data-ad187in="new"><span>🛍</span><span><b>יועץ הקניות החכם</b><small>עם תמונה: דומים בארון, לוקים, מידה, וכדאי או לא</small></span></button>')}catch(err){ERR('hub',err)}};
  if(r&&typeof r.then=='function')r.then(add);else add();setTimeout(add,400);return r}}
-window.ADV187={open,list:()=>ARC.slice()};
+function cart(){FLT='think';open('arc')}
+window.ADV187={open,cart,list:()=>ARC.slice()};
 })();

@@ -54,7 +54,41 @@ window.zHome=()=>{if(on())tab('home')};
 nav.addEventListener('click',e=>{const b=e.target.closest('[data-zt]');if(!b)return;const k=b.dataset.zt;
  try{if(k=='home'||k=='closet'){document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(_){}});B.style.overflow='';tab(k)}
   else if(k=='studio'){if(window.R360)R360.open();else (window.openStudio||(()=>{}))()}
-  else if(k=='more'){if(window.openAdmin172)openAdmin172()}}catch(err){ERR('tab',err)}});
+  else if(k=='more')openMore()}catch(err){ERR('tab',err)}});
+
+// ---------- v281 (Sara 28/10 "איפה נמצאת עגלת קניות, איפה כל דבר נמצא"): "עוד" = one clear page with everything by name ----------
+const TL=n=>{try{for(const [,L] of (window.TOOLS172||[]))for(const t of L){const nm=typeof t[1]=='function'?t[1]():t[1];if(String(nm).includes(n)&&typeof t[2]=='function')return t[2]}}catch(_){}return null};
+const closeD=()=>document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(_){}});
+const MORE=[
+ ['קניות',[
+  ['🛒','העגלה שלי','מה שאת עוד חושבת לקנות',()=>window.ADV187&&(ADV187.cart?ADV187.cart():ADV187.open('arc'))],
+  ['🔎','לבדוק לפני שקונים','יש לי כבר? מתאים? כדאי?',()=>window.ADV187&&ADV187.open('new')],
+  ['📦','ההזמנות שלי','מה הגיע, מה בדרך, מה להחזיר',()=>window.openOrders123&&openOrders123()],
+  ['💸','החזרות וכסף','מה החזרתי ומה עוד לא חזר',()=>{const f=TL('החזרות וקרדיטים');f&&f()}]]],
+ ['הבגדים שלי',[
+  ['👗','הארון','כל הבגדים, חיפוש וסינון',()=>tab('closet')],
+  ['🧠','הארון החכם','איפה כל בגד, כביסה, מיון',()=>window.SC185&&SC185.open()],
+  ['👯','כפולים','בגדים שיש לי פעמיים',()=>window.openDups89&&openDups89()],
+  ['🗃','הרשימה הכללית','מה שהוצאתי מהארון',()=>window.openGen161&&openGen161()]]],
+ ['לוקים ואווטאר',[
+  ['✨','הלוקים שלי','לוקים ששמרתי',()=>{const f=TL('הלוקים שלי');f&&f()}],
+  ['🧍‍♀️','סטודיו 360','להלביש את האווטאר',()=>window.R360&&R360.open()],
+  ['📅','מה לבשתי','השבוע שלי',()=>window.WR234&&WR234.open()]]],
+ ['עוד',[
+  ['⚙','כל הכלים והמספרים','פאנל הניהול',()=>window.openAdmin172&&openAdmin172()],
+  ['❓','איך משתמשים','הסבר קצר',()=>{const b=document.getElementById('helpb');b&&b.click()}],
+  ['🛠','משהו לא עובד','לספר לי על תקלה',()=>window.openBug77&&openBug77()]]]];
+function openMore(){let d=document.getElementById('z5m');
+ if(!d){d=document.createElement('dialog');d.id='z5m';d.dir='rtl';d.setAttribute('aria-labelledby','z5mt');document.body.appendChild(d);
+  d.addEventListener('click',e=>{if(e.target===d)return d.close();if(e.target.closest('.z5mx'))return d.close();const b=e.target.closest('[data-z5m]');if(!b)return;const [g,i]=b.dataset.z5m.split('.').map(Number),f=MORE[g][1][i][3];
+   closeD();try{f()}catch(err){ERR('more',err)}})}
+ d.innerHTML=`<div class="z5mh"><h2 id="z5mt">כל מה שיש באתר</h2><button type="button" class="z5mx" aria-label="סגירה">✕</button></div>
+  <p class="z5mi"><b>בית</b> מה לובשים היום · <b>הארון</b> כל הבגדים · <b>סטודיו</b> להלביש את האווטאר · <b>עוד</b> כל השאר, כאן</p>`+
+  MORE.map(([h,L],g)=>`<h3>${h}</h3><div class="z5mg">${L.map(([ic,n,sub],i)=>`<button type="button" data-z5m="${g}.${i}"><i aria-hidden="true">${ic}</i><span><b>${n}</b><small>${sub}</small></span></button>`).join('')}</div>`).join('');
+ // the cart shows how many things are in it
+ try{const n=window.ADV187?ADV187.list().filter(r=>r.st=='think').length:0;if(n){const b=d.querySelector('[data-z5m="0.0"] b');if(b)b.textContent='העגלה שלי ('+n+')'}}catch(_){}
+ if(!d.open)d.showModal()}
+window.openMore281=openMore;
 
 // ---------- "מה מחכה לך" on the home ----------
 const QUICK=new Set(['soon','fix','nofit']);   // these show the closet's list
@@ -71,7 +105,7 @@ function paintWait(){try{
   (show.length?`<ul>${show.map(([x,i])=>`<li><button type="button" data-z5w="${i}"${x[3]?' class="hot"':''}><i>${svg(P[x[2]]?x[2]:'alerts')}</i><span>${esc(x[1])}</span><b>${r[x[2]]}</b></button></li>`).join('')}</ul>`
    :'<p class="z5ok">הכול מסודר. אין משהו שמחכה לך ✓</p>');
  if(w.innerHTML!=h)w.innerHTML=h;
- const bd=nav.querySelector('.z5bd'),hot=L.filter(([x])=>x[3]).reduce((a,[x])=>a+r[x[2]],0);bd.hidden=!hot;bd.textContent=hot>99?'99+':hot;
+ const bd=nav.querySelector('.z5bd'),hot=r.alerts||0;   /* v281: only the important alerts (the 99+ of returns looked like an error) */bd.hidden=!hot;bd.textContent=hot>99?'99+':hot;
 }catch(e){ERR('wait',e)}}
 setInterval(()=>{if(!document.hidden&&TAB=='home'&&!document.querySelector('dialog[open]'))paintWait()},15000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&TAB=='home')paintWait()});
@@ -84,6 +118,8 @@ function avCtl(n=0){const c=document.querySelector('#h180 .z-avc');if(!c){if(n<4
  if(c.querySelector('.z5sp'))return;const b=document.createElement('button');b.type='button';b.className='z5sp';b.setAttribute('aria-label','מהירות הסיבוב');b.setAttribute('aria-expanded','false');b.innerHTML=svg('speed');
  b.onclick=()=>{const o=c.classList.toggle('z5spo');b.setAttribute('aria-expanded',o)};c.insertBefore(b,c.querySelector('.z-spd'))}
 avCtl();
+// v281: "הלוקים שלי" goes up next to the card's title (at the bottom of the card it covered the second button when the look was pinned)
+(function mvLk(n=0){const l=document.querySelector('#h180 .z-cta .z-2'),h=document.querySelector('#h180 .z-lkh');if(!l||!h){if(n<40)setTimeout(()=>mvLk(n+1),300);return}if(on()){l.textContent='הלוקים שלי ›';h.appendChild(l)}})();
 // v279: the small item pictures (דומים, recent, urgent, strips in the tools) are buttons with only a picture – give each its item's name for the screen reader
 {let q=0;const lab=()=>{q=0;try{document.querySelectorAll('button.mini[data-open]:not([aria-label])').forEach(b=>{const id=b.dataset.open,n=(typeof IT=='object'&&IT&&IT[id]&&IT[id].nm)||(typeof D=='object'&&D[id]&&D[id].short)||'';if(n)b.setAttribute('aria-label',n)})}catch(e){ERR('lab',e)}};
  new MutationObserver(()=>{if(!q)q=setTimeout(lab,400)}).observe(B,{childList:true,subtree:true});lab()}
