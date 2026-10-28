@@ -388,7 +388,7 @@ document.addEventListener('click',async e=>{const d=e.target.closest&&e.target.c
 {const tidy=root=>{try{root.querySelectorAll&&root.querySelectorAll('.mini>span').forEach(s=>{if(/^\s*₪\s?[\d.,]+\s*$/.test(s.textContent)||/^\s*[\d.,]+\s?₪\s*$/.test(s.textContent))s.classList.add('pr72')})}catch(_){}};
  new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes)if(n.nodeType==1)tidy(n)}).observe(document.body,{childList:true,subtree:true});tidy(document.body)}
 // 3. hub: the chosen tab is always visible in the tab bar
-{const _rh=renderHub;renderHub=function(...a){const r=_rh.apply(this,a);try{const b=document.querySelector('#htabs [aria-pressed="true"]');if(b)b.scrollIntoView({inline:'center',block:'nearest'})}catch(_){}return r}}
+{const _rh=renderHub;renderHub=function(...a){const r=_rh.apply(this,a);try{const b=document.querySelector('#htabs [aria-pressed="true"]');if(b){const p=b.parentElement,ar=b.getBoundingClientRect(),sr=p.getBoundingClientRect();p.scrollLeft+=(ar.left+ar.width/2)-(sr.left+sr.width/2)}}catch(_){}return r}}   // v323: only the tab row moves sideways, never the page
 // 4. drawer: pieces that are ready for the avatar come first
 {const _fd=fillDrawer;fillDrawer=function(...a){const r=_fd.apply(this,a);const go=()=>{try{const g=document.querySelector('#dgrid');if(!g)return;const tiles=[...g.children].filter(t=>t.classList.contains('di'));const late=tiles.filter(t=>t.classList.contains('noav'));if(late.length&&late.length<tiles.length)late.forEach(t=>g.appendChild(t))}catch(_){}};if(r&&r.then)r.then(go);else setTimeout(go,0);return r}}
 

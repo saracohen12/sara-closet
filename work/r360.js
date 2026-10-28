@@ -883,6 +883,9 @@ function open(){try{window.STYORD&&STYORD.freeze();if(!(dlg&&dlg.open)&&STYORD.r
  if(!dlg.open){dlg.showModal();document.documentElement.classList.add('r3on')}paintCats();paintTabs();paintRoom();paintMiss();big.show(0);
  if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!document.documentElement.dataset.still&&!sessionStorage.getItem('r3spun')){sessionStorage.setItem('r3spun',1);setTimeout(()=>big.play(true),400)}}
 function close(){if(big)big.stop();if(dlg&&dlg.open)dlg.close();document.documentElement.classList.remove('r3on')}
+// v323: the page stayed locked (no scrolling) when the studio was closed any other way – by a tab, 📌, Esc or another window
+setInterval(()=>{const d=document.getElementById('r360');if(document.documentElement.classList.contains('r3on')&&!(d&&d.open)){document.documentElement.classList.remove('r3on');try{big&&big.stop()}catch(_){}}},700);
+document.addEventListener('close',e=>{if(e.target&&e.target.id=='r360')document.documentElement.classList.remove('r3on')},true);
 // every "בניית לוק" goes here: openStudio() = the studio as it was left; openStudio(look) = a saved look; openStudio(null,{slot:id,...}) = try one item / a suggested look
 // v204 (Sara 11:46 "מספיק, יהיה לי כיסוי ראש ופאה, אני לא צריכה שלוש דברים"): only the cover and the wig; a cover item with its own picture is worn from the closet
 const HEAD2=()=>HEADS.filter(h=>h.k=='c'||h.k=='w');

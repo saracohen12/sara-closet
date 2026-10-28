@@ -25,7 +25,7 @@ function paint(){if(!dlg||!row)return;try{ON=lit();
    const w=n.replace(/[&<>"]/g,'').replace(/^✓?\s*כבר על /,'על ').split(' '),lb=w.length<2?w[0]:w.length==2?w.join('<br>'):w.slice(0,2).join(' ')+'<br>'+w.slice(2).join(' ');
    return `<button type="button" data-z8="${k}" aria-label="${w.join(' ')}" aria-pressed="${b.getAttribute('aria-pressed')=='true'}"${ON.has(k)?' data-on="1"':''}>${lb}</button>`}).join('')
   +XB.map(([k,t,a])=>`<button type="button" class="z8x" data-z8x="${k}" aria-label="${a}"${ON.has('@'+k)?' data-on="1"':''}>${t}</button>`).join('');
- if(html!=KEY){KEY=html;row.innerHTML=html;const on=row.querySelector('[aria-pressed=true]');if(on&&on.scrollIntoView)on.scrollIntoView({block:'nearest',inline:'nearest'})}}catch(e){ERR('paint',e)}}
+ if(html!=KEY){KEY=html;row.innerHTML=html;const on=row.querySelector('[aria-pressed=true]');if(on){const b=on;{const p=b.parentElement,ar=b.getBoundingClientRect(),sr=p.getBoundingClientRect();p.scrollLeft+=(ar.left+ar.width/2)-(sr.left+sr.width/2)}}}}catch(e){ERR('paint',e)}}
 function go(k){try{
  const tab=dlg.querySelector('.r3tabs [data-t="closet"]');if(tab&&tab.getAttribute('aria-selected')!='true')tab.click();
  const b=dlg.querySelector(`.r3cats [data-cat="${CSS.escape(k)}"]`);if(b)b.click();
