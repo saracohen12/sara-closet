@@ -451,24 +451,26 @@ function unBack(c,b){if(!b)return c;const g=c.getContext('2d'),im=g.getImageData
 // v310 (her 16:59 "הצוואר לא גזור מתחת לשמלה"): GPT draws her bare chest inside a V or open collar, a little warmer than the doll's beige bodysuit there,
 // so it stayed in the dress and hid the shirt worn under it. From the neck down to the chest (above her hand on the hip), skin-toned pixels (the doll's colour within 4 px, or her skin
 // in the collar's shadow) that touch the gap over her body are her, not the garment: out, growing in from the gap. A garment near her beige is left alone.
-function neckSkin(c,b){if(!b)return c;const g=c.getContext('2d'),im=g.getImageData(0,0,W,H),p=im.data;
+// v322: a deep V is more than 16 px from the first gap – again from the new gap, up to 3 times
+function neckSkin(c,b){for(let k=0;k<3;k++){c.nk=0;neckSkin1(c,b);if(!(c.nk>20))break}return c}
+function neckSkin1(c,b){if(!b)return c;const g=c.getContext('2d'),im=g.getImageData(0,0,W,H),p=im.data;
  let K=[0,0,0],kn=0;for(let r=0;r<12;r++)for(const x of [0,1,2,3,4,W-5,W-4,W-3,W-2,W-1]){const q=(r*W+x)*3;K[0]+=b[q];K[1]+=b[q+1];K[2]+=b[q+2];kn++}K=K.map(v=>v/kn);
  const dd=(a,o,k)=>(a[o]-k[0])**2+(a[o+1]-k[1])**2+(a[o+2]-k[2])**2,bg=j=>dd(b,j*3,K)<26*26,r1=Math.floor(H*.32);   // neck to chest only: her hand on the hip (from .33H) stays as it was
  const on=new Uint8Array(N),so=new Uint8Array(N);for(let i=0;i<N;i++){const a=p[i*4+3];on[i]=a>20?1:0;so[i]=a>=250?1:0}
  const cr=erode(so,3);let F=[0,0,0],fn=0,DM=[0,0,0],dn=0;for(let i=0;i<N;i++)if(cr[i]){F[0]+=p[i*4];F[1]+=p[i*4+1];F[2]+=p[i*4+2];fn++}
  for(let r=Math.floor(H*.25);r<Math.floor(H*.6);r++)for(let x=0;x<W;x++){const j=r*W+x;if(bg(j))continue;const k=j*3;DM[0]+=b[k];DM[1]+=b[k+1];DM[2]+=b[k+2];dn++}
- if(fn<500||!dn)return c;F=F.map(x=>x/fn);DM=DM.map(x=>x/dn);if((F[0]-DM[0])**2+(F[1]-DM[1])**2+(F[2]-DM[2])**2<100*100)return c;
+ if(fn<500||!dn)return cF=F.map(x=>x/fn);DM=DM.map(x=>x/dn);if((F[0]-DM[0])**2+(F[1]-DM[1])**2+(F[2]-DM[2])**2<100*100)return c
  const LF=.299*F[0]+.587*F[1]+.114*F[2],ok=new Uint8Array(N),dz=erode(on,16),bd=dollBody(b);
  const skin=(R,G,B)=>{const hu=(G-B)/(R-B+1e-6),sa=(R-B)/(R+1);return R>G&&hu>.12&&hu<.7&&sa>.14&&sa<.62};   // her skin's own tone, lit or in the collar's shadow
- {let t=0;for(let i=0;i<N;i++)if(cr[i]){const q=i*4;if(skin(p[q],p[q+1],p[q+2])&&.299*p[q]+.587*p[q+1]+.114*p[q+2]>LF+35)t++}if(t>.02*fn)return c}   // a print or velvet with light warm tones of its own: can't tell it from her skin
+ {let t=0,u=0,mx=0,mn=0;const rp=r1*W;for(let i=0;i<rp;i++)if(bd[i]){mx+=i%W;mn++}mx=mn?mx/mn:W/2;for(let i=0;i<rp;i++)if(cr[i]&&Math.abs(i%W-mx)>36){u++;const q=i*4;if(skin(p[q],p[q+1],p[q+2])&&.299*p[q]+.587*p[q+1]+.114*p[q+2]>LF+35)t++}if(t>.02*u)return c}   // (outside the neckline itself, where her skin is what we look for)   // v322: only the upper body counts – a light print on the hem (her black dress's greek key) left her chest skin in the V and the shirt under it showed as a black collar   // a print or velvet with light warm tones of its own: can't tell it from her skin
  for(let r=0;r<r1;r++){let a=-1,z=-1;for(let x=0;x<W;x++)if(bd[r*W+x]){if(a<0)a=x;z=x}if(a<0)continue;const mid=(a+z)/2;   // only around the middle of her body: the neckline, never the shoulders
- for(let x=Math.max(0,Math.round(mid-30));x<=Math.min(W-1,Math.round(mid+30));x++){const i=r*W+x,q=i*4;if(!on[i]||dz[i]||bg(i))continue;const R=p[q],G=p[q+1],B=p[q+2];
+ for(let x=Math.max(0,Math.round(mid-30));x<=Math.min(W-1,Math.round(mid+30));x++){const i=r*W+x,q=i*4;if(!on[i]||bg(i)||(dz[i]&&!skin(p[q],p[q+1],p[q+2])))continue;const R=p[q],G=p[q+1],B=p[q+2];
   if(!(R>=G&&G>=B-4&&R-B>12))continue;   // skin is warm
   const gf=(R-F[0])**2+(G-F[1])**2+(B-F[2])**2;if(gf<70*70)continue;const sp=R+G+B+1,lp=.299*R+.587*G+.114*B;let be=1e9,bc=1e9,bl=0;
   for(let y=Math.max(0,r-4);y<=Math.min(H-1,r+4);y++)for(let z=Math.max(0,x-4);z<=Math.min(W-1,x+4);z++){const j=y*W+z;if(bg(j))continue;const k=j*3,e=(R-b[k])**2+(G-b[k+1])**2+(B-b[k+2])**2;if(e<be)be=e;
    const sb=b[k]+b[k+1]+b[k+2]+1,ch=(R/sp-b[k]/sb)**2+(G/sp-b[k+1]/sb)**2+(B/sp-b[k+2]/sb)**2;if(ch<bc){bc=ch;bl=.299*b[k]+.587*b[k+1]+.114*b[k+2]}}
   const sk=skin(R,G,B);
-  if((be<34*34&&gf>4*be)||(sk&&lp>LF+35&&lp>60&&lp<1.1*bl))ok[i]=1}}
+  if((be<34*34&&gf>4*be)||(sk&&lp>LF+35&&lp>60&&lp<1.1*bl)||(sk&&LF<90&&lp>LF+60))ok[i]=1/* v322: on a dark garment her lit skin may be brighter than the doll's beige */}}
  const tr=j=>p[j*4+3]<=20&&!bg(j),st=[];let n=0;for(let i=0;i<N;i++)if(ok[i]){const r=(i/W)|0,x=i%W;if((x>0&&tr(i-1))||(x<W-1&&tr(i+1))||(r>0&&tr(i-W))||(r<H-1&&tr(i+W)))st.push(i)}
  while(st.length){const i=st.pop();if(!ok[i])continue;ok[i]=0;p[i*4+3]=0;n++;const r=(i/W)|0,x=i%W;if(x>0&&ok[i-1])st.push(i-1);if(x<W-1&&ok[i+1])st.push(i+1);if(r>0&&ok[i-W])st.push(i-W);if(r<H-1&&ok[i+W])st.push(i+W)}
  // the collar's rim that was a mix of the garment and her skin takes the garment's colour (2 px around what left)
@@ -567,5 +569,5 @@ window.cut8dbg=async(src,v)=>{const img=await toImg(src),S=sheetData(img),b=awai
  const im=a=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),x=g.createImageData(W,H);for(let i=0;i<N;i++){const on=a.length==N?a[i]:0;x.data[i*4]=on?255:0;x.data[i*4+1]=on?255:0;x.data[i*4+2]=on?255:0;x.data[i*4+3]=255}g.putImageData(x,0,0);return c.toDataURL()};
  const rgb=a=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d'),x=g.createImageData(W,H);for(let i=0;i<N;i++){x.data[i*4]=a[i*3];x.data[i*4+1]=a[i*3+1];x.data[i*4+2]=a[i*3+2];x.data[i*4+3]=255}g.putImageData(x,0,0);return c.toDataURL()};
  return {d:rgb(d),b:rgb(b),raw:im(CUT8D.raw),morph:im(CUT8D.morph),fin:im(m)}};
-window.cut8={run,MODE,W,H,CV:2,CVT:3,TOPK,cvOf:k=>TOPK.includes(k)?8:k=='dress'?7:k=='skirt'||k=='pants'?6:k=='belt'?3:k=='scarf'?5:OPENK.includes(k)?8:FRK.includes(k)?4:2,CVW:9,CVH:8,CVX:5,flags,says};   // CVT/cvOf (v271): tops, base shirts and sweaters cut before the no-tear slide are cut again by av188.js   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
+window.cut8={run,MODE,W,H,CV:2,CVT:3,TOPK,cvOf:k=>TOPK.includes(k)?8:k=='dress'?8:k=='skirt'||k=='pants'?6:k=='belt'?3:k=='scarf'?5:OPENK.includes(k)?8:FRK.includes(k)?4:2,CVW:9,CVH:8,CVX:5,flags,says};   // CVT/cvOf (v271): tops, base shirts and sweaters cut before the no-tear slide are cut again by av188.js   // CVW: hairstyles and ties cut before v214 are cut again by sty199.js   // CV: layers cut before v192 (no turn) have no cv and are cut again by themselves (av188.js)
 })();
