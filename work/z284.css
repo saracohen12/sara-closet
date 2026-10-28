@@ -1,0 +1,23 @@
+/* v284 – "✏ לסדר את הלוק" under the studio avatar */
+#r360 #z7{margin:0 0 12px;padding:14px;border-radius:18px;background:var(--z-surface,#fff);border:1px solid var(--z-line,#e6dcd2)}
+#r360 #z7 .z7h{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+#r360 #z7 h3{margin:0;font-size:1.05rem;font-weight:800;color:var(--z-ink,#2b211b)}
+#r360 #z7 .z7tell{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--z-line,#e6dcd2);background:transparent;font:inherit;font-size:.85rem;color:var(--z-ink,#2b211b);cursor:pointer}
+#r360 #z7 .z7p{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+#r360 #z7 .z7t{display:flex;align-items:center;gap:8px;min-height:52px;padding:8px 12px;border-radius:14px;border:1.5px solid var(--z-line,#e6dcd2);background:var(--z-tile,#faf6f2);font:inherit;font-size:.92rem;color:var(--z-ink,#2b211b);text-align:start;cursor:pointer}
+#r360 #z7 .z7t i{font-style:normal;font-size:1.3rem;line-height:1}
+#r360 #z7 .z7t span{flex:1 1 auto;line-height:1.25}
+#r360 #z7 .z7t b{flex:0 0 auto;font-size:.78rem;padding:3px 9px;border-radius:999px;background:var(--z-line,#e6dcd2);color:var(--z-ink,#2b211b)}
+#r360 #z7 .z7t[aria-pressed=true]{border-color:var(--z-acc,#b4532a);background:color-mix(in srgb,var(--z-acc,#b4532a) 10%,var(--z-surface,#fff))}
+#r360 #z7 .z7t[aria-pressed=true] b{background:var(--z-acc,#b4532a);color:#fff}
+#r360 #z7 .z7n,#r360 #z7 .z7s{margin:4px 2px 8px;font-size:.85rem;color:color-mix(in srgb,var(--z-ink,#2b211b) 65%,transparent)}
+#r360 #z7 .z7s{margin-top:14px}
+#r360 #z7 .z7i{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+#r360 #z7 .z7i li{display:flex;align-items:center;gap:10px;padding:6px;border-radius:12px;background:var(--z-tile,#faf6f2)}
+#r360 #z7 .z7i img{width:44px;height:44px;flex:0 0 44px;object-fit:cover;border-radius:10px;background:#fff}
+#r360 #z7 .z7i span{flex:1 1 auto;min-width:0;font-size:.88rem;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+#r360 #z7 .z7i div{display:flex;gap:6px;flex:0 0 auto}
+#r360 #z7 .z7i button{min-height:40px;padding:0 10px;border-radius:999px;border:1px solid var(--z-line,#e6dcd2);background:var(--z-surface,#fff);font:inherit;font-size:.82rem;color:var(--z-ink,#2b211b);cursor:pointer;white-space:nowrap}
+#r360 #z7 .z7i button[data-fix237]{border-color:var(--z-acc,#b4532a);color:var(--z-acc,#b4532a)}
+#r360 #z7 button:focus-visible{outline:3px solid var(--z-acc,#b4532a);outline-offset:2px}
+/* the same three checkboxes stay in the folded list too; the worn list there is now a copy, so it is not needed open */
