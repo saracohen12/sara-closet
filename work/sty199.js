@@ -142,7 +142,7 @@ function hiddenHTML(set){const L=hiddenList(set);if(!L.length)return '';
 const addCard=set=>{const one=SET(set)[3];return `<button type="button" class="syc sycadd" data-syadd aria-expanded="${ADD}"><span class="sycim"><b aria-hidden="true">＋</b></span><b class="sycn">להוסיף ${one}</b><small class="sycs">${set=='mk'?'לפי מה שתכתבי':'לפי תמונה שלך'}</small></button>`};
 function how(set){const sheet='<button type="button" data-sydl="sheet">⬇ הבובה ב-8 זוויות</button>';
  if(set=='tie')return `<div class="syhow"><p><b>בכל קשירה:</b> 📋 מעתיקים, ב-GPT בשיחה חדשה מצרפים את הבובה ומדביקים, ואת מה שחזר 📤 מעלים באותה משבצת. מיד רואים אותה עלייך.</p><p><small>☆ על קשירה שאת אוהבת – היא עוברת להתחלה (גם בסטודיו), ו-⬆ מזיז אותה עוד קדימה. אחרי האהובות באות הקשירות שבחרת לאחרונה. 🗑 מסיר דגם מהרשימה, ו"↩ מה שהסרתי" למטה מחזיר.</small></p><span class="mkb">${sheet}</span></div>`;
- if(set=='hair')return `<div class="syhow"><p><b>בכל תסרוקת:</b> ⬇ ZIP – קובץ אחד עם הפאה, הפנים שלך מקרוב, הבובה והפרומפט. ב-GPT בשיחה חדשה מצרפים את ה-ZIP ומדביקים את הפרומפט (📋). GPT מחזיר שתי תמונות: תקריב ב-8 זוויות והבובה ב-8 זוויות. 📤 מעלים את שתיהן יחד באותה משבצת, והתקריב מסתובב בכרטיס.</p><p><small>🗑 על דגם שלא אהבת – מסיר אותו מהרשימה. אפשר להחזיר ב"↩ מה שהסרתי" למטה.</small></p><span class="mkb">${sheet}<button type="button" data-sydl="wig">⬇ הפאה שלי</button></span></div>`;
+ if(set=='hair')return `<div class="syhow"><p><b>בכל תסרוקת:</b> ⬇ ZIP – קובץ אחד עם הפאה, הפנים שלך מקרוב, הבובה והפרומפט. ב-GPT בשיחה חדשה מצרפים את ה-ZIP ומדביקים את הפרומפט (📋). GPT מחזיר שתי תמונות: תקריב ב-8 זוויות והבובה ב-8 זוויות. 📤 מעלים את שתיהן יחד באותה משבצת, והתקריב מסתובב בכרטיס.</p><p><small>🗑 על דגם שלא אהבת – מסיר אותו מהרשימה. אפשר להחזיר ב"↩ מה שהסרתי" למטה.</small></p><span class="mkb">${sheet}<button type="button" data-sydl="wig">⬇ הפאה שלי</button><button type="button" data-sydl="face">⬇ הפנים מקרוב</button></span><p><small>GPT לא פותח את ה-ZIP? שומרים את שלוש התמונות האלה בנפרד ומצרפים אותן במקום.</small></p></div>`;
  // v215 (Sara 16:20 "אני לא הבנתי מה אני אמורה לעלות פה ... תעשה לי סדר"): three steps, what she sees after
  return `<div class="syhow"><p><b>איך עושים איפור</b> (פעם אחת לכל איפור):</p>
   <ol class="systeps"><li><b>⬇ שומרים</b> את הבובה ב-8 זוויות ואת הפאה שלך (פעם אחת, לכל האיפורים).<span class="mkb">${sheet}<button type="button" data-sydl="wig">⬇ הפאה שלי</button></span></li>
@@ -240,7 +240,7 @@ async function copy(b,text){let ok=false;try{await navigator.clipboard.writeText
  if(!ok){const t=b.closest('li,.sy1')&&b.closest('li,.sy1').querySelector('textarea');try{if(t){const d=t.closest('details');if(d)d.open=true;t.focus();t.select();ok=document.execCommand('copy')}}catch(_){}}
  if(!ok){try{const t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');t.style.cssText='position:fixed;opacity:0';(VW&&VW.open?VW:(DL||document.body)).appendChild(t);t.select();ok=document.execCommand('copy');t.remove()}catch(_){}}
  const o=b.textContent;b.textContent=ok?'✓ הועתק – עכשיו ל-GPT':'לא הצלחתי, להעתיק מ"לראות את הפרומפט"';setTimeout(()=>{if(b.isConnected)b.textContent=o},2600)}
-async function dl(what){try{const u=what=='wig'?'a8/wig_ref.jpg':'a8/sheet.jpg';const bl=await (await fetch(u+V)).blob();await R().saveFile(what=='wig'?'my-wig.jpg':'avatar-8-angles.jpg',bl)}catch(e){ERR('dl',e);toast_('לא הצלחתי לשמור')}}
+async function dl(what){try{const u=what=='wig'?'a8/wig_ref.jpg'+V:what=='face'?'/_blob/f020f71d608d2da7304cdb0161c87206':'a8/sheet.jpg'+V;const bl=await (await fetch(u)).blob();await R().saveFile(what=='wig'?'wig-8.jpg':what=='face'?'face-8.jpg':'doll-8.jpg',bl)}catch(e){ERR('dl',e);toast_('לא הצלחתי לשמור')}}
 
 // ---------- upload → cut → keep ----------
 let FI=null,FSET='',FRE='',FPRE=null,FG='';
@@ -362,10 +362,10 @@ function selT(set,k){const L=SEL[set]=SEL[set]||[],i=L.indexOf(k);if(i>=0)L.spli
 function selBar(set){const L=selItems(set),W=SET(set)[2];
  if(!L.length)return `<div class="sy316 none"><p>☑ <b>הרבה בבת אחת:</b> לוחצים "＋ לסמן" על עד ${MAXS} ${W}, ומקבלים <b>ZIP אחד ופרומפט אחד</b> לכולן. GPT מחזיר לכל אחת תקריב ב-8 זוויות ואת הבובה ב-8 זוויות, ואת כל התמונות מעלים כאן בבת אחת.</p></div>`;
  return `<div class="sy316" role="region" aria-label="מה שסימנתי"><p><b>סימנת ${L.length} מתוך ${MAXS}:</b> ${L.map((o,i)=>`<span class="sy316n">${i+1}. ${es(o.it.n)}</span>`).join(' ')}</p>
-  <ol class="sy316s"><li><button type="button" class="mkp" data-sy316="zip">⬇ ZIP אחד לכולן</button></li><li><button type="button" data-sy316="copy">📋 להעתיק את הפרומפט</button> <small>ב-GPT, בשיחה חדשה: מצרפים את ה-ZIP ומדביקים</small></li>
+  <ol class="sy316s"><li><button type="button" class="mkp" data-sy316="zip">⬇ ZIP אחד לכולן</button> <button type="button" data-sy316="sep">⬇ או ${set=='hair'?3:2} תמונות בנפרד</button> <small>אם GPT לא פותח את ה-ZIP</small></li><li><button type="button" data-sy316="copy">📋 להעתיק את הפרומפט</button> <small>ב-GPT, בשיחה חדשה: מצרפים את ה-ZIP ומדביקים</small></li>
   <li><button type="button" class="mkp" data-sy316="up"${busy()?' disabled':''}>📤 להעלות את כל מה שחזר</button> <small>${2*L.length} תמונות (או ZIP), בבת אחת</small></li></ol>
   <button type="button" class="sy316x" data-sy316="clear">✕ לנקות את הסימונים</button></div>`}
-const selFab=set=>{const n=(SEL[set]||[]).length;return n?`<div class="sy316f" role="region" aria-label="שליחה יחד"><b>✓ סימנת ${n} ${SET(set)[2]} (עד ${MAXS})</b><button type="button" data-sy316="zip">⬇ ZIP</button><button type="button" data-sy316="copy">📋 פרומפט</button><button type="button" data-sy316="up"${busy()?' disabled':''}>📤 להעלות</button></div>`:''};
+const selFab=set=>{const n=(SEL[set]||[]).length;return n?`<div class="sy316f" role="region" aria-label="שליחה יחד"><b>✓ סימנת ${n} ${SET(set)[2]} (עד ${MAXS})</b><button type="button" data-sy316="zip">⬇ ZIP</button><button type="button" data-sy316="sep">⬇ בנפרד</button><button type="button" data-sy316="copy">📋 פרומפט</button><button type="button" data-sy316="up"${busy()?' disabled':''}>📤 להעלות</button></div>`:''};
 const bPrompt=(set,its)=>{const p=P(),t=p&&p.batchS?p.batchS(set,its):'';return t&&window.zipAsk?zipAsk(t):t};
 async function zipB(set,its,b){const o=b.textContent;b.disabled=true;b.textContent='מכינה…';
  try{const f=[],get=async u=>(await fetch(u)).blob();
@@ -374,11 +374,16 @@ async function zipB(set,its,b){const o=b.textContent;b.disabled=true;b.textConte
   f.push({name:'prompt.txt',blob:new Blob(['﻿'+bPrompt(set,its)],{type:'text/plain;charset=utf-8'})});
   await R().saveFile(`${{hair:'hairstyles',mk:'makeup',tie:'ties'}[set]}-${its.length}.zip`,await window.zip246(f));log('sty316_zip',{set,n:its.length});
   b.textContent='✓ ירד. עכשיו ל-GPT'}catch(e){ERR('zip316',e);b.textContent='לא הצלחתי'}setTimeout(()=>{if(b.isConnected){b.textContent=o;b.disabled=false}},2600)}
+// v319 (Sara 20:12 – GPT: "לא הצלחתי לפתוח את ה-ZIP… צרפי את wig-8, face-8 ו-doll-8 כשלוש תמונות נפרדות"): the same pictures one by one, no ZIP
+async function sepB(set,b){const o=b.textContent;b.disabled=true;b.textContent='מכינה…';
+ try{const get=async u=>(await fetch(u)).blob(),L=[];if(set=='hair')L.push(['wig-8.jpg','a8/wig_ref.jpg'+V]);L.push(['face-8.jpg','/_blob/f020f71d608d2da7304cdb0161c87206'],['doll-8.jpg','a8/sheet.jpg'+V]);
+  for(const [n,u] of L)await R().saveFile(n,await get(u));log('sty319_sep',{set});b.textContent='✓ נשמרו. עכשיו ל-GPT'}catch(e){ERR('sep319',e);b.textContent='לא הצלחתי'}setTimeout(()=>{if(b.isConnected){b.textContent=o;b.disabled=false}},2600)}
 let FB=null;
 function selDo(w,b){const set=TAB,L=selItems(set);
  if(w=='clear'){const old=SEL[set].slice();SEL[set]=[];selSave();paint();toast_('הסימונים נוקו',()=>{SEL[set]=old;selSave();paint()});return}
  if(!L.length)return;
  if(w=='zip')return zipB(set,L.map(o=>o.it),b);
+ if(w=='sep')return sepB(set,b);
  if(w=='copy')return copy(b,bPrompt(set,L.map(o=>o.it)));
  if(w=='up'){if(busy())return toast_('רגע, עוד גוזרת');if(!FB){FB=document.createElement('input');FB.type='file';FB.multiple=true;FB.accept='image/*,.zip,application/zip,application/x-zip-compressed';FB.hidden=true;document.body.appendChild(FB);
    FB.addEventListener('change',()=>{const fs=[...FB.files];FB.value='';if(fs.length)review(FB._set,fs).catch(e=>ERR('rev316',e))})}FB._set=set;FB.click()}}
