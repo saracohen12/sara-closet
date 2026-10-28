@@ -370,13 +370,16 @@ function packQ(id,k){const n=npOf(id),A=asked(id),g=gOf(id),W=PLURAL[k]||'פרי
   ${n>1?`<small>${A?`📁 יש ${n} תיקיות נפרדות בקטגוריה – כל אחת כמו מוצר שקנית לבד. שם וצבע לכל אחת:`:'כל אחת תהיה תיקייה נפרדת. שם וצבע לכל אחת:'}</small><div class="g250pn g256pn">${namesOf(id).map((x,i)=>`<span><i>${i+1}</i><input data-g250pn="${i}" value="${es(x)}" aria-label="שם ${i+1}"><input data-g256pc="${i}" value="${es(colsOf(id)[i]||'')}" placeholder="צבע" aria-label="צבע ${i+1}">${k=='belt'?`<button type="button" class="g250c g257bg${bbOf(id,i)?' on':''}" data-g290pb="${i}" aria-pressed="${bbOf(id,i)}" title="בגד גוף שחור מתחת ל${es(x)}">${bbOf(id,i)?'⬛ על בגד גוף שחור':'⬜ על השמלה הבהירה'}</button>`:`<button type="button" class="g250c g257bg${pbOf(id,i)?' on':''}" data-g257bg="${i}" aria-pressed="${pbOf(id,i)}" title="הרקע ש-GPT יעשה בגיליון של ${es(x)}">${pbOf(id,i)?'⬛ רקע שחור':'⬜ רקע בהיר'}</button>`}</span>`).join('')}</div><small>${k=='belt'?'⬛ זהב, כסף, שקוף, אבנים או שרשרת – GPT מלביש בגד גוף שחור ורק עליו את החגורה · ⬜ חגורה כהה – על השמלה הרגילה. לחיצה מחליפה.':'⬛ רקע שחור רק לבגד לבן, שמנת או שקוף · ⬜ כל צבע אחר – הרקע הרגיל. לחיצה מחליפה.'}</small>`:''}</div>`}
 // ---------- the window ----------
 let DL=null,ID='';
+// v317 (Sara 28/10 19:51 "נכנסתי לשאלות, כשאני עושה X הוא מחזיר אותי למוצר… שיחזיר אותי תמיד שלב אחורה"): every window opened from another one inside this
+// box remembers where it came from – ✕ and Esc go one step back (questions → the list of products, a sending → the list of sendings), and close only at the first step.
+let STK=[];const back=()=>{const f=STK.pop();if(f){try{f()}catch(e){ERR('back',e);DL.close()}}else DL.close()};
 function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';DL.dir='rtl';DL.setAttribute('aria-labelledby','g250t');document.body.appendChild(DL);
- DL.addEventListener('cancel',e=>{e.preventDefault();DL.close()});
+ DL.addEventListener('cancel',e=>{e.preventDefault();back()});DL.addEventListener('close',()=>{STK=[]});
  DL.addEventListener('change',e=>{const s=e.target.closest('[data-g250m]');if(s&&UP){UP.map[+s.dataset.g250m]=+s.value;delete UP.flag[+s.dataset.g250m];paintUp();return}
   const t=e.target.closest('[data-g250pn]');if(t){const L=namesOf(ID);L[+t.dataset.g250pn]=t.value.trim()||L[+t.dataset.g250pn];save({pn:L},true);return}
   const c=e.target.closest('[data-g256pc]');if(c){const n=npOf(ID),L=Array.from({length:n},(_,i)=>colsOf(ID)[i]||'');L[+c.dataset.g256pc]=c.value.trim();save({pc:L,pn:namesOf(ID)},true)}});
  DL.addEventListener('click',async e=>{if(e.target===DL)return DL.close();const b=e.target.closest('button');if(!b)return;const q=b.dataset;
-  if(b.classList.contains('mkx'))return DL.close();
+  if(b.classList.contains('mkx'))return back();
   if(q.g250k)return save({kd:q.g250k});
   if(q.g250b!=null)return save({blt:q.g250b});
   if(q.g250w!=null)return save({wbg:+q.g250w});
@@ -394,19 +397,19 @@ function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';
   if(q.g250up!=null)return pick(ID);
   if(q.g252!=null)return bOpen(ID);
   if(q.g252t){if(b.disabled||!hasPh(q.g252t)){toast_('לזה אין תמונה – קודם מעלים תמונה בחלון של הפריט');return}B.np=null;const k=q.g252t,i=B.sel.indexOf(k);if(i>=0)B.sel.splice(i,1);else if(B.sel.length<MAXB){B.sel.push(k);if(b.classList.contains('done'))toast_('שימי לב: לזה כבר יש 360');}else toast_(`עד ${MAXB} מוצרים בפעם אחת`);const y=d0(DL);paintB();d0(DL,y);return}
-  if(q.g252next!=null){B.step='list';return paintB()}
+  if(q.g252next!=null){STK.push(()=>{B.step='pick';paintB()});B.step='list';return paintB()}
   if(q.g252x!=null){const was=B&&B.sel&&B.sel.length&&B.step=='pick'?B:null;DL.close();if(was){B=null;toast_(`הבחירה של ${was.sel.length} נסגרה`,()=>{B=was;paintB()})}return}
-  if(q.g312o!=null){const x=HL[+q.g312o];if(!x)return;B={cat:x.cat,sel:x.ids.filter(k=>D[k]),step:'list',np:x.np||null};saveOrd(x.ids);return paintB()}
-  if(q.g312back!=null)return paintB();
-  if(q.g312!=null)return openSends();
-  if(q.g252back!=null){B.step='pick';return paintB()}
-  if(q.g252q){B.from=1;return open(q.g252q)}
+  if(q.g312o!=null){const x=HL[+q.g312o];if(!x)return;STK.push(()=>openSends());B={cat:x.cat,sel:x.ids.filter(k=>D[k]),step:'list',np:x.np||null};saveOrd(x.ids);return paintB()}
+  if(q.g312back!=null){STK.pop();return paintB()}
+  if(q.g312!=null){if(B&&B.sel)STK.push(()=>paintB());return openSends()}
+  if(q.g252back!=null){STK.pop();B.step='pick';return paintB()}
+  if(q.g252q){B.from=1;STK.push(()=>{B.from=0;B.step='list';paintB()});return open(q.g252q)}
   if(q.g256n){const k=q.g256n;try{await putItem(k,{np:+q.v});await ensurePieces(k)}catch(er){ERR('bnp',er)}return paintB()}
   if(q.g252rm){B.np=null;B.sel=B.sel.filter(k=>k!=q.g252rm);if(!B.sel.length)B.step='pick';return paintB()}
   if(q.g252zip!=null)return bZip(b);
   if(q.g252cp!=null){saveOrd(B.sel);saveSend(B.sel,B.np);return copyTxt(b,bPrompt(B.sel,B.np))}
   if(q.g252up!=null)return pick(ordFor(B.sel));
-  if(q.g252list!=null){B.from=0;B.step='list';return paintB()}
+  if(q.g252list!=null){STK.pop();B.from=0;B.step='list';return paintB()}
   if(q.g250go!=null)return apply().catch(er=>{ERR('apply',er);toast_('משהו נעצר. מה שכבר עלה נשמר')});
   if(q.g250back!=null){const many=UP&&UP.ids.length>1,one=UP&&UP.ids[0];if(UP){UP.urls.forEach(u=>URL.revokeObjectURL(u));UP=null}if(many&&B){B.step='list';return paintB()}return open(one||ID)}
   if(q.g250see){DL.close();try{R().openWith(null,{a:q.g250see})}catch(er){ERR('see',er)}}});
