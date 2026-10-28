@@ -599,8 +599,19 @@ document.addEventListener('keydown',e=>{if(e.key=='Enter'&&e.target.id=='sp83in'
 // ================= SAFETY =================
 // ---- 50. backup: an automatic daily copy inside the site (last 7 days) + "גיבוי לקובץ" in the menu
 function snap(){return {v:window.VER||'',t:new Date().toISOString(),items:IT,looks:LOOKS,plan:PLAN,settings:SET}}
-async function autoBackup(){try{if(!DB||lsG('bk83')==tIso())return;const s=snap();const data={t:s.t,v:s.v,items:JSON.stringify(s.items),looks:JSON.stringify(s.looks),plan:JSON.stringify(s.plan),settings:JSON.stringify(s.settings)};
- await DB.collection('backup83').doc(tIso()).set(data);lsS('bk83',tIso());const old=JSON.parse(lsG('bk83l')||'[]').filter(d=>d!=tIso());old.push(tIso());while(old.length>7){const d=old.shift();try{await DB.collection('backup83').doc(d).delete()}catch(_){}}lsS('bk83l',JSON.stringify(old))}catch(e){ERR('backup',e)}}
+// v300: one stored doc holds at most 256 KB, and on 28/10 the closet grew past it, so every daily backup failed ("arguments must be plain JSON data
+// within the store's limits"). Items and looks are now split by whole entries into parts of ≤100 KB: the day's doc keeps the first part of each,
+// <day>~1, <day>~2 … the rest. Every part is whole JSON on its own (🧹 reads and renames them as before); parts:n on the day's doc says how many.
+const BKMAX=100000,u8=s=>new TextEncoder().encode(s).length;
+function bkParts(o){const out=[];let cur={},n=2;for(const k in o){const b=u8(JSON.stringify(o[k]))+u8(k)+4;if(n+b>BKMAX&&n>2){out.push(cur);cur={};n=2}cur[k]=o[k];n+=b}out.push(cur);return out.map(x=>JSON.stringify(x))}
+function bkDocs(s){const I=bkParts(s.items||{}),L=bkParts(s.looks||{}),n=Math.max(I.length,L.length);
+ const docs=[{t:s.t,v:s.v,items:I[0],looks:L[0],plan:JSON.stringify(s.plan),settings:JSON.stringify(s.settings),parts:n}];
+ for(let i=1;i<n;i++){const x={t:s.t,part:i};if(I[i])x.items=I[i];if(L[i])x.looks=L[i];docs.push(x)}return docs}
+async function autoBackup(){try{if(!DB||lsG('bk83')==tIso())return;const day=tIso(),docs=bkDocs(snap()),C=DB.collection('backup83');
+ for(let i=0;i<docs.length;i++)await C.doc(i?day+'~'+i:day).set(docs[i]);
+ for(let i=docs.length;i<docs.length+3;i++){try{await C.doc(day+'~'+i).delete()}catch(_){}}   // parts left from a bigger try earlier today
+ lsS('bk83',day);const old=JSON.parse(lsG('bk83l')||'[]').filter(d=>d!=day);old.push(day);
+ while(old.length>7){const d=old.shift();for(let i=0;i<12;i++){try{await C.doc(i?d+'~'+i:d).delete()}catch(_){}}}lsS('bk83l',JSON.stringify(old))}catch(e){ERR('backup',e)}}
 async function fileBackup(){try{const bl=new Blob([JSON.stringify(snap(),null,1)],{type:'application/json'});const dl=await claude.use('downloads');if(!dl){toast('שמירה לקובץ לא זמינה כאן');return}
  await dl.save({filename:`גיבוי-הארון-${tIso()}.json`,data:bl});toast('✓ הגיבוי נשמר')}catch(e){toast(e&&e.code=='declined'?'בוטל':'לא הצלחתי לשמור')}}
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-bk83],[data-qa83open],[data-bu83open]');if(!t)return;e.preventDefault();
