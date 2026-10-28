@@ -517,3 +517,9 @@ dialog#g256::backdrop{background:rgba(30,20,15,.45)}
 #g250 .g296st i.done{background:#3b8a50;border-color:#3b8a50;color:#fff}
 #g250 .g296r{align-self:center;border:0;background:none;color:var(--muted,#6b5a50);font:inherit;font-size:.8rem;cursor:pointer;min-height:32px}
 #g250 .mkh{background:var(--bg,#f6f3ef);margin-inline:-4px;padding-inline:4px}   /* v296: background:inherit was see-through – the chips showed through the title when scrolling */
+/* v312 📦 what was sent to GPT */
+#g250 .g312l{display:flex;flex-direction:column;gap:10px;max-height:62vh;overflow:auto;padding:2px}
+#g250 .g312r{display:flex;flex-direction:column;gap:6px;text-align:start;padding:10px;border-radius:14px;border:1px solid rgba(0,0,0,.08);background:var(--z-surface,#f6f2ee);font:inherit;color:inherit;cursor:pointer}
+#g250 .g312r:hover,#g250 .g312r:focus-visible{border-color:var(--z-accent,#8a5a44)}
+#g250 .g312t{display:flex;gap:4px;overflow-x:auto}#g250 .g312t img{width:46px;flex:0 0 46px;aspect-ratio:3/4;object-fit:cover;border-radius:7px;background:#eee}
+#g250 .g312n{font-size:.76rem;opacity:.75;line-height:1.35}

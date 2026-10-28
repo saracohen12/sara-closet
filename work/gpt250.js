@@ -191,7 +191,7 @@ async function bZip(b){const ids=B.sel.slice(),o=b.textContent;b.disabled=true;b
   const miss=[];for(let i=0;i<ids.length;i++){let n=0;for(const g of photos(ids[i]).slice(0,4)){try{files.push({name:`p${i+1}-item-${n+1}.jpg`,blob:await jpeg246(g.u)});n++}catch(e){ERR('bzipph',e)}}np.push(n);if(!n)miss.push(i+1)}   // v268: 0 = no picture went in (the prompt says so)
   await shared(ids.flatMap(id=>outs(id)),files);
   files.push({name:'prompt.txt',blob:new Blob(['\ufeff'+bPrompt(ids,np)],{type:'text/plain;charset=utf-8'})});
-  await R().saveFile(`gpt-${ids.length}-products.zip`,await zip246(files));B.np=np;saveOrd(ids);
+  await R().saveFile(`gpt-${ids.length}-products.zip`,await zip246(files));B.np=np;saveOrd(ids);saveSend(ids,np);
   toast_(miss.length?`⚠ ירד ZIP, אבל בלי תמונה של מוצר ${miss.join(', ')} – צרפי ל-GPT צילום מסך שלו`:`✓ ירד ZIP אחד: ${ids.length} מוצרים, הבובה והפרומפט`);for(const id of ids)try{await putItem(id,{g250:Date.now()})}catch(_){}}
  catch(e){ERR('bzip',e);toast_('לא הצלחתי להכין את הקובץ. לנסות שוב')}finally{if(b.isConnected){b.disabled=false;b.textContent=o}}}
 function catItems(c){return Object.keys(D).filter(k=>!k.includes('~')&&cat0(k)==c&&!it(k).gen&&!it(k).oos&&it(k).s!='ret'&&it(k).s!='give')}
@@ -209,14 +209,14 @@ function paintB(){const d=dlg();ID='';B.sel=B.sel.filter(hasPh);const c=B.cat,ti
   d.innerHTML=`<div class="mk"><div class="mkh"><h3 id="g250t">📦 כמה מוצרים יחד${title?' – '+es(title):''}</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
    <p class="g250p">בוחרים עד ${MAXB} מוצרים (נבחרו ${B.sel.length}). 📷 דלוק = יש תמונה שלך · 360 דלוק = כבר על האווטאר.</p>
    <div class="g252g">${G.filter(g=>g[2].length).map(([k,t,L])=>`<h4 class="g254h ${k}">${t} · ${L.length}</h4>${L.map(tile).join('')}`).join('')}</div>
-   <div class="mkb g250bar"><button type="button" class="mkp" data-g252next${B.sel.length?'':' disabled'}>המשך עם ${B.sel.length} ←</button><button type="button" data-g252x>ביטול</button></div></div>`}
+   <div class="mkb g250bar"><button type="button" class="mkp" data-g252next${B.sel.length?'':' disabled'}>המשך עם ${B.sel.length} ←</button><button type="button" data-g312>📦 מה ששלחתי קודם</button><button type="button" data-g252x>ביטול</button></div></div>`}
  else{const all=B.sel.flatMap(k=>outs(k));
   d.innerHTML=`<div class="mk"><div class="mkh"><h3 id="g250t">📦 ${B.sel.length} מוצרים – הכול ל-GPT</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
    <p class="g250p">לכל מוצר בדקי שהסוג נכון. "⚙ שאלות" פותח את השאלות שלו (חגורה, כמה פריטים, לבן), ו"↩ לרשימה" מחזיר לכאן.</p>
    <div class="g252l">${B.sel.map((k,i)=>{let p='';try{p=R().ph(k)}catch(_){}const O=outs(k);return `<div class="g252r"><img alt="" src="${es(p)}"><div><b>${i+1}. ${es(nm(k))}</b><small>${es(TN[kd(k)]||'')} · ${O.length} ${O.length>1?'תמונות':'תמונה'}: ${O.map(o=>es(o.n)).join(', ')}</small>${MULTI.includes(kd(k))?`<span class="g256bn${asked(k)?'':' ask'}">${asked(k)?'כמה בחבילה:':'❓ כמה בחבילה?'} ${[1,2,3,4,5,6].map(v=>`<button type="button" class="g250c${npOf(k)==v?' on':''}" data-g256n="${es(k)}" data-v="${v}" aria-pressed="${npOf(k)==v}">${v}</button>`).join('')}</span>`:''}</div><button type="button" data-g252q="${es(k)}">⚙ שאלות</button><button type="button" data-g252rm="${es(k)}" aria-label="להוריד מהרשימה: ${es(nm(k))}">✕</button></div>`}).join('')}</div>
    <div class="g250o"><b>GPT יחזיר ${all.length} תמונות</b>, מוצר אחרי מוצר.</div>
    <ol class="g250s"><li><b>⬇ להוריד</b> – ZIP אחד עם כל המוצרים, הבובה והפרומפט.</li><li>ב-GPT בשיחה חדשה: מצרפים את ה-ZIP ומדביקים את הפרומפט (📋).</li><li><b>📤 להעלות</b> – בוחרים את כל התמונות שחזרו בבת אחת. אני מסדרת מה שייך לאיזה מוצר.</li></ol>
-   <div class="mkb g250bar"><button type="button" class="mkp" data-g252zip>⬇ להוריד הכול (ZIP)</button><button type="button" data-g252cp>📋 הפרומפט</button><button type="button" class="mkp" data-g252up>📤 להעלות מה שחזר</button><button type="button" data-g252back>↩ לבחור מוצרים</button></div>
+   <div class="mkb g250bar"><button type="button" class="mkp" data-g252zip>⬇ להוריד הכול (ZIP)</button><button type="button" data-g252cp>📋 הפרומפט</button><button type="button" class="mkp" data-g252up>📤 להעלות מה שחזר</button><button type="button" data-g252back>↩ לבחור מוצרים</button><button type="button" data-g312>📦 מה ששלחתי קודם</button></div>
    <details class="g250pr"><summary>לקרוא את הפרומפט</summary><textarea readonly rows="12">${es(bPrompt(B.sel))}</textarea></details></div>`}
  if(!d.open)d.showModal()}
 window.g252open=bOpen;
@@ -252,6 +252,30 @@ function garmentRGB(f){return new Promise(res=>{const u=URL.createObjectURL(f),m
 const ORDK='g250ord';
 function saveOrd(ids){try{localStorage.setItem(ORDK,JSON.stringify({ids:ids.slice(),t:Date.now()}))}catch(_){}}
 function ordFor(sel){try{const o=JSON.parse(localStorage.getItem(ORDK)||'null');if(o&&Array.isArray(o.ids)&&o.ids.length==sel.length&&o.ids.every(x=>sel.includes(x))&&Date.now()-o.t<14*864e5)return o.ids.slice()}catch(_){}return sel.slice()}
+// v312 (Sara 17:54 "כפתור בחירה אחרונה ... שיראה לי בדיוק את אותו מסך", 18:04 "ביטול בטעות ... אני לא רואה איפה זה"): every selection that went to GPT
+// (ZIP or prompt) is kept – on this phone and in db 'gpt312' – and "📦 מה ששלחתי ל-GPT" opens the same list screen again: check the pictures, ZIP again, upload what came back.
+// Older ZIPs (before v312) are found by the time the ZIP was downloaded (g250 on each item)
+const HK='g312h',hKey=ids=>ids.slice().sort().join('-').replace(/[^A-Za-z0-9_-]/g,'').slice(0,240);
+const hGet=()=>{try{const a=JSON.parse(localStorage.getItem(HK)||'[]');return Array.isArray(a)?a.filter(x=>x&&Array.isArray(x.ids)&&x.ids.length):[]}catch(_){return []}};
+function saveSend(ids,np){if(!ids||!ids.length)return;const r={ids:ids.slice(),cat:B&&B.cat||cat0(ids[0]),np:np||null,t:Date.now()},k=hKey(ids);
+ try{localStorage.setItem(HK,JSON.stringify([r,...hGet().filter(x=>hKey(x.ids)!=k)].slice(0,20)))}catch(_){}
+ try{if(typeof DB!='undefined'&&DB)DB.collection('gpt312').doc('k'+k).set(r).catch(e=>ERR('h312',e))}catch(_){}}
+async function hAll(){const m=new Map();for(const x of hGet())m.set(hKey(x.ids),x);
+ try{if(typeof DB!='undefined'&&DB){const s=await DB.collection('gpt312').orderBy('t','desc').limit(30).get();s.docs.forEach(d=>{const x=d.data();if(x&&Array.isArray(x.ids)&&x.ids.length){const k=hKey(x.ids);if(!m.has(k)||m.get(k).t<x.t)m.set(k,x)}})}}catch(e){ERR('h312l',e)}
+ // before v312: items whose ZIP was downloaded within the same minute are one sending
+ const seen=new Set([...m.values()].flatMap(x=>x.ids)),G=Object.keys(D).filter(k=>!k.includes('~')&&+it(k).g250>0&&!seen.has(k)).sort((a,b)=>it(a).g250-it(b).g250),old=[];
+ for(const k of G){const t=+it(k).g250,g=old[old.length-1];if(g&&t-g.t1<60e3&&g.ids.length<MAXB&&cat0(g.ids[0])==cat0(k)){g.ids.push(k);g.t1=t}else old.push({ids:[k],cat:cat0(k),t,t1:t,old:1})}
+ return [...m.values(),...old].sort((a,b)=>b.t-a.t).slice(0,30)}
+const catTitle=c=>{try{return document.querySelector(`[data-sec="${c}"] h2,#${c} h2`).textContent.replace(/[\d\s]+$/,'').trim()}catch(_){return ''}};
+const when=t=>{try{const d=new Date(t),n=new Date(),day=d.toDateString()==n.toDateString()?'היום':new Date(n-864e5).toDateString()==d.toDateString()?'אתמול':d.toLocaleDateString('he-IL',{day:'numeric',month:'numeric'});return day+' '+d.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})}catch(_){return ''}};
+let HL=[];
+async function openSends(){const d=dlg();ID='';d.innerHTML=`<div class="mk"><div class="mkh"><h3 id="g250t">📦 מה ששלחתי ל-GPT</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div><p class="g250p">טוענת…</p></div>`;if(!d.open)d.showModal();
+ HL=await hAll();if(!d.open)return;
+ d.innerHTML=`<div class="mk"><div class="mkh"><h3 id="g250t">📦 מה ששלחתי ל-GPT</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
+  <p class="g250p">כל בחירה שהורדת לה ZIP, מהחדשה לישנה. לוחצים על שורה ← נפתח אותו מסך: התמונות של המוצרים, ⬇ ZIP שוב, 📤 להעלות מה שחזר.</p>
+  ${HL.length?`<div class="g312l">${HL.map((x,i)=>{const ids=x.ids.filter(k=>D[k]),ti=catTitle(x.cat);return `<button type="button" class="g312r" data-g312o="${i}"><span class="g312h"><b>${es(when(x.t))}</b> · ${ids.length} מוצרים${ti?' · '+es(ti):''}${x.old?' <small>(לפי זמן ההורדה)</small>':''}</span><span class="g312t">${ids.map(k=>{let p='';try{p=R().ph(k)}catch(_){}return `<img alt="${es(nm(k))}" loading="lazy" src="${es(p)}">`}).join('')}</span><span class="g312n">${ids.map(k=>es(nm(k))).join(' · ')}</span></button>`}).join('')}</div>`:'<p class="g250p">עוד לא הורדת ZIP של כמה מוצרים.</p>'}
+  <div class="mkb g250bar">${B&&B.sel&&B.sel.length?`<button type="button" class="mkp" data-g312back>↩ לבחירה הפתוחה (${B.sel.length})</button>`:''}<button type="button" data-g252x>סגירה</button></div></div>`}
+window.g312sends=openSends;
 const numOf=f=>{const m=String(f&&f.name||'').match(/(\d+)/);return m?+m[1]:NaN};
 async function assign(ids,fs){const byN=fs.length>1&&fs.every(f=>!isNaN(numOf(f)))&&new Set(fs.map(numOf)).size==fs.length;
  fs=fs.slice().sort((a,b)=>byN?numOf(a)-numOf(b):(a.lastModified-b.lastModified)||String(a.name).localeCompare(String(b.name),undefined,{numeric:true}));
@@ -371,13 +395,16 @@ function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';
   if(q.g252!=null)return bOpen(ID);
   if(q.g252t){if(b.disabled||!hasPh(q.g252t)){toast_('לזה אין תמונה – קודם מעלים תמונה בחלון של הפריט');return}B.np=null;const k=q.g252t,i=B.sel.indexOf(k);if(i>=0)B.sel.splice(i,1);else if(B.sel.length<MAXB){B.sel.push(k);if(b.classList.contains('done'))toast_('שימי לב: לזה כבר יש 360');}else toast_(`עד ${MAXB} מוצרים בפעם אחת`);const y=d0(DL);paintB();d0(DL,y);return}
   if(q.g252next!=null){B.step='list';return paintB()}
-  if(q.g252x!=null){B=null;return DL.close()}
+  if(q.g252x!=null){const was=B&&B.sel&&B.sel.length&&B.step=='pick'?B:null;DL.close();if(was){B=null;toast_(`הבחירה של ${was.sel.length} נסגרה`,()=>{B=was;paintB()})}return}
+  if(q.g312o!=null){const x=HL[+q.g312o];if(!x)return;B={cat:x.cat,sel:x.ids.filter(k=>D[k]),step:'list',np:x.np||null};saveOrd(x.ids);return paintB()}
+  if(q.g312back!=null)return paintB();
+  if(q.g312!=null)return openSends();
   if(q.g252back!=null){B.step='pick';return paintB()}
   if(q.g252q){B.from=1;return open(q.g252q)}
   if(q.g256n){const k=q.g256n;try{await putItem(k,{np:+q.v});await ensurePieces(k)}catch(er){ERR('bnp',er)}return paintB()}
   if(q.g252rm){B.np=null;B.sel=B.sel.filter(k=>k!=q.g252rm);if(!B.sel.length)B.step='pick';return paintB()}
   if(q.g252zip!=null)return bZip(b);
-  if(q.g252cp!=null){saveOrd(B.sel);return copyTxt(b,bPrompt(B.sel,B.np))}
+  if(q.g252cp!=null){saveOrd(B.sel);saveSend(B.sel,B.np);return copyTxt(b,bPrompt(B.sel,B.np))}
   if(q.g252up!=null)return pick(ordFor(B.sel));
   if(q.g252list!=null){B.from=0;B.step='list';return paintB()}
   if(q.g250go!=null)return apply().catch(er=>{ERR('apply',er);toast_('משהו נעצר. מה שכבר עלה נשמר')});
@@ -403,7 +430,7 @@ function open(id){ID=id;if(B&&!B.sel.includes(id))B.from=0;const d=dlg(),k=kd(id
   <div class="g250o"><b>GPT יחזיר ${O.length} ${O.length>1?'תמונות':'תמונה'}:</b><ol>${O.map(o=>`<li>${es(o.n)}</li>`).join('')}</ol></div>
   ${B&&B.from&&B.sel.includes(id)?'':goHtml(id)}
   <ol class="g250s"><li><b>⬇ להוריד</b> – ZIP אחד: ${ph.length} תמונות של המוצר, הבובה${O.some(o=>o.role=='cu')?', תקריב הפנים שלך':''} והפרומפט.</li><li>ב-GPT בשיחה חדשה: מצרפים את ה-ZIP ומדביקים את הפרומפט (📋).</li><li><b>📤 להעלות</b> – בוחרים את כל התמונות שחזרו בבת אחת.</li></ol>
-  <div class="mkb g250bar">${B&&B.from&&B.sel.includes(id)?'<button type="button" class="mkp" data-g252list>↩ לרשימת המוצרים</button>':`<button type="button" class="mkp" data-g250zip>⬇ להוריד הכול (ZIP)</button><button type="button" data-g250cp>📋 הפרומפט</button><button type="button" class="mkp" data-g250up>📤 להעלות מה שחזר</button><button type="button" data-g252>📦 כמה מוצרים יחד</button>`}</div>
+  <div class="mkb g250bar">${B&&B.from&&B.sel.includes(id)?'<button type="button" class="mkp" data-g252list>↩ לרשימת המוצרים</button>':`<button type="button" class="mkp" data-g250zip>⬇ להוריד הכול (ZIP)</button><button type="button" data-g250cp>📋 הפרומפט</button><button type="button" class="mkp" data-g250up>📤 להעלות מה שחזר</button><button type="button" data-g252>📦 כמה מוצרים יחד</button><button type="button" data-g312>🕘 מה ששלחתי קודם</button>`}</div>
   ${ps.length?`<div class="g250ps"><b>הפריטים במוצר הזה</b>${ps.map(x=>{const s=subId(id,x.k),ok=R()&&R().isReady(s);return `<div class="g250pi"><span>${es(x.n)}</span><em class="${ok?'ok':''}">${ok?'✓ על האווטאר':'עוד לא'}</em>${ok?`<button type="button" data-g250see="${es(s)}">👀 עליי</button>`:''}</div>`}).join('')}</div>`:''}
   <details class="g250pr"><summary>לקרוא את הפרומפט</summary><textarea readonly rows="12">${es(prompt(id))}</textarea></details></div>`;
  if(!d.open)d.showModal()}
