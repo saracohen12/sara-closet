@@ -30,17 +30,19 @@ const worn=k=>Object.keys(D).filter(id=>(it(id).wl||[]).includes(k));
 // ---------- her own items (added from a photo): D + a card, made from IT[id].my ----------
 function addMine(id,m){if(!m||D[id])return;try{
  const c=WEAR.includes(m.cat)||document.getElementById(m.cat)?m.cat:'other';
- D[id]={id,src:'my',cat:c,short:m.short||'בגד שלי',full:m.short||'',color:m.color||'',size:'',file:'',order:'',date:m.d||'',price:0,qty:1,paid:0,tags:[],season:[],retd:0,rdl:'',rex:false,transit:false,origt:0,hi:0,col:{fc:'',c:[],sp:0,metal:'',mixed:false},srcl:'הוספתי בעצמי',refund:0,credit:0,my:1};
+ const ro=!!(m.rcpt&&m.order);   // v299: an order she put in from a receipt (rcpt299.js) – it has its shop account, order number and prices, and is on the way
+ D[id]={id,src:ro?m.src:'my',cat:c,short:m.short||'בגד שלי',full:m.full||m.short||'',color:m.color||'',size:ro?m.size||'':'',file:'',order:ro?m.order:'',date:m.d||'',price:ro?+m.price||0:0,qty:1,paid:ro?+m.paid||0:0,tags:[],season:[],retd:0,rdl:'',rex:false,transit:ro,origt:0,hi:0,col:{fc:'',c:[],sp:0,metal:'',mixed:false},srcl:ro?'מקבלה שהעליתי':'הוספתי בעצמי',refund:0,credit:0,my:1};
  const g=document.querySelector(`#${c} .grid`)||document.querySelector('.grid');const tpl=g&&(g.querySelector('.card')||document.querySelector('.grid .card'));if(!tpl)return;
  const k=tpl.cloneNode(true);k.className='card my234';
- Object.assign(k.dataset,{id,src:'my',q:[id,m.short,m.color,catName(c),'שלי הוספתי'].join(' '),d:'0',p:'0',o:'0',c:'',ck:'99',sk:'',z:'',i:'99999',tg:'',ss:'',ord:'',rdl:''});delete k.dataset.dup;delete k.dataset.orig;
+ Object.assign(k.dataset,{id,src:D[id].src,q:[id,m.short,m.color,catName(c),ro?m.order:'שלי הוספתי'].join(' '),d:'0',p:String(D[id].price||0),o:'0',c:'',ck:'99',sk:'',z:'',i:'99999',tg:'',ss:'',ord:D[id].order,rdl:''});delete k.dataset.dup;delete k.dataset.orig;
  const p=k.querySelector('.ph');if(p){$a('img',p).forEach((x,i)=>i?x.remove():0);let im=p.querySelector('img');if(!im){im=document.createElement('img');p.prepend(im)}
   im.removeAttribute('loading');im.dataset.th=id;delete im.dataset.s79;im.src=m.img?'/_blob/'+m.img:TPH;
   $a('.dups,.dupb,.avd,.ind247,.ms123,.new83,.av83,.dt',p).forEach(x=>x.remove());const sb=p.querySelector('.sb');if(sb){sb.className='sb my';sb.textContent='שלי'}}
  const set=(s,h)=>{const e=k.querySelector(s);if(e)e.innerHTML=h};
- set('.t',es(m.short||'בגד שלי'));set('.m',es(m.color||''));set('.pr','<b>הוספתי בעצמי</b>');set('.ret','');set('.st','');
+ set('.t',es(m.short||'בגד שלי'));set('.m',es(m.color||''));set('.pr',ro?`<b>₪${(+m.paid||0).toFixed(2)}</b>`:'<b>הוספתי בעצמי</b>');set('.ret','');set('.st','');
  g.prepend(k);try{CARDM.delete(id)}catch(_){}
  }catch(e){ERR('mine',e)}}
+window.addMine299=(id,m)=>addMine(id,m);
 const mineAll=()=>{try{Object.keys(IT||{}).forEach(id=>{const m=IT[id]&&IT[id].my;if(m&&!D[id])addMine(id,Object.assign({img:IT[id].img},m))})}catch(e){ERR('mineAll',e)}};
 mineAll();
 {const _pa=paintAll;paintAll=function(){mineAll();return _pa.apply(this,arguments)}}
