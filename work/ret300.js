@@ -1,4 +1,4 @@
-// v300 (28/10 pass "יותר אוטומציה, קל יותר בהזמנות"): 51 Shein items reached their last return day with none of them marked, and marking means
+// v301 (28/10 pass "יותר אוטומציה, קל יותר בהזמנות"): 51 Shein items reached their last return day with none of them marked, and marking means
 // opening each one. Every return alert in 🔔 (last day, doubles, under a week, 8–14 days) now ends with "✓ משאירה את כל ה-N" – first tap asks
 // "בטוחה?", second tap marks them all kept (s:'kept', the same mark as "שמרתי" in the item). Any one she wants to send back she opens and marks ↩.
 (function(){
