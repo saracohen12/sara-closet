@@ -64,6 +64,7 @@ NOTEO={'N4WS':'ההזמנה שולמה כולה מיתרת הארנק בשיין
  '2CRC':'הזמנה בקליק. מסירה צפויה בין 3 ל-9 בנובמבר. שימי לב: לפי שיין חגורות אי אפשר להחזיר או להחליף.',
  'NB85':'ההזמנה בהכנה בשיין. מסירה צפויה בין 3 ל-10 בנובמבר. שימי לב: לפי שיין את הפריט הזה אי אפשר להחזיר או להחליף.',
  '1100':'ההזמנה בהכנה בשיין. מסירה צפויה בין 5 ל-11 בנובמבר. שימי לב: לפי שיין את 3 החגורות אי אפשר להחזיר או להחליף. השמלה, החולצה והחצאית אפשר.',
+ 'NGYX':'ההזמנה בעיבוד בשיין. מסירה צפויה בין 8 ל-15 בנובמבר. שימי לב: לפי שיין את התחתונים, את תחתוני הבוקסר ואת החגורה החומה אי אפשר להחזיר או להחליף.',
  '1CNR':'מסלסל השיער השני בהזמנה בוטל והוחזר, ולכן הוא לא מופיע.'}
 APP=json.load(open('shein/app_imgs.json')); ORIG=json.load(open('shein/orig.json'))
 def simg(k,j):
@@ -182,21 +183,22 @@ def tags(x):
     return sorted(r),sorted(s)
 TODAY=_dt.date.today()   # v267: was fixed at 20/10 – the page also recounts in the browser every day (data-rdl)
 EXACT={'GSH1RR24U0017QJ':(10,25),'GSH1R824B00N4WS':(10,26),'GSH1R424X000MNA':(10,20),'GSH1RF24F002MH3':(11,3),'GSH1RR24C001A5K':(10,25)}
+NORETI={'SNGYX_3','SNGYX_8','SNGYX_11'}  # v286: single items Shein won't take back
 NORET={'GSH19924N00NB85','GSH199241001VHG','GSH1992410000HR','GSH199241002CRC'}  # Shein: this category can't be returned
 def retdate(x):
-    if x['order'] in NORET or x['src']=='ae': return None,False
+    if x['order'] in NORET or x.get('id') in NORETI or x['src']=='ae': return None,False
     if x['src']=='sh' and x['order'] in EXACT:
         m,d=EXACT[x['order']]; return _dt.date(2026,m,d),True
     try: d,m=map(int,x['date'].split('/'))
     except: return None,False
     return _dt.date(2026,m,d)+_dt.timedelta(days=72 if x['src']=='sh' else 90),False
 def retdays(x):
-    if x['order'] in NORET or x['src']=='ae': return None
+    if x['order'] in NORET or x.get('id') in NORETI or x['src']=='ae': return None
     try: d,m=map(int,x['date'].split('/'))
     except: return None
     od=_dt.date(2026,m,d); dl=od+_dt.timedelta(days=72 if x['src']=='sh' else 90)
     return (dl-TODAY).days
-INTRANSIT={'P0-097-14609737083511206','P0-097-14609699308151206','P0-097-14609733274231206','P0-097-14609727468151206','P0-097-03584171136631005','GSH199249001100','P0-097-18076072617591091','GSH19X248000VSY','GSH19X24N00NM5K','GSH19624C00MEX3','GSH19T24900MS2G','GSH19Q24600NN8H','GSH19424S001CNR','GSH19C246001BGU','GSH19R24700MU9J','GSH19924N00MU5B','GSH19924N002QB0','GSH19924N00NB85','GSH199241001VHG','GSH1992410000HR','GSH199241002CRC'}
+INTRANSIT={'GSH19F24800NGYX','P0-097-14609737083511206','P0-097-14609699308151206','P0-097-14609733274231206','P0-097-14609727468151206','P0-097-03584171136631005','GSH199249001100','P0-097-18076072617591091','GSH19X248000VSY','GSH19X24N00NM5K','GSH19624C00MEX3','GSH19T24900MS2G','GSH19Q24600NN8H','GSH19424S001CNR','GSH19C246001BGU','GSH19R24700MU9J','GSH19924N00MU5B','GSH19924N002QB0','GSH19924N00NB85','GSH199241001VHG','GSH1992410000HR','GSH199241002CRC'}
 def money(v): return f'₪{v:,.2f}'
 nav=[];secs=[];meta={};opts=[]
 ALWAYS={'base'}   # v210 (Sara 14:24): her new category, there even before she moves shirts into it
