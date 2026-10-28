@@ -27,3 +27,16 @@ html:not([data-d180=z50]) #t282b:not(.in){bottom:calc(76px + env(safe-area-inset
 /* v296 – inside a window the 💬 sat on top of the window's own buttons (bottom corner): there it is a small tab on the side edge */
 #t282b.in{bottom:calc(34% + env(safe-area-inset-bottom));left:0;right:auto;inset-inline-start:auto;width:26px;height:46px;padding:0;border-radius:0 12px 12px 0;font-size:.8rem;opacity:.7;box-shadow:0 3px 10px rgba(0,0,0,.25)}
 #t282b.in:hover,#t282b.in:focus-visible{opacity:1}
+/* v321 – on the page the 💬 is a labelled bubble "לשאול את Claude"; it takes a screenshot itself; 🎤 to speak */
+#t282b:not(.in){width:auto;min-width:48px;padding:0 16px 0 12px;border-radius:999px;gap:6px;display:flex;align-items:center;font-size:1.15rem}
+#t282b i{font:600 .86rem/1 Rubik,system-ui,sans-serif;font-style:normal;white-space:nowrap}
+#t282b.in i{display:none}
+#t282b.wait{opacity:.6;pointer-events:none}
+#tell282 .t282t{display:flex;gap:8px;align-items:stretch}
+#tell282 .t282t textarea{flex:1;min-width:0}
+#tell282 .t282mic{flex:0 0 60px;border-radius:14px;border:1px solid #cfcac4;background:#fff;font-size:1.4rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px}
+#tell282 .t282mic small{font-size:.7rem;font-family:inherit}
+#tell282 .t282mic.on{background:#b4532a;color:#fff;border-color:#b4532a;animation:t321p 1.2s ease-in-out infinite}
+@keyframes t321p{50%{box-shadow:0 0 0 6px rgba(180,83,42,.25)}}
+#tell282 .t282s{flex-wrap:wrap}
+#t282b{direction:rtl}

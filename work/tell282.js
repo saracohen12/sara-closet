@@ -6,7 +6,14 @@
 const ERR=(w,e)=>(window.ERRS=window.ERRS||[]).push('v282 '+w+': '+(e&&e.message||e));
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const QUICK=['החגורה לא חתוכה טוב, רואים לבן','השיער חתוך על הפנים','הבגד לא יושב טוב על האווטאר','האיפור לא טוב','חסר כאן כפתור','משהו לא עובד כשאני לוחצת','הדף לא נוח, קשה למצוא'];
-let SNAP=null,CTX=null,PIC=null,ROWS=[],SUB=false;
+let SNAP=null,CTX=null,PIC=null,ROWS=[],SUB=false,SCR=null;
+// v321 (Sara 28/10 21:36 "בועה במסך הבית לשאול אותך… זה עושה לי צילום מסך… ויתן לי אפשרות גם לדבר"): a picture of the whole screen as she sees it
+// (html2canvas draws the page or the window on top; it loads once from cdnjs), and 🎤 to speak instead of typing
+let H2C=null;const h2c=()=>H2C||(H2C=new Promise((ok,no)=>{if(window.html2canvas)return ok(window.html2canvas);const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';s.onload=()=>ok(window.html2canvas);s.onerror=()=>{H2C=null;no(new Error('h2c'))};document.head.appendChild(s)}));
+async function screen(){try{const f=await Promise.race([h2c(),new Promise((_,no)=>setTimeout(()=>no(new Error('slow')),6000))]);const d=topD(),sc=Math.min(devicePixelRatio||1,1.5);
+  const o={useCORS:true,logging:false,scale:sc,backgroundColor:'#f6f5f3',ignoreElements:el=>el.id=='t282b'||el.id=='tell282'};
+  const c=await Promise.race([d?f(d,o):f(document.body,Object.assign(o,{x:scrollX,y:scrollY,width:innerWidth,height:innerHeight,windowWidth:innerWidth,windowHeight:innerHeight})),new Promise((_,no)=>setTimeout(()=>no(new Error('slow')),9000))]);
+  return c&&c.width?c:null}catch(e){ERR('screen',e);return null}}
 const READ=new Set((()=>{try{return JSON.parse(localStorage.getItem('tell282r')||'[]')}catch(_){return []}})());const saveRead=()=>{try{localStorage.setItem('tell282r',JSON.stringify([...READ].slice(-200)))}catch(_){}};
 const tops=()=>[...document.querySelectorAll('dialog[open]')].filter(d=>d.id!='tell282');
 const topD=()=>{const L=tops();return L[L.length-1]||null};
@@ -29,27 +36,38 @@ function dlg(){let d=document.getElementById('tell282');if(d)return d;d=document
   if(b.dataset.t282=='pic')return d.querySelector('.t282f').click();
   if(b.dataset.t282=='rmpic'){PIC=null;paintPic();return}
   if(b.dataset.t282=='send')return send();
+  if(b.dataset.t282=='mic')return mic(b);
   if(b.dataset.t282=='mine'){d.querySelector('.t282m').hidden=!d.querySelector('.t282m').hidden;paintMine();return}});
  d.addEventListener('change',e=>{if(e.target.classList.contains('t282f')&&e.target.files&&e.target.files[0]){PIC=e.target.files[0];e.target.value='';paintPic()}});
  return d}
+let REC=null;
+function mic(b){const SR=window.SpeechRecognition||window.webkitSpeechRecognition,ta=dlg().querySelector('textarea'),T=window.toast||(()=>{});
+ if(REC){try{REC.stop()}catch(_){}return}
+ if(!SR){T('כאן אין הקלטה. לוחצים בתיבה ואז על המיקרופון 🎤 שבמקלדת של הטלפון');ta.focus();return}
+ let r;try{r=new SR()}catch(_){T('לוחצים בתיבה ואז על המיקרופון 🎤 שבמקלדת');ta.focus();return}
+ r.lang='he-IL';r.continuous=true;r.interimResults=false;REC=r;b.classList.add('on');b.querySelector('small').textContent='מקשיב… לעצור';
+ r.onresult=e=>{let t='';for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)t+=e.results[i][0].transcript;t=t.trim();if(t)ta.value=(ta.value.trim()?ta.value.trim()+' ':'')+t};
+ r.onerror=e=>{T(e.error=='not-allowed'||e.error=='service-not-allowed'?'המיקרופון חסום בתוך האתר. לוחצים בתיבה ואז על המיקרופון 🎤 שבמקלדת של הטלפון':'לא שמעתי, נסי שוב')};
+ r.onend=()=>{REC=null;b.classList.remove('on');const s=b.querySelector('small');if(s)s.textContent='לדבר'};
+ try{r.start()}catch(_){REC=null;b.classList.remove('on')}}
 function paintPic(){const d=dlg(),w=d.querySelector('.t282pp');if(!w)return;w.innerHTML=PIC?`<img alt="הצילום שצירפת" src="${URL.createObjectURL(PIC)}"><button type="button" data-t282="rmpic">✕ להוריד</button>`:''}
 function paintMine(){const d=dlg(),m=d.querySelector('.t282m');if(!m||m.hidden)return;ROWS.forEach(r=>{if(r.ans)READ.add(r.id)});saveRead();setTimeout(paintBtn,0);
  m.innerHTML=ROWS.length?ROWS.slice(0,15).map(r=>`<li><small>${new Date(r.t).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'})} · ${r.st=='done'?'✓ תוקן':r.st=='seen'?'👀 Claude ראה':'⏳ נשלח'}</small><p>${esc(r.note)}</p>${r.ans?`<p class="t282a"><b>Claude:</b> ${esc(r.ans)}</p>`:''}</li>`).join(''):'<li>עוד לא שלחת כלום.</li>'}
-function open(){try{SNAP=snap();CTX=where();PIC=null;const d=dlg();const ans=ROWS.filter(r=>r.ans&&!READ.has(r.id)).length;
+async function open(){if(open.busy)return;open.busy=1;try{SNAP=snap();CTX=where();PIC=null;btn.classList.add('wait');(window.toast||(()=>{}))('📸 מצלמת את המסך…');SCR=await screen();btn.classList.remove('wait');const d=dlg();const ans=ROWS.filter(r=>r.ans&&!READ.has(r.id)).length;
   d.innerHTML=`<div class="t282h"><h2 id="t282h">💬 לספר ל-Claude</h2><button type="button" data-t282="x" aria-label="סגירה">✕</button></div>
    <p class="t282i">כתבי מה לא תקין כאן${CTX.itemName?` (<b>${esc(CTX.itemName)}</b>)`:''}. אני מקבל את ההודעה יחד עם ${SNAP?'תמונה של האווטאר כמו שהוא עכשיו על המסך, ו':''}איפה את נמצאת באתר.</p>
-   ${SNAP?`<div class="t282s"><img alt="מה שעל המסך עכשיו" src="${SNAP.toDataURL('image/jpeg',.7)}"><label><input type="checkbox" class="t282c" checked> לצרף את התמונה הזו</label></div>`:''}
+   ${SCR||SNAP?`<div class="t282s">${SCR?`<img alt="צילום המסך שלך עכשיו" src="${SCR.toDataURL('image/jpeg',.6)}">`:''}${SNAP?`<img alt="האווטאר עכשיו" src="${SNAP.toDataURL('image/jpeg',.7)}">`:''}<label><input type="checkbox" class="t282c" checked> לצרף ${SCR?'את צילום המסך':'את התמונה הזו'}</label></div>`:''}
    <div class="t282q">${QUICK.map((q,i)=>`<button type="button" data-t282q="${i}">${q}</button>`).join('')}</div>
-   <textarea rows="4" aria-label="מה לא תקין" placeholder="לדוגמה: החגורה השחורה – בצד ימין רואים פס לבן"></textarea>
+   <div class="t282t"><textarea rows="4" aria-label="מה לא תקין" placeholder="כותבים, או לוחצים 🎤 ומדברים"></textarea><button type="button" class="t282mic" data-t282="mic" aria-label="לדבר במקום לכתוב">🎤<small>לדבר</small></button></div>
    <div class="t282r"><button type="button" data-t282="pic">📷 להוסיף צילום מסך</button><input type="file" accept="image/*" class="t282f" hidden></div><div class="t282pp"></div>
    <button type="button" class="t282go" data-t282="send">שליחה ל-Claude</button>
    <button type="button" class="t282mb" data-t282="mine">📬 מה ששלחתי${ans?` · <b>${ans} תשובות חדשות</b>`:''}</button><ul class="t282m" hidden></ul>`;
-  if(!d.open)d.showModal();setTimeout(()=>{const ta=d.querySelector('textarea');ta&&ta.focus()},60)}catch(e){ERR('open',e)}}
+  if(!d.open)d.showModal();setTimeout(()=>{const ta=d.querySelector('textarea');ta&&ta.focus()},60)}catch(e){ERR('open',e)}finally{open.busy=0;btn.classList.remove('wait')}}
 async function send(){const d=dlg(),b=d.querySelector('.t282go'),note=d.querySelector('textarea').value.trim();if(!note&&!PIC){(window.toast||alert)('כתבי כמה מילים, או הוסיפי צילום');return}
  b.disabled=true;b.textContent='שולחת…';const doc=Object.assign({t:Date.now(),note:note.slice(0,2000),st:'new'},CTX||where());
  try{let a=null;try{a=await claude.use('assets')}catch(_){}
   const up=async bl=>{if(!a||!bl)return '';try{const r=typeof upl=='function'?await upl(a,bl):await a.upload(bl);return r&&r.id||''}catch(e){ERR('up',e);return ''}};
-  const keep=d.querySelector('.t282c');if(SNAP&&(!keep||keep.checked)){const bl=await new Promise(r=>SNAP.toBlob(r,'image/jpeg',.85));doc.shot=await up(bl)}
+  const keep=d.querySelector('.t282c');if(!keep||keep.checked){if(SNAP){const bl=await new Promise(r=>SNAP.toBlob(r,'image/jpeg',.85));doc.shot=await up(bl)}if(SCR){const bl=await new Promise(r=>SCR.toBlob(r,'image/jpeg',.82));doc.scr=await up(bl)}}
   if(PIC)doc.pic=await up(PIC);
   let ok=false;if(typeof DB!='undefined'&&DB){try{await DB.collection('tell282').doc('m'+Date.now().toString(36)).set(doc);ok=true}catch(e){ERR('save',e)}}
   if(!ok){try{const l=JSON.parse(localStorage.getItem('tell282')||'[]');l.push(doc);localStorage.setItem('tell282',JSON.stringify(l.slice(-20)))}catch(_){}}
@@ -62,11 +80,12 @@ function load(n=0){if(SUB)return;try{if(typeof DB!='undefined'&&DB){SUB=true;DB.
   else if(n<20)setTimeout(()=>load(n+1),1500)}catch(e){ERR('load',e)}}
 
 // the round 💬 button: on the page, and moved into the window on top so it is there in every window
-const btn=document.createElement('button');btn.type='button';btn.id='t282b';btn.setAttribute('aria-label','לספר ל-Claude מה לא תקין');btn.innerHTML='<span aria-hidden="true">💬</span><b hidden></b>';
+const btn=document.createElement('button');btn.type='button';btn.id='t282b';btn.setAttribute('aria-label','לספר ל-Claude מה לא תקין');btn.innerHTML='<span aria-hidden="true">💬</span><i>לשאול את Claude</i><b hidden></b>';
 btn.addEventListener('click',e=>{e.stopPropagation();open()});document.body.appendChild(btn);
 function paintBtn(){const n=ROWS.filter(r=>r.ans&&!READ.has(r.id)).length,b=btn.querySelector('b');b.hidden=!n;b.textContent=n}
 // on the page it sits in the header row (round like the others); inside a window it floats at the bottom corner
-function place(){const d=topD(),act=document.querySelector('#top .h9act'),p=d||act||document.body;if(btn.parentNode!==p){if(p===act)act.prepend(btn);else p.appendChild(btn)}btn.classList.toggle('in',!!d);btn.classList.toggle('hd',!d&&p===act)}
+function place(){const d=topD(),act=null,p=d||document.body;   // v321: on the page a labelled bubble at the bottom corner, not a small round button in the header
+ if(btn.parentNode!==p){if(p===act)act.prepend(btn);else p.appendChild(btn)}btn.classList.toggle('in',!!d);btn.classList.toggle('hd',!d&&p===act)}
 new MutationObserver(()=>place()).observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});setInterval(place,1200);
 window.openTell282=open;window.openBug77=open;
 setTimeout(load,2500);
