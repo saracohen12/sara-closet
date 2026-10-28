@@ -1,0 +1,6 @@
+/* v313 keep / return under each picture in return alerts */
+.r313{display:flex;flex-direction:column;align-items:stretch;gap:4px;flex:none;transition:opacity .25s,transform .25s}
+.r313.gone{opacity:0;transform:scale(.9)}
+.r313b{display:flex;flex-direction:column;gap:3px}
+.r313b button{min-height:30px;padding:3px 6px;border-radius:999px;border:1px solid var(--z-line,#e6e3df);background:var(--z-surface,#fff);color:var(--z-ink,#17161a);font:600 .7rem/1.1 var(--z-body,inherit);cursor:pointer;white-space:nowrap}
+.r313b button[data-r313=kept]{background:var(--z-ink,#17161a);color:#fff;border-color:var(--z-ink,#17161a)}
