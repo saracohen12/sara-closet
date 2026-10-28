@@ -21,3 +21,6 @@ dialog#cl262::backdrop{background:rgba(30,20,15,.45)}
 #cl262 .cl302{display:flex;gap:10px;align-items:flex-start;margin:16px 0 4px;padding:12px 14px;border-radius:14px;background:#f3efe9;cursor:pointer;line-height:1.45}
 #cl262 .cl302 input{width:22px;height:22px;flex:none;margin:2px 0 0;accent-color:#2e7d4f}
 #cl262 .cl302 small{display:block;color:#6b6460;font-size:.85em}
+/* v305 old 5-pose avatar pictures */
+#cl262 .cl305{margin-top:14px;padding-top:10px;border-top:1px solid var(--z-line,#e6ddd3)}
+#cl262 .cl305 button.arm{background:#b4532a;color:#fff;border-color:transparent}

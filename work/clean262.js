@@ -45,19 +45,19 @@ const mb=b=>Math.round(b/1048576);
 let DL=null,RUN=false;
 function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='cl262';DL.dir='rtl';DL.setAttribute('aria-labelledby','cl262t');document.body.appendChild(DL);
  DL.addEventListener('cancel',e=>{e.preventDefault();DL.close()});DL.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-  if(b.dataset.x!=null)return DL.close();if(b.dataset.go!=null)go()});return DL}
+  if(b.dataset.x!=null)return DL.close();if(b.dataset.go!=null)go();if(b.dataset.old305!=null)goOld(b)});return DL}
 function show(h){const d=dlg();d.innerHTML=`<div class="mk"><div class="mkh"><h3 id="cl262t">🧹 לפנות מקום לתמונות</h3><button type="button" class="mkx" data-x aria-label="סגירה">✕</button></div>${h}</div>`;if(!d.open)d.showModal()}
 let SC=null;   // last scan
 let PROG={n:0,all:0};   // v303: the delete under way (her press or the daily one) – the window shows it whenever it is opened
 const progHtml=()=>`<p class="cl262p">מוחקת תמונות ישנות שאף אחד לא משתמש בהן… <b data-n>${PROG.n}</b> מתוך ${PROG.all}.<br>אפשר לסגור את החלון ולהמשיך – רק לא לסגור את האתר.</p><progress max="${PROG.all||1}" value="${PROG.n}"></progress>`;
 function tick(){if(!DL||!DL.open)return;const c=DL.querySelector('[data-n]'),p=DL.querySelector('progress');if(c)c.textContent=PROG.n;if(p)p.value=PROG.n}
 async function open(){if(RUN)return show(progHtml());show('<p class="cl262p">בודקת אילו תמונות עדיין בשימוש… (כחצי דקה)</p>');
- try{SC=await scan()}catch(e){ERR('scan',e);SC=null;show(`<p class="cl262p">${e.code=='not_granted'?'רק בעלת האתר יכולה לפנות מקום. לפתוח את האתר מהחשבון שלך.':e.code=='big'?'יש כאן יותר מדי נתונים לבדיקה בטוחה. כתבי לי ואני אפנה מקום.':'לא הצלחתי לבדוק. לנסות שוב בעוד רגע.'}</p>`);return}
+ try{SC=await scan();try{await oldScan()}catch(e){ERR('oldscan',e);OLDS=null}}catch(e){ERR('scan',e);SC=null;show(`<p class="cl262p">${e.code=='not_granted'?'רק בעלת האתר יכולה לפנות מקום. לפתוח את האתר מהחשבון שלך.':e.code=='big'?'יש כאן יותר מדי נתונים לבדיקה בטוחה. כתבי לי ואני אפנה מקום.':'לא הצלחתי לבדוק. לנסות שוב בעוד רגע.'}</p>`);return}
  const u=SC.usage||{};
  show(`<p class="cl262p">שמורות עכשיו <b>${u.files||SC.all}</b> תמונות מתוך <b>${u.maxFiles||'?'}</b> (${mb(u.bytes||0)} מתוך ${mb(u.maxBytes||0)} MB).</p>
   ${SC.free.length?`<p class="cl262p"><b>${SC.free.length}</b> מהן ישנות ואף אחד כבר לא משתמש בהן – גזירות קודמות שהוחלפו, העלאות שלא נשמרו (${mb(SC.bytes)} MB).<br>כל מה שמופיע באתר נשאר: בגדים, אווטאר, קשירות, תסרוקות, איפורים, רקעים ולוקים.</p>
   <span class="mkb"><button type="button" class="mkp" data-go>🧹 למחוק ${SC.free.length} תמונות ישנות</button><button type="button" data-x>לא עכשיו</button></span>`
-  :'<p class="cl262p">אין תמונות ישנות למחוק – הכול בשימוש. אפשר לבקש עוד מקום ("Request a higher limit").</p>'}${autoRow()}`)}
+  :'<p class="cl262p">אין תמונות ישנות למחוק – הכול בשימוש. אפשר לבקש עוד מקום ("Request a higher limit").</p>'}${oldRow()}${autoRow()}`)}
 async function go(){if(RUN||!SC||!SC.free.length)return;RUN=true;let L=SC.free;const a=SC.a;if(SC.rn){const keep=await bkFix(SC);if(keep.size)L=L.filter(x=>!keep.has(x.id))}let n=0,bad=0,wait=0;PROG={n:0,all:L.length};show(progHtml());
  for(const x of L){for(let t=0;t<4;t++){try{await a.delete(x.id);n++;break}catch(e){if(e&&e.code=='rate_limited'||e&&e.code=='store_unavailable'){wait=Math.min(8000,(wait||800)*2);await new Promise(r=>setTimeout(r,wait));continue}bad++;ERR('del',e);break}}
   wait=Math.max(0,wait-200);PROG.n=n+bad;tick()}
@@ -84,6 +84,27 @@ async function autoRun(force){if(RUN||!(await autoOn()))return false;if(!force&&
  if(DL&&DL.open)show(`<p class="cl262p">✓ נמחקו <b>${n}</b> תמונות ישנות. עכשיו יש מקום.${bad?` (${bad} לא נמחקו)`:''}</p>${autoRow()}<span class="mkb"><button type="button" class="mkp" data-x>סגירה</button></span>`);try{const x=document.getElementById('cl262b');if(x)x.remove();banner()}catch(_){}return n>0}
 document.addEventListener('change',e=>{const t=e.target;if(t&&t.matches&&t.matches('[data-cl302]'))setAuto(t.checked)});
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-cl302on]');if(!b)return;e.preventDefault();setAuto(true)},true);
+// ===== v305 (Sara 28/10 16:04 "איך מקטינים עוד יותר ולא מאבדים איכות" → she chose to delete them): the old 5-pose avatar (p5g, p5gv, p5g118, jewelry jw,
+// ties) has been hidden since v188 (26/10) and nothing shows it. Its pictures (318 on 28/10, in 49 items) are listed here with one button; a
+// picture any other field, style or saved collection still points at is left alone. First tap asks again; the second clears those fields
+// on the items and deletes the files. Backups older than today may still name them – a restore then simply has no old-avatar pictures.
+const OLDK=['p5g','p5gv','p5g118','jw','ties'];
+function oldFind(){const ids=new Map(),other=new Set();const I=(typeof IT=='object'&&IT)||{};
+ for(const id in I){const it=I[id]||{};for(const k in it){const t=JSON.stringify(it[k]);if(OLDK.includes(k)){(t.match(HEX)||[]).forEach(h=>{if(!ids.has(h))ids.set(h,new Set());ids.get(h).add(id)})}else add(other,t)}}
+ return {ids,other}}
+let OLDS=null,OLDARM=0;
+const oldRow=()=>{if(!OLDS||!OLDS.del.length)return '';return `<div class="cl305"><p class="cl262p"><b>🗂 האווטאר הישן (5 תנוחות):</b> ${OLDS.del.length} תמונות ב-${OLDS.items.length} בגדים. הן מוסתרות מאז 26/10 ולא מופיעות בשום מקום באתר.</p><span class="mkb"><button type="button" data-old305>למחוק את ${OLDS.del.length} התמונות של האווטאר הישן</button></span></div>`};
+async function oldScan(){const db=await claude.use('db');const {ids,other}=oldFind();
+ for(const c of COLS){if(c=='items'||c=='backup83')continue;try{const sn=await db.collection(c).limit(1000).get();sn.docs.forEach(d=>{try{add(other,JSON.stringify(d.data()))}catch(_){}})}catch(_){}}
+ const del=[...ids.keys()].filter(h=>!other.has(h)),items=[...new Set(del.flatMap(h=>[...ids.get(h)]))];OLDS={del,items};return OLDS}
+async function goOld(b){if(RUN||!OLDS||!OLDS.del.length)return;if(Date.now()-OLDARM>8000){OLDARM=Date.now();b.textContent=`בטוחה? לחצי שוב – ${OLDS.del.length} תמונות יימחקו לתמיד`;b.classList.add('arm');return}
+ RUN=true;const a=await claude.use('assets');let n=0,bad=0;PROG={n:0,all:OLDS.del.length};show(progHtml());
+ try{for(const id of OLDS.items){const it=IT[id]||{},pt={};OLDK.forEach(k=>{if(k in it)pt[k]=''});if(Object.keys(pt).length)try{await putItem(id,pt)}catch(e){ERR('old-put',e)}}
+  const left=new Set();Object.values(IT).forEach(it=>OLDK.forEach(k=>{if(it&&it[k])(JSON.stringify(it[k]).match(HEX)||[]).forEach(h=>left.add(h))}));
+  for(const h of OLDS.del){if(left.has(h)){bad++;continue}for(let t=0;t<4;t++){try{await a.delete(h);n++;break}catch(e){if(e&&(e.code=='rate_limited'||e.code=='store_unavailable')){await new Promise(q=>setTimeout(q,1500*(t+1)));continue}if(e&&e.code=='not_found'){n++;break}bad++;ERR('old-del',e);break}}PROG.n=n+bad;tick()}}
+ finally{RUN=false}
+ try{const db=await claude.use('db');if(db)await db.collection('cl302').doc('old305').set({t:Date.now(),n,bad,items:OLDS.items.length})}catch(_){}
+ OLDS=null;toast_(`✓ נמחקו ${n} תמונות של האווטאר הישן`);show(`<p class="cl262p">✓ נמחקו <b>${n}</b> תמונות של האווטאר הישן.${bad?` (${bad} לא נמחקו)`:''}</p><span class="mkb"><button type="button" class="mkp" data-x>סגירה</button></span>`);try{banner()}catch(_){}}
 window.clean262=open;window.clean262b=()=>banner().catch(()=>{});
 // a line at the top when the store is (nearly) full, and in the admin panel
 async function banner(){let u=null;try{const a=await claude.use('assets');if(!a)return;u=(await a.list()).usage}catch(_){return}
