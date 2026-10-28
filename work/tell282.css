@@ -1,0 +1,26 @@
+/* v282: 💬 tell Claude – the round button on every screen and its window */
+#t282b{position:fixed;bottom:calc(92px + env(safe-area-inset-bottom));inset-inline-start:14px;z-index:2147483000;width:48px;height:48px;border-radius:50%;border:0;background:#17161a;color:#fff;font-size:1.3rem;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer;display:grid;place-items:center;padding:0}
+#t282b.in{bottom:calc(16px + env(safe-area-inset-bottom))}
+html:not([data-d180=z50]) #t282b:not(.in){bottom:calc(76px + env(safe-area-inset-bottom))}
+#t282b b{position:absolute;top:-4px;inset-inline-end:-4px;min-width:20px;height:20px;border-radius:10px;background:#b4532a;color:#fff;font:700 .72rem/20px system-ui,sans-serif;padding:0 5px}
+#tell282{width:min(520px,100vw);max-width:100vw;max-height:90svh;margin:auto auto 0;padding:0 16px 18px;border:0;border-radius:24px 24px 0 0;background:#f6f5f3;color:#17161a;overflow-y:auto;box-sizing:border-box;font-family:Rubik,system-ui,sans-serif}
+#tell282::backdrop{background:rgba(20,18,22,.45)}
+#tell282 .t282h{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:16px 0 6px;background:#f6f5f3;z-index:1}
+#tell282 h2{margin:0;font-size:1.2rem}
+#tell282 .t282h button{width:44px;height:44px;border-radius:50%;border:1px solid #e6e3df;background:#fff;font-size:1.05rem;cursor:pointer}
+#tell282 .t282i{margin:0 0 10px;font-size:.86rem;line-height:1.55;color:#4a4650}
+#tell282 .t282s{display:flex;gap:10px;align-items:center;margin-bottom:10px}#tell282 .t282s img{height:120px;border-radius:12px;background:#fff;border:1px solid #e6e3df}
+#tell282 .t282s label{font-size:.84rem;display:flex;gap:6px;align-items:center}
+#tell282 .t282q{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+#tell282 .t282q button{min-height:36px;padding:6px 12px;border-radius:999px;border:1px solid #cfcac4;background:#fff;font:inherit;font-size:.82rem;cursor:pointer}
+#tell282 textarea{width:100%;box-sizing:border-box;padding:12px;border-radius:14px;border:1px solid #cfcac4;font:inherit;font-size:16px;background:#fff;resize:vertical}
+#tell282 .t282r{margin:8px 0}#tell282 .t282r button,#tell282 .t282mb{min-height:44px;padding:0 14px;border-radius:14px;border:1px solid #cfcac4;background:#fff;font:inherit;font-size:.88rem;cursor:pointer}
+#tell282 .t282pp{display:flex;gap:8px;align-items:center}#tell282 .t282pp img{height:110px;border-radius:10px}#tell282 .t282pp button{min-height:36px;border-radius:10px;border:1px solid #cfcac4;background:#fff;font:inherit;cursor:pointer}
+#tell282 .t282go{display:block;width:100%;min-height:50px;margin:12px 0 8px;border:0;border-radius:16px;background:#17161a;color:#fff;font:600 1rem inherit;font-family:inherit;cursor:pointer}
+#tell282 .t282go:disabled{opacity:.6}
+#tell282 .t282mb{width:100%}#tell282 .t282mb b{color:#b4532a}
+#tell282 .t282m{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+#tell282 .t282m li{background:#fff;border:1px solid #e6e3df;border-radius:14px;padding:10px 12px;font-size:.86rem}
+#tell282 .t282m p{margin:4px 0 0;white-space:pre-wrap}#tell282 .t282m small{color:#6a6670}#tell282 .t282a{background:#f6e7df;border-radius:10px;padding:6px 8px}
+@media (min-width:860px){#tell282{margin:auto;border-radius:24px}#t282b:not(.in){bottom:24px}}
+#t282b.hd{position:static;width:44px;height:44px;box-shadow:none;background:#17161a!important;color:#fff!important;border:0!important;font-size:1.15rem}

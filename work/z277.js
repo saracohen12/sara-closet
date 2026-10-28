@@ -77,7 +77,7 @@ const MORE=[
  ['עוד',[
   ['⚙','כל הכלים והמספרים','פאנל הניהול',()=>window.openAdmin172&&openAdmin172()],
   ['❓','איך משתמשים','הסבר קצר',()=>{const b=document.getElementById('helpb');b&&b.click()}],
-  ['🛠','משהו לא עובד','לספר לי על תקלה',()=>window.openBug77&&openBug77()]]]];
+  ['💬','לספר ל-Claude','מה לא תקין, עם תמונה של המסך',()=>window.openTell282&&openTell282()]]]];
 function openMore(){let d=document.getElementById('z5m');
  if(!d){d=document.createElement('dialog');d.id='z5m';d.dir='rtl';d.setAttribute('aria-labelledby','z5mt');document.body.appendChild(d);
   d.addEventListener('click',e=>{if(e.target===d)return d.close();if(e.target.closest('.z5mx'))return d.close();const b=e.target.closest('[data-z5m]');if(!b)return;const [g,i]=b.dataset.z5m.split('.').map(Number),f=MORE[g][1][i][3];
