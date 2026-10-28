@@ -312,6 +312,9 @@ function layersFor(v,s){const on=s.on||{},L=[];const x=k=>({s:'x'+k+(v+1),k});co
  ord.forEach(sl=>{if(sl=='body'&&!bs)Object.keys(LACE).forEach(k=>{if(on[k])L.push({s:'x'+k+'u'+(v+1),t:camOf(s.cam),ref:LACE[k]})});ofs(sl).forEach(k=>L.push(TK.includes(sl)?Object.assign(x(k),{tk:1}):sl=='bottom'?Object.assign(x(k),{bt:1}):x(k)))});
  // v255 (Sara 27/10 18:58 "בשמלות ארוכות אתה עולה על הנעליים"): a long dress or skirt was cut from GPT's sheet together with the doll's beige flats under its hem,
  // so it covered the shoes she chose. The shoes are drawn once more over the dress, skirt and coat (the shoe layer is only the shoe, at the floor)
+ // v293 (Sara 28/10 15:50 "אני נמצאת בחגורה ואין לי אפשרות לשים חולצה בפנים, בחוץ"): a top (or sweater) over a DRESS can be tucked too – it is drawn over
+ // the dress and ends at her waist: at the belt when she wears one, otherwise at her own waist line, and the dress's skirt shows below it
+ if(!skirt&&s.tuck&&!s.under&&of('body').length)L.forEach(l=>{if(!l.k)return;const sl=SL(l.k);if(sl=='top'||(sl=='outer'&&swk(l.k)))l.tk=1;else if(sl=='belt')l.wl=1;else if(sl=='body')l.dl=1});
  const shs=of('shoes');if(shs.length&&(of('body').length||of('bottom').length||of('coat').length))shs.forEach(k=>L.push(x(k)));
  const st=STY[s.head],z=st&&'z'+s.head.slice(1)+(v+1);
  const head=s.head=='w'?[{s:(s.wb&&WB[v]?'wbx':'w')+(v+1),hd:1}]:st?[DYN[s.head+(v+1)]&&{s:(s.wb&&WB[v]&&st.set=='hair'?'hb_':'')+s.head+(v+1),hd:1},st.set=='tie'&&DYN[z]&&{s:z,t:s.tc||GREY,ref:st.lum}].filter(Boolean):(s.head&&s.head!='c')?[x(s.head)]:[];
@@ -401,7 +404,8 @@ async function paint(cv,v,s,pad){s=headOf(s);const bg=s.bg||'';const hw=whole(s.
  c.drawImage(base,0,0);if(E){for(let i=0;i<8;i++){c.globalAlpha=(i+1)/8;c.drawImage(E,0,0,2,1,0,BH-8+i,BW,1)}c.globalAlpha=1}
  if(hw&&!bg){const nk=await im('ch'+(v+1));if(nk)c.drawImage(nk,0,0)}   // v284: under a wig or hairstyle, her real neck (the no-head picture has a blurred stump there with a second chin shadow)
  const HTv=!s.rawHead&&hw?((await headT(s.head))||[])[v]:null;
- const BT=ms.filter((m,i)=>m&&L[i].bt),BTK=L.filter(l=>l.bt).map(l=>l.s).join(',');const doll=BT.length&&L.some(l=>l.tk)?await im('c'+(v+1)):null;
+ let BT=ms.filter((m,i)=>m&&L[i].bt),BTK=L.filter(l=>l.bt).map(l=>l.s).join(',');const doll=L.some(l=>l.tk)?await im('c'+(v+1)):null;
+ if(!BT.length&&doll){BT=ms.filter((m,i)=>m&&L[i].wl);BTK=L.filter(l=>l.wl).map(l=>l.s).join(',');const di=L.findIndex(l=>l.dl);if(!BT.length&&di>=0&&ms[di]){BT=[waistBand(ms[di],doll,L[di].s)];BTK='wb|'+L[di].s}}   // v293: tucked over a dress
  ms.forEach((m,i)=>{if(!m)return;const l=L[i];if(l.tk&&BT.length)m=tuckCut(m,BT,doll,l.s+'|'+(m.src||'')+'|'+BTK+'|'+BT.map(b=>b.src||'').join(','));const im=l.t?tinted(m,l.t,l.ref):m;if(l.hd&&HTv)drawHead(c,im,HTv);else c.drawImage(im,0,l.k?JY(l.k):0)});if(L.fit)await mkFit(c,v,s.head,L.fit,pt,L.fitId);if(pt||pb)c.restore();
  const miss=ms.some(m=>!m);if(cv._pg!==my)return !miss;if(cv.width!=BW||cv.height!=BH+pt+pb){cv.width=BW;cv.height=BH+pt+pb}const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);g.drawImage(oc,0,0);
  if(pad){if(miss)again(cv,v,s,pad,my);else cv._rt=0}return !miss}   // a layer missing: not kept as a finished picture (frames, thumbs), the stage tries again
@@ -409,6 +413,15 @@ async function paint(cv,v,s,pad){s=headOf(s);const bg=s.bg||'';const hw=whole(s.
 // the hem at the hips (outside her body: the sweater stood out boxy in the side view) and below a short skirt. Her arms and sleeves at the sides stay
 // v279: with no doll frame to tell body from sleeve, only the columns of the skirt itself are cut, so the sleeves at the sides stay
 const TUCK=new Map();
+// v293: no belt over the dress – a thin band at her waist (the narrowest row of her body between chest and hips), as wide as the dress's middle there
+const WBAND=new Map();
+function waistBand(dress,doll,key){if(WBAND.has(key))return WBAND.get(key);const W=doll.naturalWidth||doll.width,H=doll.naturalHeight||doll.height;
+ const rd=x=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(x,0,0,W,H);return g.getImageData(0,0,W,H).data};
+ const b=rd(doll),d=rd(dress),A=(D,x,y)=>D[(y*W+x)*4+3]>100;let sx=0,sn=0;for(let y=Math.floor(H*.3);y<H*.5;y++)for(let x=0;x<W;x++)if(A(b,x,y)){sx+=x;sn++}
+ const cx=sn?Math.round(sx/sn):W>>1,run=(D,y)=>{let a=cx,z=cx;if(!A(D,cx,y))return [cx,cx,0];while(a>0&&A(D,a-1,y))a--;while(z<W-1&&A(D,z+1,y))z++;return [a,z,z-a+1]};
+ let wy=Math.round(H*.4),wmin=1e9;for(let y=Math.floor(H*.33);y<H*.5;y++){const w=run(b,y)[2];if(w>8&&w<wmin){wmin=w;wy=y}}
+ const [a,z]=run(d,wy),c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');g.fillStyle='#000';if(z>a)g.fillRect(a,wy,z-a+1,5);
+ if(WBAND.size>16)WBAND.delete(WBAND.keys().next().value);WBAND.set(key,c);return c}
 function tuckCut(m,BT,doll,key){if(TUCK.has(key))return TUCK.get(key);const W=m.naturalWidth||m.width,H=m.naturalHeight||m.height;
  const rd=x=>{const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(x,0,0,W,H);return [c,g,g.getImageData(0,0,W,H)]};
  const [oc,og,od]=rd(m),p=od.data,sk=new Uint8Array(W*H);BT.forEach(b=>{const d=rd(b)[2].data;for(let i=0;i<W*H;i++)if(d[i*4+3]>100)sk[i]=1});
@@ -614,7 +627,7 @@ function paintRoom(){if(!dlg)return;
  if(UNDO)chips.unshift(`<button type="button" class="r3wc r3undo" data-undo="1" aria-label="להחזיר: ${esc(UNDO.n)}"><b aria-hidden="true">↩</b><span>להחזיר: ${esc(UNDO.n)}</span></button>`);
  wv.innerHTML=(chips.join('')||'<p class="r3note">עוד לא לבשת כלום. בוחרים למטה מהארון.</p>')+fx;thl(ids);
  dlg.querySelector('.r3cnt').textContent=ids.length?`${ids.length} פריטים`:'';
- const t=dlg.querySelector('.r3tk');const sl=x=>Object.keys(ST.on).some(k=>ST.on[k]&&SLOT[k]&&SL(k)==x);t.hidden=!((sl('top')||sl('base')||Object.keys(ST.on).some(k=>ST.on[k]&&SLOT[k]=='outer'&&PK[k]=='sweater'))&&sl('bottom')&&!sl('body'));t.querySelector('input').checked=!!ST.tuck;   // v225 (Sara 19:22 "איפה מכניסים את החולצה"): any top with any skirt, not only the first two items
+ const t=dlg.querySelector('.r3tk');const sl=x=>Object.keys(ST.on).some(k=>ST.on[k]&&SLOT[k]&&SL(k)==x);const tp=sl('top')||sl('base')||Object.keys(ST.on).some(k=>ST.on[k]&&SLOT[k]=='outer'&&PK[k]=='sweater');t.hidden=!(tp&&((sl('bottom')&&!sl('body'))||(sl('body')&&(sl('top')||Object.keys(ST.on).some(k=>ST.on[k]&&SLOT[k]=='outer'&&PK[k]=='sweater'))&&!ST.under)));   // v293: over a dress toot.querySelector('input').checked=!!ST.tuck;   // v225 (Sara 19:22 "איפה מכניסים את החולצה"): any top with any skirt, not only the first two items
  paintJY();
  const un=dlg.querySelector('.r3un');un.hidden=!(sl('top')&&sl('body'));un.querySelector('input').checked=!!ST.under;
  const w=dlg.querySelector('.r3wb');w.hidden=!(ST.head=='w'||(STY[ST.head]&&STY[ST.head].set=='hair'));w.querySelector('input').checked=!!ST.wb;
@@ -952,7 +965,7 @@ function styFrame0(k,o){o=o||{};const st=STY[k];if(!st)return Promise.resolve(''
 setTimeout(()=>{try{KV.tidy(KVV)}catch(_){}},9000);   // pictures of older versions go
 // v288b: ↺ איפוס – everything off the avatar in one tap (Sara 28/10 15:18 "במקום שאני אוריד כל דבר… מאפס"); ↩ brings it all back
 function reset(){UNDO={a:clone(ST),n:'כל מה שהיה עלייך'};ST=Object.assign(clone(DEF),{on:{},bg:ST.bg,cam:ST.cam});UNDO.bj=JSON.stringify(ST);MISS=[];keep();redraw();try{paintMiss()}catch(_){}}
-window.R360={reset,st:()=>ST,worn:()=>wornIds(ST),catOf:id=>cat(id),dbgPaint:async(h,mk,v,on)=>{const c=document.createElement("canvas");if(!await paint(c,v,Object.assign(clone(DEF),{on:on||{},bg:"",head:h,mk:mk||"",tc:null})))return "";return c.toDataURL("image/png")},dbgFrames:(h,mk,on,raw)=>frames8("#dbg|"+h+"|"+mk+"|"+JSON.stringify(on||{})+(raw?"r":""),Object.assign(clone(DEF),{on:on||{},bg:"",head:h,mk:mk||"",tc:null,rawHead:raw?1:0})),open,close,make,prompts,openWith,styCard,styFace,styFrames,styFrame0,headFrames,restyle:()=>{try{if(dlg&&dlg.open)paintSty()}catch(_){}},Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
+window.R360={reset,st:()=>ST,worn:()=>wornIds(ST),catOf:id=>cat(id),dbgPaint:async(h,mk,v,on,ex)=>{const c=document.createElement("canvas");if(!await paint(c,v,Object.assign(clone(DEF),{on:on||{},bg:"",head:h,mk:mk||"",tc:null},ex||{})))return "";return c.toDataURL("image/png")},dbgFrames:(h,mk,on,raw)=>frames8("#dbg|"+h+"|"+mk+"|"+JSON.stringify(on||{})+(raw?"r":""),Object.assign(clone(DEF),{on:on||{},bg:"",head:h,mk:mk||"",tc:null,rawHead:raw?1:0})),open,close,make,prompts,openWith,styCard,styFace,styFrames,styFrame0,headFrames,restyle:()=>{try{if(dlg&&dlg.open)paintSty()}catch(_){}},Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
  ready:()=>Object.keys(READY).filter(id=>D[id]),isReady,kind:kindOf,KIND,ME,prompt1:prompt,sync:resync,dyn:id=>!!(READY[id]&&READY[id].dyn),names:NAMES,show:v=>{if(big){big.stop();big.show(v)}},
  still:async(id,v)=>{if(!READY[id])return null;const s=stateFrom([id],{head:ST.head=='w'?'w':'c',cam:ST.cam,bg:''});
   if((await Promise.all(layersFor(v||0,s).map(l=>im(l.s)))).some(m=>!m))return null;   // a layer that did not load would show the bare doll
