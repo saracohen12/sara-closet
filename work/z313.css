@@ -54,3 +54,31 @@ html[data-d180=z50] body[data-z50=closet] section h2{position:static!important;t
 html[data-d180=z50] #totop{width:auto!important;height:48px!important;min-height:0!important;padding:0 18px!important;border-radius:999px!important;background:var(--z-ink)!important;color:#fff!important;font:600 .9rem/48px var(--z-body)!important;opacity:1!important;box-shadow:0 8px 22px rgba(23,22,26,.25)!important;z-index:61!important}
 html[data-d180=z50] #totop::after{content:" למעלה"}
 @media (min-width:760px){html[data-d180=z50] #totop{inset-inline-start:24px!important;bottom:24px!important}}
+/* v316 "הכל · ☀ חול · ✨ שבת" – stays while she picks categories */
+.z316m{display:none}
+html[data-d180=z50] body[data-z50=closet] .z316m{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:999px;background:var(--z-tile,#efebe6);order:4}
+.z316m button{display:flex;align-items:center;justify-content:center;gap:6px;min-height:46px;border:0;border-radius:999px;background:none;color:var(--z-ink);font:600 .9rem var(--z-body);cursor:pointer;padding:0 6px}
+.z316m button small{font:500 .72rem var(--z-body);color:var(--z-muted)}
+.z316m button[aria-checked=true]{background:var(--z-ink);color:#fff;box-shadow:0 4px 12px rgba(23,22,26,.18)}
+.z316m button[aria-checked=true] small{color:rgba(255,255,255,.75)}
+html[data-d180=z50] body[data-z50=closet] .ctrl .z6c{order:5}
+html[data-d180=z50] body[data-z50=closet] .z313b{order:6}
+html[data-d180=z50] body[data-z50=closet] .ctrl .groups{order:7}
+html[data-d180=z50] body[data-z50=closet] .ctrl #q77{order:8}
+/* the mode is the switch above – the two old group buttons are not needed twice */
+html[data-d180=z50] body[data-z50=closet] .ctrl .groups button[data-g=day],html[data-d180=z50] body[data-z50=closet] .ctrl .groups button[data-g=shab]{display:none!important}
+.z6c button.z316e{opacity:.45}
+section[data-m316=shab] h2::after{content:" · ✨ שבת";font-size:.8em;color:var(--z-acc,#b4532c)}
+section[data-m316=day] h2::after{content:" · ☀ חול";font-size:.8em;color:var(--z-acc,#b4532c)}
+/* 🖼 choosing category pictures in the closet grid: every picture gets ✏, and on a phone all the categories open */
+.z6c button{position:relative}
+body:has(.c180e[aria-pressed=true]) .z6c button[data-h9cat]::before{content:"✏";position:absolute;top:-4px;inset-inline-end:2px;z-index:2;width:24px;height:24px;border-radius:50%;background:var(--z-acc,#b4532c);color:#fff;font-size:.75rem;line-height:24px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+@media (max-width:759px){html[data-d180=z50] body[data-z50=closet]:has(.c180e[aria-pressed=true]) .ctrl .z6c button:nth-child(n+9){display:flex!important}}
+/* v316 home row: hairstyles · makeup · ties */
+.z316h{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;grid-column:1/-1}
+.z316h button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:6px 10px;border-radius:16px;border:1px solid var(--z-line,#e3ddd6);background:var(--z-surface,#fff);color:var(--z-ink,#17161a);font:inherit;cursor:pointer;box-shadow:var(--z-shadow,none)}
+.z316h button span{font-size:1.2rem;line-height:1}.z316h b{font-size:.86rem;font-weight:600;line-height:1.2;text-align:start}
+html[data-d180=terra] .z316h button{background:rgba(255,246,238,.14);border-color:rgba(255,246,238,.32);color:#fff6ee}
+html[data-d180=z50] #h180{grid-template-areas:"txt txt" "av lk" "chips chips" "sty316 sty316" "wait wait"!important}
+html[data-d180=z50] #h180 .z316h{grid-area:sty316;margin-top:0}
+@media (min-width:760px){html[data-d180=z50] #h180 .z316h{max-width:640px}}

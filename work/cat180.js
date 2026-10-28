@@ -211,7 +211,7 @@ document.addEventListener('pointerover',e=>{if(e.pointerType=='touch')return;con
 document.addEventListener('pointerout',e=>{if(e.pointerType=='touch')return;const a=e.target.closest&&e.target.closest('.c208av');if(a&&!(e.relatedTarget&&a.contains(e.relatedTarget)))hoverOff(a)});
 // v208: on window, so it runs before the closet window's own capture handler (fix163 would close it and jump to the category)
 window.addEventListener('click',e=>{if(EDIT){const s=e.target.closest&&e.target.closest('.sty202c[data-sty202]');if(s){e.preventDefault();e.stopImmediatePropagation();return styPicker(s.dataset.sty202)}}
- const t=e.target.closest&&e.target.closest('.c180e,.h9cat[data-h9cat],#cl163 [data-cl163]');if(!t)return;
+ const t=e.target.closest&&e.target.closest('.c180e,.h9cat[data-h9cat],.z6c [data-h9cat],#cl163 [data-cl163]');if(!t)return;
  if(t.classList.contains('c180e')){e.preventDefault();e.stopImmediatePropagation();return setEdit(!EDIT)}
  if(!EDIT){const c=e.target.closest('.h9im.c253,.ph.c253');if(c&&e.detail!==0&&(e.pointerType||LASTPT)=='touch'&&window.sp253){e.preventDefault();e.stopImmediatePropagation();sp253(c.querySelector('img[data-c253]')||c,true,true);return}
   const a=e.target.closest('.c208av');if(a&&a.dataset.c208&&e.detail!==0&&(e.pointerType||LASTPT)=='touch'){e.preventDefault();e.stopImmediatePropagation();   // v208: a touch on her avatar turns it; the name opens the category
