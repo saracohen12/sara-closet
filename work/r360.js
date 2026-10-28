@@ -650,8 +650,21 @@ function paintGrid(){if(!dlg||TAB!='closet')return;dlg.querySelectorAll('.r3cats
  const r=ids.filter(isReady).length,worn=wornIds(ST);
  dlg.querySelector('.r3hint').textContent=ids.length?(CAT=='ready'?'לוחצים כדי ללבוש או להוריד.':`${r?`${r} כבר על האווטאר (מסומנים 360°), לוחצים כדי ללבוש. `:''}לשאר צריך גיליון 360 – לוחצים ואני מסבירה איך.`):'לא מצאתי פריטים.';
  const sh=ids.slice(0,SHOWN);
- dlg.querySelector('.r3grid').innerHTML=sh.map(id=>{const tw=coverTie(id),ok=isReady(id)||tw;const f=!!itOf(id).fav;return `<div class="r3cw"><button type="button" class="r3st${f?' on':''}" data-r3st="${id}" aria-pressed="${f}" aria-label="${f?'להוריד כוכב':'לסמן בכוכב'}: ${esc(nm(id))}">${f?'★':'☆'}</button><button type="button" class="r3c${ok?' ok':''}" data-it="${id}"${ok?` aria-pressed="${worn.includes(id)}"`:''}><span class="r3ph"><img alt="" loading="lazy" data-th="${id}" src="${ph(id)}"></span><span class="r3n">${esc(nm(id))}</span><span class="r3b">${tw?'🧕 עם קשירה':ok?'360°':(window.up188&&up188(id))?'⏳ הועלה, מחכה':'עוד לא ב-360'}${itOf(id).wear?` · לבשתי ${itOf(id).wear}`:''}</span></button></div>`}).join('');
- const mb=dlg.querySelector('.r3moreb');mb.hidden=ids.length<=SHOWN;mb.textContent=`להראות עוד (${ids.length-SHOWN})`;thl(sh)}
+ dlg.querySelector('.r3grid').innerHTML=sh.map(id=>{const tw=coverTie(id),ok=isReady(id)||tw;const f=!!itOf(id).fav;return `<div class="r3cw">${partOf(id)?`<button type="button" class="r3pc" data-pc293="${esc(id)}" aria-label="לבחור תמונה ל${esc(nm(id))}" title="לבחור תמונה לפריט">✂</button>`:''}<button type="button" class="r3st${f?' on':''}" data-r3st="${id}" aria-pressed="${f}" aria-label="${f?'להוריד כוכב':'לסמן בכוכב'}: ${esc(nm(id))}">${f?'★':'☆'}</button><button type="button" class="r3c${ok?' ok':''}" data-it="${id}"${ok?` aria-pressed="${worn.includes(id)}"`:''}><span class="r3ph">${pimTag(id)}</span><span class="r3n">${esc(nm(id))}</span><span class="r3b">${tw?'🧕 עם קשירה':ok?'360°':(window.up188&&up188(id))?'⏳ הועלה, מחכה':'עוד לא ב-360'}${itOf(id).wear?` · לבשתי ${itOf(id).wear}`:''}</span></button></div>`}).join('');
+ const mb=dlg.querySelector('.r3moreb');mb.hidden=ids.length<=SHOWN;mb.textContent=`להראות עוד (${ids.length-SHOWN})`;thl(sh);pimLoad(sh)}
+// v293 (Sara 28/10 15:49 "אני לא רוצה לראות את החולצות שמופיעות כמה פעמים … רק את החולצה של הצבע המתאים … אולי תשים לזה אבטר"): a piece of a pack
+// (3 shirts, 3 belts) shows ITS OWN picture, not the pack photo: a picture chosen for it (part.img), or her avatar wearing it (front, cut to the shirt / the belt)
+const PIM=window.PIM292={},PIMQ=[];let PIMB=0;
+const partOf=id=>{const i=id.indexOf('~');if(i<0||!(D[id]&&D[id].part))return null;const P=(itOf(id.slice(0,i)).parts||[]).find(p=>p.k==id.slice(i+1));return P||{}};
+function pimTag(id){const P=partOf(id);if(!P)return `<img alt="" loading="lazy" data-th="${id}" src="${ph(id)}">`;if(P.img&&!PIM[id])PIM[id]='/_blob/'+P.img;
+ return `<img alt="" loading="lazy" data-pim="${esc(id)}" src="${PIM[id]||ph(id)}"${PIM[id]?'':' class="r3pw"'}>`}
+function pimLoad(ids){ids.forEach(id=>{if(PIM[id]||!partOf(id)||!READY[id]||PIMQ.includes(id))return;PIMQ.push(id)});if(!PIMB)pimRun()}
+async function pimRun(){PIMB=1;try{while(PIMQ.length){const id=PIMQ.shift();if(PIM[id])continue;try{const c=await R360.still(id,0);if(!c)continue;
+  const c0=cat(id),W=c.width,H=c.height,bl0=c0=='belts',tp=['tops','base','sweaters'].includes(c0);   // a 3:4 picture like the card: the belt at her waist, the shirt from the neck down
+  const h=Math.round(bl0?W*.55*4/3:tp?H*.56:H),w=Math.round(h*3/4),y0=Math.max(0,Math.min(H-h,Math.round(bl0?H*.46-h/2:tp?H*.05:0))),x0=Math.round((W-w)/2);
+  const o=document.createElement('canvas');o.width=w;o.height=h;o.getContext('2d').drawImage(c,x0,y0,w,h,0,0,w,h);
+  const bl=await new Promise(r=>o.toBlob(r,'image/jpeg',.88));if(!bl)continue;PIM[id]=URL.createObjectURL(bl);
+  document.querySelectorAll(`img[data-pim="${CSS.escape(id)}"]`).forEach(i=>{i.src=PIM[id];i.classList.remove('r3pw')})}catch(e){ERR('pim',e)}await new Promise(r=>setTimeout(r,30))}}finally{PIMB=0}}
 function paintMiss(){if(!dlg)return;const m=dlg.querySelector('.r3miss');m.hidden=!MISS.length;if(!MISS.length){m.innerHTML='';return}
  m.innerHTML=`<p>עוד ${MISS.length==1?'פריט אחד':MISS.length+' פריטים'} מהלוק בלי 360:</p><div>${MISS.map(id=>`<button type="button" data-mk="${id}" aria-label="${esc(nm(id))}: איך להכין"><img alt="" data-th="${id}" src="${ph(id)}"></button>`).join('')}</div><button type="button" class="r3missx" aria-label="סגירה">✕</button>`;thl(MISS)}
 

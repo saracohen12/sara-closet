@@ -216,7 +216,7 @@ window.g256={npOf,namesOf,colsOf,asked,kd,ensurePieces,MULTI,TN};
 const subId=(id,k)=>id+'~'+k;
 // v256: also when she answers how many (not only at upload), and fewer pieces when she lowers the number – each piece's own avatar stays saved under its id
 async function ensurePieces(id){const O=outs(id).filter(o=>o.pk),old=Array.isArray(it(id).parts)?it(id).parts:[];if(!O.length&&!old.some(p=>/^g\d+$/.test(p.k)))return;
- const keep=old.filter(p=>!/^g\d+$/.test(p.k)),mine=O.map(o=>{const p={k:o.pk,n:(o.pn||o.n).slice(0,40),cat:MULTI.includes(kd(id))&&o.kind==kd(id)?cat0(id):(CATOF[o.kind]||cat0(id))};if(o.col)p.color=o.col;return p});
+ const keep=old.filter(p=>!/^g\d+$/.test(p.k)),mine=O.map(o=>{const p={k:o.pk,n:(o.pn||o.n).slice(0,40),cat:MULTI.includes(kd(id))&&o.kind==kd(id)?cat0(id):(CATOF[o.kind]||cat0(id))};if(o.col)p.color=o.col;const ob=old.find(x=>x.k==o.pk);if(ob&&ob.img)p.img=ob.img;return p});   // v293: keep the piece's own picture
  const nu=[...keep,...mine];if(JSON.stringify(nu)!=JSON.stringify(old))await putItem(id,{parts:nu.length?nu:null});try{window.syncParts85&&syncParts85()}catch(_){}}
 // ---------- upload: she picks every picture GPT returned; the site shows which is which (by order), she can change it, then ✓ ----------
 let UP=null;

@@ -129,7 +129,7 @@ function syncParts(){try{if(typeof IT!='object')return;const sig=Object.keys(IT)
 setInterval(syncParts,1500);setTimeout(syncParts,300);
 window.pieces85=()=>[...PIECES].filter(s=>D[s]);window.syncParts85=syncParts;   // v250: the 360 studio lists the pieces too
 // a piece shows its own avatar picture, or the product photo until it has one
-if(typeof img=='function'){const _img=img;img=function(t){if(isPart(t)){const g=typeof p5gOf=='function'&&p5gOf(t);if(g&&g.front)return p5gUrl(g,'front');return _img(D[t].part)}return _img(t)};window.img=img}
+if(typeof img=='function'){const _img=img;img=function(t){if(isPart(t)){if(window.PIM292&&PIM292[t])return PIM292[t];   /* v293: the piece's own picture */const g=typeof p5gOf=='function'&&p5gOf(t);if(g&&g.front)return p5gUrl(g,'front');return _img(D[t].part)}return _img(t)};window.img=img}
 // opening a piece opens its product, at the pieces box
 {const _oi=openItem;openItem=function(id){if(isPart(id)){const pid=D[id].part;const r=_oi.call(this,pid);setTimeout(()=>{const b=document.querySelector(`#dlg [data-pt85row="${id}"]`);if(b){b.open=true;b.scrollIntoView({block:'center'})}},700);return r}return _oi.apply(this,arguments)};window.openItem=openItem}
 // the pieces box in the product window
@@ -155,7 +155,7 @@ document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.c
  if(t.dataset.pt85add!==undefined){const r=box.querySelector('.pt85r');const c=r.cloneNode(true);c.querySelector('input').value='';box.querySelector('.pt85a').before(c);c.querySelector('input').focus();return}
  if(t.dataset.pt85del!==undefined){if(box.querySelectorAll('.pt85r').length>1)t.closest('.pt85r').remove();else t.closest('.pt85r').querySelector('input').value='';return}
  const id=t.dataset.pt85save;const list=readEditor(box).filter(p=>p.n);if(list.length==1){toast('צריך לפחות 2 פריטים כדי לפרק');return}
- const old=partsOf(id);const used=new Set();const parts=list.map((p,i)=>{let o=old.find(x=>!used.has(x.k)&&x.n==p.n)||old.find(x=>!used.has(x.k)&&x.cat==p.cat);const k=o?o.k:('p'+Date.now().toString(36)+i);used.add(k);return {k,n:p.n.slice(0,40),cat:p.cat}});
+ const old=partsOf(id);const used=new Set();const parts=list.map((p,i)=>{let o=old.find(x=>!used.has(x.k)&&x.n==p.n)||old.find(x=>!used.has(x.k)&&x.cat==p.cat);const k=o?o.k:('p'+Date.now().toString(36)+i);used.add(k);const r={k,n:p.n.slice(0,40),cat:p.cat};if(o&&o.img)r.img=o.img;if(o&&o.color)r.color=o.color;return r});   /* v293: keep the piece's own picture */
  const gone=old.filter(o=>!used.has(o.k)&&avReady(subId(id,o.k)));if(gone.length&&!confirm(`להסיר את ${gone.map(g=>g.n).join(', ')}? התמונות שלהם לאווטאר יישארו שמורות אם תוסיפי אותם שוב.`))return;
  try{await putItem(id,{parts:parts.length?parts:null})}catch(err){ERR('ptsave',err)}syncParts();ptMount(id);setTimeout(()=>toast(parts.length?`✂ פירקתי ל-${parts.length} פריטים. עכשיו מעלים לכל אחד גיליון 5 תנוחות`:'הפירוק בוטל'),700)},true);
 // a list of every product that looks like several pieces (search: "פירוק")

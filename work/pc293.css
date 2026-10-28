@@ -1,0 +1,20 @@
+/* v293 – choosing a pack piece's own picture */
+#pc293{width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 24px);padding:0;border:0;border-radius:20px;background:#fff;color:#17161a;font-family:inherit;overflow:auto}
+#pc293::backdrop{background:rgba(20,16,14,.55)}
+#pc293 .pc9h{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;background:#fff;border-bottom:1px solid #eee5dc}
+#pc293 h3{margin:0;font-size:1.05rem}
+#pc293 .pc9x{width:40px;height:40px;border-radius:50%;border:1px solid #e6dcd2;background:#fff;font-size:1rem;cursor:pointer}
+#pc293 .pc9t{margin:10px 14px;font-size:.9rem;color:#5a4d45}
+#pc293 .pc9l{display:flex;gap:8px;overflow-x:auto;padding:0 14px 10px}
+#pc293 .pc9l button{flex:0 0 auto;width:78px;height:96px;padding:0;border-radius:12px;border:2px solid #e6dcd2;background:#f6f5f3;overflow:hidden;cursor:pointer}
+#pc293 .pc9l button[aria-pressed=true]{border-color:#b4532a;box-shadow:0 0 0 2px #b4532a}
+#pc293 .pc9l img{width:100%;height:100%;object-fit:cover;display:block}
+#pc293 .pc9w{padding:0 14px}
+#pc293 .pc9s{position:relative;touch-action:none;user-select:none;-webkit-user-select:none;cursor:crosshair;border-radius:12px;overflow:hidden;background:#f6f5f3}
+#pc293 .pc9s img{display:block;width:100%;height:auto;pointer-events:none}
+#pc293 .pc9b{position:absolute;border:3px solid #b4532a;border-radius:6px;box-shadow:0 0 0 9999px rgba(0,0,0,.35);pointer-events:none}
+#pc293 .pc9a{position:sticky;bottom:0;display:flex;gap:8px;flex-wrap:wrap;padding:12px 14px;background:#fff;border-top:1px solid #eee5dc}
+#pc293 .pc9a button{min-height:44px;padding:0 18px;border-radius:999px;border:1px solid #e6dcd2;background:#fff;font:inherit;font-weight:600;cursor:pointer}
+#pc293 .pc9ok{background:#17161a!important;color:#fff;border-color:#17161a!important}
+#pc293 .pc9ok:disabled{opacity:.4;cursor:default}
+#pc293 button:focus-visible{outline:3px solid #b4532a;outline-offset:2px}
