@@ -149,6 +149,16 @@ async function dlZip(id,b){const o=b.textContent;b.disabled=true;b.textContent='
   await R().saveFile(`gpt-${String(id).replace(/[^A-Za-z0-9_]/g,'')}.zip`,await zip246(files));
   toast_(n?`✓ ירד ZIP: ${n} תמונות של המוצר, הבובה והפרומפט`:'ירד ZIP בלי תמונת המוצר – צרפי אותה לבד');try{await putItem(id,{g250:Date.now()})}catch(_){}}
  catch(e){ERR('zip',e);toast_('לא הצלחתי להכין את הקובץ. לנסות שוב')}finally{if(b.isConnected){b.disabled=false;b.textContent=o}}}
+// v296 (Sara 28/10 16:00 "אני רוצה לשלוח דברים ל-GPT ממש, בלחיצת כפתור"): one big button that walks the whole way – 1. the ZIP downloads and the prompt
+// is copied, 2. GPT opens (the prompt copied again, in case the save replaced it), 3. she picks every picture that came back. The step is kept per item.
+let GO={};
+const GOS=[['🚀 לשלוח ל-GPT','מוריד ZIP אחד ומעתיק את הפרומפט'],['💬 עכשיו לפתוח את GPT','שם: מצרפים את ה-ZIP ומדביקים את הפרומפט (לחיצה ארוכה ← הדבק)'],['📤 להעלות את התמונות שחזרו','בוחרים את כולן בבת אחת – הן נכנסות לפי הסדר']];
+function goHtml(id){const k=GO[id]|0,[a,b]=GOS[k];return `<div class="g296"><button type="button" class="g296go" data-g296go>${a}<small>${b}</small></button><div class="g296st">${GOS.map((_,i)=>`<i class="${i<k?'done':i==k?'on':''}">${i+1}</i>`).join('')}</div>${k?'<button type="button" class="g296r" data-g296go="0">↺ מההתחלה</button>':''}</div>`}
+function goPaint(id){const d=document.querySelector('.g296');if(d)d.outerHTML=goHtml(id)}
+async function go(id,b){if(b.dataset.g296go==='0'){GO[id]=0;return goPaint(id)}const k=GO[id]|0;
+ if(k==0){try{await navigator.clipboard.writeText(prompt(id))}catch(_){}await dlZip(id,b);GO[id]=1;return goPaint(id)}
+ if(k==1){const t=prompt(id);if(window.gptOpen93)await gptOpen93(t,false);else{try{await navigator.clipboard.writeText(t)}catch(_){}window.open('https://chatgpt.com/','_blank')}GO[id]=2;goPaint(id);toast_('הפרומפט הועתק. ב-GPT: 📎 מצרפים את ה-ZIP, מדביקים ושולחים');return}
+ return pick(id)}
 async function copyTxt(b,t){let ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch(_){try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();ok=document.execCommand('copy');a.remove()}catch(_){}}
  const o=b.textContent;b.textContent=ok?'✓ הועתק – עכשיו ל-GPT':'לא הצלחתי להעתיק';setTimeout(()=>{if(b.isConnected)b.textContent=o},2600)}
 // ---------- several products of one category in ONE zip (v252) ----------
@@ -354,6 +364,7 @@ function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';
   if(q.g250j){const L=jwOf(ID).slice(),i=L.indexOf(q.g250j);if(i>=0){if(L.length>1)L.splice(i,1)}else L.push(q.g250j);return save({jw:JW.map(x=>x[0]).filter(x=>L.includes(x))})}
   if(q.g250sa)return save({sp:[q.g250sa,setOf(ID)[1]]});
   if(q.g250sb)return save({sp:[setOf(ID)[0],q.g250sb]});
+  if(q.g296go!=null)return go(ID,b);
   if(q.g250zip!=null)return dlZip(ID,b);
   if(q.g250cp!=null)return copyTxt(b,prompt(ID));
   if(q.g250up!=null)return pick(ID);
@@ -390,6 +401,7 @@ function open(id){ID=id;if(B&&!B.sel.includes(id))B.from=0;const d=dlg(),k=kd(id
  d.innerHTML=`<div class="mk"><div class="mkh"><h3 id="g250t">🚀 ${es(nm(id))} – הכול ל-GPT</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
   <div class="g250top"><img alt="" src="${es(p)}"><div>${q.join('')}</div></div>
   <div class="g250o"><b>GPT יחזיר ${O.length} ${O.length>1?'תמונות':'תמונה'}:</b><ol>${O.map(o=>`<li>${es(o.n)}</li>`).join('')}</ol></div>
+  ${B&&B.from&&B.sel.includes(id)?'':goHtml(id)}
   <ol class="g250s"><li><b>⬇ להוריד</b> – ZIP אחד: ${ph.length} תמונות של המוצר, הבובה${O.some(o=>o.role=='cu')?', תקריב הפנים שלך':''} והפרומפט.</li><li>ב-GPT בשיחה חדשה: מצרפים את ה-ZIP ומדביקים את הפרומפט (📋).</li><li><b>📤 להעלות</b> – בוחרים את כל התמונות שחזרו בבת אחת.</li></ol>
   <div class="mkb g250bar">${B&&B.from&&B.sel.includes(id)?'<button type="button" class="mkp" data-g252list>↩ לרשימת המוצרים</button>':`<button type="button" class="mkp" data-g250zip>⬇ להוריד הכול (ZIP)</button><button type="button" data-g250cp>📋 הפרומפט</button><button type="button" class="mkp" data-g250up>📤 להעלות מה שחזר</button><button type="button" data-g252>📦 כמה מוצרים יחד</button>`}</div>
   ${ps.length?`<div class="g250ps"><b>הפריטים במוצר הזה</b>${ps.map(x=>{const s=subId(id,x.k),ok=R()&&R().isReady(s);return `<div class="g250pi"><span>${es(x.n)}</span><em class="${ok?'ok':''}">${ok?'✓ על האווטאר':'עוד לא'}</em>${ok?`<button type="button" data-g250see="${es(s)}">👀 עליי</button>`:''}</div>`}).join('')}</div>`:''}

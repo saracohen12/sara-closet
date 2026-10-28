@@ -506,3 +506,14 @@ dialog#g256::backdrop{background:rgba(30,20,15,.45)}
 #g250 .g250fl{color:#a3141c;font-size:.85rem;line-height:1.3}
 /* v295 – the 🗑 / ☆ on the cards slid over the sticky title and tabs while scrolling */
 #sty199 .mkh{z-index:5}#sty199 .syt{z-index:4}#tie202 .mkh{z-index:5}#tie202 .t246top{z-index:4}
+/* v296 one-button GPT walk-through */
+#g250 .g296{display:flex;flex-direction:column;align-items:stretch;gap:6px;margin:12px 0 4px}
+#g250 .g296go{min-height:58px;border:0;border-radius:16px;background:linear-gradient(135deg,#2d211b,#8a5a3c);color:#fff;font:inherit;font-weight:800;font-size:1.08rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 14px;box-shadow:0 6px 16px #2d211b33}
+#g250 .g296go small{font-weight:500;font-size:.78rem;opacity:.88}
+#g250 .g296go:disabled{opacity:.6}
+#g250 .g296st{display:flex;justify-content:center;gap:8px}
+#g250 .g296st i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:.75rem;font-weight:700;border:2px solid #0002;color:var(--muted,#6b5a50)}
+#g250 .g296st i.on{border-color:var(--accent,#b5562f);color:var(--accent,#b5562f)}
+#g250 .g296st i.done{background:#3b8a50;border-color:#3b8a50;color:#fff}
+#g250 .g296r{align-self:center;border:0;background:none;color:var(--muted,#6b5a50);font:inherit;font-size:.8rem;cursor:pointer;min-height:32px}
+#g250 .mkh{background:var(--bg,#f6f3ef);margin-inline:-4px;padding-inline:4px}   /* v296: background:inherit was see-through – the chips showed through the title when scrolling */
