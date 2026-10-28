@@ -90,6 +90,25 @@ async function run(max){if(RUN)return;RUN=true;let n=0,tries=0;try{const a=await
     ['L','M'].forEach(f=>{if(Array.isArray(v[f])&&sig(v[f])==k)pt[f]=NL.slice()});if(Object.keys(pt).length){await ref.update(pt);DONE++}}
    try{R360.sync()}catch(_){}}
  }catch(e){ERR('run',e)}finally{RUN=false}}
+// v302: the background re-cuts (v296–v298 made every top, jacket, scarf and tie cut again) uploaded 8 files per item and the store reached its
+// 5,000 files (her error log 28/10 15:04). A new cut is now stored packed from the start: one picture of the 8 angles, read back and checked
+// against the 8 cuts before it is used (a failed check deletes our own upload of a moment ago and the caller stores 8 files as before).
+// keep[v]===false leaves angle v empty. Returns the list of 8 names, or null.
+async function put8(a,V,keep){const ok=V.map((c,v)=>c&&(!keep||keep[v]!==false)?c:null),one=ok.find(Boolean);if(!one)return null;const W=one.width,H=one.height;
+ if(ok.some(c=>c&&(c.width!=W||c.height!=H)))return null;
+ const c=document.createElement('canvas');c.width=W*4;c.height=H*2;const x=c.getContext('2d');ok.forEach((k,v)=>{if(k)x.drawImage(k,(v%4)*W,(v>>2)*H)});
+ let bl=await new Promise(r=>c.toBlob(r,'image/webp',.97));if(!bl||bl.type!='image/webp')bl=await new Promise(r=>c.toBlob(r,'image/png'));if(!bl)return null;
+ const up=await put1(a,bl);let back,bad=0;try{back=await decode(up.id)}catch(e){bad=2}
+ if(!bad)try{if(back.width!=W*4||back.height!=H*2)bad=1;else for(let v=0;v<8&&!bad;v++){const k=ok[v];if(!k)continue;const A=k.getContext('2d',{willReadFrequently:true}).getImageData(0,0,W,H).data,B=px(back,(v%4)*W,(v>>2)*H,W,H);let d=0,n=0;
+   for(let i=0;i<A.length;i+=4){const al=Math.max(A[i+3],B[i+3]);if(!al)continue;n++;d+=Math.abs(A[i+3]-B[i+3])+(al>40?(Math.abs(A[i]-B[i])+Math.abs(A[i+1]-B[i+1])+Math.abs(A[i+2]-B[i+2]))/3:0)}
+   if(n&&d/n>4)bad=1}}catch(e){bad=3}finally{try{back.close()}catch(_){}}
+ if(bad){ERR('put8',bad);try{await a.delete(up.id)}catch(e){ERR('del8',e)}return null}
+ return ok.map((k,v)=>k?up.id+'~'+v:'')}
+// the store is full: background re-cuts wait (each try would fail again) and the 🧹 bar shows
+const FULLRX=/at most|quota|limit/i;
+window.SP262.full=e=>{if(e&&FULLRX.test(String(e.code||'')+' '+String(e.message||''))){window.STOREFULL=Date.now();try{window.clean262b&&clean262b()}catch(_){}return true}return false};
+window.SP262.isFull=()=>!!window.STOREFULL&&Date.now()-window.STOREFULL<15*60e3;
+window.SP262.put8=put8;
 window.SP262.run=run;window.SP262.left=async()=>{const db=await claude.use('db');return db?lists((await db.collection('styles').get()).docs).length:-1};
 // 25 s after the page opens, then every 4 minutes, a few at a time (each pack takes a few seconds and runs in the background)
 setTimeout(()=>run(30),25000);const IV=setInterval(()=>run(15),4*60e3);window.SP262.stop=()=>clearInterval(IV);

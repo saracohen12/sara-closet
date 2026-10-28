@@ -252,23 +252,24 @@ async function grid1(c,f){let a=null;try{a=await claude.use('assets')}catch(_){}
 const ERRT={shape:'התמונה לא בצורה של הגיליון (2 שורות של 4 משבצות). מעלים את התמונה המלאה שחזרה מ-GPT, בלי לחתוך',
  empty:'לא מצאתי שינוי על הבובה. זו התמונה ש-GPT החזיר?',assets:'שמירת תמונות לא זמינה כאן. לפתוח את האתר ב-Chrome ולנסות שוב',db:'השמירה לא זמינה כאן. לפתוח את האתר ב-Chrome',x:'משהו השתבש. לנסות שוב'};
 const blobOf=c=>new Promise(r=>c.toBlob(b=>{if(b&&b.type=='image/webp')return r(b);c.toBlob(r,'image/png')},'image/webp',.92));
+const put8=async(a,V,keep)=>{const S=window.SP262;if(S&&S.put8){try{const L=await S.put8(a,V,keep);if(L)return L}catch(e){if(S.full&&S.full(e))throw e;ERR('put8',e)}}const L=[];for(let v=0;v<V.length;v++)L.push(V[v]&&(!keep||keep[v]!==false)?(await put1(a,await blobOf(V[v]))).id:'');return L};   // v302: one packed picture, not 8 files
 async function put1(a,b){let last;for(const w of [0,1500,4000]){if(w)await new Promise(r=>setTimeout(r,w));try{return await a.upload(b)}catch(e){last=e}}throw last}
 // v213 (Sara 26/10 15:36 "התמונה של השיער לא נגזרה טוב"): the whole-head cutter is better now (cut8.CVW) – a hairstyle or tie cut before
 // is cut again from her own GPT picture, once, quietly in the background; the old pictures stay in the store
 const RC=new Set();let RCB=false;
-async function recut(){if(RCB||!window.cut8||!cut8.CVW||!DB||(PROC&&!PROC.err))return;
+async function recut(){if(window.SP262&&SP262.isFull()){setTimeout(recut,5*60e3);return}if(RCB||!window.cut8||!cut8.CVW||!DB||(PROC&&!PROC.err))return;
  const due=y=>y.src&&!((y.cv||0)>=(y.set=='hair'&&cut8.CVH||cut8.CVW))&&!RC.has(y.id),x=LIST.find(y=>y.set=='hair'&&due(y))||LIST.find(y=>y.set=='tie'&&due(y));if(!x)return;RC.add(x.id);RCB=true;   // v214: hairstyles first
  try{let a=null;try{a=await claude.use('assets')}catch(_){}if(!a)return;
   const r=await cut8.run('/_blob/'+x.src,KIND[x.set]);if(r.px.filter(p=>p>150).length<5)throw new Error('empty');
-  const L=[];for(let v=0;v<8;v++)L.push((await put1(a,await blobOf(r.views[v]))).id);
+  const L=await put8(a,r.views.slice(0,8));
   const doc={L,cv:cut8.CVW};
-  if(r.fab){const M=[];for(let v=0;v<8;v++)M.push((await put1(a,await blobOf(r.fab[v]))).id);doc.M=M;doc.lum=r.lum||x.lum||128}
+  if(r.fab){const M=await put8(a,r.fab.slice(0,8));doc.M=M;doc.lum=r.lum||x.lum||128}
   // v267: write only the new layers, and only if the style still has the same picture – a name, close-up or new picture she saved meanwhile stays.
   // If she replaced the picture while this ran, these new files are ours, a few seconds old and used nowhere – they are deleted.
   const ref=DB.collection('styles').doc(x.id),fr=await ref.get(),cur=fr.exists?fr.data():null;
-  if(!cur||cur.src!==x.src){for(const f of [...L,...(doc.M||[])])try{await a.delete(f)}catch(_){}return}
+  if(!cur||cur.src!==x.src){for(const f of new Set([...L,...(doc.M||[])].filter(Boolean).map(f=>String(f).split('~')[0])))try{await a.delete(f)}catch(_){}return}
   await ref.update(doc);log('sty_recut',{set:x.set,id:x.id,px:r.px.join(',')})}
- catch(e){ERR('recut',e)}finally{RCB=false;setTimeout(recut,1500)}}
+ catch(e){ERR('recut',e);try{window.SP262&&SP262.full(e)}catch(_){}}finally{RCB=false;setTimeout(recut,1500)}}
 async function run(set,fs,re,pre){if(PROC&&!PROC.err){toast_('רגע, עוד גוזרת');return}if(!window.cut8)return;
  let a=null;try{a=await claude.use('assets')}catch(_){}
  if(!a||!DB){PROC={err:ERRT[a?'db':'assets']};paint();return}
@@ -282,7 +283,7 @@ async function run(set,fs,re,pre){if(PROC&&!PROC.err){toast_('רגע, עוד ג�
   try{const r=await cut8.run(fs[i],KIND[set],v=>{PROC={v:v+1,i:i+1,n:fs.length,k:pk,n0:base};const s=DL&&DL.querySelector('.syst');if(s)s.outerHTML=status()});
    if(r.px.filter(x=>x>(set=='mk'?30:150)).length<(set=='mk'?1:5))throw Object.assign(new Error('empty'),{code:'empty'});
    PROC={v:9,i:i+1,n:fs.length,k:pk,n0:base};paint();
-   const src=(await put1(a,await slim272(fs[i]))).id,L=[];for(let v=0;v<8;v++)L.push(set!='mk'||r.px[v]>3?(await put1(a,await blobOf(r.views[v]))).id:'');
+   const src=(await put1(a,await slim272(fs[i]))).id,L=await put8(a,r.views.slice(0,8),r.views.slice(0,8).map((_,v)=>set!='mk'||r.px[v]>3));
    let M=null;if(r.fab){M=[];for(let v=0;v<8;v++)M.push((await put1(a,await blobOf(r.fab[v]))).id)}
    const old=re&&LIST.find(x=>x.id==re);
    const n=old?old.n:(base?(fs.length>1?`${base} ${i+1}`:base):`${one} ${mine(set).length+done.length+1}`);

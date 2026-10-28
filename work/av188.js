@@ -111,7 +111,7 @@ async function up(id,fs){if(BUSY){toast_('רגע, עוד שומרת');return fal
  BUSY=true;let a=null;try{a=await claude.use('assets')}catch(_){}
  if(!a){BUSY=false;toast_(ERRT.assets);return false}
  let upFail=false;const add=[];try{for(let i=0;i<fs.length;i++){toast_(`שומרת ${i+1} מתוך ${fs.length}…`);const r=await a.upload(await slim272(fs[i]));add.push({a:r.id,t:Date.now(),n:String(fs[i].name||'').slice(0,80)})}}
- catch(e){upFail=true;ERR('upload',e);toast_(/quota/.test(e&&e.code||'')?ERRT.full:add.length?`נשמרו ${add.length}, השאר לא עלו. לנסות שוב`:'התמונה לא עלתה. לנסות שוב')}
+ catch(e){upFail=true;ERR('upload',e);toast_(/quota/.test(e&&e.code||'')||(window.SP262&&SP262.full(e))?ERRT.full:add.length?`נשמרו ${add.length}, השאר לא עלו. לנסות שוב`:'התמונה לא עלתה. לנסות שוב')}
  if(add.length){try{await putItem(id,{a8up:[...ups(id),...add]})}catch(e){ERR('put',e)}rebox(id);repaint(id)}
  BUSY=false;
  const at=AT[id];delete AT[id];let ok=!upFail&&add.length>0;for(let i=0;i<add.length;i++){if(!(await cut(id,fs[i],add[i].a,add[i].t,i==0&&at!=null&&parts(id)[at]?at:undefined)))ok=false}
@@ -128,6 +128,7 @@ const SLOT={tiex:'head',dress:'body',top:'top',base:'top',sweater:'outer',skirt:
  necklace:'neck',earrings:'ears',bracelet:'wrist',ring:'wrist',belt:'belt',shoes:'shoes',bag:'bag'};
 const TWIN={set:['top','skirt'],jwset:['necklace','earrings']};
 const blobOf=c=>new Promise(r=>c.toBlob(b=>{if(b&&b.type=='image/webp')return r(b);c.toBlob(r,'image/png')},'image/webp',.92));
+const put8=async(a,V,keep)=>{const S=window.SP262;if(S&&S.put8){try{const L=await S.put8(a,V,keep);if(L)return L}catch(e){if(S.full&&S.full(e))throw e;ERR('put8',e)}}const L=[];for(let v=0;v<V.length;v++)L.push(V[v]&&(!keep||keep[v]!==false)?(await put1(a,await blobOf(V[v]))).id:'');return L};   // v302: one packed picture, not 8 files
 async function put1(a,b){let last;for(const w of [0,1500,4000]){if(w)await new Promise(r=>setTimeout(r,w));try{return await a.upload(b)}catch(e){last=e}}throw last}
 // src: the File she just picked, or the stored picture · ua: its asset id · t: its upload time
 // at: the index of a part that is cut again (v192: older cuts did not follow the turned doll)
@@ -142,15 +143,15 @@ async function cut(id,src,ua,t,at){if(PROC[id]&&PROC[id].v){toast_('רגע, עו
   if(r.px.filter(x=>x>150).length<5)throw Object.assign(new Error('empty'),{code:'empty'});
   PROC[id]={v:9};paintSt(id);
   try{a=await claude.use('assets')}catch(_){}if(!a)throw Object.assign(new Error('assets'),{code:'assets'});
-  for(const c of r.views)L.push((await put1(a,await blobOf(c))).id);
+  L.push(...await put8(a,r.views));
   const np={s:SLOT[kind]||'top',k:kind,L,src:ua||'',t:t||Date.now(),cv:cut8.cvOf?cut8.cvOf(kind):cut8.CV||1,sh:r.shifts.some(s=>s[0]||s[1])?r.shifts:null,...(nt?{n:nt}:{})};if(re)P[at]=np;else P.push(np);
   await putItem(id,{a8:P});delete PROC[id];DONE.add(id);
   try{R360.sync()}catch(_){}rebox(id);repaint(id);avNow(id);log('cut8_ok',{id,kind,re,ms:Date.now()-t0,px:r.px.join(',')});
   if(re)return true;const half=TWIN[(()=>{try{return R360.kind(id)}catch(_){return ''}})()]&&P.length==1;
   toast_(half?`✓ ${KN[kind]||'החלק הראשון'} על האווטאר. עכשיו מעלים את התמונה של החלק השני`:`✓ ${KN[kind]||'הבגד'} על האווטאר החדש`,half?null:()=>see(id));return true}
- catch(e){PROC[id]={err:/quota/.test(e&&e.code||'')?'full':e&&e.code||'x'};DONE.add(id);ERR('cut',e);
+ catch(e){PROC[id]={err:/quota/.test(e&&e.code||'')||(window.SP262&&SP262.full(e))?'full':e&&e.code||'x'};DONE.add(id);ERR('cut',e);
   // v268: layers this cut already stored are ours, seconds old and used nowhere – they are deleted, not left to fill the storage
-  if(a)for(const f of L)try{await a.delete(f)}catch(_){}log('cut8_fail',{id,kind,code:String(e&&(e.code||e.message)||e).slice(0,60)});rebox(id);toast_('✗ '+(ERRT[PROC[id].err]||ERRT.x));return false}}
+  if(a)for(const f of new Set(L.filter(Boolean).map(f=>String(f).split('~')[0])))try{await a.delete(f)}catch(_){}log('cut8_fail',{id,kind,code:String(e&&(e.code||e.message)||e).slice(0,60)});rebox(id);toast_('✗ '+(ERRT[PROC[id].err]||ERRT.x));return false}}
 // v233: cut the same GPT picture again, with the notes she wrote now ("לדבר איתך מתוך הבגד ותוכל לתקן לי את הטעות")
 async function saveNote(id){const ta=document.querySelector(`[data-a8note="${CSS.escape(id)}"]`);if(!ta)return;const v=ta.value.trim().slice(0,300);
  if(v==note(id).trim())return;try{await putItem(id,{a8note:v||''});log('a8note',{id,n:v.length})}catch(e){ERR('note',e)}}
@@ -170,7 +171,7 @@ const pending=id=>{const u=ups(id);if(!u.length||DONE.has(id)||PROC[id])return n
  if(P.some(p=>p.src==last.a))return null;if(ready(id)&&!(window.R360&&R360.dyn(id)))return null;return last};
 function soon(){if(SOON)return;SOON=setTimeout(async()=>{SOON=null;if(BUSY)return;
  for(const id of Object.keys(typeof IT=='object'&&IT||{})){if(!D[id])continue;const p=pending(id);if(p)await cut(id,'/_blob/'+p.a,p.a,p.t);
-  const s=stale(id);if(s.length){RE.add(id);for(const j of s){const q=parts(id)[j];if(q&&!PROC[id])await cut(id,'/_blob/'+q.src,q.src,q.t,j)}}}},2500)}
+  const s=window.SP262&&SP262.isFull()?[]:stale(id);if(s.length){RE.add(id);for(const j of s){const q=parts(id)[j];if(q&&!PROC[id])await cut(id,'/_blob/'+q.src,q.src,q.t,j)}}}},2500)}
 setTimeout(soon,4000);
 
 // its own toasts say what was saved, so no generic "נשמר: a8up"

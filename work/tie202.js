@@ -393,17 +393,18 @@ setInterval(tick,700);setTimeout(tick,500);
 // every tie of her own covers (IT.tx, and the one on the avatar) is cut again from her own GPT picture – once, one at a time, quietly in the background
 const RCX=new Set();let RXB=false;
 const blobOf=c=>new Promise(r=>c.toBlob(b=>{if(b&&b.type=='image/webp')return r(b);c.toBlob(r,'image/png')},'image/webp',.92));
+const put8=async(a,V,keep)=>{const S=window.SP262;if(S&&S.put8){try{const L=await S.put8(a,V,keep);if(L)return L}catch(e){if(S.full&&S.full(e))throw e;ERR('put8',e)}}const L=[];for(let v=0;v<V.length;v++)L.push(V[v]&&(!keep||keep[v]!==false)?(await put1(a,await blobOf(V[v]))).id:'');return L};   // v302: one packed picture, not 8 files
 async function put1(a,b){let last;for(const w of [0,1500,4000]){if(w)await new Promise(r=>setTimeout(r,w));try{return await a.upload(b)}catch(e){last=e}}throw last}
-async function recutTx(){if(RXB||!window.cut8||!cut8.CVX||typeof IT!='object'||!IT)return;const due=x=>x&&x.src&&x.k=='tiex'&&(x.cv||0)<cut8.CVX;
+async function recutTx(){if(window.SP262&&SP262.isFull()){setTimeout(recutTx,5*60e3);return}if(RXB||!window.cut8||!cut8.CVX||typeof IT!='object'||!IT)return;const due=x=>x&&x.src&&x.k=='tiex'&&(x.cv||0)<cut8.CVX;
  let id=null,x=null;for(const k of Object.keys(IT)){if(!D[k])continue;const L=[...(Array.isArray(IT[k].tx)?IT[k].tx:[]),...(Array.isArray(IT[k].a8)?IT[k].a8:[])];
   x=L.find(y=>due(y)&&!RCX.has(k+'|'+y.src));if(x){id=k;break}}
  if(!x)return;RCX.add(id+'|'+x.src);RXB=true;
  try{let a=null;try{a=await claude.use('assets')}catch(_){}if(!a)return;
   const r=await cut8.run('/_blob/'+x.src,'tiex');if(r.px.filter(p=>p>150).length<5)throw new Error('empty');
-  const L=[];for(const c of r.views)L.push((await put1(a,await blobOf(c))).id);
+  const L=await put8(a,r.views);
   const fix=y=>due(y)&&y.src==x.src?Object.assign({},y,{L,cv:cut8.CVX,sh:r.shifts.some(q=>q[0]||q[1])?r.shifts:null}):y,it=IT[id],pa={};
   if(Array.isArray(it.tx))pa.tx=it.tx.map(fix);if(Array.isArray(it.a8)&&it.a8.some(y=>due(y)&&y.src==x.src))pa.a8=it.a8.map(fix);
   await putItem(id,pa);try{R().sync()}catch(_){}}
- catch(e){ERR('recutx',e)}finally{RXB=false;setTimeout(recutTx,2000)}}
+ catch(e){ERR('recutx',e);try{window.SP262&&SP262.full(e)}catch(_){}}finally{RXB=false;setTimeout(recutTx,2000)}}
 setTimeout(recutTx,15000);
 })();

@@ -60,7 +60,7 @@ async function go(){if(RUN||!SC||!SC.free.length)return;RUN=true;let L=SC.free;c
   wait=Math.max(0,wait-200);const c=DL.querySelector('[data-n]');if(c)c.textContent=n;const p=DL.querySelector('progress');if(p)p.value=n+bad}
  RUN=false;SC=null;show(`<p class="cl262p">✓ נמחקו <b>${n}</b> תמונות ישנות. עכשיו יש מקום להעלות שוב.${bad?` (${bad} לא נמחקו)`:''}</p><span class="mkb"><button type="button" class="mkp" data-x>סגירה</button></span>`);
  toast_(`✓ פיניתי ${n} תמונות`);try{const x=document.getElementById('cl262b');if(x)x.remove();banner()}catch(_){}}
-window.clean262=open;
+window.clean262=open;window.clean262b=()=>banner().catch(()=>{});
 // a line at the top when the store is (nearly) full, and in the admin panel
 async function banner(){let u=null;try{const a=await claude.use('assets');if(!a)return;u=(await a.list()).usage}catch(_){return}
  const full=u&&((u.maxFiles&&u.files>=u.maxFiles-150)||(u.maxBytes&&u.bytes>=u.maxBytes*.93));let b=document.getElementById('cl262b');
