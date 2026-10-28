@@ -41,8 +41,8 @@ async function setMany(ids,patch,msg){ids=ids.filter(id=>D[id]);if(!ids.length)r
  for(const id of ids){const p=typeof patch=='function'?patch(id):patch;const o=Object.assign({},IT[id]||{},p);Object.keys(o).forEach(k=>{if(o[k]===''||o[k]==null||o[k]===false||(Array.isArray(o[k])&&!o[k].length))delete o[k]});
   if(Object.keys(o).length)IT[id]=o;else delete IT[id];try{paint(id)}catch(_){}}
  try{apply()}catch(_){}
- try{if(typeof DB!='undefined'&&DB)await Promise.all(ids.map(id=>{const d=DB.collection('items').doc(id);return (IT[id]?d.set(IT[id]):d.delete()).catch(e=>console.warn(e))}));else saveLocal()}catch(e){ERR('save',e)}
- if(msg)toast_(msg);refresh()}
+ let bad=0;try{if(typeof DB!='undefined'&&DB)await Promise.all(ids.map(id=>{const d=DB.collection('items').doc(id);return (IT[id]?d.set(IT[id]):d.delete()).catch(e=>{bad++;ERR('save1',e)})}));else saveLocal()}catch(e){bad=ids.length;ERR('save',e)}
+ if(bad)toast_(`⚠ לא הצלחתי לשמור ${bad==1?'פריט אחד':bad+' פריטים'} – לנסות שוב`);else if(msg)toast_(msg);refresh()}   // v278: no "saved" when the database refused
 const toState=(ids,s,msg)=>setMany(ids,()=>({loc:s,locT:s?today():''}),msg);
 
 // "לבשתי היום" → עליי (the whole look too, it calls putItem for every item)

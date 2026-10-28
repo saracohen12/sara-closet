@@ -555,7 +555,8 @@ $('#byo').addEventListener('click',e=>{BYO=!BYO;e.currentTarget.setAttribute('ar
  else{$$('#orderView .card').forEach(c=>{const g=document.querySelector(`#${curCat(c.dataset.id)} .grid`);if(g)g.appendChild(c)});ov.innerHTML='';$$('section').forEach(s=>s.style.display='');$('.groups').style.display='';$('.subs').style.display='';sortAll()}
  apply()});
 // random
-$('#rnd').addEventListener('click',()=>{const v=$$('.grid .card:not(.hide)').filter(c=>(IT[c.dataset.id]||{}).s!='ret');if(!v.length)return;const c=v[Math.floor(Math.random()*v.length)];openItem(c.dataset.id)});
+$('#rnd').addEventListener('click',()=>{const v=$$('.grid .card:not(.hide)').filter(c=>(i=>i.s!='ret'&&i.s!='give'&&!i.gen&&!i.oos)(IT[c.dataset.id]||{}));if(!v.length)return;   // v278: not given away, archived or cancelled
+const c=v[Math.floor(Math.random()*v.length)];openItem(c.dataset.id)});
 // csv
 $('#csv').addEventListener('click',async()=>{const rows=[['מזהה','חנות','קטגוריה','שם','צבע','מידה','כמות','תאריך','הזמנה','מחיר מקורי','שולם בפועל','החזרה עד','מצב','מועדף','צריך תיקון','לא במידה','סגנון','עונה','של מי','הערה','לבשתי']];
  Object.entries(D).forEach(([id,x])=>{const it=IT[id]||{};const c=card(id);rows.push([id,x.srcl,curCat(id),x.short,x.color,x.size,x.qty,x.date,x.order,x.origt||'',x.paid,c?.dataset.rdl||'',{kept:'שמרתי',ret:'החזרתי',give:'למסור'}[it.s]||'',it.fav?'כן':'',it.fix?'כן':'',it.nofit?'כן':'',(c?.dataset.tg||'').replace(/\|/g,', '),(c?.dataset.ss||'').replace(/\|/g,', '),it.kid||'',it.note||'',it.wear||''])});
@@ -575,7 +576,7 @@ function afterOpen(id){RECENT=[id,...RECENT.filter(z=>z!=id)].slice(0,12);try{lo
  const x=D[id];const it=IT[id]||{};const w=it.wear||0;
  const ed=$('#dlbody .ed:not(.edtop)');if(ed){ed.insertAdjacentHTML('beforeend',`<div class="erow wear"><span>לבישות</span><b>${w}</b><button data-wear="1">+ לבשתי היום</button>${w?`<button data-wear="-1">−</button><small>מחיר ללבישה: ${m(x.paid/w)}</small>`:''}</div>`)}
  const c=card(id);const famc=c?.dataset.c;const cat=curCat(id);
- const sims=Object.keys(D).filter(o=>o!=id&&curCat(o)==cat&&card(o)&&card(o).dataset.c==famc&&(IT[o]||{}).s!='ret').slice(0,8);
+ const sims=Object.keys(D).filter(o=>o!=id&&curCat(o)==cat&&card(o)&&card(o).dataset.c==famc&&(i=>i.s!='ret'&&i.s!='give'&&!i.gen&&!i.oos)(IT[o]||{})).slice(0,8);
  if(sims.length)$('#dlbody').insertAdjacentHTML('beforeend',`<div class="sim"><h4>דומים מהארון שלך (אותו סוג ואותו צבע)</h4><div class="strip">${sims.map(o=>`<button class="mini" data-open="${o}">${img(o)||(D[o]||{}).hi?`<img data-th="${o}" src="${img(o)||TPH}" alt="">`:''}<span>${m(D[o].paid)}</span></button>`).join('')}</div></div>`)}
 document.addEventListener('click',e=>{const w=e.target.closest('[data-wear]');if(w){const id=CUR;const cur=(IT[id]||{}).wear||0;putItem(id,{wear:Math.max(0,cur+ +w.dataset.wear)||''}).then(()=>openItem(id))}
  const im=e.target.closest('.dl img.main');if(im){const z=$('#zoom'),zi=z&&z.querySelector('img');if(!zi)return;zi.src=im.src;z.classList.remove('hide')}});   // v267: #zoom is empty now (the studio zoom took over) – no error on every tap

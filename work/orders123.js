@@ -32,7 +32,7 @@ function picDone(o){const p=picSum(o);return p.done||p.has>=p.need}
 // v229 (Sara 27/10 00:13 "סימון האם יש אבטר או אין אבטר ... לחפש רק את ההזמנות שעדיין לא עשיתי להם אבטר"): an avatar mark per order,
 // like the photos one. need = clothes/shoes/bags/jewelry that stay (not cancelled, not going back); has = on the 8-angle avatar (av188 st188 'ok').
 const AVC=['dresses','tops','base','sweaters','skirts','sets','outer','scarves','shoes','belts','jewelry','bags'];
-const needAv=id=>{const it=IT[id]||{};return !it.oos&&it.s!='ret'&&AVC.includes(cat(id))};
+const needAv=id=>{const it=IT[id]||{};return !it.oos&&!it.gen&&it.s!='ret'&&it.s!='give'&&AVC.includes(cat(id))};
 const avOk=id=>{try{return window.st188&&st188(id)=='ok'}catch(_){return false}};
 function avSum(o){let need=0,has=0;for(const id of o.ids)if(needAv(id)){need++;if(avOk(id))has++}return {need,has,mark:!!(ORD[o.k]||{}).ad}}
 function avDone(o){const a=avSum(o);return a.mark||a.has>=a.need}

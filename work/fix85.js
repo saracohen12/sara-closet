@@ -284,7 +284,7 @@ function dupsBtn(){const r=document.querySelector('#q77 .t83');if(!r||r.querySel
 function openDups(focus){dupGroups();let d=document.getElementById('dg89');if(!d){d=document.createElement('dialog');d.id='dg89';d.className='sheet9 dg89';d.dir='rtl';document.body.appendChild(d)}
  const nd=ND().filter(id=>D[id]);const it=id=>{const X=D[id]||{},I=IT[id]||{};const g=GOF[id];const keep=g&&g.keep==id;
   const meta=[X.color,X.size,X.paid?m(X.paid):'',X.rdl&&I.s!='ret'?'להחזרה עד '+X.rdl.split('-').reverse().slice(0,2).join('/'):'',I.s=='ret'?'הוחזר':I.s=='keep'?'נשאר':''].filter(Boolean).join(' · ');
-  return `<div class="dg89i${keep?' keep':''}"><button class="dg89p" data-dg89o="${id}"><img src="${img(id)||TPH}" alt="">${keep?'<i>⭐ מוצג בארון</i>':''}</button><b>${esc((X.short||'').slice(0,44))}</b><small>${esc(meta)}</small>
+  return `<div class="dg89i${keep?' keep':''}"><button class="dg89p" data-dg89o="${id}" aria-label="${esc((X.short||'').slice(0,44))}"><img src="${img(id)||TPH}" alt="">${keep?'<i>⭐ מוצג בארון</i>':''}</button><b>${esc((X.short||'').slice(0,44))}</b><small>${esc(meta)}</small>
    <div class="dg89a">${keep?'':`<button data-dg89k="${id}">⭐ שזה יוצג בארון</button>`}<button data-dg89n="${id}">↩ זה לא כפול</button></div></div>`};
  d.innerHTML=`<div class="sh9h"><h3>👯 כפולים</h3><button class="x" data-dg89x aria-label="סגירה">✕</button></div><div class="dg89b">
   <p class="m77h">בארון כל כפול מופיע פעם אחת. כאן רואים את כולם, ${GRP.length} קבוצות. אם משהו לא באמת כפול, "↩ זה לא כפול" מחזיר אותו לארון הרגיל.</p>

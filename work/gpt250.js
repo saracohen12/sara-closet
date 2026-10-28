@@ -270,7 +270,8 @@ async function check(U){const say=t=>{if(UP!==U)return;U.chk=t;const e=dlg().que
   say('✨ בודקת שכל תמונה מתאימה למוצר שלה…');
   const ph=await Promise.all(si.map(i=>{let u='';try{u=(photos(U.T[i].id)[0]||{}).u||R().ph(U.T[i].id)}catch(_){}return photoCell(u)}));
   const sh=await Promise.all(sj.map(j=>sheetCell(U.urls[j])));
-  const L='ABCDEFGHIJKLMNOPQRSTUVWXYZ';const A=await grid(ph,260,300,i=>String(i+1)),B_=await grid(sh,200,300,i=>L[i]);
+  const L=[...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'].concat([...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'].map(c=>c+c));   // v278: more than 26 pictures (AA, BB…)
+  const A=await grid(ph,260,300,i=>String(i+1)),B_=await grid(sh,200,300,i=>L[i]);
   const list=si.map((i,k)=>`${k+1}. ${U.T[i].o.n}${U.T[i].o.col?' – colour: '+U.T[i].o.col:''} (product: ${nm(U.T[i].id)}${(D[U.T[i].id]||{}).color?', shop colour: '+D[U.T[i].id].color:''})`).join('\n');
   const prompt=`You check try-on pictures for a clothing app. Image 1 = the shop photos of the products, numbered in red:\n${list}\n`+
    `Some products are packs or sets: then the name says which piece or colour is wanted. Image 2 = pictures made by an image AI, lettered in red (A, B…): each shows a woman wearing ONE item (front view).\n`+
@@ -284,6 +285,8 @@ async function check(U){const say=t=>{if(UP!==U)return;U.chk=t;const e=dlg().que
    if(took[ti]!=null){U.flag[j]='✗ עוד תמונה נראית כמו אותו מוצר: '+(x.problem||'');U.map[j]=-1;bad++;return}took[ti]=j;
    if(x.colour_ok===false){U.map[j]=-1;U.flag[j]='✗ הצבע או הדוגמה לא כמו במוצר: '+(x.problem||'');bad++;return}
    if(U.map[j]!==ti){U.map[j]=ti;moved++}if(x.problem)U.flag[j]='⚠ '+x.problem});
+  // v278: a picture Claude didn't name keeps its first place – not when that product already got the picture Claude chose for it
+  sj.forEach(j=>{const ti=U.map[j];if(ti>=0&&took[ti]!=null&&took[ti]!==j){U.map[j]=-1;U.flag[j]='✗ למוצר הזה כבר יש תמונה מתאימה';bad++}});
   U.chk=bad?`✨ בדקתי: ${bad} תמונות לא מתאימות (מסומנות באדום, לא יעלו אלא אם תבחרי).${moved?' '+moved+' תמונות העברתי למוצר הנכון.':''}`:moved?`✨ בדקתי: ${moved} תמונות העברתי למוצר הנכון. השאר מתאימות`:'✨ בדקתי: כל תמונה מתאימה למוצר שלה';
   paintUp()}
  catch(e){ERR('check',e);say('לא הצלחתי לבדוק את ההתאמה – כדאי להסתכל על כל תמונה מול המוצר')}}

@@ -81,7 +81,7 @@ function renderHub(){if(!$('#hub')||!$('#hub').open)return;$('#htabs').innerHTML
  else if(TAB=='money')b.innerHTML=moneyTab();
  else if(TAB=='check')b.innerHTML=`<p>הדביקי כאן את שם המוצר שאת שוקלת להזמין (מטמו או משיין), ואבדוק אם כבר יש לך משהו דומה.</p><textarea id="chk" rows="3" style="width:100%" placeholder="למשל: שמלת מקסי קטיפה חומה עם שרוולים ארוכים"></textarea><div class="hrow"><button class="go" id="chkgo">בדקי</button></div><div id="chkres"></div>`;
  else if(TAB=='home')b.innerHTML=homeTab();}
-function insights(){const ids=Object.keys(D).filter(id=>(IT[id]||{}).s!='ret');const by={};ids.forEach(id=>{const c=curCat(id);(by[c]=by[c]||[]).push(id)});
+function insights(){const ids=Object.keys(D).filter(id=>(i=>i.s!='ret'&&i.s!='give'&&!i.gen&&!i.oos)(IT[id]||{}));const by={};ids.forEach(id=>{const c=curCat(id);(by[c]=by[c]||[]).push(id)});
  const n=c=>(by[c]||[]).length;const cname=k=>(CATS.find(x=>x[0]==k)||[k,k])[1];
  const miss=[];if(n('skirts')+n('dresses')>4*(n('belts')||1))miss.push(`יש לך ${n('skirts')} חצאיות ו-${n('dresses')} שמלות, אבל רק ${n('belts')} חגורות.`);
  if(n('shoes')<10)miss.push(`רק ${n('shoes')} פריטי נעליים, מעט לעומת ${n('skirts')+n('dresses')} חצאיות ושמלות.`);
@@ -175,10 +175,10 @@ const _afterOpen=afterOpen;afterOpen=function(id){_afterOpen(id);const ed=$('#dl
  <div class="imgrow" data-imgrow="${id}"></div>`);renderImgRow(id)}
  const f=famOf(id);const g=GROUPOF(curCat(id));
  if(g=='clo'){const goesW=f?(HARM[f]=='*'?['כל הצבעים']:(HARM[f]||[])):[];
-  const sc=Object.keys(D).filter(o=>curCat(o)=='scarves'&&(IT[o]||{}).s!='ret'&&goes(famOf(o),f)).slice(0,10);
+  const sc=f?Object.keys(D).filter(o=>{const fo=famOf(o);return curCat(o)=='scarves'&&(i=>i.s!='ret'&&i.s!='give'&&!i.gen&&!i.oos)(IT[o]||{})&&fo&&goes(fo,f)}).map(o=>[o,famOf(o)==f?0:HARM[famOf(o)]=='*'?2:1]).sort((a,b)=>a[1]-b[1]).map(x=>x[0]).slice(0,10):[];   // v278: was the same first 10 scarves for every item
   $('#dlbody').insertAdjacentHTML('beforeend',`<div class="sim"><button class="go" data-lookfrom="${id}">✨ הרכיבי לוק מהבגד הזה</button>${f?`<h4>הולך טוב עם: ${goesW.join(', ')}</h4>`:''}${sc.length?`<h4>כיסויי ראש שמתאימים</h4><div class="strip">${sc.map(o=>`<button class="mini" data-open="${o}">${img(o)||(D[o]||{}).hi?`<img data-th="${o}" src="${img(o)||TPH}" alt="">`:''}</button>`).join('')}</div>`:''}</div>`)}};
 // wear sets lastWorn
-const _putItem=putItem;putItem=function(id,patch){if('wear' in patch&&patch.wear>((IT[id]||{}).wear||0))patch.lastWorn=new Date().toISOString().slice(0,10);return _putItem(id,patch)};
+const _putItem=putItem;putItem=function(id,patch){if('wear' in patch&&patch.wear>((IT[id]||{}).wear||0))patch.lastWorn=(d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'))(new Date());return _putItem(id,patch)};
 // closet rail view
 let RAIL=false;$('#rail').addEventListener('click',e=>{RAIL=!RAIL;document.body.classList.toggle('rail',RAIL);e.currentTarget.setAttribute('aria-pressed',RAIL);if(RAIL){SORT='col';$('#sort').value='col';sortAll()}});
 // location filter

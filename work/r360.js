@@ -378,7 +378,7 @@ async function paint(cv,v,s,pad){s=headOf(s);const bg=s.bg||'';const hw=whole(s.
  c.drawImage(base,0,0);if(E){for(let i=0;i<8;i++){c.globalAlpha=(i+1)/8;c.drawImage(E,0,0,2,1,0,BH-8+i,BW,1)}c.globalAlpha=1}
  const HTv=!s.rawHead&&hw?((await headT(s.head))||[])[v]:null;
  const BT=ms.filter((m,i)=>m&&L[i].bt),BTK=L.filter(l=>l.bt).map(l=>l.s).join(',');const doll=BT.length&&L.some(l=>l.tk)?await im('c'+(v+1)):null;
- ms.forEach((m,i)=>{if(!m)return;const l=L[i];if(l.tk&&BT.length)m=tuckCut(m,BT,doll,l.s+'|'+BTK);const im=l.t?tinted(m,l.t,l.ref):m;if(l.hd&&HTv)drawHead(c,im,HTv);else c.drawImage(im,0,l.k?JY(l.k):0)});if(L.fit)await mkFit(c,v,s.head,L.fit,pt,L.fitId);if(pt||pb)c.restore();
+ ms.forEach((m,i)=>{if(!m)return;const l=L[i];if(l.tk&&BT.length)m=tuckCut(m,BT,doll,l.s+'|'+(m.src||'')+'|'+BTK+'|'+BT.map(b=>b.src||'').join(','));const im=l.t?tinted(m,l.t,l.ref):m;if(l.hd&&HTv)drawHead(c,im,HTv);else c.drawImage(im,0,l.k?JY(l.k):0)});if(L.fit)await mkFit(c,v,s.head,L.fit,pt,L.fitId);if(pt||pb)c.restore();
  const miss=ms.some(m=>!m);if(cv._pg!==my)return !miss;if(cv.width!=BW||cv.height!=BH+pt+pb){cv.width=BW;cv.height=BH+pt+pb}const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);g.drawImage(oc,0,0);
  if(pad){if(miss)again(cv,v,s,pad,my);else cv._rt=0}return !miss}   // a layer missing: not kept as a finished picture (frames, thumbs), the stage tries again
 // v274: a top, base shirt or sweater tucked into the skirt. Under the skirt it is hidden already; what is left is what sticks out below the skirt's waist –
@@ -398,7 +398,7 @@ function tuckCut(m,BT,doll,key){if(TUCK.has(key))return TUCK.get(key);const W=m.
  const bd2=new Uint8Array(W*H);for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){const i=y*W+x;if(bd[i]||bd[i-1]||bd[i+1]||bd[i-W]||bd[i+W]||bd[i-2]||bd[i+2])bd2[i]=1}
  let n=0;for(let x=0;x<W;x++){const t=Math.round(top[x])+3;for(let y=t;y<H;y++){const i=y*W+x,q=i*4;if(!p[q+3]||sk[i])continue;
   const below=x>=lo&&x<=hi&&bot[x]>=0&&y>bot[x];if(!doll||!bd2[i]||below){p[q+3]=0;n++}}}
- if(n){og.putImageData(od,0,0)}const out=n?oc:m;if(TUCK.size>60)TUCK.clear();TUCK.set(key,out);return out}
+ if(n){og.putImageData(od,0,0)}const out=n?oc:m;if(TUCK.size>16)TUCK.delete(TUCK.keys().next().value);TUCK.set(key,out);return out}
 const JYT={},JYN={neck:'📿 שרשרת',ears:'✨ עגילים',wrist:'⌚ צמיד',belt:'➰ חגורה'};
 // v266 (Sara 23:34 "לא כל הזמן על המסך – עיגול קטן, פותחת, מזיזה, סוגרת"): the rows live in a small panel over the avatar, opened by 📿 and closed by ✓
 let JYOPEN=false;

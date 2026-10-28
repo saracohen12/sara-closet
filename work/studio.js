@@ -53,7 +53,7 @@ function paintSel(){const c=$('#ssel');const slot=SSEL;const tf=slot&&ST.tf[slot
 // ---- drawer
 const hasPic=id=>{const x=D[id];return !!(x&&(x.hi||TH[id]||(IT[id]||{}).img))};
 function drawerItems(slot){const cats=SLOTS.find(s=>s[0]==slot)[3];const cur=lookIds(ST).filter(id=>id!=ST.items[slot]);const fs=cur.map(famOf).filter(Boolean);const q=DRF.q.trim().toLowerCase().split(/\s+/).filter(Boolean);
- let ids=Object.keys(D).filter(id=>cats.includes(curCat(id))&&(IT[id]||{}).s!='ret'&&hasPic(id));
+ let ids=Object.keys(D).filter(id=>cats.includes(curCat(id))&&(i=>i.s!='ret'&&i.s!='give'&&!i.gen&&!i.oos)(IT[id]||{})&&hasPic(id));
  if(DRF.occ&&['dress','top','skirt','set','outer'].includes(slot))ids=ids.filter(id=>{const c=card(id);return c&&(DRF.occ=='day'?isDay(c):isShab(c))});
  if(DRF.fam)ids=ids.filter(id=>famOf(id)==DRF.fam);if(DRF.fav)ids=ids.filter(id=>(IT[id]||{}).fav);
  if(q.length)ids=ids.filter(id=>q.every(w=>(card(id)?.dataset.q||'').toLowerCase().includes(w)));

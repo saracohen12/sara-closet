@@ -37,7 +37,7 @@ document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;
 });
 
 // ---------- 2. home: look of the day + avatar readiness strip
-const today=()=>new Date().toISOString().slice(0,10);
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};   // v278: her date, not London's (after midnight it was yesterday)
 function lotdPick(fresh){const oc=window.occToday83?window.occToday83():null;const occ=oc?oc[0]:([5,6].includes(new Date().getDay())?'shab':'day');
  let c=null;try{c=JSON.parse(lsG('lotd77')||'null')}catch(_){}
  if(!fresh&&c&&c.d==today()&&(c.o||'')==occ&&c.items&&Object.values(c.items).every(id=>D[id]))return c;
@@ -100,7 +100,7 @@ document.addEventListener('touchend',e=>{if(!sw)return;const p=e.changedTouches[
  poseStep(dx<0?1:-1)},{passive:true,capture:true});
 function poseStep(d){const bs=$$('#studio [data-sview]').filter(b=>b.getClientRects().length);if(bs.length){let i=bs.findIndex(b=>b.getAttribute('aria-pressed')=='true');i=((i<0?0:i)+d+bs.length)%bs.length;bs[i].click();const n=bs[i].textContent.trim();if(n)toast(n)}else{const b=document.querySelector(`#spin [data-spin="${d}"]`);if(b)b.click()}}
 window.poseStep77=poseStep;
-function readyScarves(){return Object.keys(D).filter(id=>curCat(id)=='scarves'&&avReady(id)&&(IT[id]||{}).s!='ret'&&(IT[id]||{}).s!='give')}
+function readyScarves(){return Object.keys(D).filter(id=>curCat(id)=='scarves'&&avReady(id)&&(i=>i.s!='ret'&&i.s!='give'&&!i.gen&&!i.oos)(IT[id]||{}))}
 function paintHeads(){const sm=document.querySelector('#studio .smain');if(!sm||!ST)return;let r=$('#hd77');const L=readyScarves();
  if(!L.length){if(r)r.remove();return}
  if(!r){r=document.createElement('div');r.id='hd77';r.dir='rtl';sm.after(r)}

@@ -38,7 +38,7 @@ const fire=attr=>{const b=document.createElement('button');b.setAttribute(attr,'
 const tap=sel=>{const b=$1(sel);if(b){b.click();return true}return false};
 const hub=t=>()=>{shut();openHub(t)};
 const gen=id=>typeof gen161=='function'&&gen161(id);
-const live=id=>{const s=(IT[id]||{}).s;return s!='ret'&&s!='give'};
+const live=id=>{const i=IT[id]||{};return i.s!='ret'&&i.s!='give'&&!i.gen&&!i.oos};   // v278: the general list and cancelled items are not counted
 // show the closet with one filter of the site's "רק" filter
 function only(v){shut();window.zCloset&&zCloset();try{FLF=v;const s=$1('#flf');if(s)s.value=v;G='all';C='';document.querySelectorAll('.groups button').forEach(o=>o.setAttribute('aria-pressed',false));const q=$1('#q');if(q)q.value='';apply();try{chips()}catch(_){}}catch(e){ERR('only',e)}
  setTimeout(()=>{const el=$1('#cnt');if(el){const y=el.getBoundingClientRect().top+scrollY-140;try{LOCK=Date.now()+1200}catch(_){}window.scrollTo(0,Math.max(0,y))}},80)}

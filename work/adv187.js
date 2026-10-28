@@ -37,7 +37,7 @@ const sortA=()=>ARC.sort((a,b)=>String(b.t).localeCompare(String(a.t)));
 function load(){if(SUB)return;
  try{if(typeof DB!='undefined'&&DB){let first=true;SUB=DB.collection(LK).onSnapshot(sn=>{const a=[];sn.docs.forEach(d=>{const v=d.data();if(v)a.push(Object.assign({},v,{id:d.id}))});
    // checks saved in this browser before the db was there go up once
-   if(first){first=false;const have=new Set(a.map(x=>x.id)),up=lsGet().filter(x=>x&&x.id&&!have.has(x.id));if(up.length){up.forEach(x=>{a.push(x);const {id,...v}=x;DB.collection(LK).doc(id).set(v).catch(e=>ERR('up',e))});try{localStorage.removeItem(LK)}catch(_){}}}
+   if(first){first=false;const have=new Set(a.map(x=>x.id)),up=lsGet().filter(x=>x&&x.id&&!have.has(x.id));if(up.length){up.forEach(x=>a.push(x));Promise.all(up.map(x=>{const {id,...v}=x;return DB.collection(LK).doc(id).set(v)})).then(()=>{try{localStorage.removeItem(LK)}catch(_){}}).catch(e=>ERR('up',e));/* v278: removed from the phone only after all are in the database */}}
    ARC=a;sortA();const f=document.activeElement;if(!(W&&f&&W.contains(f)&&/^(TEXTAREA|INPUT|SELECT)$/.test(f.tagName)))render();homeBtn()},e=>ERR('snap',e));return}}catch(e){ERR('load',e)}
  if(!LOCAL){LOCAL=true;ARC=lsGet();sortA()}}
 [1200,4000,9000].forEach(ms=>setTimeout(()=>{load();homeBtn()},ms));

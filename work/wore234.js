@@ -63,7 +63,8 @@ function week(){const b=$1('#wk83');if(!b)return;const days=weekDays(),td=today(
  $a('.w83d',b).forEach((x,i)=>{const k=days[i];if(!k)return;const fut=k>td;x.dataset.wd234=k;
   if(fut){x.disabled=true;return}x.disabled=false;x.removeAttribute('data-open');
   const n=worn(k).length,p=DAYS[k]&&DAYS[k].ph;x.setAttribute('aria-label',dayName(k)+' '+dm(k)+(n?`: ${n} בגדים`:': לבחור מה לבשתי'));
-  const c=x.querySelector('.w83c');if(c){if(p&&!c.querySelector('.me234')){c.innerHTML=`<img class="me234" alt="" src="/_blob/${es(p)}">${n?`<i>${n}</i>`:''}`;x.classList.add('on')}
+  const c=x.querySelector('.w83c');if(c){if(p&&(c.querySelector('.me234')||{}).getAttribute?.('src')!='/_blob/'+p){   // v278: also when the day's photo was changed
+  c.innerHTML=`<img class="me234" alt="" src="/_blob/${es(p)}">${n?`<i>${n}</i>`:''}`;x.classList.add('on')}
    if(!n&&!p&&!c.querySelector('.pl234'))c.innerHTML='<span class="pl234" aria-hidden="true">+</span>'}});
  const s=b.querySelector('.w83h small'),h='לחצי על יום: 👗 מה לבשתי · 📸 צלמי את עצמך';if(s&&!s.dataset.k234){s.dataset.k234=1;s.textContent=h}}
 setInterval(week,1500);setTimeout(week,600);
