@@ -498,3 +498,9 @@ dialog#g256::backdrop{background:rgba(30,20,15,.45)}
 /* v270: a product with no photo can't be picked – greyed out, no pointer */
 #g250 .g252i.noph,#g250 .g252i:disabled{opacity:.38;filter:grayscale(1);cursor:not-allowed;border-style:dashed}
 #g250 .g252i .g270x{color:#8a2b1c;font-weight:700}
+/* v276: upload window – each GPT picture next to the product photo, Claude's check */
+#g250 .g250ck{margin:4px 0 10px;font-weight:600;color:var(--z-ink,#3a2a22)}
+#g250 .g250pair{display:grid;grid-template-columns:2fr 1fr;gap:4px;align-items:center}
+#g250 .g250pair img.g250pp{aspect-ratio:3/4;object-fit:cover}
+#g250 .g250f.bad{outline:2px solid #c0262d;outline-offset:3px;border-radius:10px}
+#g250 .g250fl{color:#a3141c;font-size:.85rem;line-height:1.3}

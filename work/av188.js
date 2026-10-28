@@ -78,7 +78,8 @@ function box(id){const p=PROC[id],u=ups(id),ok=ready(id),dyn=(()=>{try{return R3
  else body=`<ol class="a8s">
   <li><b>הפרומפט ל-GPT:</b> שומרים את תמונת הבגד ואת הבובה ב-8 זוויות, ושולחים ל-GPT עם הפרומפט, הכל בהודעה אחת.<button type="button" data-mk188="${es(id)}">📋 הפרומפט ל-GPT</button>${pics}</li>
   <li><b>מעלים את מה שחזר:</b> תמונה אחת עם 8 הזוויות${twin?(half?` – עכשיו של ${kind=='set'?'החלק התחתון':'העגילים'}`:` (${kind=='set'?'קודם החלק העליון, אחר כך התחתון':'קודם השרשרת, אחר כך העגילים'})`):''}. האתר גוזר אותה ל-8, מתאים בדיוק לבובה ומכניס את הבגד לסטודיו.${noteF(id)}<button type="button" class="go" data-up188="${es(id)}"${busy?' disabled':''}>📤 להעלות תמונה של 8 זוויות</button></li></ol>`;
- return `<summary>🧍 האווטאר החדש · 8 זוויות</summary><p class="a8st">${line(id)}</p>${cuts}${body}${u.length?'<p class="a8h">התמונה שהעלית מ-GPT:</p>':''}${th}`}
+ const ck=it(id).a8chk,warn=ck&&ck.ok===false&&P.length?`<div class="a8bad" role="alert"><b>✗ Claude בדק: מה שעל האווטאר לא נראה כמו המוצר${ck.m?' – '+es(ck.m):''}</b><div class="a8b"><button type="button" data-off190="${es(id)}">🗑 למחוק מהאווטאר</button><button type="button" data-chk276="${es(id)}">✓ זה בסדר, להשאיר</button></div></div>`:'';
+ return `<summary>🧍 האווטאר החדש · 8 זוויות</summary><p class="a8st">${line(id)}</p>${warn}${cuts}${body}${u.length?'<p class="a8h">התמונה שהעלית מ-GPT:</p>':''}${th}`}
 function paintSt(id){document.querySelectorAll(`[data-go190="${CSS.escape(id)}"]`).forEach(b=>b.innerHTML=line(id)+'<b aria-hidden="true">⬇</b>');
  document.querySelectorAll(`[data-a8box="${CSS.escape(id)}"] .a8st`).forEach(p=>p.innerHTML=line(id));
  document.querySelectorAll(`[data-mkst188="${CSS.escape(id)}"]`).forEach(m=>m.innerHTML=mkst(id))}
@@ -113,7 +114,11 @@ async function up(id,fs){if(BUSY){toast_('רגע, עוד שומרת');return fal
  catch(e){upFail=true;ERR('upload',e);toast_(/quota/.test(e&&e.code||'')?ERRT.full:add.length?`נשמרו ${add.length}, השאר לא עלו. לנסות שוב`:'התמונה לא עלתה. לנסות שוב')}
  if(add.length){try{await putItem(id,{a8up:[...ups(id),...add]})}catch(e){ERR('put',e)}rebox(id);repaint(id)}
  BUSY=false;
- const at=AT[id];delete AT[id];let ok=!upFail&&add.length>0;for(let i=0;i<add.length;i++){if(!(await cut(id,fs[i],add[i].a,add[i].t,i==0&&at!=null&&parts(id)[at]?at:undefined)))ok=false}return ok}
+ const at=AT[id];delete AT[id];let ok=!upFail&&add.length>0;for(let i=0;i<add.length;i++){if(!(await cut(id,fs[i],add[i].a,add[i].t,i==0&&at!=null&&parts(id)[at]?at:undefined)))ok=false}
+ // v276 (Sara 23:32 "לאמת מול הקובץ שהכל מתאים"): Claude compares what she uploaded here with the product photo; a mismatch is written on the item, in red, until she decides
+ if(ok&&add.length&&!window.G276SKIP&&window.g276one&&!parts(id).some(p=>p.k=='tiex'))g276one(id,fs[0]).then(async r=>{if(!r)return;const bad=r.same===false||r.colour_ok===false;
+  try{await putItem(id,{a8chk:{t:Date.now(),ok:!bad,m:String(r.problem||'').slice(0,200)}})}catch(e){ERR('chk',e)}rebox(id);if(bad)toast_('✗ התמונה לא נראית כמו המוצר – כתבתי בחלון של הפריט')}).catch(e=>ERR('chk',e));
+ return ok}
 async function del(id,i){const old=ups(id);const x=old[i];if(!x)return;const nu=old.filter((_,k)=>k!=i);await putItem(id,{a8up:nu.length?nu:''});rebox(id);repaint(id);
  toast_('התמונה הוסרה',async()=>{await putItem(id,{a8up:[...ups(id).slice(0,i),x,...ups(id).slice(i)]});rebox(id);repaint(id)})}
 
@@ -153,7 +158,7 @@ async function recut(id){if(PROC[id]&&PROC[id].v)return;await saveNote(id);const
  toast_(note(id).trim()?'✓ גזרתי שוב לפי ההערות. כדאי לבדוק ב-8 הזוויות':'✓ גזרתי שוב')}
 function see(id,v){try{R360.openWith(null,{a:id});if(v>0)setTimeout(()=>{try{R360.show(v)}catch(_){}},700)}catch(e){ERR('see',e)}}
 async function off(id){const o={a8:it(id).a8||'',a8up:it(id).a8up||''};if(!o.a8&&!o.a8up)return;DONE.add(id);delete PROC[id];
- await putItem(id,{a8:'',a8up:''});try{R360.sync()}catch(_){}rebox(id);repaint(id);avNow(id);log('a8_off',{id});
+ await putItem(id,{a8:'',a8up:'',a8chk:''});try{R360.sync()}catch(_){}rebox(id);repaint(id);avNow(id);log('a8_off',{id});
  toast_('✓ נמחק מהאווטאר. אפשר להעלות תמונה חדשה',async()=>{await putItem(id,o);try{R360.sync()}catch(_){}rebox(id);repaint(id);avNow(id)})}
 
 // a picture that was uploaded but not cut yet (on another phone, before v190, or the page was closed in the middle) is cut when the site opens
@@ -167,10 +172,11 @@ function soon(){if(SOON)return;SOON=setTimeout(async()=>{SOON=null;if(BUSY)retur
 setTimeout(soon,4000);
 
 // its own toasts say what was saved, so no generic "נשמר: a8up"
-{const _bp=beforePut;beforePut=function(id,patch){const k=patch&&Object.keys(patch);if(k&&k.length&&k.every(x=>x=='a8up'||x=='a8'||x=='a8note'))return;return _bp.apply(this,arguments)}}
+{const _bp=beforePut;beforePut=function(id,patch){const k=patch&&Object.keys(patch);if(k&&k.length&&k.every(x=>x=='a8up'||x=='a8'||x=='a8note'||x=='a8chk'))return;return _bp.apply(this,arguments)}}
 
 // every old "upload for the avatar" button (5 poses) now leads to the new avatar
-document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-up188],[data-re233],[data-mk188],[data-del188],[data-m77up],[data-go190],[data-see190],[data-off190]');if(!t)return;
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-up188],[data-re233],[data-mk188],[data-del188],[data-m77up],[data-go190],[data-see190],[data-off190],[data-chk276]');if(!t)return;
+ if(t.dataset.chk276){e.preventDefault();e.stopPropagation();const id=t.dataset.chk276;putItem(id,{a8chk:''}).then(()=>rebox(id)).catch(er=>ERR('chk',er));return}
  if(t.dataset.up188){e.preventDefault();e.stopPropagation();if(t.dataset.at!=null)AT[t.dataset.up188]=+t.dataset.at;else delete AT[t.dataset.up188];if(t.dataset.w)WH.add(t.dataset.up188);else WH.delete(t.dataset.up188);saveNote(t.dataset.up188);picker(t.dataset.up188);return}
  if(t.dataset.re233){e.preventDefault();e.stopPropagation();recut(t.dataset.re233).catch(er=>ERR('recut',er));return}
  if(t.dataset.del188){e.preventDefault();e.stopPropagation();del(t.dataset.del188,+t.dataset.i).catch(er=>ERR('del',er));return}

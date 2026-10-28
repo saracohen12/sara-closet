@@ -78,3 +78,6 @@ html:not(#n188) body .card .ind247 i.r.on{background:#1f9d55;color:#fff;box-shad
 html:not(#n188) body[data-size="s"] .card .ind247{inset-block-end:5px!important;inset-inline-start:auto!important;inset-inline-end:5px!important;padding:2px!important}
 html:not(#n188) body[data-size="s"] .card .ind247 i{height:17px;min-width:17px;font-size:.58rem;padding:0 3px}
 html:not(#n188) body[data-size="s"] .card .ind247 i.p{font-size:.66rem}
+/* v276: Claude's check of an uploaded picture against the product */
+.a8bad{margin:8px 0;padding:10px 12px;border:2px solid #c0262d;border-radius:12px;background:#fff3f2;color:#8f1218}
+.a8bad b{display:block;margin-bottom:8px;line-height:1.4}

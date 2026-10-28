@@ -173,7 +173,7 @@ async function bZip(b){const ids=B.sel.slice(),o=b.textContent;b.disabled=true;b
   const miss=[];for(let i=0;i<ids.length;i++){let n=0;for(const g of photos(ids[i]).slice(0,4)){try{files.push({name:`p${i+1}-item-${n+1}.jpg`,blob:await jpeg246(g.u)});n++}catch(e){ERR('bzipph',e)}}np.push(n);if(!n)miss.push(i+1)}   // v268: 0 = no picture went in (the prompt says so)
   await shared(ids.flatMap(id=>outs(id)),files);
   files.push({name:'prompt.txt',blob:new Blob(['\ufeff'+bPrompt(ids,np)],{type:'text/plain;charset=utf-8'})});
-  await R().saveFile(`gpt-${ids.length}-products.zip`,await zip246(files));B.np=np;
+  await R().saveFile(`gpt-${ids.length}-products.zip`,await zip246(files));B.np=np;saveOrd(ids);
   toast_(miss.length?`⚠ ירד ZIP, אבל בלי תמונה של מוצר ${miss.join(', ')} – צרפי ל-GPT צילום מסך שלו`:`✓ ירד ZIP אחד: ${ids.length} מוצרים, הבובה והפרומפט`);for(const id of ids)try{await putItem(id,{g250:Date.now()})}catch(_){}}
  catch(e){ERR('bzip',e);toast_('לא הצלחתי להכין את הקובץ. לנסות שוב')}finally{if(b.isConnected){b.disabled=false;b.textContent=o}}}
 function catItems(c){return Object.keys(D).filter(k=>!k.includes('~')&&cat0(k)==c&&!it(k).gen&&!it(k).oos&&it(k).s!='ret'&&it(k).s!='give')}
@@ -228,7 +228,15 @@ const cdist=(a,b)=>Math.sqrt(2*(a[0]-b[0])**2+4*(a[1]-b[1])**2+3*(a[2]-b[2])**2)
 // the garment's colour: the median of the middle of the body in the front view (top-left square), chest to waist
 function garmentRGB(f){return new Promise(res=>{const u=URL.createObjectURL(f),m=new Image();m.onload=()=>{try{const W=m.naturalWidth/4,H=m.naturalHeight/2,c=document.createElement('canvas');c.width=40;c.height=40;const g=c.getContext('2d',{willReadFrequently:true});
   g.drawImage(m,W*.42,H*.27,W*.16,H*.14,0,0,40,40);const d=g.getImageData(0,0,40,40).data,R=[],G=[],B=[];for(let k=0;k<d.length;k+=4){R.push(d[k]);G.push(d[k+1]);B.push(d[k+2])}const md=a=>a.sort((x,y)=>x-y)[a.length>>1];res([md(R),md(G),md(B)])}catch(_){res(null)}URL.revokeObjectURL(u)};m.onerror=()=>{URL.revokeObjectURL(u);res(null)};m.src=u})}
-async function assign(ids,fs){fs=fs.slice().sort((a,b)=>(a.lastModified-b.lastModified)||String(a.name).localeCompare(String(b.name),undefined,{numeric:true}));
+// v276 (Sara 23:29–23:39: belts, skirts and sweaters each went to the item before it): GPT names its pictures by the product's number in the prompt
+// (skirt-01, 04_woven…). The list she uploads to can be in another order than the list the ZIP was made from (opened from another item,
+// picked again after a refresh), so the ZIP's order is kept and used again, and the files go by the number in their names
+const ORDK='g250ord';
+function saveOrd(ids){try{localStorage.setItem(ORDK,JSON.stringify({ids:ids.slice(),t:Date.now()}))}catch(_){}}
+function ordFor(sel){try{const o=JSON.parse(localStorage.getItem(ORDK)||'null');if(o&&Array.isArray(o.ids)&&o.ids.length==sel.length&&o.ids.every(x=>sel.includes(x))&&Date.now()-o.t<14*864e5)return o.ids.slice()}catch(_){}return sel.slice()}
+const numOf=f=>{const m=String(f&&f.name||'').match(/(\d+)/);return m?+m[1]:NaN};
+async function assign(ids,fs){const byN=fs.length>1&&fs.every(f=>!isNaN(numOf(f)))&&new Set(fs.map(numOf)).size==fs.length;
+ fs=fs.slice().sort((a,b)=>byN?numOf(a)-numOf(b):(a.lastModified-b.lastModified)||String(a.name).localeCompare(String(b.name),undefined,{numeric:true}));
  const T=targets(ids),sc=await Promise.all(fs.map(cuKind));
  // close-ups go to the close-up outputs, sheets to the sheet outputs, each in order. The close-ups = the pictures that cover the bottom of their squares most
  // (a face close-up ~1, a half body ~.5, a whole body sheet ~.1 – floor and two feet)
@@ -241,11 +249,57 @@ async function assign(ids,fs){fs=fs.slice().sort((a,b)=>(a.lastModified-b.lastMo
   if(sh.length>1&&cols.every(Boolean)){const fc=await Promise.all(sh.map(j=>garmentRGB(fs[j])));if(fc.every(Boolean)){
    const C=[];sh.forEach((j,x)=>tg.forEach((i,y)=>C.push([cdist(fc[x],cols[y])+6*Math.abs(x-y),x,y])));C.sort((p,q)=>p[0]-q[0]);
    const ux=new Set(),uy=new Set();for(const [,x,y] of C){if(ux.has(x)||uy.has(y))continue;ux.add(x);uy.add(y);map[sh[x]]=tg[y]}}}}catch(e){ERR('bycol',e)}
- UP={ids,T,fs,map,urls:fs.map(f=>URL.createObjectURL(f))};paintUp()}
+ UP={ids,T,fs,map,urls:fs.map(f=>URL.createObjectURL(f)),flag:{},chk:'run'};paintUp();check(UP)}
+// v276 (Sara 23:32 "אתה חייב תמיד כאשר אני מעלה קובץ לאמת מול הקובץ שהכל מתאים"): Claude looks at every picture GPT returned next to the photos of the
+// products and says which product each one is, and whether the colour and the details are the same. A picture that is not the product, or not
+// in its colour, is set to "לא להשתמש" with the reason in red – she can still choose it herself
+const TOp=(p,ms,v)=>Promise.race([p,new Promise(r=>setTimeout(()=>r(v),ms))]);
+const ldImg=u=>new Promise(r=>{const m=new Image();m.crossOrigin='anonymous';m.onload=()=>r(m);m.onerror=()=>r(null);m.src=u});
+function grid(cells,cw,ch,lab){const n=cells.length,cols=Math.min(4,n),rows=Math.ceil(n/cols),c=document.createElement('canvas');c.width=cols*cw;c.height=rows*(ch+28);
+ const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);
+ cells.forEach((m,i)=>{const x=(i%cols)*cw,y=Math.floor(i/cols)*(ch+28);if(m){const k=Math.min(cw/m.w,ch/m.h),w=m.w*k,h=m.h*k;g.drawImage(m.im,m.sx||0,m.sy||0,m.sw||m.w,m.sh||m.h,x+(cw-w)/2,y+28,w,h)}
+  g.fillStyle='#c0262d';g.font='bold 24px sans-serif';g.fillText(lab(i),x+6,y+23)});
+ return new Promise(r=>c.toBlob(r,'image/jpeg',.85))}
+const sheetCell=async u=>{const m=await ldImg(u);if(!m)return null;const W=m.naturalWidth,H=m.naturalHeight;return {im:m,sx:0,sy:0,sw:W/4,sh:H/2,w:W/4,h:H/2}};
+const photoCell=async u=>{const m=u&&await ldImg(u);return m?{im:m,w:m.naturalWidth,h:m.naturalHeight}:null};
+async function check(U){const say=t=>{if(UP!==U)return;U.chk=t;const e=dlg().querySelector('.g250ck');if(e)e.textContent=t};
+ try{const si=U.T.map((t,i)=>t.o.role!='cu'?i:-1).filter(i=>i>=0),sj=U.fs.map((f,j)=>j).filter(j=>!(U.map[j]>=0&&U.T[U.map[j]].o.role=='cu'));
+  if(!si.length||!sj.length){say('');return}
+  let S=null;try{S=await TOp(claude.use('sample'),12000,null)}catch(_){}const lim=S?await TOp(S.limits().catch(()=>null),8000,null):null;
+  if(!S||!lim||!lim.images||lim.images.maxCount<2){say('לא הצלחתי לבדוק כאן את ההתאמה – כדאי להסתכל על כל תמונה מול המוצר');return}
+  say('✨ בודקת שכל תמונה מתאימה למוצר שלה…');
+  const ph=await Promise.all(si.map(i=>{let u='';try{u=(photos(U.T[i].id)[0]||{}).u||R().ph(U.T[i].id)}catch(_){}return photoCell(u)}));
+  const sh=await Promise.all(sj.map(j=>sheetCell(U.urls[j])));
+  const L='ABCDEFGHIJKLMNOPQRSTUVWXYZ';const A=await grid(ph,260,300,i=>String(i+1)),B_=await grid(sh,200,300,i=>L[i]);
+  const list=si.map((i,k)=>`${k+1}. ${U.T[i].o.n}${U.T[i].o.col?' – colour: '+U.T[i].o.col:''} (product: ${nm(U.T[i].id)}${(D[U.T[i].id]||{}).color?', shop colour: '+D[U.T[i].id].color:''})`).join('\n');
+  const prompt=`You check try-on pictures for a clothing app. Image 1 = the shop photos of the products, numbered in red:\n${list}\n`+
+   `Some products are packs or sets: then the name says which piece or colour is wanted. Image 2 = pictures made by an image AI, lettered in red (A, B…): each shows a woman wearing ONE item (front view).\n`+
+   `For every letter say which product number the woman is wearing. Compare the kind of item, the colour, the pattern and the details (buckle, lace, collar, sleeves). colour_ok=false when the colour or pattern is clearly different from that product (e.g. grey in the photo, black on her). same=false when it is not any of the products. problem = a short note in Hebrew for the owner, empty when all is fine.\n`+
+   `Answer JSON only: {"sheets":[{"s":"A","p":1,"same":true,"colour_ok":true,"problem":""}]}`;
+  const r=await TOp(S.json(prompt,{images:[A,B_],modelTier:'default'}),120000,null);if(UP!==U)return;
+  const R_=(r&&Array.isArray(r.sheets))?r.sheets:null;if(!R_){say('לא הצלחתי לבדוק את ההתאמה – כדאי להסתכל על כל תמונה מול המוצר');return}
+  let moved=0,bad=0;const took={};
+  R_.forEach(x=>{const k=L.indexOf(String(x.s||'').trim().toUpperCase());const j=sj[k];if(j==null)return;const p=+x.p;const ti=p>=1&&p<=si.length?si[p-1]:-1;
+   if(x.same===false||ti<0){U.map[j]=-1;U.flag[j]='✗ '+(x.problem||'זה לא אחד המוצרים');bad++;return}
+   if(took[ti]!=null){U.flag[j]='✗ עוד תמונה נראית כמו אותו מוצר: '+(x.problem||'');U.map[j]=-1;bad++;return}took[ti]=j;
+   if(x.colour_ok===false){U.map[j]=-1;U.flag[j]='✗ הצבע או הדוגמה לא כמו במוצר: '+(x.problem||'');bad++;return}
+   if(U.map[j]!==ti){U.map[j]=ti;moved++}if(x.problem)U.flag[j]='⚠ '+x.problem});
+  U.chk=bad?`✨ בדקתי: ${bad} תמונות לא מתאימות (מסומנות באדום, לא יעלו אלא אם תבחרי).${moved?' '+moved+' תמונות העברתי למוצר הנכון.':''}`:moved?`✨ בדקתי: ${moved} תמונות העברתי למוצר הנכון. השאר מתאימות`:'✨ בדקתי: כל תמונה מתאימה למוצר שלה';
+  paintUp()}
+ catch(e){ERR('check',e);say('לא הצלחתי לבדוק את ההתאמה – כדאי להסתכל על כל תמונה מול המוצר')}}
+// v276: one picture uploaded in the item's own window – the same check, for that one product (av188.js shows the answer on the item)
+window.g276one=async(id,f)=>{let S=null;try{S=await TOp(claude.use('sample'),12000,null)}catch(_){}const lim=S?await TOp(S.limits().catch(()=>null),8000,null):null;
+ if(!S||!lim||!lim.images||lim.images.maxCount<2)return null;const u=URL.createObjectURL(f);
+ try{const ph=await photoCell(prodPh(id)),sh=await sheetCell(u);if(!ph||!sh)return null;const A=await grid([ph],300,340,()=>'1'),B_=await grid([sh],220,330,()=>'A');const x=D[id]||{};
+  const r=await TOp(S.json(`Image 1 = the shop photo of a product: "${nm(id)}"${x.color?', shop colour: '+x.color:''}. Image 2 = a picture made by an image AI of a woman who should be wearing exactly this product (front view). `+
+   `Is it the same item (kind, colour, pattern, details)? Answer JSON only: {"same":true,"colour_ok":true,"problem":"short note in Hebrew for the owner, empty when all is fine"}`,{images:[A,B_],modelTier:'default'}),90000,null);
+  return r&&typeof r=='object'?r:null}catch(e){ERR('one',e);return null}finally{URL.revokeObjectURL(u)}};
+const prodPh=id=>{try{return (photos(id)[0]||{}).u||R().ph(id)||''}catch(_){return ''}};
 function paintUp(){const d=dlg();const {ids,T,fs,map,urls}=UP,many=ids.length>1,lab=t=>(many?`מוצר ${t.p+1} · `:'')+t.o.n;
  d.innerHTML=`<div class="mk"><div class="mkh"><h3 id="g250t">📤 מה GPT החזיר – ${many?ids.length+' מוצרים':es(nm(ids[0]))}</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
   <p class="g250p">סידרתי לפי הסדר. אם משהו לא במקום, בוחרים מהרשימה מה כל תמונה. אחר כך "✓ לסדר הכול".</p>
-  <div class="g250u">${fs.map((f,j)=>`<label class="g250f"><img alt="" src="${urls[j]}"><select data-g250m="${j}" aria-label="מה התמונה הזו"><option value="-1">— לא להשתמש —</option>${T.map((t,i)=>`<option value="${i}"${map[j]==i?' selected':''}>${i+1}. ${es(lab(t))}</option>`).join('')}</select></label>`).join('')}</div>
+  <p class="g250ck" aria-live="polite">${es(UP.chk=='run'?'✨ בודקת שכל תמונה מתאימה למוצר שלה…':UP.chk||'')}</p>
+  <div class="g250u">${fs.map((f,j)=>`<label class="g250f${UP.flag[j]&&UP.flag[j][0]=='✗'?' bad':''}"><span class="g250pair"><img alt="" src="${urls[j]}">${map[j]>=0?`<img class="g250pp" alt="המוצר" src="${es(prodPh(T[map[j]].id))}">`:''}</span>${UP.flag[j]?`<small class="g250fl">${es(UP.flag[j])}</small>`:''}<select data-g250m="${j}" aria-label="מה התמונה הזו"><option value="-1">— לא להשתמש —</option>${T.map((t,i)=>`<option value="${i}"${map[j]==i?' selected':''}>${i+1}. ${es(lab(t))}</option>`).join('')}</select></label>`).join('')}</div>
   <div class="mkb"><button type="button" class="mkp" data-g250go>✓ לסדר הכול</button><button type="button" data-g250back>ביטול</button></div></div>`;if(!d.open)d.showModal()}
 async function apply(){const {ids,T,fs,map}=UP;const d=dlg();d.close();UP.urls.forEach(u=>URL.revokeObjectURL(u));UP=null;
  if(typeof window.av188up!='function'){toast_('לא הצלחתי להעלות. לרענן את הדף');return}
@@ -256,7 +310,7 @@ async function apply(){const {ids,T,fs,map}=UP;const d=dlg();d.close();UP.urls.f
   try{if(o.role=='cu'){if(!a)throw new Error('assets');const r=await a.upload(await cuJpeg(x.f));if(r&&r.id)(CU[id]=CU[id]||[]).push({k:o.cuOf,n:o.n,cu:r.id,cu8:1});continue}
    if(o.role=='whole'){if(!a)throw new Error('assets');const r=await a.upload(await slim272(x.f));if(r&&r.id)await putItem(id,{whole:r.id});continue}
    const t=o.pk?subId(id,o.pk):id;if(o.pk){try{window.syncParts85&&syncParts85()}catch(_){}if(!D[t]){await new Promise(r=>setTimeout(r,1600))}}
-   window.av188kind(t,o.kind);if((await window.av188up(t,[x.f]))===false)bad.push(o.n)}catch(e){ERR('apply',e);bad.push(o.n)}}
+   window.av188kind(t,o.kind);window.G276SKIP=1;const okU=await window.av188up(t,[x.f]);window.G276SKIP=0;if(okU===false)bad.push(o.n)}catch(e){ERR('apply',e);bad.push(o.n)}}
 for(const id of used){const cus=CU[id]||[];
   if(cus.length){const old=(it(id).cus||[]).filter(c=>!cus.some(q=>q.k==c.k));try{await putItem(id,{cus:[...old,...cus]})}catch(e){ERR('cus',e)}}
   // a set: the product wears both parts together; each piece can be worn alone
@@ -273,7 +327,7 @@ function packQ(id,k){const n=npOf(id),A=asked(id),g=gOf(id),W=PLURAL[k]||'פרי
 let DL=null,ID='';
 function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';DL.dir='rtl';DL.setAttribute('aria-labelledby','g250t');document.body.appendChild(DL);
  DL.addEventListener('cancel',e=>{e.preventDefault();DL.close()});
- DL.addEventListener('change',e=>{const s=e.target.closest('[data-g250m]');if(s&&UP){UP.map[+s.dataset.g250m]=+s.value;return}
+ DL.addEventListener('change',e=>{const s=e.target.closest('[data-g250m]');if(s&&UP){UP.map[+s.dataset.g250m]=+s.value;delete UP.flag[+s.dataset.g250m];paintUp();return}
   const t=e.target.closest('[data-g250pn]');if(t){const L=namesOf(ID);L[+t.dataset.g250pn]=t.value.trim()||L[+t.dataset.g250pn];save({pn:L},true);return}
   const c=e.target.closest('[data-g256pc]');if(c){const n=npOf(ID),L=Array.from({length:n},(_,i)=>colsOf(ID)[i]||'');L[+c.dataset.g256pc]=c.value.trim();save({pc:L,pn:namesOf(ID)},true)}});
  DL.addEventListener('click',async e=>{if(e.target===DL)return DL.close();const b=e.target.closest('button');if(!b)return;const q=b.dataset;
@@ -299,8 +353,8 @@ function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';
   if(q.g256n){const k=q.g256n;try{await putItem(k,{np:+q.v});await ensurePieces(k)}catch(er){ERR('bnp',er)}return paintB()}
   if(q.g252rm){B.np=null;B.sel=B.sel.filter(k=>k!=q.g252rm);if(!B.sel.length)B.step='pick';return paintB()}
   if(q.g252zip!=null)return bZip(b);
-  if(q.g252cp!=null)return copyTxt(b,bPrompt(B.sel,B.np));
-  if(q.g252up!=null)return pick(B.sel.slice());
+  if(q.g252cp!=null){saveOrd(B.sel);return copyTxt(b,bPrompt(B.sel,B.np))}
+  if(q.g252up!=null)return pick(ordFor(B.sel));
   if(q.g252list!=null){B.from=0;B.step='list';return paintB()}
   if(q.g250go!=null)return apply().catch(er=>{ERR('apply',er);toast_('משהו נעצר. מה שכבר עלה נשמר')});
   if(q.g250back!=null){const many=UP&&UP.ids.length>1,one=UP&&UP.ids[0];if(UP){UP.urls.forEach(u=>URL.revokeObjectURL(u));UP=null}if(many&&B){B.step='list';return paintB()}return open(one||ID)}
