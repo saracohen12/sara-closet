@@ -44,20 +44,23 @@ async function bkFix(sc){const ids=new Set(sc.free.map(x=>x.id)),keep=new Set();
 const mb=b=>Math.round(b/1048576);
 let DL=null,RUN=false;
 function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='cl262';DL.dir='rtl';DL.setAttribute('aria-labelledby','cl262t');document.body.appendChild(DL);
- DL.addEventListener('cancel',e=>{e.preventDefault();if(!RUN)DL.close()});DL.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-  if(b.dataset.x!=null&&!RUN)return DL.close();if(b.dataset.go!=null)go()});return DL}
+ DL.addEventListener('cancel',e=>{e.preventDefault();DL.close()});DL.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.x!=null)return DL.close();if(b.dataset.go!=null)go()});return DL}
 function show(h){const d=dlg();d.innerHTML=`<div class="mk"><div class="mkh"><h3 id="cl262t">🧹 לפנות מקום לתמונות</h3><button type="button" class="mkx" data-x aria-label="סגירה">✕</button></div>${h}</div>`;if(!d.open)d.showModal()}
 let SC=null;   // last scan
-async function open(){if(RUN)return show('<p class="cl262p">מוחקת… <b data-n></b></p>');show('<p class="cl262p">בודקת אילו תמונות עדיין בשימוש… (כחצי דקה)</p>');
+let PROG={n:0,all:0};   // v303: the delete under way (her press or the daily one) – the window shows it whenever it is opened
+const progHtml=()=>`<p class="cl262p">מוחקת תמונות ישנות שאף אחד לא משתמש בהן… <b data-n>${PROG.n}</b> מתוך ${PROG.all}.<br>אפשר לסגור את החלון ולהמשיך – רק לא לסגור את האתר.</p><progress max="${PROG.all||1}" value="${PROG.n}"></progress>`;
+function tick(){if(!DL||!DL.open)return;const c=DL.querySelector('[data-n]'),p=DL.querySelector('progress');if(c)c.textContent=PROG.n;if(p)p.value=PROG.n}
+async function open(){if(RUN)return show(progHtml());show('<p class="cl262p">בודקת אילו תמונות עדיין בשימוש… (כחצי דקה)</p>');
  try{SC=await scan()}catch(e){ERR('scan',e);SC=null;show(`<p class="cl262p">${e.code=='not_granted'?'רק בעלת האתר יכולה לפנות מקום. לפתוח את האתר מהחשבון שלך.':e.code=='big'?'יש כאן יותר מדי נתונים לבדיקה בטוחה. כתבי לי ואני אפנה מקום.':'לא הצלחתי לבדוק. לנסות שוב בעוד רגע.'}</p>`);return}
  const u=SC.usage||{};
  show(`<p class="cl262p">שמורות עכשיו <b>${u.files||SC.all}</b> תמונות מתוך <b>${u.maxFiles||'?'}</b> (${mb(u.bytes||0)} מתוך ${mb(u.maxBytes||0)} MB).</p>
   ${SC.free.length?`<p class="cl262p"><b>${SC.free.length}</b> מהן ישנות ואף אחד כבר לא משתמש בהן – גזירות קודמות שהוחלפו, העלאות שלא נשמרו (${mb(SC.bytes)} MB).<br>כל מה שמופיע באתר נשאר: בגדים, אווטאר, קשירות, תסרוקות, איפורים, רקעים ולוקים.</p>
   <span class="mkb"><button type="button" class="mkp" data-go>🧹 למחוק ${SC.free.length} תמונות ישנות</button><button type="button" data-x>לא עכשיו</button></span>`
   :'<p class="cl262p">אין תמונות ישנות למחוק – הכול בשימוש. אפשר לבקש עוד מקום ("Request a higher limit").</p>'}${autoRow()}`)}
-async function go(){if(RUN||!SC||!SC.free.length)return;RUN=true;let L=SC.free;const a=SC.a;if(SC.rn){const keep=await bkFix(SC);if(keep.size)L=L.filter(x=>!keep.has(x.id))}let n=0,bad=0,wait=0;show(`<p class="cl262p">מוחקת… <b data-n>0</b> מתוך ${L.length}. לא לסגור את הדף.</p><progress max="${L.length}" value="0"></progress>`);
+async function go(){if(RUN||!SC||!SC.free.length)return;RUN=true;let L=SC.free;const a=SC.a;if(SC.rn){const keep=await bkFix(SC);if(keep.size)L=L.filter(x=>!keep.has(x.id))}let n=0,bad=0,wait=0;PROG={n:0,all:L.length};show(progHtml());
  for(const x of L){for(let t=0;t<4;t++){try{await a.delete(x.id);n++;break}catch(e){if(e&&e.code=='rate_limited'||e&&e.code=='store_unavailable'){wait=Math.min(8000,(wait||800)*2);await new Promise(r=>setTimeout(r,wait));continue}bad++;ERR('del',e);break}}
-  wait=Math.max(0,wait-200);const c=DL.querySelector('[data-n]');if(c)c.textContent=n;const p=DL.querySelector('progress');if(p)p.value=n+bad}
+  wait=Math.max(0,wait-200);PROG.n=n+bad;tick()}
  RUN=false;SC=null;show(`<p class="cl262p">✓ נמחקו <b>${n}</b> תמונות ישנות. עכשיו יש מקום להעלות שוב.${bad?` (${bad} לא נמחקו)`:''}</p><span class="mkb"><button type="button" class="mkp" data-x>סגירה</button></span>`);
  toast_(`✓ פיניתי ${n} תמונות`);try{const x=document.getElementById('cl262b');if(x)x.remove();banner()}catch(_){}}
 // ===== v303 (Sara 28/10 15:38 "אני לא יכולה כל פעם להיות בלחץ שנגמר לי המקום"): a switch she turns on once – "🔁 לנקות לבד כל יום". While it is on,
@@ -72,12 +75,13 @@ const autoRow=()=>`<label class="cl302"><input type="checkbox" data-cl302 ${(AUT
 let LASTAUTO=0;
 async function autoRun(force){if(RUN||!(await autoOn()))return false;if(!force&&Date.now()-LASTAUTO<60*60e3)return false;LASTAUTO=Date.now();
  let r=null;try{r=await scan()}catch(e){if(e&&e.code!='not_granted')ERR('auto-scan',e);return false}
- if(!r||!r.free.length)return false;RUN=true;let L=r.free,n=0,bad=0,wait=0;
+ if(!r||!r.free.length)return false;RUN=true;let L=r.free,n=0,bad=0,wait=0;PROG={n:0,all:L.length};if(DL&&DL.open)show(progHtml());
  try{if(r.rn){const keep=await bkFix(r);if(keep.size)L=L.filter(x=>!keep.has(x.id))}
-  for(const x of L){for(let t=0;t<4;t++){try{await r.a.delete(x.id);n++;break}catch(e){if(e&&(e.code=='rate_limited'||e.code=='store_unavailable')){wait=Math.min(8000,(wait||800)*2);await new Promise(q=>setTimeout(q,wait));continue}bad++;ERR('auto-del',e);break}}wait=Math.max(0,wait-200)}}
+  for(const x of L){for(let t=0;t<4;t++){try{await r.a.delete(x.id);n++;break}catch(e){if(e&&(e.code=='rate_limited'||e.code=='store_unavailable')){wait=Math.min(8000,(wait||800)*2);await new Promise(q=>setTimeout(q,wait));continue}bad++;ERR('auto-del',e);break}}wait=Math.max(0,wait-200);PROG.n=n+bad;tick()}}
  finally{RUN=false;SC=null}
  try{const db=await claude.use('db');if(db)await db.collection('cl302').doc('last').set({t:Date.now(),n,bad,before:r.usage&&r.usage.files||0})}catch(_){}
- if(n){window.STOREFULL=0;toast_(`🧹 פיניתי לבד ${n} תמונות ישנות`)}try{const x=document.getElementById('cl262b');if(x)x.remove();banner()}catch(_){}return n>0}
+ if(n){window.STOREFULL=0;toast_(`🧹 פיניתי לבד ${n} תמונות ישנות`)}
+ if(DL&&DL.open)show(`<p class="cl262p">✓ נמחקו <b>${n}</b> תמונות ישנות. עכשיו יש מקום.${bad?` (${bad} לא נמחקו)`:''}</p>${autoRow()}<span class="mkb"><button type="button" class="mkp" data-x>סגירה</button></span>`);try{const x=document.getElementById('cl262b');if(x)x.remove();banner()}catch(_){}return n>0}
 document.addEventListener('change',e=>{const t=e.target;if(t&&t.matches&&t.matches('[data-cl302]'))setAuto(t.checked)});
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-cl302on]');if(!b)return;e.preventDefault();setAuto(true)},true);
 window.clean262=open;window.clean262b=()=>banner().catch(()=>{});
