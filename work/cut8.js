@@ -340,7 +340,9 @@ async function run(src,kind,onStep,opt){const img=await toImg(src);const S=sheet
  for(let v=0;v<8;v++){onStep&&onStep(v);await tick();const b=await base(v);const s=shift(S,v,b,o.mode=='head'||o.mode=='whole');shifts.push(s);const d=panel(BM?S0:S,v,s[0],s[1]);if(BM)unBlack(d,b,panelM(BM,v,s[0],s[1]));
   if(o.mode=='whole'){const [m,f,l]=maskWhole(b,d,v,o.fab,kind=='tiex');views.push(kind=='hair'?await snug(turn(layerA(d,m.A),v),v):turn(layerA(d,m.A),v));if(f){fab.push(turn(layer(d,f),v));lum.push(...l)}}
   else if(o.mode=='face')views.push(turn(layerA(d,maskFace(b,d,v)),v));
-  else if(kind=='belt'&&o.chain)views.push(turn(layer(d,mask(b,d,Object.assign({},o,{mode:'small',low:1,warm:1,rows:[.28,.8],one:1,rim:0}))),v));
+  else if(kind=='belt'&&o.chain){const m=mask(b,d,Object.assign({},o,{mode:'small',low:1,warm:1,rows:[.28,.8],one:1,rim:0}));
+   for(let i=0;i<N;i++)if(m[i]){const k=i*3,l=.299*d[k]+.587*d[k+1]+.114*d[k+2];if(l<105||d[k+1]<.7*d[k])m[i]=0}   // a chain is gold or crystal: bright, not her nails or a dark edge
+   views.push(turn(layer(d,m),v))}
   else if(kind=='belt'&&o.sheer)views.push(turn(layerA(d,maskClear(b,d)),v));
   else{let m=mask(b,d,o);if(TOPK.includes(kind)){const r=slide(d,m,b);m=r[1];views.push(turn(layer(r[0],m),v))}else views.push(turn(layer(d,m),v))}}
  lum.sort((x,y)=>x-y);
