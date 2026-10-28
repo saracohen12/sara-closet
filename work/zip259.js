@@ -5,10 +5,14 @@
 (function(){
 const ERR=(w,e)=>(window.ERRS=window.ERRS||[]).push('v259 '+w+': '+(e&&(e.code||e.message)||e));
 const toast_=m=>(window.toast||(()=>{}))(m);
-const ZIPASK=`ובסוף, אחרי שסיימת ליצור את כל התמונות: צרי לי בנוסף קובץ ZIP אחד להורדה, ובתוכו כל התמונות שיצרת (PNG באיכות מלאה, בלי לכווץ ובלי לשנות אותן), בשמות לפי הסדר: 01.png, 02.png, 03.png… כך אוכל להוריד את כל התמונות בבת אחת. אם התמונות יצאו בכמה תשובות (אחרי "המשך"), ה-ZIP בסוף כולל את כל התמונות מכל התשובות, באותו סדר.`;
-const MARK='קובץ ZIP אחד להורדה, ובתוכו כל התמונות שיצרת';
+const ZIPOLD=`ובסוף, אחרי שסיימת ליצור את כל התמונות: צרי לי בנוסף קובץ ZIP אחד להורדה, ובתוכו כל התמונות שיצרת (PNG באיכות מלאה, בלי לכווץ ובלי לשנות אותן), בשמות לפי הסדר: 01.png, 02.png, 03.png… כך אוכל להוריד את כל התמונות בבת אחת. אם התמונות יצאו בכמה תשובות (אחרי "המשך"), ה-ZIP בסוף כולל את כל התמונות מכל התשובות, באותו סדר.`;
+// v296 (Sara 28/10 16:00 "GPT לא מחזיר לי את הזיפ, הוא מחזיר לי רגיל תמונות"): GPT's image tool can't pack its pictures in a zip, so the prompt no longer
+// asks for one. It asks for the pictures in order, each with its number and name above it; she saves them all and uploads them together in one pick –
+// the site sorts them by that order and checks each one against the product (v276). A zip that does come is still opened as before.
+const ZIPASK=`בסוף: החזירי את כל התמונות לפי הסדר שכתבתי, אחת אחרי השנייה, ומעל כל תמונה כתבי שורה קצרה עם המספר והשם שלה (למשל "01 – תקריב"). אין צורך בקובץ ZIP – רק התמונות עצמן, באיכות מלאה. אם לא הספקת את כולן בתשובה אחת, עשי כמה שאפשר ואני אכתוב "המשך", ואז תמשיכי מהמספר הבא.`;
+const MARK='ומעל כל תמונה כתבי שורה קצרה עם המספר והשם שלה';
 const isPrompt=t=>typeof t=='string'&&t.length>120&&/מצורפ/.test(t.slice(0,400));
-function zipAsk(t){if(!isPrompt(t))return t;return t.split(ZIPASK).join('').replace(/\n{3,}/g,'\n\n').trimEnd()+'\n\n'+ZIPASK}
+function zipAsk(t){if(!isPrompt(t))return t;return t.split(ZIPOLD).join('').split(ZIPASK).join('').replace(/\n{3,}/g,'\n\n').trimEnd()+'\n\n'+ZIPASK}
 window.ZIPASK=ZIPASK;window.zipAsk=zipAsk;
 // any copy of a prompt: the clipboard buttons and a manual copy of a shown prompt
 try{const C=navigator.clipboard;if(C&&C.writeText){const w=C.writeText.bind(C);C.writeText=t=>w(zipAsk(t))}}catch(e){ERR('clip',e)}

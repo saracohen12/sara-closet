@@ -24,3 +24,6 @@ html:not([data-d180=z50]) #t282b:not(.in){bottom:calc(76px + env(safe-area-inset
 #tell282 .t282m p{margin:4px 0 0;white-space:pre-wrap}#tell282 .t282m small{color:#6a6670}#tell282 .t282a{background:#f6e7df;border-radius:10px;padding:6px 8px}
 @media (min-width:860px){#tell282{margin:auto;border-radius:24px}#t282b:not(.in){bottom:24px}}
 #t282b.hd{position:static;width:44px;height:44px;box-shadow:none;background:#17161a!important;color:#fff!important;border:0!important;font-size:1.15rem}
+/* v296 – inside a window the 💬 sat on top of the window's own buttons (bottom corner): there it is a small tab on the side edge */
+#t282b.in{bottom:calc(34% + env(safe-area-inset-bottom));left:0;right:auto;inset-inline-start:auto;width:34px;height:42px;border-radius:0 14px 14px 0;font-size:1rem;opacity:.82;box-shadow:0 3px 10px rgba(0,0,0,.25)}
+#t282b.in:hover,#t282b.in:focus-visible{opacity:1}
