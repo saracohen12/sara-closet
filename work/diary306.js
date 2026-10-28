@@ -93,7 +93,35 @@ function outHtml(){const ids=outIds().sort((a,b)=>String(IT[b].out.d||'').locale
  return `<section class="dys306" aria-labelledby="dyh306o"><h4 class="h234" id="dyh306o">🧺 יצא משימוש${ids.length?` <small>${ids.length}</small>`:''}</h4>
  <p class="i234">בגד שנקרע, התקלקל, עם כתם שלא יורד, או שעבר לבת שלך. הוא יוצא מהארון, מהאווטאר ומהלוקים, ונשאר כאן עם הסיבה. אפשר תמיד להחזיר.</p>
  ${WHY.filter(w=>g[w[0]]).map(([r,n])=>`<h5 class="dyoh306">${n} <small>${g[r].length}</small></h5><ul class="dyl306">${g[r].map(id=>`<li><button type="button" data-dy306open="${es(id)}"><img alt="" data-th="${es(id)}" src="${ph(id)}"><span><b>${es(nm(id))}</b><small>${es([catName(cat(id)),IT[id].out.d?dm(IT[id].out.d):'',IT[id].out.note||''].filter(Boolean).join(' · '))}</small></span></button><button type="button" class="dyun306" data-dy306unout="${es(id)}">↩ לארון</button></li>`).join('')}</ul>`).join('')}
- <div class="act234 dya306"><button type="button" class="pri" data-dy306outpick>➕ להוסיף בגד שיצא משימוש</button></div></section>`}
+ <div class="act234 dya306"><button type="button" class="pri" data-dy306outpick>➕ להוסיף בגד שיצא משימוש</button><button type="button" data-dy306sort>🗂 למיין את הארון, בגד אחרי בגד</button></div></section>`}
+
+// v309 🗂 sorting the closet (smart-closet stage B for what is already in the closet): one item at a time, oldest purchase first –
+// ♥ love it / ✓ keep / 🧺 out of use (reason) / 👧 to my daughter / 🎁 to give away / 🪡 to the tailor / ⏳ not sure, ask again in 3 months / ⏭ skip.
+// Each answer: IT.srt {v, d, until?}; answered items leave the queue (⏳ comes back after its date). ↩ undoes the last answer.
+const SRT=[['love','♥ אוהבת, משאירה'],['keep','✓ משאירה'],['out','🧺 יצא משימוש'],['daughter','👧 לבת שלי'],['give','🎁 למסור'],['tailor','🪡 לתופרת'],['wait','⏳ לא בטוחה, לשאול שוב בעוד 3 חודשים']];
+const sorted_=id=>{const r=it(id).srt;if(!r||!r.v)return false;return !(r.v=='wait'&&r.until&&r.until<=today())};
+function sortQ(){let L=Object.keys(D).filter(id=>liveId(id)&&it(id).s!='give'&&!sorted_(id));if(S.sc)L=L.filter(id=>cat(id)==S.sc);
+ const dt=id=>String((D[id]||{}).date||'9999');return L.sort((a,b)=>wearN(a)-wearN(b)||dt(a).localeCompare(dt(b)))}
+let UNDO=[];
+function sortHtml(){const L=sortQ(),all=Object.keys(D).filter(id=>liveId(id)&&(!S.sc||cat(id)==S.sc)),done=all.filter(sorted_).length,has=new Set(Object.keys(D).filter(liveId).map(cat));
+ const chips=`<div class="cs234" role="group" aria-label="סוג">${OCATS.filter(([c])=>!c||has.has(c)||S.sc==c).map(([c,t])=>`<button type="button" data-dy306sc="${c}" aria-pressed="${(S.sc||'')==c}">${t}</button>`).join('')}</div>`;
+ const bar=`<div class="dysb309" role="progressbar" aria-valuemin="0" aria-valuemax="${all.length}" aria-valuenow="${done}" aria-label="ממוינים"><i style="width:${all.length?Math.round(done/all.length*100):0}%"></i></div><p class="i234 dysn309">מיינת ${done} מתוך ${all.length}${UNDO.length?` · <button type="button" class="dyu309" data-dy306undo>↩ לבטל את האחרון</button>`:''}</p>`;
+ const id=L[0];if(!id)return chips+bar+`<p class="dyok309">✓ סיימת למיין${S.sc?' את הסוג הזה':''}! 👏</p>`;
+ const x=D[id]||{},n=wearN(id),wl=(it(id).wl||[]).slice().sort(),pr=price(id);
+ return chips+bar+`<div class="dysc309"><img alt="" data-th="${es(id)}" src="${ph(id)}"><div><b>${es(nm(id))}</b>
+  <small>${es([catName(cat(id)),x.color,x.size].filter(Boolean).join(' · '))}</small>
+  <small>${x.date?'נקנה '+es(dm(String(x.date).slice(0,10))+'/'+String(x.date).slice(2,4)):''}${pr?` · ₪${pr.toFixed(0)}`:''}</small>
+  <small>${n?`לבשת ${n==1?'פעם אחת':n+' פעמים'} · לאחרונה ${dm(wl[wl.length-1]||today())}`:'עוד לא סימנת שלבשת'}</small>
+  <button type="button" class="dyop309" data-dy306open="${es(id)}">לפתוח את הבגד ›</button></div></div>
+ <h4 class="h234">מה עושים איתו?</h4>
+ <div class="dyso309">${SRT.map(([v,t])=>`<button type="button" data-dy306srt="${v}" data-id="${es(id)}"${v=='love'?' class="pri"':''}>${t}</button>`).join('')}<button type="button" data-dy306srt="skip" data-id="${es(id)}">⏭ לדלג, אחר כך</button></div>`}
+async function sortSet(id,v){const prev={srt:it(id).srt||'',fav:!!it(id).fav,s:it(id).s||'',loc:it(id).loc||'',locT:it(id).locT||'',gen:it(id).gen||'',out:it(id).out||''};
+ const d=today(),pt={srt:{v,d}};
+ if(v=='love')pt.fav=true;if(v=='wait'){const u=new Date();u.setDate(u.getDate()+90);pt.srt.until=iso(u)}
+ if(v=='give')pt.s='give';if(v=='tailor'){pt.loc='אצל התופרת';pt.locT=d}
+ if(v=='daughter'){pt.gen=Date.now();pt.out={r:'daughter',d,note:''}}
+ await putItem(id,pt);if(v=='daughter')try{window.sync161&&sync161(true)}catch(_){}
+ UNDO.push([id,prev]);if(UNDO.length>20)UNDO.shift()}
 const liveId=id=>{const i=it(id);return D[id]&&!i.gen&&!i.oos&&i.s!='ret'&&!(D[id]||{}).part};
 const OCATS=[['','הכל'],['dresses','שמלות'],['skirts','חצאיות'],['tops','חולצות'],['sweaters','סוודרים'],['outer','ז׳קטים'],['scarves','כיסויים'],['shoes','נעליים'],['jewelry','תכשיטים'],['belts','חגורות'],['bags','תיקים'],['girls','לבת'],['boys','לבן']];
 function outPickHtml(){const q=S.q.trim().toLowerCase();let L=Object.keys(D).filter(liveId);const has=new Set(L.map(cat));if(S.c)L=L.filter(id=>cat(id)==S.c);
@@ -142,8 +170,8 @@ function listHtml(by){const tabs=[['d','היום'],['w','השבוע'],['m',S.m==
 function render(keep){if(!W||!W.open)return;const b=W.querySelector('.dyb306'),y=b.scrollTop,by=byDay(),v=S.v;
  W.querySelector('.bk234').hidden=v=='main';
  const hd=(()=>{try{return new Date().toLocaleDateString('he-IL-u-ca-hebrew',{day:'numeric',month:'long'})}catch(_){return dm(today())}})();
- W.querySelector('#dy306t').innerHTML=(v=='main'?'📅 מה לבשתי':v=='outpick'?'🧺 איזה בגד יצא משימוש?':'🧺 יצא משימוש')+`<small>${es(dayName(today())+' · '+hd)}</small>`;
- b.innerHTML=v=='outpick'?outPickHtml():v=='outwhy'?outWhyHtml():todayHtml(by)+pastHtml(by)+calHtml(by)+listHtml(by)+tipsHtml(by)+usefulHtml()+favHtml()+outHtml();b.scrollTop=keep===false?0:y;
+ W.querySelector('#dy306t').innerHTML=(v=='main'?'📅 מה לבשתי':v=='sort'?'🗂 מיון הארון':v=='outpick'?'🧺 איזה בגד יצא משימוש?':'🧺 יצא משימוש')+`<small>${es(dayName(today())+' · '+hd)}</small>`;
+ b.innerHTML=v=='sort'?sortHtml():v=='outpick'?outPickHtml():v=='outwhy'?outWhyHtml():todayHtml(by)+pastHtml(by)+calHtml(by)+listHtml(by)+tipsHtml(by)+usefulHtml()+favHtml()+outHtml();b.scrollTop=keep===false?0:y;
  thl($a('img[data-th]',b).map(x=>x.dataset.th).filter(id=>D[id]))}
 
 // a day opens in the day window of wore234; its ✕ (or Esc) comes back to the diary
@@ -159,7 +187,15 @@ document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.c
  if(d.dy306x!=null)return W.close();
  if(d.dy306open){W.close();return openItem(d.dy306open)}
  if(d.dy306day)return day(d.dy306day,d.v||undefined);
- if(d.dy306back!=null){S.v=S.v=='outwhy'&&S.from=='pick'?'outpick':'main';return render(false)}
+ if(d.dy306back!=null){S.v=S.v=='outwhy'&&S.from=='pick'?'outpick':S.v=='outwhy'&&S.from=='sort'?'sort':'main';return render(false)}
+ if(d.dy306sort!=null){S.v='sort';return render(false)}
+ if(d.dy306sc!=null){S.sc=d.dy306sc;return render(false)}
+ if(d.dy306srt){const id=d.id,v=d.dy306srt;if(!D[id])return;
+  if(v=='skip'){const r=it(id).srt;await putItem(id,{srt:{v:'wait',d:today(),until:iso(new Date(Date.now()+7*864e5))}});UNDO.push([id,{srt:r||''}]);return render(false)}
+  if(v=='out'){S.oid=id;S.r='';S.note='';S.from='sort';S.v='outwhy';return render(false)}
+  $a('#dy306 [data-dy306srt]').forEach(x=>x.disabled=true);await sortSet(id,v);
+  toast_({love:'♥ אוהבת ומשאירה',keep:'✓ נשאר בארון',daughter:'👧 עבר לבת שלך',give:'🎁 סומן למסירה',tailor:'🪡 סומן: אצל התופרת',wait:'⏳ אשאל שוב בעוד 3 חודשים'}[v]||'✓');return render(false)}
+ if(d.dy306undo!=null){const u=UNDO.pop();if(!u)return;const [id,prev]=u;await putItem(id,prev);if('gen' in prev)try{window.sync161&&sync161(true)}catch(_){}toast_('↩ בוטל');return render(false)}
  if(d.dy306fav){const id=d.dy306fav,on=!it(id).fav;await putItem(id,{fav:on});toast_(on?'♥ נוסף לאהובים':'הוסר מהאהובים');return render()}
  if(d.dy306favmore!=null){S.fx+=24;return render()}
  if(d.dy306outpick!=null){S.v='outpick';S.q='';S.c='';S.n=60;render(false);const q=W.querySelector('#q306');if(q&&matchMedia('(pointer:fine)').matches)q.focus();return}
@@ -169,7 +205,7 @@ document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.c
  if(d.dy306r){S.r=d.dy306r;const nt=W.querySelector('#nt306');if(nt)S.note=nt.value;return render()}
  if(d.dy306outok!=null){const id=S.oid,nt=W.querySelector('#nt306');if(nt)S.note=nt.value.trim();if(!S.r||!D[id])return;t.disabled=true;
   await putItem(id,{gen:Date.now(),out:{r:S.r,d:today(),note:S.note.slice(0,80)}});try{window.sync161&&sync161(true)}catch(_){}
-  toast_(`🧺 "${nm(id).slice(0,30)}" יצא משימוש (${whyName(S.r).replace(/^\S+\s/,'')})`);S.v='main';render(false);const o=W.querySelector('#dyh306o');if(o)o.scrollIntoView({block:'start'});return}
+  toast_(`🧺 "${nm(id).slice(0,30)}" יצא משימוש (${whyName(S.r).replace(/^\S+\s/,'')})`);if(S.from=='sort'){try{await putItem(id,{srt:{v:'out',d:today()}})}catch(_){}S.v='sort';return render(false)}S.v='main';render(false);const o=W.querySelector('#dyh306o');if(o)o.scrollIntoView({block:'start'});return}
  if(d.dy306unout){const id=d.dy306unout;await putItem(id,{gen:'',out:''});try{window.sync161&&sync161(true)}catch(_){}toast_(`↩ "${nm(id).slice(0,30)}" חזר לארון`);return render()}
  if(d.dy306pick!=null)return day(today(),'pick');
  if(d.dy306wash!=null){W.close();return SC185.open('now')}

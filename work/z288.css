@@ -14,8 +14,9 @@
 #r360 .r3h .z8c button:focus-visible,#r360 .r3h .z8r:focus-visible,#r360 .r3h.z8h .r3tabs button:focus-visible{outline:3px solid var(--z-acc,#b4532a);outline-offset:1px}
 #r360 .r3h .z8r{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;min-height:30px;height:30px;padding:0 5px;border-radius:9px;border:1px solid var(--z-line,#e6dcd2);background:var(--z-surface,#fff);font:inherit;font-size:.6rem;line-height:1;color:var(--z-ink,#2b211b);cursor:pointer}
 #r360 .r3h .z8r i{font-style:normal;font-size:.75rem;line-height:1}
-#r360 .r3h.z8h .r3pin,#r360 .r3h.z8h .r3save{width:30px;min-width:30px;height:30px;min-height:30px;padding:0;font-size:0;display:grid;place-items:center;box-shadow:none}
-#r360 .r3h.z8h .r3pin::before{content:"📌";font-size:.8rem}
+#r360 .r3h.z8h .r3save{width:30px;min-width:30px;height:30px;min-height:30px;padding:0;font-size:0;display:grid;place-items:center;box-shadow:none}
+/* v309 (Sara 16:42 "אין לי איך להעלות את זה לדף הבית"): the pin says what it does again */
+#r360 .r3h.z8h .r3pin{width:auto;min-width:0;height:34px;min-height:34px;padding:0 12px;font-size:.8rem;font-weight:700;white-space:nowrap;box-shadow:none}
 #r360 .r3h.z8h .r3save::before{content:"♡";font-size:.95rem}
 #r360 .r3pane[data-p="closet"]{scroll-margin-top:118px}
 #r360 .r3pane[data-p="looks"]{scroll-margin-top:118px}

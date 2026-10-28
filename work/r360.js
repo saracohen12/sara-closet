@@ -487,7 +487,7 @@ function build(){
  dlg=document.createElement('dialog');dlg.id='r360';dlg.setAttribute('aria-label','הסטודיו');dlg.setAttribute('dir','rtl');
  dlg.innerHTML=`<div class="r3w">
  <header class="r3h"><button type="button" class="r3x" aria-label="סגירה">✕</button><div class="r3tt"><small>האווטאר שלך · 360°</small><h2>הסטודיו</h2></div>
-  <div class="r3ha"><button type="button" class="r3pin" aria-label="לשים את הלוק הזה בדף הראשי">📌 לדף הראשי</button><button type="button" class="r3save" aria-label="שמירת הלוק">♡ שמירה</button></div></header>
+  <div class="r3ha"><button type="button" class="r3pin" aria-label="לשים את הלוק הזה בדף הראשי">📌 לדף הבית</button><button type="button" class="r3save" aria-label="שמירת הלוק">♡ שמירה</button></div></header>
  <div class="r3stage" role="region" aria-label="האווטאר">
   <div class="r3fig"></div>
   <div class="r3miss" hidden></div>
@@ -911,18 +911,18 @@ function genReady(){const avoid=new Set(Object.keys(D).filter(id=>!isReady(id)))
 function lotd(fresh){const d=new Date().toISOString().slice(0,10),o=occNow();let c=null;try{c=JSON.parse(localStorage.getItem('lotd360')||'null')}catch(_){}
  if(fresh||!c||c.d!=d||c.o!=o||!c.ids||!c.ids.every(id=>isReady(id))){c={d,o,ids:genReady()};try{localStorage.setItem('lotd360',JSON.stringify(c))}catch(_){}}
  return c}
-// what the home avatar wears: her pinned look ("📌 לדף הראשי" in the studio) or the look of the day; the head is her own choice (Sara 21:17: "לא תמיד עם פאה")
+// what the home avatar wears: her pinned look ("📌 לדף הבית" in the studio) or the look of the day; the head is her own choice (Sara 21:17: "לא תמיד עם פאה")
 let HOME=(()=>{try{return Object.assign({head:'c',pin:null},JSON.parse(localStorage.getItem('r3home')||'{}'))}catch(_){return {head:'c',pin:null}}})();
 function saveHome(){try{localStorage.setItem('r3home',JSON.stringify(HOME))}catch(_){}if(DB)DB.collection('r360').doc('home').set(clone(HOME)).catch(()=>{});STAGES.forEach(s=>s.today&&s.draw());HOMEL.forEach(f=>{try{f()}catch(_){}})}
 const HOMEL=new Set();
-// v185 (Sara 22:41 "אם בחרתי לוק אני רוצה שיופיע במסך הראשי, אין לי כפתור"): "📌 לדף הראשי" on the studio, on every saved look and in the looks album –
+// v185 (Sara 22:41 "אם בחרתי לוק אני רוצה שיופיע במסך הראשי, אין לי כפתור"): "📌 לדף הבית" on the studio, on every saved look and in the looks album –
 // it puts the look on the home avatar and jumps there, so she sees it happen
 function pinGo(s,name){HOME.pin=clone(s);HOME.head=s.head||'c';saveHome();close();
  document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(_){}});
  if(window.zHome&&document.documentElement.dataset.d180=='z50')zHome();const hb=document.querySelector('.bnav [data-bn="home"]');if(hb)hb.click();else window.scrollTo({top:0,behavior:'smooth'});
  const av=document.querySelector('#h180 .z-av');if(av){av.classList.remove('z-pin185');void av.offsetWidth;av.classList.add('z-pin185');setTimeout(()=>av.classList.remove('z-pin185'),2600)}
  toast_(name?`📌 "${name}" בדף הראשי`:'📌 הלוק הזה בדף הראשי')}
-const pinB=(k,n)=>`<button type="button" class="r3lp" data-l3pin="${esc(k)}" aria-label="לשים את ${esc(n||'הלוק')} בדף הראשי">📌 לדף הראשי</button>`;
+const pinB=(k,n)=>`<button type="button" class="r3lp" data-l3pin="${esc(k)}" aria-label="לשים את ${esc(n||'הלוק')} בדף הראשי">📌 לדף הבית</button>`;
 function nudgePin(){const b=dlg&&dlg.querySelector('.r3pin');if(!b)return;b.classList.remove('r3nudge');void b.offsetWidth;b.classList.add('r3nudge');setTimeout(()=>b.classList.remove('r3nudge'),3200)}
 (async()=>{try{const db=await window.claude?.use?.('db');if(!db)return;const d=await db.collection('r360').doc('home').get();const v=d&&d.exists&&d.data&&d.data();
  if(v&&!localStorage.getItem('r3home')){HOME=Object.assign({head:'c',pin:null},v);STAGES.forEach(s=>s.today&&s.draw());HOMEL.forEach(f=>{try{f()}catch(_){}})}}catch(_){}})();
@@ -942,11 +942,11 @@ const TODAY={state:homeState,
  onchange:f=>HOMEL.add(f),
  wear:()=>{const s=homeState();ST=Object.assign(clone(DEF),clone(s));MISS=[];keep();open();redraw()}};
 
-// the looks album and the suggested looks ("הלוקים שלי") get the same "📌 לדף הראשי"
+// the looks album and the suggested looks ("הלוקים שלי") get the same "📌 לדף הבית"
 try{if(typeof lookHTML=='function'){const _lh=lookHTML;lookHTML=function(L,idx,saved){const h=_lh.apply(this,arguments);
- return h.replace('<div class="lb">',`<div class="lb"><button type="button" class="lb185" ${saved?`data-pin185="${esc(saved.id)}"`:`data-pin185g="${idx}"`}>📌 לדף הראשי</button>`)}}}catch(e){(window.ERRS=window.ERRS||[]).push('v185 hub pin: '+e.message)}
+ return h.replace('<div class="lb">',`<div class="lb"><button type="button" class="lb185" ${saved?`data-pin185="${esc(saved.id)}"`:`data-pin185g="${idx}"`}>📌 לדף הבית</button>`)}}}catch(e){(window.ERRS=window.ERRS||[]).push('v185 hub pin: '+e.message)}
 try{if(typeof albumHTML=='function'){const _al=albumHTML;albumHTML=async function(){const h=await _al.apply(this,arguments);
- return String(h).replace(/<div class="lb"><button data-sedit="([^"]+)">/g,(m0,id)=>`<div class="lb"><button type="button" class="lb185" data-pin185="${id}">📌 לדף הראשי</button><button data-sedit="${id}">`)}}}catch(e){(window.ERRS=window.ERRS||[]).push('v185 album pin: '+e.message)}
+ return String(h).replace(/<div class="lb"><button data-sedit="([^"]+)">/g,(m0,id)=>`<div class="lb"><button type="button" class="lb185" data-pin185="${id}">📌 לדף הבית</button><button data-sedit="${id}">`)}}}catch(e){(window.ERRS=window.ERRS||[]).push('v185 album pin: '+e.message)}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-pin185],[data-pin185g]');if(!b)return;e.preventDefault();e.stopPropagation();
  if(b.dataset.pin185!=null)TODAY.pinLook('m:'+b.dataset.pin185);else{let L=null;try{L=GEN[+b.dataset.pin185g]}catch(_){}if(L)TODAY.pinIds(Object.values(L),'הלוק')}},true);
 

@@ -97,14 +97,19 @@ const oldRow=()=>{if(!OLDS||!OLDS.del.length)return '';return `<div class="cl305
 async function oldScan(){const db=await claude.use('db');const {ids,other}=oldFind();
  for(const c of COLS){if(c=='items'||c=='backup83')continue;try{const sn=await db.collection(c).limit(1000).get();sn.docs.forEach(d=>{try{add(other,JSON.stringify(d.data()))}catch(_){}})}catch(_){}}
  const del=[...ids.keys()].filter(h=>!other.has(h)),items=[...new Set(del.flatMap(h=>[...ids.get(h)]))];OLDS={del,items};return OLDS}
-async function goOld(b){if(RUN||!OLDS||!OLDS.del.length)return;if(Date.now()-OLDARM>8000){OLDARM=Date.now();b.textContent=`בטוחה? לחצי שוב – ${OLDS.del.length} תמונות יימחקו לתמיד`;b.classList.add('arm');return}
- RUN=true;const a=await claude.use('assets');let n=0,bad=0;PROG={n:0,all:OLDS.del.length};show(progHtml());
+async function goOld(b,quiet){if(RUN||!OLDS||!OLDS.del.length)return;if(Date.now()-OLDARM>8000){OLDARM=Date.now();b.textContent=`בטוחה? לחצי שוב – ${OLDS.del.length} תמונות יימחקו לתמיד`;b.classList.add('arm');return}
+ RUN=true;const a=await claude.use('assets');let n=0,bad=0;PROG={n:0,all:OLDS.del.length};if(!quiet)show(progHtml());
  try{for(const id of OLDS.items){const it=IT[id]||{},pt={};OLDK.forEach(k=>{if(k in it)pt[k]=''});if(Object.keys(pt).length)try{await putItem(id,pt)}catch(e){ERR('old-put',e)}}
   const left=new Set();Object.values(IT).forEach(it=>OLDK.forEach(k=>{if(it&&it[k])(JSON.stringify(it[k]).match(HEX)||[]).forEach(h=>left.add(h))}));
   for(const h of OLDS.del){if(left.has(h)){bad++;continue}for(let t=0;t<4;t++){try{await a.delete(h);n++;break}catch(e){if(e&&(e.code=='rate_limited'||e.code=='store_unavailable')){await new Promise(q=>setTimeout(q,1500*(t+1)));continue}if(e&&e.code=='not_found'){n++;break}bad++;ERR('old-del',e);break}}PROG.n=n+bad;tick()}}
  finally{RUN=false}
  try{const db=await claude.use('db');if(db)await db.collection('cl302').doc('old305').set({t:Date.now(),n,bad,items:OLDS.items.length})}catch(_){}
- OLDS=null;toast_(`✓ נמחקו ${n} תמונות של האווטאר הישן`);show(`<p class="cl262p">✓ נמחקו <b>${n}</b> תמונות של האווטאר הישן.${bad?` (${bad} לא נמחקו)`:''}</p><span class="mkb"><button type="button" class="mkp" data-x>סגירה</button></span>`);try{banner()}catch(_){}}
+ OLDS=null;toast_(`✓ נמחקו ${n} תמונות של האווטאר הישן`);if(!quiet||(DL&&DL.open))show(`<p class="cl262p">✓ נמחקו <b>${n}</b> תמונות של האווטאר הישן.${bad?` (${bad} לא נמחקו)`:''}</p><span class="mkb"><button type="button" class="mkp" data-x>סגירה</button></span>`);try{banner()}catch(_){}}
+// v309 (Sara 16:50 "איך אני עושה, לא רואה"): she chose on 28/10 16:07 to delete the old avatar's pictures, but 🧹 opens only from the
+// "almost full" bar, which is gone now. So it runs once by itself (quietly, a toast at the end); cl302/old305 marks it done.
+async function oldAuto(){try{if(RUN)return;const db=await claude.use('db'),a=await claude.use('assets');if(!db||!a)return;const s=await db.collection('cl302').doc('old305').get();if(s&&s.exists)return;
+ const o=await oldScan();if(!o||!o.del.length)return;OLDARM=Date.now();await goOld({textContent:'',classList:{add(){}}},true)}catch(e){RUN=false;ERR('oldauto',e)}}
+setTimeout(oldAuto,45000);
 window.clean262=open;window.clean262b=()=>banner().catch(()=>{});
 // a line at the top when the store is (nearly) full, and in the admin panel
 async function banner(){let u=null;try{const a=await claude.use('assets');if(!a)return;u=(await a.list()).usage}catch(_){return}
