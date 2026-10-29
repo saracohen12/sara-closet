@@ -506,6 +506,7 @@ function mcOpen(){pk();MCV={more:false};PID=null;mcState();if(!PK.open)PK.showMo
   PK.addEventListener('close',()=>{MCV=null})}}
 // a cover's own window is drawn by open(): leaving it clears the multi view
 const _open333=open;open=async function(id){MCV=null;return _open333.apply(this,arguments)};
-window.MC333={open:mcOpen,wait:mcWait,prompt:mcPrompt};
+window.MC333={open:mcOpen,wait:mcWait,prompt:mcPrompt,up:()=>mcPick()};
+window.TIE202up=id=>pickAll(id);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-m333go]');if(!b)return;e.preventDefault();e.stopPropagation();mcOpen()},true);
 })();

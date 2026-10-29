@@ -282,6 +282,8 @@ async function openSends(){const d=dlg();ID='';d.innerHTML=`<div class="mk"><div
   ${HL.length?`<div class="g312l">${HL.map((x,i)=>{const ids=x.ids.filter(k=>D[k]),ti=catTitle(x.cat);return `<button type="button" class="g312r" data-g312o="${i}"><span class="g312h"><b>${es(when(x.t))}</b> · ${ids.length} מוצרים${ti?' · '+es(ti):''}${x.old?' <small>(לפי זמן ההורדה)</small>':''}</span><span class="g312t">${ids.map(k=>{let p='';try{p=R().ph(k)}catch(_){}return `<img alt="${es(nm(k))}" loading="lazy" src="${es(p)}">`}).join('')}</span><span class="g312n">${ids.map(k=>es(nm(k))).join(' · ')}</span></button>`}).join('')}</div>`:'<p class="g250p">עוד לא הורדת ZIP של כמה מוצרים.</p>'}
   <div class="mkb g250bar">${B&&B.sel&&B.sel.length?`<button type="button" class="mkp" data-g312back>↩ לבחירה הפתוחה (${B.sel.length})</button>`:''}<button type="button" data-g252x>סגירה</button></div></div>`}
 window.g312sends=openSends;
+// v334: the home inbox (inbox334.js) lists the sendings that still wait for GPT's pictures, and opens / uploads them directly
+window.g334={hist:()=>hAll(),up:ids=>pick(ordFor(ids.filter(k=>D[k]))),open:x=>{const d=dlg();STK=[];B={cat:x.cat,sel:x.ids.filter(k=>D[k]),step:'list',np:x.np||null};saveOrd(x.ids);paintB();if(!d.open)d.showModal()}};
 const numOf=f=>{const m=String(f&&f.name||'').match(/(\d+)/);return m?+m[1]:NaN};
 async function assign(ids,fs){const byN=fs.length>1&&fs.every(f=>!isNaN(numOf(f)))&&new Set(fs.map(numOf)).size==fs.length;
  fs=fs.slice().sort((a,b)=>byN?numOf(a)-numOf(b):(a.lastModified-b.lastModified)||String(a.name).localeCompare(String(b.name),undefined,{numeric:true}));
