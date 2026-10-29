@@ -1,0 +1,11 @@
+const W=ms=>new Promise(r=>setTimeout(r,ms));await W(500);openOrders123('P0-097-00209037804151091');await W(800);const row=i=>document.querySelectorAll('.o3it')[i];
+row(0).querySelector('[data-o3set="fix"]').click();await W(600);row(0).querySelector('[data-o3set="fixk"][data-v="short"]').click();await W(600);
+row(0).querySelector('summary').click();await W(300);
+row(0).querySelector('[data-o3set="fab"][data-v="y"]').click();await W(600);
+const stillOpen=row(0).querySelector('details').open;
+row(0).querySelector('[data-o3set="fs"][data-v="winter"]').click();await W(600);
+row(0).querySelector('[data-o3set="rb"][data-v="y"]').click();await W(600);
+const r=IT.T103;document.querySelector('[data-o3="back"]').click();await W(400);
+document.querySelector('[data-o3sheet="open"]').click();await W(500);document.querySelector('[data-o3tag="rb:y"]').click();await W(800);
+const n=document.querySelectorAll('.o3it').length;const w=document.querySelector('#ord123 .o3b');
+return [r,stillOpen,n,w.scrollWidth-w.clientWidth,document.querySelector('.o3fab summary')?.textContent];

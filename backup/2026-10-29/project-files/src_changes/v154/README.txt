@@ -1,0 +1,1 @@
+v154 (orders thread) on v153: new Shein order GSH19924N002QB0 (15 items, 467.99, in transit). Data only, same files as v153 + shein/app/n133, S2QB0_*. th/cut published for dresses, scarves, tops, skirts, shoes, outer.

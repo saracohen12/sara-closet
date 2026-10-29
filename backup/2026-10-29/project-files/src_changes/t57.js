@@ -1,0 +1,13 @@
+const {chromium,devices}=require('playwright');const S=process.argv[2];const PHONE=process.argv[3]=='phone';
+(async()=>{const b=await chromium.launch();const c=await b.newContext(PHONE?{...devices['Pixel 7']}:{viewport:{width:1366,height:800}});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+ await p.addInitScript(()=>{window.claude={use:async k=>k=='assets'?{upload:async bl=>({id:'a'+Math.random().toString(36).slice(2,10),url:URL.createObjectURL(bl)})}:null}});
+ await p.goto('http://localhost:8765/index.html',{waitUntil:'load'});await p.waitForTimeout(2500);
+ const id=await p.evaluate(()=>Object.keys(D).find(i=>D[i].cat=='jewelry'));await p.evaluate(id=>openItem(id),id);await p.waitForTimeout(800);
+ const st=()=>p.evaluate(id=>({jwp:(IT[id]||{}).jwp,chips:[...document.querySelectorAll('.jwbox [data-jwpk]')].map(b=>b.textContent+':'+b.getAttribute('aria-pressed')).join(' '),up:(document.querySelector('.jwbox [data-upm="jw"]')||{}).disabled,toast:document.querySelector('#toast').textContent}),id);
+ const tap=async k=>{await p.locator('.jwbox [data-jwpk="'+k+'"]').click();await p.waitForTimeout(500)};
+ console.log('start',JSON.stringify(await st()));
+ await tap('neck');console.log('untick neck',JSON.stringify(await st()));
+ await tap('ear');console.log('tick ear',JSON.stringify(await st()));
+ await tap('neck');await tap('neck');console.log('neck on/off',JSON.stringify(await st()));
+ await p.screenshot({path:S+'/tests/audit/t57'+(PHONE?'_m':'')+'.png'});
+ console.log('ERR',JSON.stringify(errs),await p.evaluate(()=>JSON.stringify(window.ERRS||[])));await b.close()})();

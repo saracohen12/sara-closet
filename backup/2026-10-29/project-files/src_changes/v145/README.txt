@@ -1,0 +1,1 @@
+v145: perf – book4_tpl cardEl() cache used by img() and card() (querySelector by attribute over 700 cards was the top cost); orders list/items content-visibility:auto; a mark redraws only its row + header (rowRefresh), kick skips the 2nd refresh. Built on v144.

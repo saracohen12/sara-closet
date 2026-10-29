@@ -1,0 +1,136 @@
+/* ===== v78 "2050 soft": the A palette kept, but rounded, glassy and lighter – smaller hero title, pill buttons and chips,
+   soft-shadow cards, floating glass bottom bar, gradient primary buttons. Everything under html.d73.d78 (design78.js adds d78). */
+html.d73.d78{--r1:12px;--r2:18px;--r3:24px;--r4:30px;--pill:999px;
+ --sh1:0 1px 2px rgba(70,45,20,.05),0 4px 14px rgba(70,45,20,.07);--sh2:0 2px 6px rgba(70,45,20,.06),0 14px 38px rgba(70,45,20,.12);
+ --glow:0 8px 22px rgba(120,86,48,.28);--g1:linear-gradient(135deg,#1d1714 0%,#3b2c22 55%,#7a5a3a 120%);--g2:linear-gradient(120deg,#b08a5a,#d3a98a 60%,#c58f8f);
+ --glass2:rgba(255,255,255,.62);--line:#ece4da;--bg:#faf6f1}
+html.d73.d78 body{background:radial-gradient(900px 520px at 105% -8%,#f4dfcf 0%,rgba(244,223,207,0) 62%),radial-gradient(760px 480px at -12% 22%,#efe4f1 0%,rgba(239,228,241,0) 60%),radial-gradient(700px 520px at 60% 108%,#e6efe9 0%,rgba(230,239,233,0) 60%),var(--bg)!important}
+@media (prefers-reduced-motion:no-preference){
+ html.d73.d78 .h9hero,html.d73.d78 .h73fig,html.d73.d78 .h9tiles,html.d73.d78 #lotd77,html.d73.d78 #rdy77{animation:up78 .55s cubic-bezier(.2,.7,.2,1) both}
+ html.d73.d78 .h73fig{animation-delay:.08s}html.d73.d78 .h9tiles{animation-delay:.14s}html.d73.d78 #lotd77{animation-delay:.2s}html.d73.d78 #rdy77{animation-delay:.26s}
+ @keyframes up78{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+ html.d73.d78 button.go:active,html.d73.d78 .h9tiles button:active,html.d73.d78 .groups button:active,html.d73.d78 .bnav button:active,html.d73.d78 .card:active,html.d73.d78 #lotd77 button:active{transform:scale(.97)}
+}
+html.d73.d78 .card,html.d73.d78 button.go,html.d73.d78 .h9tiles button,html.d73.d78 .groups button{transition:transform .15s ease,box-shadow .2s ease}
+
+/* ---------- app bar ---------- */
+html.d73.d78 .h9bar{border-bottom:0!important}
+html.d73.d78 .h9logo i{border-radius:var(--r1)!important;background:var(--g1)!important;box-shadow:var(--glow)!important}
+html.d73.d78 #d71t,html.d73.d78 .h9act #helpb,html.d73.d78 .h9act #bell{background:var(--glass2)!important;border:1px solid rgba(255,255,255,.8)!important;box-shadow:var(--sh1)!important;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+
+/* ---------- hero: calmer title ---------- */
+html.d73.d78 .h9t{font-size:clamp(1.9rem,8.2vw,2.7rem)!important;line-height:1.08!important;margin:4px 0 10px!important;background:linear-gradient(100deg,#1b1512 30%,#8a6a40 95%);-webkit-background-clip:text;background-clip:text;color:transparent!important}
+html.d73.d78 .h73kick{letter-spacing:.12em!important;font-size:.7rem!important}
+html.d73.d78 .h9hi{font-size:.95rem!important}
+html.d73.d78 .h9cta button,html.d73.d78 .h9cta a{border-radius:var(--pill)!important}
+html.d73.d78 .h9cta button:first-child,html.d73.d78 .h9cta .go{background:var(--g1)!important;box-shadow:var(--glow)!important;border:0!important}
+html.d73.d78 .h73fig::before{background:linear-gradient(180deg,#f1e2d4,#efe6ee)!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.7)}
+html.d73.d78 .h73dots button,html.d73.d78 .h73fig button{border-radius:var(--pill)!important}
+@media (min-width:900px){html.d73.d78 .h9t{font-size:3.4rem!important}}
+
+/* ---------- quick tiles: soft glass cards instead of ruled boxes ---------- */
+html.d73.d78 .h9tiles{gap:10px!important;border-bottom:0!important;margin-top:6px!important}
+html.d73.d78 .h9tiles button{background:var(--glass2)!important;border:1px solid rgba(255,255,255,.85)!important;border-radius:var(--r3)!important;box-shadow:var(--sh1)!important;min-height:96px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+html.d73.d78 .h9tiles button+button{border-inline-start:1px solid rgba(255,255,255,.85)!important}
+html.d73.d78 .h9tiles i{width:40px!important;height:40px!important;border-radius:50%!important;background:linear-gradient(135deg,#f6e9db,#f1e1e6)!important;display:grid!important;place-items:center;margin:0 auto 6px!important}
+html.d73.d78 .h9tiles i svg{width:20px;height:20px}
+html.d73.d78 .h9tiles span{font-size:.72rem!important}
+@media (max-width:520px){html.d73.d78 .h9tiles{gap:7px!important}html.d73.d78 .h9tiles button{padding:12px 2px!important;min-height:92px}}
+
+/* ---------- section titles, categories, returns ---------- */
+html.d73.d78 .h9head h3,html.d73.d78 .h9sec h3{font-size:1.45rem!important}
+html.d73.d78 .h9head{border-bottom:0!important}
+html.d73.d78 .h9im{border-radius:var(--r3)!important;box-shadow:var(--sh1)!important}
+html.d73.d78 #urgent .ub,html.d73.d78 .strip .mini,html.d73.d78 #urgent .strip .mini,html.d73.d78 #recent .strip .mini{border-radius:var(--r2)!important;overflow:hidden;box-shadow:var(--sh1)!important;border-color:transparent!important}
+html.d73.d78 #urgent h3 small{border-radius:var(--pill)!important}
+
+/* ---------- v77 home blocks ---------- */
+html.d73.d78 #lotd77{border-radius:var(--r4)!important;border:1px solid rgba(255,255,255,.85)!important;background:var(--glass2)!important;box-shadow:var(--sh2)!important;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html.d73.d78 #lotd77 .l77i{border-radius:var(--r2)!important;border:0!important;box-shadow:var(--sh1)}
+html.d73.d78 #lotd77 .l77a button{border-radius:var(--pill)!important}
+html.d73.d78 #lotd77 .l77a .go,html.d73.d78 button.go{background:var(--g1)!important;box-shadow:var(--glow)!important;border:0!important;color:#fff!important}
+html.d73.d78 #rdy77{border-radius:var(--pill)!important;border:1px solid rgba(255,255,255,.85)!important;background:var(--glass2)!important;box-shadow:var(--sh1)!important}
+html.d73.d78 #rdy77 .r77th img{border-radius:10px!important;border:0!important}
+html.d73.d78 .m77f button,html.d73.d78 .it77u,html.d73.d78 .e77 button,html.d73.d78 .q77s,html.d73.d78 .q77s button{border-radius:var(--pill)!important}
+html.d73.d78 .m77l img{border-radius:var(--r1)!important}
+html.d73.d78 .m77bar,html.d73.d78 .m77bar i{border-radius:var(--pill)!important}
+html.d73.d78 .it77{border:0!important;background:var(--glass2);border-radius:var(--r3);padding:12px!important;box-shadow:var(--sh1)}
+html.d73.d78 .it77p span{border-radius:var(--pill)!important}
+html.d73.d78 .q77s{overflow:hidden}
+
+/* ---------- closet bar ---------- */
+html.d73.d78 .ctrl{border-bottom:0!important;box-shadow:0 10px 24px -18px rgba(70,45,20,.35)!important}
+html.d73.d78 .tools .qw input,html.d73.d78 #q{border-radius:var(--pill)!important;background:#fff!important;border:1px solid var(--line)!important;box-shadow:var(--sh1)!important;padding-inline:44px 18px!important}
+html.d73.d78 #fb,html.d73.d78 .ctrl .tools #fb{border-radius:var(--pill)!important;background:var(--g1)!important;box-shadow:var(--glow)!important}
+html.d73.d78 .groups button,html.d73.d78 .subs a,html.d73.d78 .subs button,html.d73.d78 .chips button,html.d73.d78 #chips button,html.d73.d78 .xpand{border-radius:var(--pill)!important;border:1px solid var(--line)!important;background:#fff!important;box-shadow:var(--sh1)!important}
+html.d73.d78 .groups button[aria-pressed=true],html.d73.d78 .subs a[aria-pressed=true]{background:var(--g1)!important;color:#fff!important;border-color:transparent!important}
+
+/* ---------- cards ---------- */
+html.d73.d78 section h2{border-bottom:0!important;background:transparent!important;font-size:1.4rem!important}
+html.d73.d78 section h2 span{border-radius:var(--pill)!important;background:#fff!important;border:1px solid var(--line)!important;box-shadow:var(--sh1);padding:2px 10px!important}
+html.d73.d78 .card{background:#fff!important;border-radius:var(--r3)!important;box-shadow:var(--sh1)!important;padding:6px 6px 12px!important;overflow:hidden}
+html.d73.d78 .card .ph{border-radius:calc(var(--r3) - 6px)!important}
+html.d73.d78 .card .t,html.d73.d78 .card .m,html.d73.d78 .card .ret{padding-inline:6px!important}
+html.d73.d78 .card .mode{border-radius:var(--pill)!important;overflow:hidden;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);background:rgba(255,255,255,.75)!important}
+html.d73.d78 .card .st,html.d73.d78 .card .dup{border-radius:var(--pill)!important}
+html.d73.d78 .card .fav{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);background:rgba(255,255,255,.75)!important}
+@media (hover:hover){html.d73.d78 .card:hover{transform:translateY(-3px)!important;box-shadow:var(--sh2)!important}}
+html.d73.d78 .totop{border-radius:50%!important;background:var(--g1)!important;box-shadow:var(--glow)!important}
+
+/* ---------- floating glass bottom bar (phones) ---------- */
+@media (max-width:899px){
+ html.d73.d78 .bnav{left:10px!important;right:10px!important;bottom:calc(8px + env(safe-area-inset-bottom))!important;border-radius:26px!important;background:rgba(255,255,255,.72)!important;border:1px solid rgba(255,255,255,.9)!important;box-shadow:0 12px 34px rgba(60,40,20,.18)!important;-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);padding:4px 6px!important}
+ html.d73.d78 .bnav button{border-radius:20px!important;min-height:54px!important}
+ html.d73.d78 .bnav button.on{background:rgba(176,138,90,.12)!important}
+ html.d73.d78 .bnav button[data-bn=studio] i{border-radius:16px!important;background:var(--g1)!important;box-shadow:var(--glow)!important}
+}
+
+/* ---------- dialogs & sheets ---------- */
+html.d73.d78 dialog{border-radius:var(--r4)!important;box-shadow:0 30px 80px rgba(40,25,10,.25)!important}
+html.d73.d78 .sheet9{border-radius:var(--r4) var(--r4) 0 0!important}
+@media (min-width:701px){html.d73.d78 .sheet9{border-radius:var(--r4)!important}}
+html.d73.d78 #dlg .dlwrap{border-radius:var(--r4)!important}
+html.d73.d78 #dlg img.main{border-radius:var(--r3)!important}
+html.d73.d78 #dlg .dhead button,html.d73.d78 #dlg .navb{border-radius:50%!important}
+html.d73.d78 .erow>button,html.d73.d78 .ed button[data-k],html.d73.d78 .ed button[data-mode],html.d73.d78 .ib button,html.d73.d78 .hrow button,html.d73.d78 #dlbody .erow button,html.d73.d78 .stbtns button,html.d73.d78 .lb button,html.d73.d78 .qa .qab button{border-radius:var(--pill)!important}
+html.d73.d78 #dlbody .imgrow,html.d73.d78 #dlbody .drest>.ed,html.d73.d78 #dlbody .sim,html.d73.d78 #dlbody details.srch9,html.d73.d78 #dlbody .p5gbox,html.d73.d78 #dlbody details.dmore,html.d73.d78 #dlbody .note{border-radius:var(--r3)!important}
+html.d73.d78 #dlbody .p5gv .pv,html.d73.d78 #dlbody .p5r>*{border-radius:var(--r2)!important}
+html.d73.d78 #dlbody .gcap{border-radius:var(--pill)!important}
+html.d73.d78 .dinfo details.dinfo-more>summary{border-radius:var(--pill)!important}
+html.d73.d78 textarea,html.d73.d78 input[type=text],html.d73.d78 input[type=number],html.d73.d78 input[type=date],html.d73.d78 select{border-radius:var(--r1)!important}
+html.d73.d78 .toast{border-radius:var(--pill)!important;background:var(--g1)!important;box-shadow:var(--glow)!important}
+/* filter sheet, hub, alerts, pose dialogs */
+html.d73.d78 #panel.pn9 .row>select,html.d73.d78 #panel.pn9 .row>input{border-radius:var(--r1)!important}
+html.d73.d78 #panel.pn9 .seg,html.d73.d78 #panel.pn9 .seg button,html.d73.d78 #panel.pn9 .tools2 button,html.d73.d78 #panel.pn9 #addcat,html.d73.d78 #panel.pn9 .prow button{border-radius:var(--pill)!important}
+html.d73.d78 #panel.pn9 .seg{overflow:hidden}
+html.d73.d78 .sh9b .prog,html.d73.d78 .sh9b details.sum,html.d73.d78 .sh9b .stats{border-radius:var(--r3)!important;overflow:hidden}
+html.d73.d78 .sh9b .prog .pb,html.d73.d78 .sh9b .prog .pb i{border-radius:var(--pill)!important}
+html.d73.d78 #htabs button,html.d73.d78 #hbody button:not(.mini),html.d73.d78 #hbody select,html.d73.d78 #p5pv .pvbar button,html.d73.d78 #p5all .p5bt button{border-radius:var(--pill)!important}
+html.d73.d78 #hbody details,html.d73.d78 .tips article,html.d73.d78 .wd,html.d73.d78 .look,html.d73.d78 .alb .ac,html.d73.d78 #hbody .aires,html.d73.d78 #hbody .learnbox,html.d73.d78 #albody .al{border-radius:var(--r3)!important}
+html.d73.d78 #hbody textarea{border-radius:var(--r2)!important}
+
+/* ---------- studio ---------- */
+html.d73.d78 #studio button,html.d73.d78 .smenu button,html.d73.d78 .avbl button,html.d73.d78 .p5ed button,html.d73.d78 .base74 button,html.d73.d78 .base74i button,html.d73.d78 #studio .er74 button{border-radius:var(--pill)!important}
+html.d73.d78 #studio .stop button[aria-pressed=true],html.d73.d78 #studio [data-sview][aria-pressed=true]{background:var(--g1)!important;color:#fff!important;border-color:transparent!important}
+html.d73.d78 #sstage{border-radius:var(--r4)!important;overflow:hidden;box-shadow:var(--sh2)!important}
+html.d73.d78 #ssel,html.d73.d78 #ssel.thin{border-radius:var(--r3)!important}
+html.d73.d78 #srail .slot,html.d73.d78 body[data-size] #srail .slot{border-radius:var(--r2)!important;box-shadow:var(--sh1)!important;border-color:transparent!important}
+html.d73.d78 #srail .slot:not(.base) .ic,html.d73.d78 #srail .slot img{border-radius:var(--r1)!important}
+html.d73.d78 #studio .sside,html.d73.d78 #spin{border-radius:var(--pill)!important;box-shadow:var(--sh1)!important;background:var(--glass2)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+html.d73.d78 #sinfo .lscore,html.d73.d78 #ssug .sg,html.d73.d78 #ssug .sg img{border-radius:var(--r1)!important}
+html.d73.d78 #sdrawer{border-radius:var(--r3)!important}
+html.d73.d78 #sdrawer .di{border-radius:var(--r2)!important;overflow:hidden}
+html.d73.d78 #sdrawer .df input,html.d73.d78 #sdrawer select{border-radius:var(--pill)!important}
+html.d73.d78 #studio .tint74 button,html.d73.d78 #studio .tint74 button i{border-radius:50%!important}
+html.d73.d78 #hd77{border-top:0!important;background:transparent!important}
+html.d73.d78 #hd77 button{border-radius:var(--r1)!important;box-shadow:var(--sh1);border-color:transparent!important}
+html.d73.d78 #hd77 .hd77n,html.d73.d78 #hd77 .hd77m{border-radius:var(--pill)!important}
+html.d73.d78 #tip77 .t77c{border-radius:var(--r4)!important;box-shadow:var(--sh2)}
+html.d73.d78 #tip77 .go{border-radius:var(--pill)!important}
+html.d73.d78 #p5all .p5f .mst{border-radius:var(--pill)!important}
+/* ---------- fixes after the first look ---------- */
+html.d73.d78 button.go,html.d73.d78 .ib button.go,html.d73.d78 .hrow button.go,html.d73.d78 #dlbody button.go,html.d73.d78 #hbody button.go,html.d73.d78 #hbody #bigstudio,html.d73.d78 #studio button.go,html.d73.d78 #studio .stop #ssv{background:var(--g1)!important;color:#fff!important;border:0!important;border-radius:var(--pill)!important;box-shadow:var(--glow)!important}
+html.d73.d78 #dlbody .imgrow,html.d73.d78 #dlbody .drest>.ed,html.d73.d78 #dlbody .sim,html.d73.d78 #dlbody details.srch9{border:0!important;border-top:0!important;background:rgba(255,255,255,.72)!important;box-shadow:var(--sh1)!important;padding:14px!important;margin-top:12px!important}
+html.d73.d78 #dlbody .p5gbox,html.d73.d78 #dlbody details.dmore{border:0!important;box-shadow:var(--sh1)!important}
+html.d73.d78 #studio{border-radius:0!important}
+html.d73.d78 #studio .stop button[aria-pressed=true]{box-shadow:none!important}

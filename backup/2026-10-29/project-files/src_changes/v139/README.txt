@@ -1,0 +1,1 @@
+v139: per-order ORD[k].pd (finished uploading photos) + per-item IT.pn y/n (needs photos; default no for kids/men/makeup/other/hosiery/hair/night). putOrd in book4_tpl now merges objects (putOrd(k,{pd:1})) and keeps arrived. Filter group 'תמונות' (pnd/pdd).

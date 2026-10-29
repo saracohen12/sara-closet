@@ -1,0 +1,6 @@
+const {chromium}=require('playwright');const S=process.argv[2];
+(async()=>{const b=await chromium.launch();const c=await b.newContext({viewport:{width:1220,height:800}});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+ await p.addInitScript(()=>{window.claude={use:async k=>null}});
+ await p.goto('http://localhost:8765/index.html',{waitUntil:'load'});await p.waitForTimeout(2500);
+ const r=await p.evaluate(async()=>{const top=Object.keys(D).find(i=>D[i].cat=='sweaters');const sk=Object.keys(D).find(i=>D[i].cat=='skirts');await openStudio(null,{});ST.avbase='short';await drawStudio();await setItem('top',top);await setItem('skirt',sk);SSEL='skirt';paintSel();const b=document.querySelector('#ssel [data-sa="tuck"]');const t1=b&&b.textContent;b&&b.click();await new Promise(r=>setTimeout(r,600));SSEL='top';paintSel();const b2=document.querySelector('#ssel [data-sa="tuck"]');return {fromSkirt:t1,zTop:ST.tf.top.z,fromTop:b2&&b2.textContent,zi:document.querySelector('#sstage img.sl[data-slot="top"]').style.zIndex}});console.log(JSON.stringify(r));
+ console.log('ERR',JSON.stringify(errs),await p.evaluate(()=>JSON.stringify(window.ERRS||[])));await b.close()})();

@@ -1,0 +1,18 @@
+const {chromium,devices}=require('playwright');const fs=require('fs');const S=process.argv[2];const M=process.argv[3]||'desk';
+const rec=JSON.parse(fs.readFileSync(S+'/live111/items/T156.json','utf8'));delete rec.version;
+const ids={'eaae681128bb2e9f06bf9476796350e7':'front','6e33037b54c0218b399ca5dc2181cd37':'side','693d25ae7e61982b20142de8a455f0a4':'back','6e1c83b08b3380928a1a329706fd6e87':'half','00d1c0263f25d4e49443f851dba92d71':'hip'};
+const log=(...a)=>console.log(...a.map(x=>typeof x=='string'?x:JSON.stringify(x)));
+(async()=>{const b=await chromium.launch();const c=await b.newContext(M=='phone'?{...devices['Pixel 7'],hasTouch:true}:{viewport:{width:1280,height:800}});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.route('**/_blob/**',r=>{const id=r.request().url().split('/_blob/')[1].split('?')[0];const v=ids[id];if(v)return r.fulfill({status:200,contentType:'image/png',body:fs.readFileSync(S+'/t156/'+v+'.png')});return r.fulfill({status:200,contentType:'image/webp',body:fs.readFileSync(S+'/build/pub/av/p6c_front.webp')})});
+await p.addInitScript(()=>{try{localStorage.setItem('tips77','1')}catch(_){}});
+await p.goto('http://localhost:8765/index.html');await p.waitForTimeout(2500);await p.evaluate(r=>{IT.T156=r},rec);
+await p.evaluate(async()=>{await openStudio();ST.avbase='p5';ST.head='cap';ST.view='front';await setItem('skirt','T156');await drawStudio()});await p.waitForTimeout(1500);
+log('tf',await p.evaluate(()=>ST.tf.skirt));
+log('studio',await p.evaluate(async()=>{const o={};for(const v of ['front','side','half','hip','back']){ST.view=v;paintTop();await drawStudio();await new Promise(r=>setTimeout(r,400));const i=document.querySelector('#sstage img.sl[data-slot="skirt"]');o[v]=i&&i.getAttribute('style').slice(0,40)}return o}));
+await p.evaluate(async()=>{const tf=ST.tf.skirt;tf.gv=1792681126754;tf.g112=0;SSEL='skirt';ST.view='front';await drawStudio()});await p.waitForTimeout(500);
+log('broken',await p.evaluate(()=>document.querySelector('#sstage img.sl[data-slot="skirt"]').getAttribute('style').slice(0,40)));
+log('btn',await p.evaluate(()=>!!document.querySelector('#sreset,#sfit,[data-fit]')));
+await p.evaluate(()=>document.querySelector('#sreset,#sfit,[data-fit]').click());await p.waitForTimeout(800);
+log('after',await p.evaluate(()=>document.querySelector('#sstage img.sl[data-slot="skirt"]').getAttribute('style').slice(0,40)),await p.evaluate(()=>JSON.stringify(ST.tf.skirt.pv||null)));
+await p.evaluate(()=>{ST.view='front';window.p5ShowAll()});await p.waitForTimeout(3500);await p.screenshot({path:S+'/tests/v92/t113b_'+M+'.png'});
+log('ERR',errs);await b.close()})();

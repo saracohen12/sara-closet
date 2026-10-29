@@ -1,0 +1,1 @@
+v135: imgup.js autoCrop second pass – if no tall content band, only black/white flat rows count as phone UI (beige product backgrounds were treated as background). Fixed T292 + SMU9J_1 main images in db. Build on v134 + this.

@@ -1,0 +1,123 @@
+/* ===== v93 ===== */
+/* jewelry: the part row (שרשרת / עגיל / צמיד with ➖ ➕ ↺ ↻) wraps instead of running off the screen */
+#ssel .jwt,#ssel.thin .jwt,#ssel.c91 .jwt{flex-wrap:wrap!important;overflow:visible!important;flex-basis:100%!important;row-gap:6px}
+#ssel .jwt>span:first-child{white-space:normal!important}
+#ssel .jwt .jwg{display:inline-flex;align-items:center;gap:3px;flex:none;padding:2px 4px;border-radius:999px;background:var(--chip,#f1ece4)}
+/* frame + background around the avatar */
+#fr93{position:absolute;z-index:0;pointer-events:none;box-sizing:border-box;border-radius:10px;box-shadow:0 14px 40px rgba(40,25,10,.18)}
+#fr93 .in,.fr93w .in{position:absolute;inset:var(--t,0);border-radius:4px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+#fr93 .in{inset:0;position:relative;width:100%;height:100%}
+#fr93.nof{box-shadow:none;border-radius:14px}#fr93.nof .in{border-radius:14px}
+#studio.fr93 .smain>#sstage{z-index:1;background:transparent!important;box-shadow:none!important;border-radius:0!important}
+#studio.fr93 .smain>#sstage>.sbg{opacity:0}
+#studio.fr93 .smain>#sstage:not([data-z]),#studio.fr93 .smain>#sstage[data-z="1"]{height:calc(100% - var(--fr93py,24px)*2 - 4px)!important;margin-block:var(--fr93py,24px)!important}
+.fr93w{position:relative;box-sizing:border-box;border-radius:10px;box-shadow:0 14px 40px rgba(40,25,10,.22)}
+.fr93w .in{position:relative;width:100%;height:100%}
+.fr93w.nof{box-shadow:none}
+#sbg93{font-size:1rem!important}
+/* the window */
+#bg93{border:0;padding:0;width:min(560px,100vw);max-width:100vw;max-height:92dvh;border-radius:22px;background:var(--bg,#f8f5f0);color:var(--fg);overflow:hidden;display:none;flex-direction:column}
+#bg93[open]{display:flex}
+#bg93::backdrop{background:rgba(30,22,16,.45)}
+#bg93 .b93h{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line,#e6ddd2)}
+#bg93 .b93h b{font-size:1.05rem}
+#bg93 button{font:inherit;color:inherit;cursor:pointer}
+#bg93 .go{background:var(--fg,#2a1f1a)!important;color:var(--bg,#fff)!important;border:0!important;border-radius:999px;padding:7px 16px;font-weight:600}
+#bg93 .b93b{overflow:auto;padding:4px 16px 18px}
+#bg93 h4{margin:14px 0 8px;font-size:.88rem}
+#bg93 .b93w{display:flex;gap:8px}
+#bg93 .b93w input{flex:1;min-width:0;font:inherit;padding:9px 12px;border-radius:999px;border:1px solid var(--line2,#d8cfc2);background:var(--card,#fff);color:inherit}
+#bg93 .b93msg{min-height:1em;margin:6px 2px 0;font-size:.8rem;color:var(--muted,#7a6e64)}
+#bg93 .b93r{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+#bg93 .b93r>*{border:1px solid var(--line2,#d8cfc2);background:var(--card,#fff);border-radius:999px;padding:6px 14px;font-size:.84rem;cursor:pointer}
+#bg93 .b93g{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
+#bg93 .b93t{position:relative;display:flex;flex-direction:column;gap:3px;padding:0;border:0;background:none;text-align:center}
+#bg93 .b93t i{display:block;aspect-ratio:3/5;border-radius:10px;border:2px solid transparent;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+#bg93 .b93t.on i{border-color:var(--fg,#2a1f1a);box-shadow:0 0 0 2px var(--bg,#fff) inset}
+#bg93 .b93t span{font-size:.7rem;line-height:1.15}
+#bg93 .b93t b{position:absolute;top:3px;inset-inline-start:3px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:.7rem;display:grid;place-items:center}
+#bg93 .b93e{font-size:.8rem;color:var(--muted,#7a6e64);margin:0;grid-column:1/-1}
+#bg93 .b93c{display:flex;flex-wrap:wrap;gap:8px}
+#bg93 .b93c button{display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;padding:0;width:48px}
+#bg93 .b93c i{width:34px;height:34px;border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+#bg93 .b93c button[aria-pressed="true"] i{box-shadow:0 0 0 2px var(--bg,#fff),0 0 0 4px var(--fg,#2a1f1a)}
+#bg93 .b93c span{font-size:.66rem}
+#bg93 .b93m{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+#bg93 .b93m button{border:1px solid var(--line2,#d8cfc2);background:var(--card,#fff);border-radius:999px;padding:6px 14px;font-size:.82rem}
+#bg93 .b93m button[aria-pressed="true"]{background:var(--fg,#2a1f1a);color:var(--bg,#fff);border-color:transparent}
+@media (max-width:600px){#bg93{width:100vw;max-height:88dvh;margin-bottom:0;border-radius:22px 22px 0 0}}
+/* phone: the שרשרת / עגיל size buttons come right after the name, so they are on screen without scrolling */
+@media (max-width:899px){#ssel.c91>b{order:-3}#ssel.c91 .nx83{order:-2}#ssel .jwt,#ssel.thin .jwt,#ssel.c91 .jwt{order:-1;flex-wrap:nowrap!important;flex-basis:auto!important}#ssel .jwt>span:first-child{display:none}}
+.fr93w #sstage,#mg91 .mg91s .fr93w #sstage{background:transparent!important;box-shadow:none!important;border-radius:0!important}.fr93w #sstage>.sbg{display:none}
+
+/* v100: the stage does not cut garments at the avatar's box; the frame (clip-path from frPlace93) is the limit */
+#studio.fr93 .smain>#sstage{overflow:visible!important}
+.fr93w .in{overflow:hidden}
+.fr93w #sstage{overflow:visible!important;clip-path:none!important}
+/* v100: bodysuit colour */
+#ssuit100 i.d100,.r100 i.d100{display:inline-block;width:14px;height:14px;border-radius:50%;margin-inline-end:6px;vertical-align:-2px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+#sdrawer .r100{display:flex;align-items:center;gap:8px;width:100%;text-align:start;padding:10px 12px;margin-top:8px;border-radius:14px;border:1px solid rgba(0,0,0,.1);background:#fff}
+#sdrawer .r100 span{display:flex;flex-direction:column}#sdrawer .r100 small{opacity:.7}
+#sdrawer .s100 .c100{display:inline-flex;align-items:center;gap:6px;position:relative;cursor:pointer;padding:6px 10px;border-radius:999px;border:1px solid rgba(0,0,0,.12);background:#fff}
+#sdrawer .s100 .c100[aria-pressed="true"]{box-shadow:0 0 0 2px #3b2a1e}
+#sdrawer .s100 .c100 i{width:18px;height:18px;border-radius:50%;display:inline-block}
+#sdrawer .s100 .c100 input{position:absolute;inset:0;opacity:0;cursor:pointer}
+#sdrawer .n100{font-size:12px;opacity:.7;margin:8px 2px 0}
+/* v102: flip through the garment's pictures, pick and download */
+#zoomd .zp102{display:none;position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:48px;height:48px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#3b2a1e;font-size:30px;line-height:1;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer}
+#zoomd.m102 .zp102{display:block}#zoomd .zp102.zl{left:10px}#zoomd .zp102.zr{right:10px}
+#zoomd .zn102{position:absolute;bottom:58px;left:50%;transform:translateX(-50%);z-index:5;background:rgba(0,0,0,.55);color:#fff;font-weight:700;font-size:14px;padding:5px 12px;border-radius:99px;white-space:nowrap;max-width:80vw;overflow:hidden;text-overflow:ellipsis}
+#zoomd .zn102:empty{display:none}
+#zoomd .zb .za102{width:auto!important;padding:0 12px;border-radius:99px;font-size:.9rem;font-weight:700}
+.pk102b{display:block;margin:8px auto 0;padding:9px 16px;border-radius:99px;border:1px solid rgba(0,0,0,.12);background:#fff;font-weight:700;font-size:14px;cursor:pointer}
+#pk102{width:min(760px,96vw);max-height:92vh;overflow-y:auto;padding:0 14px 0}
+#pk102 .pk102h{margin:4px 2px 8px;font-size:13px;opacity:.75}
+#pk102 .pk102a{display:flex;align-items:center;gap:10px;margin-bottom:8px}#pk102 .pk102a button{padding:7px 14px;border-radius:99px;border:1px solid rgba(0,0,0,.15);background:#fff;font-weight:700}#pk102 .pk102a span{font-size:13px;opacity:.75}
+#pk102 .pk102g{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+#pk102 figure{position:relative;margin:0;border-radius:12px;overflow:hidden;background:#f3eee8;border:2px solid transparent;cursor:pointer}
+#pk102 figure.on{border-color:#3b2a1e}
+#pk102 figure img{display:block;width:100%;aspect-ratio:3/4;object-fit:contain;background:#f3eee8}
+#pk102 figure b{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.95);border:2px solid #3b2a1e;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px}
+#pk102 figure.on b{background:#3b2a1e}
+#pk102 figure .z{position:absolute;top:6px;left:6px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(255,255,255,.9);font-size:13px;padding:0}
+#pk102 figcaption{font-size:11.5px;padding:4px 6px;text-align:center;line-height:1.25}
+#pk102 .pk102f{position:sticky;bottom:0;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:10px 0;background:var(--bg,#fbf6ef);border-top:1px solid rgba(0,0,0,.08);margin-top:10px}
+#pk102 .pk102f button{padding:10px 16px;border-radius:99px;border:1px solid rgba(0,0,0,.15);background:#fff;font-weight:700}
+#pk102 .pk102f button.go{background:#3b2a1e;color:#fff;border-color:#3b2a1e}#pk102 .pk102f button:disabled{opacity:.45}
+#pk102 .pk102n{font-size:12px;opacity:.7;margin:0 2px 12px}
+#zoomd .zb{max-width:calc(100vw - 12px);flex-wrap:wrap;justify-content:flex-start}
+@media (max-width:480px){#zoomd .zb{gap:5px!important}}
+#two99 .t99n button{padding:4px 12px;border-radius:99px;border:1px solid rgba(0,0,0,.15);background:#fff;font-weight:600;margin:2px}
+
+/* v106: send-to-GPT window on a computer */
+#g106{width:min(620px,96vw);max-height:92vh;overflow-y:auto;padding:0 16px 14px}
+#g106 .g106s{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.08)}
+#g106 .g106s>b{flex:none;width:30px;height:30px;border-radius:50%;background:#3b2a1e;color:#fff;display:grid;place-items:center;font-size:15px}
+#g106 .g106s>div{flex:1;min-width:0}#g106 p{margin:4px 0 8px;font-size:15px;line-height:1.5}
+#g106 button{padding:8px 16px;border-radius:99px;border:1px solid rgba(0,0,0,.15);background:#fff;font-weight:700;font-size:14px;cursor:pointer}
+#g106 button.go{background:#3b2a1e;color:#fff;border-color:#3b2a1e;margin-top:8px}
+#g106 .g106g{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}#g106 figure{margin:0;text-align:center}
+#g106 figure img{width:100%;height:110px;object-fit:contain;background:#f3efe9;border-radius:10px}#g106 figcaption{font-size:12px;margin:4px 0}
+#g106 figure button{padding:5px 10px;font-size:13px}#g106 small{display:block;margin-top:6px;opacity:.7}#g106 .g106n{font-size:13px;opacity:.8;margin-top:10px}
+#g106 .g106p{margin:0 0 8px;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:12px;padding:8px 12px}#g106 .g106p summary{cursor:pointer;font-weight:700;font-size:14px}#g106 .g106p pre{white-space:pre-wrap;font:inherit;font-size:13.5px;line-height:1.55;max-height:260px;overflow-y:auto;margin:8px 0 0}
+#g106 .g106ph{grid-template-columns:repeat(auto-fill,minmax(92px,1fr))}
+#g106 .g106t{position:relative;padding:4px;border-radius:12px;border:2px solid transparent;background:#f3efe9;display:flex;flex-direction:column;align-items:center;gap:3px;font-weight:400}
+#g106 .g106t img{width:100%;height:104px;object-fit:contain;border-radius:8px}#g106 .g106t small{font-size:11.5px;opacity:.8;margin:0;line-height:1.2}
+#g106 .g106t.on{border-color:#3b2a1e}#g106 .g106t i{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:#fff;border:1.5px solid #3b2a1e;font-style:normal;font-weight:800;display:grid;place-items:center;font-size:14px}
+#g106 .g106t.on i{background:#3b2a1e;color:#fff}
+#g106 .g106av{display:flex;align-items:center;gap:6px;font-size:13.5px;margin-top:10px}#g106 .g106av img{height:44px;border-radius:6px;background:#eee}
+#g106 .g106one{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;margin-top:10px}#g106 .g106one button{padding:5px 10px;font-size:13px}
+/* v114: garment length row + length check */
+.len114{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0 4px;font-size:14px}
+.len114 b{width:100%;font-weight:600}
+.len114 button{border:1px solid #d8cfc4;background:#fff;color:#3a2a22;border-radius:999px;padding:5px 12px;font:inherit;cursor:pointer}
+.len114 button.on{background:#6b4334;color:#fff;border-color:#6b4334}
+.len114 input{width:64px;padding:4px 6px;border:1px solid var(--line,#d8cfc4);border-radius:8px;font:inherit}
+.len114 small{width:100%;opacity:.7}
+.lck114{margin:8px 0;padding:8px 10px;border-radius:10px;background:#eef6ea;font-size:14px;line-height:1.5}
+.lck114.bad{background:#fdf0e6;color:#7a3a12}
+/* v115: the published page adds img{max-width:100%}; garments wider than the stage (wide skirts) were squeezed to 100% – smaller and lower */
+img.sl,img.sb,img.sh,#sstage img,.mst img{max-width:none!important}
+/* v115: in the all-poses window the 2px border made the box 1% taller than the avatar, so the body (centred) and the head/arm layers (top) were drawn 2–3px apart – a doubled face and arms. The box is now exactly the avatar's shape and every layer starts at the top */
+#p5all .p5f .mst{box-sizing:content-box!important}
+.mst img.sb[src*="av/p6"],.mst img.sb[data-p6],#sstage img.sb[data-p6],.mst img.sh[src*="av/p6"],#sstage img.sb[src*="av/p6"],#sstage img.sh[src*="av/p6"]{top:0!important;left:0!important;width:100%!important;height:auto!important;inset:0 auto auto 0!important;object-fit:fill!important}

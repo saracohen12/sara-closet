@@ -1,0 +1,13 @@
+const {chromium,devices}=require('playwright');const S=process.argv[2];const PHONE=process.argv[3]=='phone';
+(async()=>{const b=await chromium.launch();const c=await b.newContext(PHONE?{...devices['Pixel 7']}:{viewport:{width:1366,height:800}});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+ await p.addInitScript(()=>{window.claude={use:async k=>k=='assets'?{upload:async bl=>({id:'a'+Math.random().toString(36).slice(2,10),url:URL.createObjectURL(bl)})}:null}});
+ await p.goto('http://localhost:8765/index.html',{waitUntil:'load'});await p.waitForTimeout(2500);
+ await p.evaluate(id=>openItem(id),'S17QJ_11');await p.waitForTimeout(800);
+ const box=async()=>p.evaluate(()=>{const g=document.querySelector('.p5gbox');if(!g)return 'none';const ib=g.querySelector('.ib');const r=g.getBoundingClientRect();const btns=[...ib.querySelectorAll('button')].map(b=>{const q=b.getBoundingClientRect();return b.textContent.trim().slice(0,12)+':'+(q.right<=r.right+1&&q.left>=r.left-1?'in':'CUT')});const figs=[...g.querySelectorAll('.p5r figure')].map(f=>{const q=f.getBoundingClientRect();return q.right<=r.right+1&&q.left>=r.left-1?'in':'CUT'});return {w:Math.round(r.width),ibOv:ib.scrollWidth-ib.clientWidth,btns,figs}});
+ console.log('before',JSON.stringify(await box()));
+ await (await p.$('button[data-upm="p5g"] input.ovf')).setInputFiles([S+'/tests/fx/skirt5.jpg']);await p.waitForTimeout(6000);
+ console.log('after',JSON.stringify(await box()));
+ await p.evaluate(()=>document.querySelector('.p5gbox').scrollIntoView({block:'center'}));await p.waitForTimeout(300);
+ const r=await p.evaluate(()=>{const r=document.querySelector('.p5gbox').getBoundingClientRect();return {x:Math.max(0,r.x-6),y:Math.max(0,r.y-6),width:r.width+12,height:r.height+12}});
+ await p.screenshot({path:S+'/tests/audit/t38_box'+(PHONE?'_m':'')+'.png',clip:r});
+ console.log('ERR',JSON.stringify(errs),await p.evaluate(()=>JSON.stringify(window.ERRS||[])));await b.close()})();

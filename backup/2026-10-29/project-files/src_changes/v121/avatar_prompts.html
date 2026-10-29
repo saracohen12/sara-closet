@@ -1,0 +1,330 @@
+<title>פרומפטים לאווטאר של שרה</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700&family=Heebo:wght@400;500;700&display=swap">
+<style>
+/* layout: one calm column of prompt cards, each with a big copy button – made for a phone */
+:root{--bg:#f7f2ec;--card:#fffdfa;--fg:#2b211c;--muted:#7b6c62;--line:#e6dacd;--accent:#8a4b3a;--accent-fg:#fff;--ok:#2f6b4a;--chip:#f0e6db;
+ --display:"Frank Ruhl Libre",Georgia,serif;--body:"Heebo",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1714;--card:#26201c;--fg:#f1e8df;--muted:#b3a497;--line:#3c332c;--accent:#d99a84;--accent-fg:#1c1714;--ok:#8fd1aa;--chip:#332a24;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1c1714;--card:#26201c;--fg:#f1e8df;--muted:#b3a497;--line:#3c332c;--accent:#d99a84;--accent-fg:#1c1714;--ok:#8fd1aa;--chip:#332a24;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6;direction:rtl}
+.wrap{max-width:720px;margin:0 auto;padding-block:20px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+h1{font-family:var(--display);font-size:1.9rem;line-height:1.2;margin:0;text-wrap:balance}
+.lead{margin:0;color:var(--muted)}
+.how{background:var(--chip);border-radius:14px;padding:12px 16px;margin:0}
+.how ol{margin:0;padding-inline-start:20px}
+.gpt{align-self:flex-start;display:inline-flex;gap:6px;align-items:center;text-decoration:none;color:var(--fg);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 16px;font-weight:500}
+h2{font-family:var(--display);font-size:1.35rem;margin:14px 0 0;text-wrap:balance}
+.sub{margin:-8px 0 0;color:var(--muted);font-size:.92rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.top h3{margin:0;font-size:1.05rem}
+.tag{font-size:.78rem;color:var(--muted)}
+.copy{font:inherit;font-weight:700;border:0;border-radius:999px;padding:10px 22px;background:var(--accent);color:var(--accent-fg);cursor:pointer;min-width:120px}
+.copy.done{background:var(--ok)}
+.copy:focus-visible,.gpt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+textarea{width:100%;box-sizing:border-box;font:inherit;font-size:.9rem;line-height:1.55;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;resize:vertical;min-height:120px}
+.att{margin:0;font-size:.86rem;color:var(--muted)}
+.att b{color:var(--fg)}
+.avf{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.avf h2{margin:0;font-size:1.2rem}
+.avg{display:grid;grid-template-columns:3fr 2fr;gap:10px}
+.avg figure{margin:0;display:flex;flex-direction:column;gap:4px}
+.avg img{width:100%;border-radius:10px;border:1px solid var(--line);background:#e9e4de;display:block}
+.avg figcaption{font-size:.82rem;color:var(--muted);text-align:center}
+.avb{display:flex;flex-wrap:wrap;gap:8px}
+.avb button{font:inherit;font-weight:700;border-radius:999px;padding:10px 18px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer}
+.avb button.main{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.avf details summary{cursor:pointer;color:var(--muted);font-size:.9rem}
+.avmsg{margin:0;font-size:.86rem;color:var(--ok);min-height:1.2em}
+</style>
+
+<div class="wrap">
+  <h1>פרומפטים ל-GPT</h1>
+  <p class="lead">לכל פרומפט יש כפתור "📋 העתיקי". לוחצים, עוברים ל-GPT, ומדביקים בלחיצה ארוכה ← הדבק.</p>
+  <div class="how"><b>מה עושים עכשיו, לפי הסדר</b><ol>
+    <li><b>✓ האווטאר</b> – מוכן ובאתר (כובע + פאה).</li>
+    <li><b>הכי קל ומדויק: מהאתר.</b> בחלון הבגד ← "🚀 הכל ל-GPT". שם בוחרים את האורך האמיתי (ברך / אמצע שוק / קרסול), והפרומפט כבר כולל את כל המידות של הגוף שלך ואת מה שקנית. כשמעלים את 2 התמונות חזרה, האתר בודק את האורך ואומר אם צריך לתקן.</li>
+    <li><b>בגד ראשון לניסיון: חצאית הקטיפה.</b> צ'אט חדש. מצרפים 3 תמונות יחד: קובץ 1 + קובץ 2 עם הכובע + תמונה של החצאית ← "בגד: הכל בהודעה אחת" (כותבים "חצאית"). GPT מחזיר שתי תמונות. הכי קל: באתר, בחלון החצאית ← "📋 פרומפט אחד ל-GPT" – כבר כתוב בו מה קנית.</li>
+    <li><b>אותו דבר עם שמלה אחת.</b> אחרי שאני בודקת את החצאית ואומרת שזה יושב טוב – ממשיכים לשאר הבגדים.</li>
+    <li><b>תסרוקות:</b> צ'אט חדש עם קובץ 1 עם הפאה ← "תסרוקות 1–20" (שתי תמונות בבת אחת). שולחים לי את המספרים שאהבת. כל אהובה ← "תסרוקת אהובה" (עריכה, שני הקבצים יחד).</li>
+    <li><b>איפור:</b> אותו דבר – בחירה, ואז "איפור אהוב" (עריכה).</li>
+    <li><b>קשירות:</b> לכל מטפחת – בוחרים אחת מ-13 הקשירות (צ'אט חדש לכל קשירה).</li>
+  </ol><p style="margin:8px 0 0">את קבצי האווטאר מורידים <a href="#avf">כאן למטה</a> (או באתר, בחלון הבגד: "🚀 הכל ל-GPT"). לבגדים תמיד הקבצים <b>עם הכובע</b>.</p></div>
+  <a class="gpt" href="https://chatgpt.com/" target="_blank" rel="noopener">💬 פתיחת ChatGPT</a>
+  <div class="avf" id="avf">
+    <h2>🧍 קבצי האווטאר ל-GPT</h2>
+    <div class="avg"><figure><img src="av/p6c_sheet1.jpg" alt="האווטאר עם כובע, קובץ 1"><figcaption>קובץ 1: חזית, צד, גב</figcaption></figure><figure><img src="av/p6c_sheet2.jpg" alt="האווטאר עם כובע, קובץ 2"><figcaption>קובץ 2: חצי צד, יד על המותן</figcaption></figure></div>
+    <div class="avb"><button class="main" data-av="c" data-do="share" hidden>📤 שלחי את שניהם ל-GPT</button><button data-av="c" data-do="dl">⬇ הורידי את שניהם</button></div>
+    <p class="avmsg" id="avmsg">עם כובע – לבגדים, לכיסויים ולאיפור. אפשר גם לחיצה ארוכה על תמונה ← שמירה.</p>
+    <details><summary>עם הפאה (לתסרוקות)</summary><div class="avg" style="margin-top:8px"><figure><img src="av/p6w_sheet1.jpg" alt="האווטאר עם פאה, קובץ 1" loading="lazy"><figcaption>פאה · קובץ 1</figcaption></figure><figure><img src="av/p6w_sheet2.jpg" alt="האווטאר עם פאה, קובץ 2" loading="lazy"><figcaption>פאה · קובץ 2</figcaption></figure></div>
+    <div class="avb" style="margin-top:8px"><button class="main" data-av="w" data-do="share" hidden>📤 שלחי את שניהם</button><button data-av="w" data-do="dl">⬇ הורידי את שניהם</button></div></details>
+  </div>
+
+
+  <h2>בגדים (הכל בהודעה אחת)</h2>
+  <p class="sub">לכל בגד צ'אט חדש. מצרפים את שני קבצי האווטאר ואת הבגד יחד, וכותבים מה קנית ואת האורך – GPT מצייר רק אותו, במידות של הגוף שלך.</p>
+  <div id="g-cl"></div>
+
+  <h2>האווטאר החדש</h2>
+  <p class="sub">כובע (לכיסויים) ופאה. כל אחד בשני קבצים: 3 תנוחות + 2 תנוחות.</p>
+  <div id="g-av"></div>
+
+  <h2>💇 20 התסרוקות שבחרת לפאה</h2>
+  <p class="sub">פרומפט לכל תסרוקת: GPT עורך את שני קבצי האווטאר עם הפאה ומשנה רק את השיער (1–13 יום חול, 14–20 ערב ושבת). בסוף – הפרומפטים הישנים לבחירת תסרוקות.</p>
+  <div id="g-hair"></div>
+
+  <h2>איפור</h2>
+  <p class="sub">טבעי + 15 איפורים בשתי תמונות. הפנים והגוף לא משתנים.</p>
+  <div id="g-mk"></div>
+
+  <h2>🧕 קשירות למטפחות – 13 סגנונות</h2>
+  <p class="sub">פרומפט לכל קשירה. GPT מחזיר תמונה אחת עם 4 חלקים (חזית, צד, גב, חצי צד), ומעלים אותה באתר בחלון המטפחת ← "➕ הוסיפי קשירות". בסוף יש גם "10 קשירות" בתמונה אחת.</p>
+  <div id="g-tie"></div>
+</div>
+
+<script>
+const ME='גובה 156 ס"מ, חזה 94, מתחת לחזה 83, מותן 73, ירכיים 96, רוחב כתפיים 45, מבסיס הצוואר עד המותן 49, ממותן לברך 58, ממותן לקרסול 90, ממותן לרצפה 99, אורך יד 50, היקף זרוע 28, פרק כף יד 16, היקף צוואר 32, מידת נעל 38';
+const BODY=`המידות של הגוף שלי – נמדדו על תמונות האווטאר עצמן. בכל תנוחה: מקצה הכובע עד כפות הרגליים = 100%.
+- קו הכתפיים: 20% מלמעלה.
+- המותן: 37% מלמעלה – בדיוק בתפר הרוחבי של הבגד-גוף באווטאר. רוחב המותן: בחזית ובגב 15% מהגובה, בצד ובחצי צד 12%.
+- הירכיים (המקום הכי רחב): 50% מלמעלה, רוחב 21% מהגובה בחזית.
+- הברך: 74% מלמעלה. אמצע השוק: 84%. הקרסול: 95%.
+במידות אמיתיות: גובה 156 ס״מ, היקף חזה 94, היקף מותן 73, היקף ירכיים 96, רוחב כתפיים 45, מהמותן עד הברך 58, עד הקרסול 90, עד הרצפה 99.`;
+const HEAD='היקף ראש 52 ס"מ, מקו השיער במצח עד העורף 32, מאוזן לאוזן מעל הראש 30';
+const P=[
+{g:'cl',t:'בגד: הכל בהודעה אחת',a:'צ\'אט חדש. מצרפים 3 תמונות יחד: קובץ 1 + קובץ 2 של האווטאר עם הכובע + תמונה של הבגד. ממלאים מה קנית (באתר, בחלון הבגד, "📋 פרומפט אחד ל-GPT" כבר ממלא לבד)',x:`מצורפות 3 תמונות:
+1) האווטאר שלי – 3 תנוחות: חזית, צד, גב.
+2) האווטאר שלי – 2 תנוחות: חצי צד, יד על המותן.
+3) תמונה של מה שקניתי.
+
+מה שקניתי: רק ______ (חצאית / חולצה / שמלה / סוודר / ז'קט / חגורה / תיק / נעליים).
+אם בתמונה 3 יש עוד בגדים או אביזרים – הם לא שלי. לא לצייר אותם. רק מה שקניתי.
+
+צרי שתי תמונות חדשות, אחת לכל תמונת אווטאר, ושלחי את שתיהן:
+- תמונה א' לפי תמונה 1: אותו גודל תמונה, אותן 3 תנוחות, אותו סידור ואותו מקום.
+- תמונה ב' לפי תמונה 2: אותו גודל תמונה, אותן 2 תנוחות, אותו סידור ואותו מקום.
+בכל תנוחה: מה שקניתי כאילו אני לובשת, ואז להשאיר רק אותו – כאילו לובשת דמות שקופה. בדיוק בגודל, בצורה ובמקום שזה יושב על הגוף שלי.
+
+${BODY}
+האורך של מה שקניתי: ______ (חצאית או שמלה: עד הברך = 58 ס״מ מהמותן, השוליים ב-74% מהגובה · אמצע השוק = 74 ס״מ, השוליים ב-84% · הקרסול = 88 ס״מ, השוליים ב-93%). באותו גובה בדיוק בכל 5 התנוחות.
+חצאית: החגורה שלה ברוחב המותן של האווטאר באותה תנוחה. הנפח והקפלים כמו בתמונה של מה שקניתי – לא להוסיף נפח.
+
+חשוב:
+- חצאית מתחילה בקו המותן שלי. שרוולים הולכים לפי הידיים של כל תנוחה. בתוך הצווארון רואים את הצד הפנימי.
+- חגורה: בכל תנוחה רק החצי שפונה למצלמה, ברוחב המותן המלא. שרשרת: רק החלק שרואים מלפנים.
+- בלי ראש, בלי פנים, בלי ידיים, בלי רגליים ובלי גוף.
+- נראה בדיוק כמו בתמונה 3: אותו צבע, בד, דוגמה, כפתורים, קפלים ואורך. לבן נשאר לבן.
+- בצד ובגב: איך שזה נראה באמת מהצד ומאחור (רוכסן, קפלים, הגב).
+- ביד על המותן: השרוול (אם יש) הולך לפי היד המכופפת, והיד עצמה לא מופיעה.
+- הכל בתוך החלק שלו, לא חתוך ולא נוגע בקצה.
+- רקע אפור בהיר אחיד כמו בתמונות האווטאר. אם הצבע אפור – רקע ירוק בהיר.
+- בלי טקסט, בלי מספרים, בלי קווים, בלי צל.`},
+{g:'cl',t:'אם GPT החזיר רק תמונה אחת',a:'באותו צ\'אט, משפט אחד',x:`חסרה התמונה השנייה. עכשיו צרי גם את תמונה ב' לפי תמונה 2 (חצי צד, יד על המותן): אותו בגד בדיוק, באותה דרך, אותו גודל, אותו סידור ואותו מקום.`},
+{g:'av',t:'פרומפט 1: עם כובע, 3 תנוחות',a:'מצרפים: גיליון האווטאר הנוכחי מהאתר',x:`מצורף גיליון האווטאר שלי. זו אני, ואני צריכה גרסה חדשה ונקייה שלי לארון בגדים דיגיטלי.
+
+גודל התמונה: לרוחב, 1536 על 1024 פיקסלים (או הכי גדול שאפשר באותו יחס 3:2).
+שלוש דמויות זו לצד זו, כל אחת ברוחב שליש מהתמונה בדיוק, משמאל לימין:
+1. חזית: עומדת ישר מול המצלמה, ידיים לצד הגוף, רגליים צמודות מעט.
+2. צד (פרופיל מלא): הגוף והפנים פונים שמאלה בתמונה, ידיים לצד הגוף.
+3. גב: עומדת עם הגב למצלמה, ידיים לצד הגוף.
+אותו גובה דמות בדיוק בשלושתן: קצה הראש באותו קו למעלה וכפות הרגליים באותו קו למטה, עם מרווח קטן מעל הראש ומתחת לנעליים. גוף שלם מהראש עד הנעליים, לא חתוך: הידיים, המרפקים והנעליים בתוך החלק שלהן, עם רווח אפור קטן מכל צד. שום דבר לא נוגע בקצה ולא עובר לחלק של הדמות השכנה.
+בלי טקסט, בלי כותרות, בלי מספרים, בלי קווי הפרדה ובלי מסגרות. רקע אפור בהיר אחיד וחלק (לא לבן), בלי צל על הרצפה.
+
+הדמות: אותה אישה בדיוק מהגיליון המצורף. אל תשנה את תווי הפנים, את מבנה הגוף, את הגובה, את גוון העור או את הפרופורציות. רק מה שכתוב למטה משתנה.
+המידות שלי (לפרופורציות, נמדדו בסרט מידה): ${ME}.
+
+מה שמשתנה:
+1. פנים: אותם פנים בדיוק, עם חיוך קל ורך, שפתיים סגורות. גוון עור חי ובריא, לא חיוור. בלי איפור (טבעי לגמרי), רק עור נקי ובריא.
+2. ראש: כובע גרב דק וצמוד בצבע העור, שמכסה את כל השיער לגמרי. בלי שיער שיוצא בכלל, לא במצח, לא בצדדים ולא מאחור. צורת הראש טבעית, בלי בליטה של שיער אסוף. האוזניים חשופות.
+3. בלי שום תכשיט: בלי עגילים, בלי שרשרת, בלי צמיד, בלי טבעת, בלי שעון.
+4. בגד הבסיס: שמלת בסיס צמודה ופשוטה בצבע העור, שרוול קצר, צווארון עגול סגור צמוד לצוואר (לא מחשוף), באורך הברך, בד חלק בלי קפלים ובלי תפרים בולטים.
+5. נעליים: נעלי בלרינה שטוחות לגמרי, פשוטות, בצבע נוד קרוב לגוון העור, בלי קישוטים.
+
+תאורה רכה ואחידה מלפנים, אותה תאורה בשלוש הדמויות. בלי חפצים ובלי רקע מאחורה.`},
+{g:'av',t:'פרומפט 2: עם כובע, 2 תנוחות',a:'מצרפים: את התמונה שיצאה מפרומפט 1 (אם זה צ\'אט חדש)',x:`מצורפים: הגיליון הישן שלי, והתמונה שיצרת עכשיו (3 תנוחות). תשאיר את האישה בדיוק כמו בתמונה שיצרת עכשיו.
+
+גודל התמונה: ריבוע, 1024 על 1024 פיקסלים (או הכי גדול שאפשר בריבוע).
+שתי דמויות זו לצד זו, כל אחת בחצי מהתמונה בדיוק, משמאל לימין:
+1. חצי צד: הגוף מסובב בערך 45 מעלות ימינה בתמונה, הפנים לכיוון המצלמה, ידיים לצד הגוף.
+2. יד על המותן: עומדת מול המצלמה, היד שבצד ימין של התמונה מונחת על המותן והמרפק החוצה, היד השנייה לצד הגוף.
+אותו גובה דמות בדיוק כמו בתמונה הקודמת: אותו גודל ראש, אותו קו של קצה הראש ואותו קו של כפות הרגליים, כך שאם שמים את התמונות אחת ליד השנייה הדמויות באותו גודל. גוף שלם מהראש עד הנעליים. היד על המותן והמרפק בתוך החלק שלה, עם רווח אפור מכל צד, לא חתוכים.
+בלי טקסט, בלי כותרות, בלי קווי הפרדה ובלי מסגרות. אותו רקע אפור בהיר אחיד.
+
+הדמות: אותה אישה בדיוק כמו בתמונה הקודמת: אותם פנים עם אותו חיוך קל, אותו גוון עור, אותו גוף, אותו כובע גרב בצבע העור בלי שום שיער, אותה שמלת בסיס עם שרוול קצר וצווארון עגול סגור, אותן נעלי בלרינה נוד, בלי איפור ובלי שום תכשיט. אל תשנה כלום בפנים ובגוף.`},
+{g:'av',t:'פרומפט 3: עם פאה, 3 תנוחות',a:'באותו צ\'אט, אחרי פרומפט 2',x:`עכשיו אותה תמונה בדיוק כמו קובץ 1 שיצרת (3 תנוחות: חזית, צד, גב), באותו גודל, אותו סידור, אותו רקע, אותו גובה דמות ואותן תנוחות.
+שינוי אחד בלבד: במקום כובע הגרב – הפאה שלי: שיער ארוך בגלים רכים, חום כהה עם גוונים בהירים עדינים, מסורק יפה, שביל צד עדין, נופל מאחורי הכתפיים ולא מסתיר את הצוואר והכתפיים מקדימה. אותה פאה בדיוק בשלוש התנוחות (בצד ובגב רואים את הגלים מאחור).
+כל השאר זהה לגמרי: אותם פנים עם אותו חיוך קל, אותו גוף, אותה שמלת בסיס, אותן נעליים, בלי איפור ובלי תכשיטים, בלי טקסט ובלי קווים.`},
+{g:'av',t:'פרומפט 4: עם פאה, 2 תנוחות',a:'באותו צ\'אט, אחרי פרומפט 3',x:`עכשיו אותה תמונה בדיוק כמו קובץ 2 שיצרת (2 תנוחות: חצי צד, יד על המותן), באותו גודל ובאותו סידור, עם אותה פאה בדיוק כמו בתמונה הקודמת (גלים רכים, חום כהה עם גוונים בהירים). כל השאר זהה לגמרי, בלי טקסט ובלי קווים.`},
+{g:'av',t:'פאה בעריכה: שני הקבצים יחד',a:'צ\'אט חדש. מצרפים את שני הקבצים עם הכובע (באתר: 🧍 גיליון האווטאר)',x:`ערכי את שתי התמונות המצורפות. אל תצרי תמונות חדשות. החזירי שתי תמונות, אחת לכל תמונה, באותו גודל ובאותו סידור.
+שינוי אחד בלבד: במקום כובע הגרב, הפאה שלי: שיער ארוך בגלים רכים, חום כהה עם גוונים בהירים עדינים, שביל צד עדין. אותה פאה בכל הדמויות (בצד ובגב רואים את הגלים מאחור).
+כל השאר נשאר בדיוק כמו בתמונות המצורפות, פיקסל לפיקסל: אותם פנים, אותו חיוך, אותו גוון עור, אותו גוף, אותה שמלה, אותן נעליים, אותה תנוחה וכיוון של כל דמות, אותו רקע ואותו מקום. בלי טקסט ובלי קווים.`},
+{g:'av',t:'אם משהו יצא לא טוב',a:'משפט אחד שמוסיפים ב-GPT',x:`שמור על הפנים בדיוק כמו בגיליון המצורף, זו אותה אישה, אל תייפה ואל תשנה. אותו גובה דמות בדיוק בכל הדמויות, קצה הראש וכפות הרגליים באותו קו. בלי שום טקסט ובלי קווים, רק הדמויות על רקע אפור. תן את התמונה בגודל הכי גדול שאפשר.`},
+
+{g:'hair',t:'תסרוקות 1–20 (שתי תמונות בבת אחת)',a:'מצרפים: האווטאר עם הפאה, 3 תנוחות',x:`מצורפת תמונה שלי עם הפאה שלי (גלים רכים, חום כהה עם גוונים בהירים).
+צרי תמונה אחת לרוחב: 10 תסרוקות שונות לאותה פאה, בשתי שורות של 5. בכל ריבוע: אני, מבט ישר מקדימה, מהראש עד מתחת לכתפיים. אותם פנים בדיוק, אותו גודל ראש ואותו מקום בכל הריבועים, רק השיער משתנה. אותו צבע שיער בכולן (חום כהה עם גוונים בהירים).
+ברוב התסרוקות השיער יורד גם מקדימה, על הכתפיים ועל החזה (לא רק מאחור), כמו שאני הולכת בדרך כלל.
+1. התסרוקת הרגילה שלי: שביל צד. בצד אחד השיער יורד קדימה על הכתף והחזה. בצד השני השיער מאחורי האוזן (האוזן גלויה), ומשם יורד קדימה על הכתף
+2. פן מוברש עם גלים פתוחים ורחבים, השיער קדימה משני הצדדים
+3. מדורג עם נפח ותנועה, השיער קדימה
+4. חלק ומבריק, ארוך, השיער קדימה
+5. חצי אסוף עם קליפס מאחור
+6. קוקו נמוך חלק
+7. קוקו גבוה עם נפח
+8. צמה צרפתית רחבה לצד אחד
+9. בוב קצר עד הסנטר
+10. קצר עד הכתפיים, עם גלים רכים
+בלי טקסט, בלי מספרים, בלי קווים. רקע אפור בהיר אחיד. בלי תכשיטים, בלי איפור.
+
+באותה תשובה, צרי גם תמונה שנייה:
+עכשיו עוד 10 תסרוקות לאותה פאה, באותו סידור בדיוק (שתי שורות של 5, אותם פנים, אותו גודל ראש, אותו צבע שיער, רקע אפור). גם כאן, בתסרוקות עם שיער פזור, השיער יורד גם מקדימה:
+11. שביל צד עמוק, גלים גדולים לצד אחד, מאחורי האוזן בצד השני
+12. פוני וילון עם גלים
+13. לעבודה: חלק ומסודר, אחרי האוזניים
+14. לשבת: תלתלים רכים ומבריקים
+15. לשבת: חצי אסוף עם סרט קטיפה כהה
+16. לאירוע: גלים הוליוודיים
+17. לאירוע: אסוף נמוך ואלגנטי (שיניון)
+18. לחתונה: אסוף עם תלתלים רכים שיוצאים בצדדים
+19. לחתונה: גלים מלאים עם סיכת פנינים בצד
+20. ספורטיבי: קוקו עם קשת בד לשיער
+בלי טקסט, בלי מספרים, בלי קווים. בלי תכשיטים, בלי איפור.`},
+{g:'hair',t:'תסרוקת אהובה (עריכה, שני הקבצים יחד)',a:'צ\'אט חדש. מצרפים: שני הקבצים עם הפאה + התמונה של התסרוקות. ממלאים את המספר',x:`ערכי את שתי תמונות האווטאר שלי (3 תנוחות ו-2 תנוחות). אל תצרי תמונות חדשות. החזירי שתי תמונות, באותו גודל ובאותו סידור.
+שינוי אחד בלבד: השיער בתסרוקת מספר ___ מהתמונה של התסרוקות. רואים איך התסרוקת נראית מכל צד (בצד ובגב – הקוקו, הצמה או האסוף מאחור).
+כל השאר נשאר בדיוק כמו בתמונות המצורפות: אותם פנים, אותו חיוך, אותו גוף, אותה שמלה, אותן נעליים, אותה תנוחה וכיוון של כל דמות, אותו רקע ואותו מקום. בלי טקסט ובלי קווים.`},
+{g:'mk',t:'איפור 0–15 (שתי תמונות בבת אחת)',a:'מצרפים: האווטאר עם הכובע, 3 תנוחות',x:`מצורפת תמונה שלי. צרי תמונה אחת לרוחב של הפנים שלי, 8 ריבועים בשתי שורות של 4, מהראש עד הכתפיים, מבט ישר מקדימה. בכל ריבוע איפור אחר.
+חשוב מאוד: אל תשנה את תווי הפנים, את צורת העיניים, האף, השפתיים והפנים, ואת הגוף. רק האיפור משתנה. זו עדיין אני. אותו גודל ראש ואותו מקום בכל הריבועים.
+0. טבעי לגמרי, בלי איפור, עור נקי ובריא
+1. עדין יומיומי: מסקרה, סומק אפרסק, שפתון נוד
+2. חום חם: צללית חומה רכה, ריסים, שפתון חום-ורוד
+3. אדום-חום: שפתון אדום-חום, אייליינר דק
+4. ורוד רענן: סומק ורוד, שפתון ורוד עדין
+5. ברונזה זוהרת: הארה על הלחיים, צללית ברונזה
+6. טרקוטה: צללית ושפתון בגוון טרקוטה
+7. שבת עדין: ריסים מודגשים, שפתון ורד עתיק
+בלי טקסט, בלי מספרים, בלי קווים. רקע אפור בהיר אחיד. בלי תכשיטים.
+
+באותה תשובה, צרי גם תמונה שנייה:
+עכשיו עוד 8 איפורים, באותו סידור בדיוק (שתי שורות של 4, אותם פנים, אותו גודל, רקע אפור). לא לשנות את תווי הפנים ואת הגוף, רק האיפור.
+8. ערב: עיניים מעושנות בחום, שפתון נוד כהה
+9. בורדו: שפתון בורדו, עיניים עדינות
+10. אירוע זוהר: הארה, ריסים מלאים, שפתון ורוד-אדום
+11. מייקאפ קל וקונסילר שמטשטשים נמשים, קמטים עדינים ושחור מתחת לעיניים, מראה טבעי
+12. מייקאפ וקונסילר + איפור חום חם
+13. מייקאפ וקונסילר + שפתון אדום-חום
+14. מייקאפ מלא לאירוע, עור חלק וזוהר
+15. מייקאפ מלא לחתונה, עדין ויוקרתי
+במייקאפ (11–15): העור אחיד וחלק יותר, אבל עדיין רואים שזו אני.
+בלי טקסט, בלי מספרים, בלי קווים. בלי תכשיטים.`},
+{g:'mk',t:'איפור אהוב (עריכה, שני הקבצים יחד)',a:'צ\'אט חדש. מצרפים: שני הקבצים עם הכובע + התמונה של האיפורים. ממלאים את המספר',x:`ערכי את שתי תמונות האווטאר שלי (3 תנוחות ו-2 תנוחות). אל תצרי תמונות חדשות. החזירי שתי תמונות, באותו גודל ובאותו סידור.
+שינוי אחד בלבד: איפור מספר ___ מהתמונה של האיפורים, על הפנים בכל הדמויות שרואים בהן פנים. אל תשני את תווי הפנים, את צורת הפנים או את הגוף – רק האיפור.
+כל השאר נשאר בדיוק כמו בתמונות המצורפות: אותו כובע, אותו גוף, אותה שמלה, אותה תנוחה וכיוון של כל דמות, אותו רקע ואותו מקום. בלי טקסט ובלי קווים.`},
+{g:'tie',t:'10 קשירות לכיסוי אחד',a:'מצרפים: תמונה של הכיסוי + האווטאר עם הכובע',x:`מצורפות: תמונה של מטפחת/כיסוי ראש שלי, ותמונה שלי עם כובע גרב.
+צרי תמונה אחת לרוחב: 10 קשירות שונות של אותו כיסוי בדיוק (אותו בד, צבע, דוגמה וקישוטים), בשתי שורות של 5. בכל ריבוע: הכיסוי קשור על הראש שלי, מבט ישר מקדימה, מהראש עד הכתפיים, אותם פנים ואותו גודל ראש בכל הריבועים.
+מידות הראש שלי: ${HEAD}. הכיסוי יושב צמוד ויפה על הראש בגודל הזה.
+הכיסוי יושב על בובו (נפח מתחת למטפחת) כמו שקושרים באמת: לקשירה עם קשר או נפח מאחור – בובו נמוך מאחור; לקשירה גבוהה / טורבן – בובו גבוה; לקשירה שטוחה – בלי בובו.
+קשירות: קשר מאחור עם זנבות, טורבן, צמה מסביב לראש, קשר בצד, פפיון למעלה, ספגטי סביב הראש, קשר נמוך בעורף, עטיפה עם נפח למעלה, זנבות נופלים על הכתף, קשירה פשוטה ליום-יום.
+כל הכיסוי בתוך הריבוע, לא חתוך. בלי טקסט, בלי מספרים, בלי קווים. אם הכיסוי אפור – רקע ירוק בהיר; אחרת רקע אפור בהיר אחיד. כיסוי לבן נשאר לבן.`}
+];
+const TIES120=[
+ ['שובל נשפך אחורי','Flowing Tail Wrap','חלק מלפנים, כל הבד נאסף בעורף ונופל לאורך הגב בשובל אחד ארוך ורך.',
+  'The fabric is wrapped smoothly across the top and sides over a Bobo base. At the nape of the neck, all excess fabric is gathered together and left cascading down the back as a single, long, gracefully flowing, loose tail. The front remains flat and neat.'],
+ ['בובו קוקס נמוך ומהודק','Neat Low Bun / Kuks','חלק מלפנים ובצדדים, בעורף הבד מלופף לקוקס עגול ומסודר, בלי זנבות.',
+  'Perfectly smooth on the front and sides over a low Bobo. At the nape, the fabric is tightly twisted and coiled repeatedly around a round base to form a prominent, neat low bun. All fabric ends are cleanly tucked inside with zero loose or draping tails.'],
+ ['טורבן גבוה','High Volume Turban','בובו גבוה עם הרבה גובה בכתר, קפלים אלכסוניים מלפנים, הגב שטוח וסגור.',
+  'The fabric is wrapped upwards over a high Bobo base to create significant height and structure at the crown. The front features neat overlapping diagonal pleats along the upper hairline. The back is flat and tightly wrapped, with all ends securely hidden inside.'],
+ ['פפיון צדדי אלגנטי','Elegant Side Bow','צמוד לכל הראש, פפיון גדול ומסודר בצד בגובה הלסת, בלי זנבות ארוכים.',
+  'Snug fit around the entire head over a low Bobo. Positioned on one side at the lower jawline level, the fabric is tied into a large, structured bow with clearly defined loops. No long trailing ends.'],
+ ['קשירה נמוכה משולבת בשכבות','Layered Low Wrap / Combined','חלק מלפנים, מאחור למטה פסים רחבים ושטוחים בשכבות, כל הקצוות מוסתרים.',
+  'Smooth front over a low Bobo base. At the lower back, the fabric is wrapped in wide, flat, overlapping horizontal and diagonal bands repeatedly around the base. All ends are securely tucked beneath the layers, leaving a clean woven look with no loose tails.'],
+ ['קשר עורף עם שובל אחורי ישר','Low Knot with Straight Back Tail','קשר רך בעורף, והשאר נופל ישר באמצע הגב כשובל רחב ושטוח.',
+  'Tied over a low volumizing base (Bobo). Wrapped smoothly across the front. At the nape, it is gathered and twisted into a soft, textured knot, with remaining fabric falling straight down the center of the back as a wide, flat tail.'],
+ ['כתר גבוה עם שובל צדדי','High Crown with Single Side Tail','בובו גבוה עם קפלים למעלה, כל הבד נאסף לצד אחד ונופל על כתף אחת.',
+  'Tied over a high volumizing base (Bobo) creating prominent height at the crown. Overlapping textured folds across top, while all excess fabric is gathered to one side, falling over a single shoulder as a long flowing tail.'],
+ ['קשר נמוך מסובב עם שובל קצר','Low Twisted Knot with Short Tail','צמוד מלפנים, קשר מסובב בולט למטה מאחור, ושובל קצר ומשולש.',
+  'Tied over a low volumizing base (Bobo) with front and sides tightly wrapped. At the lower back, tied into a prominent twisted knot, leaving a short, wide, triangular tail cascading gently down.'],
+ ['קוקס מלופף ועשיר בטקסטורה','Massive Textured Coiled Bun','בובו גדול, מאחור שכבות עבות מלופפות כמו שושנה גדולה, בלי זנבות.',
+  'Tied over a large low-to-mid volumizing base (Bobo). Smooth front, while the back is wrapped repeatedly in thick, overlapping, coiled layers to create a massive, rosette-like bun with no long tails.'],
+ ['שובל חזיתי יחיד','Single Front Cascading Tail','בובו גבוה, כל הבד נאסף לצד אחד ונופל קדימה על כתף אחת בשובל רחב.',
+  'Tied over a high volumizing base (Bobo). Fabric wrapped asymmetrically, covering the head completely. All excess fabric gathered strictly to one side, falling forward over a single shoulder in a long wide tail. Opposite side and back are completely smooth.'],
+ ['קוקו נמוך הדוק עם שובל','Low Tied Ponytail Wrap','צמוד, בעורף קשר קטן והדוק כמו גומייה, ושובל אחד ארוך ישר לאורך הגב.',
+  'Tightly wrapped over a low volumizing base (Bobo). At the nape, gathered and tied tightly into a single compact knot resembling a hair tie, with a single long tail dropping straight down the back.'],
+ ['כתר גבוה עם פפיון קדמי','High Crown with Front Bow and Side Tail','בובו גבוה, פפיון גדול לרוחב מעל המצח, ושובל דק יורד מהצד על הכתף.',
+  'Tied over a high volumizing base (Bobo) for significant height. Culminates in a large, structured horizontal bow placed directly above the forehead. A long sheer tail cascades down from the side of the bow over the shoulder.'],
+ ['קשירה צמודה עם שני שובלים אחוריים','Dual-Pattern Close Wrap with Two Tails','צמוד מאוד, דוגמה אחת מלפנים ואחרת מאחור, ושני שובלים ארוכים לאורך הגב.',
+  'Tied tightly over a very low volumizing base (Bobo). Front displays one pattern section, back displays another. Tied securely at the nape, leaving two distinct long tails cascading straight down the back and shoulders.']];
+function tiePrompt120(i,id){const [he,en,,det]=TIES120[i];return `Attached in this one message: 2 files of my avatar (file 1: front, side, back; file 2: half side, hand on hip) and the photo of my headscarf.
+My headscarf (this is exactly what I bought): ______ (write what you bought).
+Use my avatar files ONLY to match the size and shape of my head, the cap line on my forehead and the head angle in each view. Do NOT draw my face, hair, neck or body.
+
+Create ONE horizontal image divided into 4 equal vertical panels side-by-side, separated by thin white lines:
+Panel 1: Front view. Panel 2: Profile side view (the same direction as my avatar's side view). Panel 3: Back view. Panel 4: Three-quarter view (like my avatar's half side view).
+
+Subject: the exact headscarf from the photo (same fabric, pattern, colour, texture and trims) as a 3D floating headscarf (mitpachat) shaped over an invisible head the size of my avatar's head, with a volumizing base (Bobo) underneath. HOLLOW inside, the face opening empty (background colour). NO face, NO neck wrap, NO fabric on the neck, NO torso, cut cleanly at the jawline (only the tails of the tying style may fall lower, down the back or over a shoulder).
+Same head size and same height in all 4 panels, the head centered in the upper part of each panel, the whole scarf inside its panel with a small margin, never cut off.
+Style: solid light grey studio background, photorealistic, 8k resolution, clean lighting, modular digital avatar asset. No text, no extra objects, no shadow on the background.
+If the headscarf is grey or silver, use a solid light green background instead of grey. A white headscarf stays white.
+
+Tying style ${i+1}: ${en} (${he})
+Tying Style Details: ${det}`}
+P.splice(P.findIndex(p=>p.g=='tie'),0,...TIES120.map(([he,en,hd],i)=>({g:'tie',t:`${i+1}. ${he}`,a:`${hd} · מצרפים בהודעה אחת: קובץ 1 + קובץ 2 של האווטאר עם הכובע + תמונה של המטפחת. ממלאים מה קנית (באתר, בחלון המטפחת ← "🧕 13 קשירות" כבר ממלא לבד)`,x:tiePrompt120(i)})));
+const HAIR121=[
+ ['שביל צד קלאסי',1,'Classic side-parted hairstyle with soft cascading waves. On one side, the hair flows gracefully over the shoulder and chest. On the other side, the hair is tucked neatly behind the ear (ear visible), and then drapes forward over the shoulder.'],
+ ['מדורג נפחי',3,'Voluminous layered cut with natural movement. Soft, bouncy layers frame the face and cascade down over both shoulders and chest with full body and texture.'],
+ ['צמה צדדית רכה',5,'Soft, loose side braid gathered over one shoulder. Clean hairline with a relaxed, elegant weave falling gently down the chest.'],
+ ['גלים פתוחים מוקפדים',6,'Polished business-ready wide blowout waves. Perfectly styled, symmetrical soft waves falling over both shoulders and chest with a glossy, neat finish.'],
+ ['פזור גלי נפחי',7,'Full-bodied, high-volume loose waves. Rich, luxurious hair texture flowing abundantly over both shoulders and chest.'],
+ ['קארה גלי קצר','9 מתמונה 1','Chin-length short bob cut with soft, modern waves. A neat, voluminous short hairstyle framing the jawline cleanly.'],
+ ['חלק מבריק וארוך',10,'Ultra-sleek, long, silky straight hair. Perfectly straight, polished, and shiny hair parted down the middle, falling straight over both shoulders and chest.'],
+ ['קוקו גבוה אופנתי',22,'High, voluminous ponytail set on top of the head. Smooth, pulled-back front with a full ponytail cascading down, complemented by soft wispy tendrils delicately framing the face.'],
+ ['קארה גלי בינוני',26,'Shoulder-length medium bob with soft, relaxed waves. Gentle curves around the shoulders framing the face neatly.'],
+ ['חצי-אסוף גבוה / חצי קוקו',33,'Half-up high ponytail style. The top half of the hair is gathered into a neat small high ponytail on the crown, while the remaining long hair flows in soft waves over the shoulders.'],
+ ['אסוף קליפס קז׳ואל',34,'Casual chic claw-clip updo. Hair is gathered at the back with a neutral claw clip in an effortless bun, leaving soft, delicate face-framing tendrils falling naturally around the face.'],
+ ['חצי-אסוף יומיומי עם קליפס','9 מתמונה 4','Relaxed half-up style held at the back of the head with a simple claw clip, allowing smooth, long waves to drape down over the shoulders.'],
+ ['שביל באמצע טבעי',37,'Natural center part with effortless, relaxed loose waves. Hair drapes evenly on both sides over the shoulders and chest in a soft, understated look.'],
+ ['שביל צד עמוק גלי',11,'Deep side-part with dramatic, glamorous big waves swept entirely over one shoulder, while the opposite side is smooth and tucked neatly.'],
+ ['תלתלים מובנים יוקרתיים',14,'Luxurious, defined, glossy curls with rich volume. Perfectly sculpted shiny spiral curls cascading elegantly over both shoulders.'],
+ ['גלים הוליוודיים קלאסיים',16,'Classic Hollywood glam waves. Ultra-polished, vintage-inspired uniform luxury waves with a high-shine glossy finish flowing smoothly down.'],
+ ['שיניון נמוך אצילי',17,'Noble, sleek low chignon bun tied neatly at the nape of the neck. Clean, polished hairline, fully pulled-back, elegant, and sophisticated updo.'],
+ ['אסוף אירועים גבוה',18,'Intricate formal high updo for special events. Sculpted voluminous bun on top, with delicate, soft curled tendrils hanging gracefully around the sides of the face.'],
+ ['גלים עשירים עם סיכת פנינה',19,'Rich, open glamour waves styled with a delicate pearl hairpin accent placed gracefully on one side above the ear, hair flowing over both shoulders.'],
+ ['ערב אלגנטי אסוף','8 מתמונה 1','Structured, elegant high evening updo. Smoothly gathered hair built into a polished, regal crown bun with a clean, sophisticated silhouette.']];
+function hairPrompt121(i){const [he,,en]=HAIR121[i];return `Attached in this one message: my 2 avatar files with my wig (file 1: front, side, back; file 2: half side, hand on hip).
+EDIT these two pictures – do not create new pictures and do not redraw me. Return two pictures, the same size and the same layout as the attached files.
+Change ONE thing only: my hairstyle (my wig).
+Everything else stays exactly the same: the same face, the same smile, the same skin, the same body, the same nude fitted outfit, the same shoes, the same pose and direction of each figure, the same light grey background and the same place in the picture. NO jewelry, NO heavy makeup, NO text, NO lines.
+Hair Color: Dark brown hair with subtle light highlights – the same colour as my wig now.
+Hairstyle ${i+1} (${he}): ${en}
+Show how this hairstyle really looks from every side: in the side, back and half side views – the ponytail, braid, bun, clip or waves at the back.
+Photorealistic, clean lighting, hyper-detailed hair texture, modular avatar asset style.`}
+P.splice(P.findIndex(p=>p.g=='hair'),0,...HAIR121.map(([he,no],i)=>({g:'hair',t:`${i+1}. ${he}`,a:`${i<13?'יום חול':'ערב ושבת'} · מספר ${no} בתמונות התסרוקות · צ'אט חדש. מצרפים בהודעה אחת: קובץ 1 + קובץ 2 של האווטאר עם הפאה (למטה ב"עם הפאה") + הפרומפט. GPT מחזיר שתי תמונות – שולחים לי אותן`,x:hairPrompt121(i)})));
+for(const [i,p] of P.entries()){
+ const box=document.getElementById('g-'+p.g);
+ const c=document.createElement('section');c.className='card';
+ c.innerHTML=`<div class="top"><h3></h3><button class="copy" type="button">📋 העתיקי</button></div><p class="att"></p><textarea id="p${i}" readonly></textarea>`;
+ c.querySelector('h3').textContent=p.t;c.querySelector('.att').innerHTML='<b>📎</b> ';c.querySelector('.att').append(p.a);
+ const ta=c.querySelector('textarea');ta.value=p.x;ta.rows=Math.min(10,Math.max(4,Math.ceil(p.x.length/70)));
+ const b=c.querySelector('.copy');
+ b.addEventListener('click',async()=>{let ok=false;try{await navigator.clipboard.writeText(p.x);ok=true}catch(_){}
+  if(!ok){try{ta.removeAttribute('readonly');ta.focus();ta.select();ta.setSelectionRange(0,ta.value.length);ok=document.execCommand('copy')}catch(_){}ta.setAttribute('readonly','')}
+  b.textContent=ok?'✓ הועתק':'סמני והעתיקי';b.classList.toggle('done',ok);setTimeout(()=>{b.textContent='📋 העתיקי';b.classList.remove('done')},2500)});
+ box.append(c);box.style.display='flex';box.style.flexDirection='column';box.style.gap='12px';
+}
+</script>
+<script>
+// avatar files: send both at once (phone share sheet → ChatGPT) or download both
+(()=>{const N={c:['האווטאר שלי עם כובע - קובץ 1 (חזית, צד, גב).jpg','האווטאר שלי עם כובע - קובץ 2 (חצי צד, יד על המותן).jpg'],w:['האווטאר שלי עם פאה - קובץ 1.jpg','האווטאר שלי עם פאה - קובץ 2.jpg']};
+ const say=t=>{const m=document.getElementById('avmsg');if(m)m.textContent=t};
+ const load=u=>new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=u});
+ const blob=async u=>{const i=await load(u);const c=document.createElement('canvas');c.width=i.naturalWidth;c.height=i.naturalHeight;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(i,0,0);return await new Promise(ok=>c.toBlob(ok,'image/jpeg',.95))};
+ const R={};const files=k=>R[k]||(R[k]=Promise.all([1,2].map(async n=>new File([await blob(`av/p6${k}_sheet${n}.jpg`)],N[k][n-1],{type:'image/jpeg'}))));
+ const canSh=!!(navigator.canShare&&navigator.share);if(canSh)document.querySelectorAll('[data-do="share"]').forEach(b=>b.hidden=false);
+ setTimeout(()=>files('c').catch(()=>{}),600);
+ document.addEventListener('click',async e=>{const b=e.target.closest('[data-av]');if(!b)return;const k=b.dataset.av;let fs;try{fs=await files(k)}catch(_){say('לא הצלחתי להכין את הקבצים – לחיצה ארוכה על התמונה ← שמירה');return}
+  if(b.dataset.do=='share'){try{if(navigator.canShare({files:fs})){await navigator.share({files:fs});say('✓ נשלח. ב-GPT מדביקים את הפרומפט');return}}catch(err){if(err&&err.name=='AbortError')return;say('לחצי שוב לשליחה');return}}
+  let dl=null;try{dl=await Promise.race([window.claude&&claude.use?claude.use('downloads'):null,new Promise(r=>setTimeout(()=>r(null),1500))])}catch(_){}
+  let n=0;for(const f of fs){if(dl){try{await dl.save({filename:f.name,data:f});n++}catch(err){if(err&&err.code=='declined')break}}else{const u=URL.createObjectURL(f);const a=document.createElement('a');a.href=u;a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(u)},4000);n++;await new Promise(r=>setTimeout(r,350))}}
+  say(n?`✓ ירדו ${n} קבצים (בהורדות)`:'בוטל')});
+})();
+</script>

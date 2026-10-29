@@ -1,0 +1,1 @@
+v160 (orders thread) on v159: orders list gets a photos row (📸 הכל / עוד צריך תמונות / כבר העליתי), V.pf saved in localStorage o3pf, picDone(o)= ✓ ticked or every product that needs a photo has one. Only orders123.js/.css changed.

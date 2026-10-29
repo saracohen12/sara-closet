@@ -1,0 +1,10 @@
+const {chromium,devices}=require('playwright');const S=process.argv[2];const M=process.argv[3]||'desk';
+(async()=>{const b=await chromium.launch();const c=await b.newContext(M=='phone'?{...devices['Pixel 7']}:{viewport:{width:1366,height:900}});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.addInitScript(()=>{try{localStorage.setItem('tips77','1')}catch(_){}});await p.goto('http://localhost:8765/index.html');await p.waitForTimeout(2500);
+await p.evaluate(()=>openPrompts80('dress','S0Y74_0'));await p.waitForTimeout(1200);
+const t=await p.evaluate(()=>document.querySelector('#p80txt').value);console.log(t.slice(-700));console.log('count',(t.match(/המידות שלי:/g)||[]).length,'box',await p.evaluate(()=>!!document.querySelector('#me91')));
+await p.evaluate(()=>{document.querySelector('#me91').open=true;const i=document.querySelector('[data-me91="sh"]');i.value='38';i.dispatchEvent(new Event('change',{bubbles:true}))});await p.waitForTimeout(500);
+const t2=await p.evaluate(()=>document.querySelector('#p80txt').value);console.log('after sh:',t2.match(/המידות שלי:[^.]*\./)[0],'count',(t2.match(/המידות שלי:/g)||[]).length,'SET',await p.evaluate(()=>JSON.stringify(SET.me91)));
+await p.evaluate(()=>document.querySelector('#me91').scrollIntoView());await p.screenshot({path:S+'/tests/v91/me91_'+M+'.png'});
+await p.evaluate(()=>openPrompts80('belt'));await p.waitForTimeout(900);console.log('belt has',(await p.evaluate(()=>document.querySelector('#p80txt').value)).includes('המידות שלי'));
+console.log('ERR',errs);await b.close()})();

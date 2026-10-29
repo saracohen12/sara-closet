@@ -1,0 +1,12 @@
+/* v73 page-bounds fixes: every sheet scrolls inside the screen */
+.sheet9[open]{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;max-height:calc(100dvh - 24px)}
+@media (max-width:700px){.sheet9[open]{max-height:92dvh}}
+.sh9b .sumt th,.sh9b .sumt td{white-space:normal;overflow-wrap:anywhere}
+/* long descriptions in the studio "עוד" menu wrap instead of running off the card */
+.smenu button{min-width:0;max-width:100%;white-space:normal}.smenu button small,.smenu button b{white-space:normal;overflow-wrap:anywhere;min-width:0}
+#sdrawer .dh{gap:8px}#sdrawer .dh b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#sdrawer .dh span{flex:none}
+/* "סיימתי" is a text button, not a 40px circle */
+#sdrawer .dh .x{position:static!important;width:auto;height:auto;min-height:32px;border-radius:999px;padding:4px 14px;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+@media (min-width:701px){#sdrawer .df{flex-wrap:wrap!important;overflow:visible!important}#sdrawer .df select{max-width:none}}
+/* v74 phone: the drawer is absolute inside .smain (overflow:auto); when it was taller than .smain its search/filter rows were clipped under the garment toolbar */
+@media (max-width:899px){#sdrawer{max-height:100%}}

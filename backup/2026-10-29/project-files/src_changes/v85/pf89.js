@@ -1,0 +1,10 @@
+const {chromium,devices}=require('playwright');const S=process.argv[2];const M=process.argv[3]||'desk';
+(async()=>{const b=await chromium.launch();const p=await (await b.newContext(M=='phone'?{...devices['Pixel 7']}:{viewport:{width:1366,height:850}})).newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.addInitScript(()=>{try{localStorage.setItem('tips77','1')}catch(_){}});await p.goto('http://localhost:8765/index.html');await p.waitForTimeout(3000);
+const id=process.argv[4]||'T5';console.log(id,await p.evaluate(i=>D[i].short+' '+curCat(i),id));
+await p.evaluate(i=>openItem(i),id);await p.waitForTimeout(1500);
+console.log('btns',await p.evaluate(()=>[...document.querySelectorAll('#dlg .p5gbox button')].map(b=>b.textContent.trim()+' {'+[...b.attributes].map(a=>a.name+'='+a.value).join(' ')+'}').join('\n')));
+await p.evaluate(()=>{const b=[...document.querySelectorAll('#dlg .p5gbox button')].find(b=>/פרומפט/.test(b.textContent));b&&b.click()});await p.waitForTimeout(1200);
+console.log('open',await p.evaluate(()=>[...document.querySelectorAll('dialog[open]')].map(d=>d.id).join(',')));
+console.log('pr80',await p.evaluate(()=>{const d=document.getElementById('pr80');if(!d||!d.open)return 'closed';return 'pressed='+[...d.querySelectorAll('[data-p80]')].map(b=>b.dataset.p80+':'+b.getAttribute('aria-pressed')).join(' ')+' pf85='+!!d.querySelector('#pf85')+' av85='+!!d.querySelector('#av85')}));
+await p.screenshot({path:S+'/tests/v77/pf89_'+M+'.png'});console.log('ERR',errs);await b.close()})();

@@ -1,0 +1,1 @@
+v153 (orders thread) on v152: new Shein order GSH19924N00MU5B (18 items, 458.29, in transit, ETA 4-11/11). Data only: shein/inv_all.py, allurls.json, app_imgs.json, shein/app/n132, srcimg+cut SMU5B_*, cut/meta.json, book3.py (INTRANSIT+NOTEO). th/cut published for dresses, scarves, tops, skirts.

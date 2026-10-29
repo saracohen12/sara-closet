@@ -1,0 +1,11 @@
+const W=ms=>new Promise(r=>setTimeout(r,ms));await W(500);openOrders123('P0-097-00209037804151091');await W(800);const row=i=>document.querySelectorAll('.o3it')[i];
+row(0).querySelector('[data-o3set="s"][data-v="ret"]').click();await W(600);row(1).querySelector('[data-o3set="s"][data-v="ret"]').click();await W(600);
+row(0).querySelector('[data-o3set="rsent"]').click();await W(600);
+openOrders123('GSH1SP24Y00MW6D');await W(800);row(2).querySelector('[data-o3set="s"][data-v="ret"]').click();await W(600);
+document.querySelector('[data-o3="back"]').click();await W(500);
+const sum=document.querySelector('.o3sum').textContent;
+document.querySelector('[data-o3f="rp"]').click();await W(800);
+const groups=document.querySelectorAll('.o3rg').length,items=document.querySelectorAll('.o3rg .o3it').length;
+document.querySelector("#ord123 .o3b").scrollTop=0;
+const w=document.querySelector('#ord123 .o3b');window.__o=[sum,groups,items,w.scrollWidth-w.clientWidth];
+return window.__o;

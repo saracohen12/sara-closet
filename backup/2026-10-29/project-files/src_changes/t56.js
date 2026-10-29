@@ -1,0 +1,11 @@
+const {chromium,devices}=require('playwright');const S=process.argv[2];const PHONE=process.argv[3]=='phone';
+(async()=>{const b=await chromium.launch();const c=await b.newContext(PHONE?{...devices['Pixel 7']}:{viewport:{width:1366,height:800}});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+ await p.addInitScript(()=>{window.claude={use:async k=>k=='assets'?{upload:async bl=>({id:'a'+Math.random().toString(36).slice(2,10),url:URL.createObjectURL(bl)})}:null}});
+ await p.goto('http://localhost:8765/index.html',{waitUntil:'load'});await p.waitForTimeout(2500);
+ const id=await p.evaluate(()=>Object.keys(D).find(i=>D[i].cat=='jewelry'));await p.evaluate(id=>openItem(id),id);await p.waitForTimeout(800);
+ await (await p.$('button[data-upm="jw"] input.ovf')).setInputFiles([S+'/tests/fx/neck5.png']);await p.waitForTimeout(4000);
+ const st=()=>p.evaluate(id=>({jw:JSON.stringify((IT[id]||{}).jw||null).slice(0,80),btns:[...document.querySelectorAll('.jwbox .ib button')].map(b=>b.textContent.trim()).join(' | ')}),id);
+ console.log('after up',JSON.stringify(await st()));
+ const del=p.locator('[data-jwdel]');await del.click();await p.waitForTimeout(300);console.log('tap1',JSON.stringify(await st()));
+ console.log('toast',await p.evaluate(()=>document.querySelector('#toast').textContent));await p.locator('#toast button').click();await p.waitForTimeout(800);console.log('undo',JSON.stringify(await st()));await p.locator('[data-jwdel]').click();await p.waitForTimeout(800);console.log('del2',JSON.stringify(await st()));
+ console.log('ERR',JSON.stringify(errs),await p.evaluate(()=>JSON.stringify(window.ERRS||[])));await b.close()})();

@@ -1,0 +1,13 @@
+const {chromium,devices}=require('playwright');const S=process.argv[2];const PHONE=process.argv[3]=='phone';
+(async()=>{const b=await chromium.launch();const c=await b.newContext(PHONE?{...devices['Pixel 7']}:{viewport:{width:1366,height:800}});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+ await p.addInitScript(()=>{window.claude={use:async k=>k=='assets'?{upload:async bl=>({id:'a'+Math.random().toString(36).slice(2,10),url:URL.createObjectURL(bl)})}:null}});
+ await p.goto('http://localhost:8765/index.html',{waitUntil:'load'});await p.waitForTimeout(2500);await p.evaluate(()=>openItem('S17QJ_11'));await p.waitForTimeout(800);
+ const st=()=>p.evaluate(()=>{const it=IT.S17QJ_11||{};return {active:it.p5g&&it.p5g.n,vars:(it.p5gv||[]).map(v=>v.n),strip:[...document.querySelectorAll('.p5gbox .p5gv .pv')].map(b=>b.textContent.trim()),btns:[...document.querySelectorAll('.p5gbox .ib button')].map(b=>b.textContent.trim()).join(' | ')}});
+ await (await p.$('button[data-upm="p5g"] input.ovf')).setInputFiles([S+'/tests/fx/skirt5.jpg']);await p.waitForTimeout(6000);console.log('1st',JSON.stringify(await st()));
+ await p.fill('.p5gbox .p5gname','בורדו');await p.locator('[data-p5grn]').click();await p.waitForTimeout(400);console.log('renamed',JSON.stringify(await st()));
+ await p.fill('.p5gbox .p5gname','שחור');await (await p.$('button[data-upm="p5gadd"] input.ovf')).setInputFiles([S+'/tests/fx/skirt5.jpg']);await p.waitForTimeout(6000);console.log('add',JSON.stringify(await st()));
+ await (await p.$('button[data-upm="p5gadd"] input.ovf')).setInputFiles([S+'/tests/fx/skirt5.jpg',S+'/tests/fx/skirt5.jpg']);await p.waitForTimeout(12000);console.log('add2',JSON.stringify(await st()));
+ await p.locator('[data-p5gpick="0"]').click();await p.waitForTimeout(500);console.log('pick0',JSON.stringify(await st()));
+ await p.evaluate(()=>document.querySelector('.p5gbox').scrollIntoView({block:'center'}));await p.waitForTimeout(200);const r=await p.evaluate(()=>{const r=document.querySelector('.p5gbox').getBoundingClientRect();return {x:Math.max(0,r.x-6),y:Math.max(0,r.y-6),width:r.width+12,height:r.height+12}});await p.screenshot({path:S+'/tests/audit/t40_vars'+(PHONE?'_m':'')+'.png',clip:r});
+ await p.locator('[data-p5gdel]').click();await p.waitForTimeout(200);await p.locator('[data-p5gdel]').click();await p.waitForTimeout(600);console.log('del',JSON.stringify(await st()));
+ console.log('ERR',JSON.stringify(errs),await p.evaluate(()=>JSON.stringify(window.ERRS||[])));await b.close()})();

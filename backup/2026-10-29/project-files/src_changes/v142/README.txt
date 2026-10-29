@@ -1,0 +1,1 @@
+v142: imgup.js upload queue stores bytes (buf+type) not Blob; unreadable/too-old items dropped to a 'lost' list (localStorage upqlost) with banner #lost142 listing garments to re-upload; uplog capped 40/session and includes item id; queue sorted by attempts.
