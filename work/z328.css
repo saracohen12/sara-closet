@@ -1,0 +1,82 @@
+/* v328 the closet as a site: a menu bar at the top, the first page = big category pictures, every category its own page (z328.js) */
+#z328n{display:none}
+html[data-d180=z50] body[data-z50=closet] #z328n{display:block;position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--z-bg,#f6f5f3) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--z-line,#e7e3dd);margin:0 0 6px}
+#z328n .z328in{display:flex;align-items:center;gap:6px;max-width:min(1560px,94vw);margin:0 auto;padding:6px 0}
+#z328n .z328l{flex:1;min-width:0;display:flex;gap:2px;overflow:hidden;white-space:nowrap}
+#z328n button{font:inherit;cursor:pointer;border:0;background:none;color:var(--z-ink,#17161a)}
+#z328n .z328l button{flex:none;padding:10px 12px;border-radius:12px;font-size:.95rem;font-weight:500;position:relative}
+#z328n .z328l button[hidden]{display:none}
+#z328n .z328l button:hover{background:var(--z-tile,#efece7)}
+#z328n .z328l button[aria-current=page]{color:var(--z-acc,#b4532a);font-weight:700}
+#z328n .z328l button[aria-current=page]::after{content:"";position:absolute;inset-inline:12px;bottom:3px;height:3px;border-radius:3px;background:var(--z-acc,#b4532a)}
+#z328n .z328h span{font-size:1.05rem}
+#z328n .z328m{flex:none;padding:9px 16px;border-radius:999px;background:var(--z-ink,#17161a);color:#fff;font-weight:600;font-size:.92rem}
+#z328n .z328m.on{background:var(--z-acc,#b4532a)}
+#z328n .z328d{position:absolute;inset-inline:0;top:100%;background:var(--z-card,#fff);border-bottom:1px solid var(--z-line,#e7e3dd);box-shadow:0 18px 40px rgba(0,0,0,.12);max-height:calc(100dvh - 120px);overflow:auto}
+#z328n .z328dg{max-width:min(1560px,94vw);margin:0 auto;padding:14px 0 18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+#z328n .z328dg button{display:flex;align-items:center;gap:10px;padding:8px;border-radius:14px;text-align:start;background:var(--z-tile,#f3f0eb)}
+#z328n .z328dg button:hover{outline:2px solid var(--z-acc,#b4532a)}
+#z328n .z328dg button.z328x{display:none}
+#z328n .z328dg button[aria-current=page]{outline:2px solid var(--z-acc,#b4532a)}
+#z328n .z328di{flex:none;width:44px;height:44px;border-radius:12px;overflow:hidden;background:#fff;display:grid;place-items:center}
+#z328n .z328di img{width:100%;height:100%;object-fit:cover}
+#z328n .z328da{background:var(--z-ink,#17161a);color:#fff}
+#z328n .z328dg b{flex:1;font-size:.88rem;font-weight:600;line-height:1.2}
+#z328n .z328dg small{color:var(--z-muted,#77736c);font-size:.75rem}
+
+/* page header and the end of the page */
+#z328p,#z328f{display:none}
+html[data-d180=z50] body[data-z50=closet]:is([data-z328=page],[data-z328=all],[data-z328=res]) #z328p{display:block;order:-1;width:100%}
+html[data-d180=z50] body[data-z50=closet]:is([data-z328=page],[data-z328=all],[data-z328=res]) #z328f{display:block}
+#z328p .z328b{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--z-muted,#77736c);margin:4px 0 2px}
+#z328p .z328b button{border:0;background:none;padding:0;font:inherit;color:var(--z-muted,#77736c);text-decoration:underline;cursor:pointer}
+#z328p .z328b b{color:var(--z-ink,#17161a);font-weight:600}
+#z328p .z328t{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 14px;margin:0 0 4px}
+#z328p h1{margin:0;font-size:clamp(1.7rem,3vw,2.6rem);font-weight:700;letter-spacing:-.01em}
+#z328p small{color:var(--z-muted,#77736c);font-size:.95rem}
+#z328p .z328pn{margin-inline-start:auto;display:flex;gap:8px;flex-wrap:wrap}
+#z328p .z328pn button,#z328f .z328fe>button:not(.z328nx){border:1px solid var(--z-line,#e2ddd6);background:var(--z-card,#fff);border-radius:999px;padding:9px 16px;font:inherit;font-size:.9rem;cursor:pointer;color:var(--z-ink,#17161a)}
+#z328p .z328pn button:hover,#z328f .z328fe>button:hover{border-color:var(--z-acc,#b4532a)}
+#z328f .z328fe{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px;margin:34px auto 90px;max-width:900px}
+#z328f .z328nx{flex:1 1 100%;max-width:560px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-items:center;gap:2px 16px;text-align:start;padding:12px 18px 12px 12px;border-radius:22px;border:0;background:var(--z-ink,#17161a);color:#fff;font:inherit;cursor:pointer}
+#z328f .z328nx img{grid-row:1/3;width:84px;height:84px;object-fit:cover;border-radius:16px}
+#z328f .z328nx small{opacity:.75;font-size:.85rem;align-self:end}
+#z328f .z328nx b{font-size:1.4rem;align-self:start}
+
+/* the first page: only the categories, as big pictures */
+html[data-d180=z50] body[data-z50=closet][data-z328=land] .wrap>section[id],
+html[data-d180=z50] body[data-z50=closet][data-z328=land] #cnt,
+html[data-d180=z50] body[data-z50=closet][data-z328=land] #empty,
+html[data-d180=z50] body[data-z50=closet][data-z328=land] #chips,
+html[data-d180=z50] body[data-z50=closet][data-z328=land] #orderView{display:none!important}
+html[data-d180=z50] body[data-z50=closet] .ctrl .z313all{display:none!important}
+html[data-d180=z50] body[data-z50=closet][data-z328=land] .ctrl .z6c{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))!important;gap:22px 16px!important;margin:10px 0 40px!important}
+html[data-d180=z50] body[data-z50=closet][data-z328=land] .ctrl .z6c button{display:flex!important;flex-direction:column;align-items:stretch;gap:6px;width:auto!important}
+html[data-d180=z50] body[data-z50=closet][data-z328=land] .ctrl .z6c .z6ci{width:100%!important;height:auto!important;aspect-ratio:4/5;border-radius:20px!important;box-shadow:0 6px 18px rgba(0,0,0,.08);transition:transform .2s}
+html[data-d180=z50] body[data-z50=closet][data-z328=land] .ctrl .z6c button:hover .z6ci{transform:translateY(-3px)}
+html[data-d180=z50] body[data-z50=closet][data-z328=land] .ctrl .z6c b{display:block!important;font-size:1.02rem!important;font-weight:600!important;text-align:start!important;-webkit-line-clamp:unset}
+html[data-d180=z50] body[data-z50=closet][data-z328=land] .ctrl .z6c small{display:block!important;text-align:start;font-size:.85rem!important;margin-top:-4px}
+html[data-d180=z50] body[data-z50=closet][data-z328=land] .ctrl .z6c .z6all .z6ci::after{font-size:2.6rem}
+html[data-d180=z50] body[data-z50=closet][data-z328=land] .ctrl .z6c button[aria-pressed=true] .z6ci{border-color:transparent;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+html[data-d180=z50] body[data-z50=closet][data-z328=land] .ctrl .z6c button[aria-pressed=true] b{color:inherit}
+@media (min-width:1200px){html[data-d180=z50] body[data-z50=closet][data-z328=land] .ctrl .z6c{grid-template-columns:repeat(auto-fill,minmax(165px,1fr))!important}}
+@media (max-width:759px){
+ html[data-d180=z50] body[data-z50=closet][data-z328=land] .ctrl .z6c{grid-template-columns:repeat(3,1fr)!important;gap:16px 10px!important}
+ html[data-d180=z50] body[data-z50=closet][data-z328=land] .ctrl .z6c button:nth-child(n+9){display:flex!important}
+ html[data-d180=z50] body[data-z50=closet][data-z328=land] .ctrl .z6c b{font-size:.86rem!important}
+ #z328n .z328l button{padding:10px 9px;font-size:.9rem}
+ #z328n .z328in{max-width:none;padding:5px 10px}
+ #z328n .z328dg{max-width:none;padding:12px;grid-template-columns:1fr 1fr}
+ #z328f .z328nx b{font-size:1.15rem}
+ #z328f .z328nx img{width:64px;height:64px}
+}
+
+/* a category page: the menu bar does the categories, so the picture grid, the tools row and the old title step aside */
+html[data-d180=z50] body[data-z50=closet]:is([data-z328=page],[data-z328=all],[data-z328=res]) .ctrl .z6c,
+html[data-d180=z50] body[data-z50=closet]:is([data-z328=page],[data-z328=all],[data-z328=res]) .ctrl .z313h,
+html[data-d180=z50] body[data-z50=closet]:is([data-z328=page],[data-z328=all],[data-z328=res]) .ctrl #z6,
+html[data-d180=z50] body[data-z50=closet]:is([data-z328=page],[data-z328=all],[data-z328=res]) .ctrl .c180e,
+html[data-d180=z50] body[data-z50=closet]:is([data-z328=page],[data-z328=all]) .ctrl .groups,
+html[data-d180=z50] body[data-z50=closet]:is([data-z328=page],[data-z328=all],[data-z328=res]) #cnt{display:none!important}
+html[data-d180=z50] body[data-z50=closet][data-z328=page] .wrap>section[id]>h2{display:none}
+html[data-d180=z50] body[data-z50=closet][data-z328=page] .wrap>section[id]{margin-top:4px}
