@@ -1,0 +1,51 @@
+/* v332 "☀ מה ללבוש היום": weather + 5 dolls in whole looks */
+#wx332{width:min(1500px,100vw);max-width:100vw;height:100dvh;max-height:100dvh;margin:0 auto;padding:0;border:0;background:var(--z-bg,#f6f5f3);color:var(--z-ink,#17161a);overflow:auto}
+@media (min-width:900px){#wx332{width:min(1500px,96vw);height:min(100dvh - 32px,1200px);margin:16px auto;border-radius:24px}}
+#wx332::backdrop{background:rgba(20,18,16,.45)}
+#wx332 .wxw{padding:0 16px 40px;max-width:1440px;margin:0 auto}
+#wx332 .wxh{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:12px;padding:12px 0;background:var(--z-bg,#f6f5f3)}
+#wx332 .wxh h2{margin:0;font-size:1.35rem}
+#wx332 .wxx{width:42px;height:42px;border-radius:50%;border:0;background:var(--z-ink,#17161a);color:#fff;font-size:1.1rem;cursor:pointer;flex:none}
+#wx332 .wxwx{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#dfeefc,#fdf2e3);border-radius:22px;padding:14px 18px}
+#wx332 .wxi{font-size:3rem;line-height:1}
+#wx332 .wxwx b{font-size:1rem}
+#wx332 .wxt{margin:2px 0;font-size:1.6rem;font-weight:700}
+#wx332 .wxwx small{color:#6b6359;font-size:.8rem}
+#wx332 .wxtips{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+#wx332 .wxtips li{display:flex;align-items:center;gap:8px;background:#fff;border:2px solid #f0c49a;border-radius:16px;padding:10px 14px;font-weight:600;font-size:1rem}
+#wx332 .wxtips li span{font-size:1.4rem}
+#wx332 .wxsay{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 0}
+#wx332 .wxsay small{color:#77706a;font-size:.8rem}
+#wx332 .wxsay button{border:1px solid #ddd5cc;background:#fff;border-radius:999px;padding:6px 12px;font:inherit;font-size:.85rem;cursor:pointer}
+#wx332 .wxsay button[aria-pressed=true]{background:var(--z-ink,#17161a);color:#fff;border-color:transparent}
+#wx332 .wxhi{margin:22px 0 2px;font-size:1.45rem}
+#wx332 .wxsub{margin:0 0 12px;color:#77706a;font-size:.9rem}
+#wx332 .wxl{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+#wx332 .wxwait{grid-column:1/-1;text-align:center;padding:40px 10px;color:#77706a}
+#wx332 .wxc{background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.06);display:flex;flex-direction:column}
+#wx332 .wxst{background:linear-gradient(#eef3f8,#f8f5f0);aspect-ratio:360/600;position:relative;cursor:grab}
+#wx332 .wxst .r3s{position:absolute;inset:0;width:100%;height:100%}
+#wx332 .wxst canvas{width:100%;height:100%;object-fit:contain}
+#wx332 .wxcb{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
+#wx332 .wxcb>b{font-size:1.05rem}
+#wx332 .wxwhy{color:#a4520f;font-weight:600}
+#wx332 .wxcb ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+#wx332 .wxit{display:flex;align-items:center;gap:8px;width:100%;border:0;background:#f6f3ef;border-radius:12px;padding:4px;text-align:start;font:inherit;font-size:.8rem;cursor:pointer;color:inherit}
+#wx332 .wxit img{width:36px;height:36px;border-radius:9px;object-fit:cover;flex:none;background:#eee}
+#wx332 .wxit span{display:flex;flex-direction:column;min-width:0}
+#wx332 .wxit span small{color:#8a8178;font-size:.7rem}
+#wx332 .wxa{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:6px}
+#wx332 .wxa button{flex:1 1 auto;border:1px solid #ddd5cc;background:#fff;border-radius:999px;padding:8px 10px;font:inherit;font-size:.82rem;cursor:pointer}
+#wx332 .wxa button.pri{background:var(--z-ink,#17161a);color:#fff;border-color:transparent}
+#wx332 .wxmore{grid-column:1/-1;text-align:center;padding:10px}
+#wx332 .wxmore p{color:#77706a;margin:0 0 8px}
+#wx332 .wxmore button{border:0;background:var(--z-acc,#b4532a);color:#fff;border-radius:999px;padding:12px 22px;font:inherit;font-weight:600;cursor:pointer}
+@media (max-width:620px){#wx332 .wxl{grid-template-columns:1fr 1fr;gap:10px}#wx332 .wxt{font-size:1.3rem}#wx332 .wxi{font-size:2.3rem}#wx332 .wxa button{font-size:.75rem;padding:7px 6px}}
+
+/* the home button */
+.wx332b{display:flex;align-items:center;gap:12px;width:100%;text-align:start;border:0;border-radius:20px;padding:12px 16px;margin:0 0 10px;background:linear-gradient(135deg,#dfeefc,#fdeedd);color:var(--z-ink,#17161a);font:inherit;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.06)}
+.wx332b .wxbi{font-size:2rem;line-height:1}
+.wx332b span{display:flex;flex-direction:column}
+.wx332b b{font-size:1.08rem}
+.wx332b small{color:#6b6359;font-size:.82rem}
+.wx332b .wxbg{margin-inline-start:auto;font-size:1.6rem;color:#a4520f}

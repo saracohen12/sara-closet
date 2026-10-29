@@ -985,6 +985,43 @@ function styFrame0(k,o){o=o||{};const st=STY[k];if(!st)return Promise.resolve(''
 setTimeout(()=>{try{KV.tidy(KVV)}catch(_){}},9000);   // pictures of older versions go
 // v288b: ↺ איפוס – everything off the avatar in one tap (Sara 28/10 15:18 "במקום שאני אוריד כל דבר… מאפס"); ↩ brings it all back
 function reset(){UNDO={a:clone(ST),n:'כל מה שהיה עלייך'};ST=Object.assign(clone(DEF),{on:{},bg:ST.bg,cam:ST.cam});UNDO.bj=JSON.stringify(ST);MISS=[];keep();redraw();try{paintMiss()}catch(_){}}
+// v332 (Sara 29/10 10:02 "תלביש לי כל יום 5 בובות … מה כדאי לי ללבוש היום … לפי מזג האוויר … מהכיסוי עד הנעליים"): whole looks for today, only from what is
+// already on the avatar – a dress / set / top + skirt, a cover in a tie, shoes, a belt, jewellery, a coat when it is cold or rainy (none when hot); each look different
+async function looksFor(wx,n){n=n||5;
+ for(let t=0;t<20&&!styList('tie').length;t++)await new Promise(r=>setTimeout(r,300));   // the tie styles come from the db a moment after the page opens
+ const occ=occNow();let sea='';try{sea=curSeason()}catch(_){}
+ const hi=wx&&wx.hi!=null?+wx.hi:null,lo=wx&&wx.lo!=null?+wx.lo:null;
+ if(hi!=null)sea=hi<18?'חורף':hi>=28?'קיץ':'מעבר';
+ const cold=hi!=null&&(hi<19||lo<12),rain=!!wx&&((+wx.rain||0)>=40||(+wx.mm||0)>=1),hot=hi!=null&&hi>=29;
+ const ok=id=>{try{const it=IT[id]||{};return !(it.s=='ret'||it.s=='give'||it.nofit||it.oos||it.gen||it.out)}catch(_){return true}};
+ const R=Object.keys(READY).filter(id=>D[id]&&!READY[id].head&&ok(id));
+ const of=(...c)=>R.filter(id=>c.includes(cat(id)));
+ const fam=id=>{try{return famOf(id)}catch(_){return ''}};
+ const harm=(pool,fs,av)=>{pool=pool.filter(id=>!av.has(id));if(!pool.length)return '';try{return pickHarm(pool,fs,new Set())||pool[0]}catch(_){return pool[Math.floor(Math.random()*pool.length)]}};
+ const fit=id=>{let v=0;try{if(sea&&fitsSeason(id,sea))v+=2}catch(_){}try{if(fitsOcc(id,occ))v+=1}catch(_){}return v+Math.random()};
+ // the bases: every dress and set, and every top (or sweater) with a skirt
+ let B=[...of('dresses','sets').map(id=>[id])];
+ const tops=of('tops','sweaters','base'),sks=of('skirts');tops.forEach(t=>sks.forEach(k=>B.push([t,k])));
+ B=B.map(b=>({b,v:b.reduce((a,id)=>a+fit(id),0)/b.length})).sort((a,b)=>b.v-a.v).map(x=>x.b);
+ const out=[],usedB=new Set(),usedA=new Map();
+ const covers=Object.keys(D).filter(id=>ok(id)&&(READY[id]&&READY[id].head||isCover(id)&&isReady(id))).concat(Object.keys(D).filter(id=>ok(id)&&coverTie(id)));
+ const ties=styList('tie');
+ for(const b of B){if(out.length>=n)break;if(b.some(id=>usedB.has(id)))continue;
+  const fs=b.map(fam).filter(Boolean),ids=b.slice(),av=new Set(),cnt=id=>usedA.get(id)||0;
+  const add=(pool,p)=>{if(Math.random()>p)return;pool=pool.slice().sort((x,y)=>cnt(x)-cnt(y));const lo2=pool.filter(id=>cnt(id)==cnt(pool[0]));const id=harm(lo2.length?lo2:pool,fs,av);if(id){ids.push(id);const f=fam(id);if(f)fs.push(f)}};
+  if(!hot&&(cold||rain||sea=='חורף'))add(of('outer'),1);else if(!hot&&sea!='קיץ')add(of('outer'),.25);
+  if(b.some(id=>['dresses','skirts'].includes(cat(id))))add(of('belts'),.65);
+  add(of('shoes'),1);add(of('jewelry'),.8);add(of('bags'),.5);
+  let s=stateFrom(ids,{head:'c',cam:ST.cam,wb:ST.wb,bg:ST.bg});
+  // the cover: her scarf in a tie (a different tie style each look when the scarf has none of its own)
+  const cv=covers.slice().sort((x,y)=>cnt(x)-cnt(y));const c=cv.length?harm(cv.filter(id=>cnt(id)==cnt(cv[0])),fs,new Set()):'';
+  if(c){const r=READY[c],own=itOf(c).tie?tieFor(c):'',k=own||ties[out.length%Math.max(1,ties.length)]||tieFor(c);
+   if(k&&STY[k]){s.head=k;s.tf=r&&r.head?r.k[0]:c;try{s.tc=await tfRGB(s.tf)}catch(_){s.tc=null}ids.unshift(c)}
+   else if(r&&r.head){s.head=r.k[0];ids.unshift(c)}}
+  b.forEach(id=>usedB.add(id));ids.forEach(id=>usedA.set(id,cnt(id)+1));
+  out.push({ids,s:clone(s),base:b})}
+ return {looks:out,cold,rain,hot,sea,occ,ready:R.length,bases:B.length}}
+function wearState(s){ST=Object.assign(clone(DEF),clone(s));MISS=[];keep();open();redraw()}
 window.R360={reset,st:()=>ST,worn:()=>wornIds(ST),catOf:id=>cat(id),dbgPaint:async(h,mk,v,on,ex)=>{const c=document.createElement("canvas");if(!await paint(c,v,Object.assign(clone(DEF),{on:on||{},bg:"",head:h,mk:mk||"",tc:null},ex||{})))return "";return c.toDataURL("image/png")},dbgFrames:(h,mk,on,raw)=>frames8("#dbg|"+h+"|"+mk+"|"+JSON.stringify(on||{})+(raw?"r":""),Object.assign(clone(DEF),{on:on||{},bg:"",head:h,mk:mk||"",tc:null,rawHead:raw?1:0})),open,close,make,prompts,openWith,styCard,styFace,styFrames,styFrame0,headFrames,restyle:()=>{try{if(dlg&&dlg.open)paintSty()}catch(_){}},Stage:(host,o)=>{const s=Stage(host,o);if(o&&o.today)s.today=1;STAGES.add(s);return s},wearing:()=>wearing(ST),today:TODAY,
  ready:()=>Object.keys(READY).filter(id=>D[id]),isReady,kind:kindOf,KIND,ME,prompt1:prompt,sync:resync,dyn:id=>!!(READY[id]&&READY[id].dyn),names:NAMES,show:v=>{if(big){big.stop();big.show(v)}},
  still:async(id,v)=>{if(!READY[id])return null;const s=stateFrom([id],{head:ST.head=='w'?'w':'c',cam:ST.cam,bg:''});
@@ -997,5 +1034,5 @@ window.R360={reset,st:()=>ST,worn:()=>wornIds(ST),catOf:id=>cat(id),dbgPaint:asy
  isCover,coverTie,tieFor,itemRGB,styList,
  wearCover:(id,k)=>{if(!wearCover(id,k))return false;keep();open();redraw();return true},
  tiles:id=>{const r=READY[id];if(!r)return null;return NAMES.map((_,v)=>r.k.map(k=>DYN['x'+k+(v+1)]||'a8/x'+k+(v+1)+'.webp'+V))},   // v191: the 8 cut pieces, for the item window
-readyCount:()=>{const P=pool();return [P.filter(isReady).length,P.length]},nm,ph};
+readyCount:()=>{const P=pool();return [P.filter(isReady).length,P.length]},nm,ph,looks:looksFor,wearState,unstage:st=>STAGES.delete(st),pinState:(st,n)=>pinGo(clone(st),n)};
 })();
