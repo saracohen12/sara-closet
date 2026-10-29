@@ -1,0 +1,38 @@
+/* v326 (Sara 29/10 00:33 "תשדרג לי מאוד מאוד את האתר"): a big visible upgrade – on her computer (1920 wide) every screen uses the whole screen,
+   the studio's category row is one clean line, orders in a wide window. Phone layouts keep working as before, with the cleaner studio row. */
+
+/* ---------- home: a wide dashboard ---------- */
+@media (min-width:1200px){
+ html[data-d180=z50] body[data-z50=home] #top{max-width:min(1560px,94vw)}
+ html[data-d180=z50] #h180{grid-template-columns:minmax(360px,30%) minmax(0,1.05fr) minmax(0,1fr);grid-template-areas:"av txt txt" "av lk wait" "av chips sty316";grid-template-rows:auto auto 1fr;align-content:start;gap:22px 28px;padding:8px 0 110px}
+ html[data-d180=z50] #h180 .z5w{align-self:stretch}
+ html[data-d180=z50] #h180 .z-chips,html[data-d180=z50] #h180 .z316h{align-self:start}
+ html[data-d180=z50] #h180 .z-stage{height:calc(100vh - 170px);height:calc(100svh - 170px);max-height:900px;min-height:520px}
+ html[data-d180=z50] #h180 .z-t{font-size:clamp(2.6rem,3.2vw,3.4rem);letter-spacing:-.01em}
+ html[data-d180=z50] #h180 .z-lkc{gap:12px}
+ html[data-d180=z50] #h180 .z-lki,html[data-d180=z50] #h180 .z-lkc img{border-radius:18px}
+ html[data-d180=z50] #h180 .z5w{border-radius:28px;box-shadow:0 18px 40px rgba(23,22,26,.07);padding:22px}
+ html[data-d180=z50] #h180 .z-chips button,html[data-d180=z50] #h180 .z316h button{min-height:64px;border-radius:20px;font-size:1rem;box-shadow:0 8px 20px rgba(23,22,26,.05)}
+ html[data-d180=z50] #h180 .z-chips button:hover,html[data-d180=z50] #h180 .z316h button:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(23,22,26,.1)}
+ html[data-d180=z50] #h180 .z-chips button,html[data-d180=z50] #h180 .z316h button{transition:transform .15s ease,box-shadow .15s ease}
+}
+
+/* ---------- closet: wider page, more clothes in a row ---------- */
+@media (min-width:1200px){
+ html[data-d180=z50] body[data-z50=closet] .ctrl .wrap,html[data-d180=z50] body[data-z50=closet] .wrap{max-width:min(1560px,94vw)!important}
+ html[data-d180=z50] body[data-z50=closet] .wrap>section .grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))!important;gap:18px!important}
+}
+
+/* ---------- studio: the category row is one clean line that slides sideways ---------- */
+#r360 .z8c{display:flex!important;flex-wrap:nowrap;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding:2px 2px 6px;-webkit-mask-image:linear-gradient(to left,#000 92%,transparent);mask-image:linear-gradient(to left,#000 92%,transparent)}
+#r360 .z8c::-webkit-scrollbar{display:none}
+#r360 .z8c button{flex:0 0 auto;width:auto!important;min-height:38px;padding:0 14px!important;border-radius:999px!important;font-size:.84rem!important;line-height:1!important;white-space:nowrap!important;overflow:visible!important}
+@media (min-width:1200px){
+ #r360 .r3w{max-width:min(1640px,96vw)!important;width:min(1640px,96vw)!important}
+ #r360 .r3fig{height:min(calc(100dvh - 190px),980px)!important}
+}
+
+/* ---------- orders: a wide window on the computer, three orders in a row ---------- */
+@media (min-width:1200px){
+ #ord123{width:min(1400px,96vw)!important;height:min(94dvh,1100px)!important}
+}

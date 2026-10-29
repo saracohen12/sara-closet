@@ -106,7 +106,7 @@ function paintWait(){try{
    try{if(QUICK.has(x[2]))zCloset();x[4]()}catch(err){ERR('wait',err)}})}
  let r={};try{r=window.COUNTS172?COUNTS172():{}}catch(e){ERR('counts',e)}
  const W=window.WAIT172||[];const L=W.map((x,i)=>[x,i]).filter(([x])=>r[x[2]]>0).sort((a,b)=>b[0][3]-a[0][3]);
- const rows=innerHeight<800?2:innerHeight<900?3:4,n=L.length,show=L.slice(0,rows);s.style.setProperty('--z5fix',(416+44*rows)+'px');   // the avatar gets what is left of the screen
+ const rows=innerWidth>=1200?99:innerHeight<800?2:innerHeight<900?3:4,n=L.length,show=L.slice(0,rows);s.style.setProperty('--z5fix',(416+44*rows)+'px');   // the avatar gets what is left of the screen
  const h=`<div class="z5wh"><h2 id="z5wh">מה מחכה לך</h2><button type="button" data-z5all>${n>show.length?`הכול (${n})`:'כל הכלים'}${svg('chev')}</button></div>`+
   (show.length?`<ul>${show.map(([x,i])=>`<li><button type="button" data-z5w="${i}"${x[3]?' class="hot"':''}><i>${svg(P[x[2]]?x[2]:'alerts')}</i><span>${esc(x[1])}</span><b>${r[x[2]]}</b></button></li>`).join('')}</ul>`
    :'<p class="z5ok">הכול מסודר. אין משהו שמחכה לך ✓</p>');
