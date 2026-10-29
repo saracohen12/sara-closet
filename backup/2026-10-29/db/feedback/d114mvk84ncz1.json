@@ -1,0 +1,28 @@
+{
+  "avbase": "p5",
+  "fit": {
+    "w": 103.5,
+    "x": 49.6,
+    "y": 33.5
+  },
+  "gn": "",
+  "gt": 1792714000000,
+  "h": 1231,
+  "id": "S17QJ_13",
+  "img": "<img class=\"sl\" data-slot=\"top\"  data-av=\"/_blob/ce0cc7f541990bd85fa7d28a4bf8cc0f\" style=\"left:49.6%;top:33.5%;width:103.5%;z-index:30;transform:translate(-50%,-50%) rotate(0deg) scale(1,1) skewX(0deg)\" alt=\"\" draggable=\"false\">",
+  "kind": "dbg114",
+  "slot": "top",
+  "t": 1792714839875,
+  "tf": {
+    "g112": 1792714000000,
+    "pvv": "front",
+    "q": 1,
+    "r": 0,
+    "w": 103.5,
+    "x": 49.6,
+    "y": 33.5
+  },
+  "v": "front",
+  "ver": 114,
+  "w": 2560
+}

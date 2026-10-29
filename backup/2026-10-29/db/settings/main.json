@@ -1,0 +1,32 @@
+{
+  "albumView": "/_blob/ebd29fbd7cf7d3139e744ded6605a456",
+  "avb2": 1,
+  "avb3": 1,
+  "avbase": "p5",
+  "bg": "s_parch",
+  "bg93seen": 1,
+  "catCover": {
+    "base": "SNAA5_7",
+    "boys": "SM3PB_3",
+    "dresses": "S1100_0",
+    "girls": "T129",
+    "hair": "T363",
+    "hosiery": "T276",
+    "makeup": "T324",
+    "other": "T591091_13",
+    "scarves": "S17QJ_9"
+  },
+  "catPic": {},
+  "dk89": {},
+  "learn": {
+    "items": {},
+    "notes": [],
+    "pairs": {}
+  },
+  "nd89": [],
+  "styCover": {
+    "tie": {
+      "k": "ytsmvp3s2xo0"
+    }
+  }
+}

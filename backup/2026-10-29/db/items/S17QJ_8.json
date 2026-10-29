@@ -1,0 +1,382 @@
+{
+  "a8": [
+    {
+      "L": [
+        "f9c0de99e195bacdb113df9827a133f4~0",
+        "f9c0de99e195bacdb113df9827a133f4~1",
+        "f9c0de99e195bacdb113df9827a133f4~2",
+        "f9c0de99e195bacdb113df9827a133f4~3",
+        "f9c0de99e195bacdb113df9827a133f4~4",
+        "f9c0de99e195bacdb113df9827a133f4~5",
+        "f9c0de99e195bacdb113df9827a133f4~6",
+        "f9c0de99e195bacdb113df9827a133f4~7"
+      ],
+      "cv": 5,
+      "k": "scarf",
+      "s": "head",
+      "sh": null,
+      "src": "34c3846d5ac13ae53341dc6a726966d7",
+      "t": 1793126183655
+    }
+  ],
+  "a8up": [
+    {
+      "a": "d4eecc073757d7ff792ef6b1e249a325",
+      "n": "Eight-view embroidered blush scarf portrait-1.png",
+      "t": 1793124710413
+    },
+    {
+      "a": "ccc9e1a135b75efe3182dc5e613bf470",
+      "n": "Eight-view embroidered blush scarf portrait-1.png",
+      "t": 1793126051162
+    },
+    {
+      "a": "031e23b6d45cca36b29200e3e3f7fa26",
+      "n": "Eight-view portrait with a blush embroidered scarf-4.png",
+      "t": 1793126062855
+    },
+    {
+      "a": "d38df8659fd1c1b39b6f3abb18bb7f08",
+      "n": "Blush silk scarf, eight-view portrait grid-6.png",
+      "t": 1793126074493
+    },
+    {
+      "a": "2bd8f4a1582089c9bc794fd313623803",
+      "n": "Eight-view doll in a blush floral scarf-8.png",
+      "t": 1793126086409
+    },
+    {
+      "a": "a591db14bcbc70cd0ba0bf6a746bcf23",
+      "n": "Eight-view blush pink scarf grid-10.png",
+      "t": 1793126098121
+    },
+    {
+      "a": "29ff21eed34b62e60e11647b59a91b59",
+      "n": "Eight-view portrait with a blush floral scarf-12.png",
+      "t": 1793126111050
+    },
+    {
+      "a": "8c399f1fb936e0f3e5fa6d2476c68c66",
+      "n": "Eight-view blush-pink scarf portrait-14.png",
+      "t": 1793126147800
+    },
+    {
+      "a": "d29e32f94098577cd07a837bbdabadd1",
+      "n": "Eight-view doll in a blush embroidered scarf-15.png",
+      "t": 1793126160955
+    },
+    {
+      "a": "85f4b130e795dc673efe25d9e8d14ca2",
+      "n": "Eight-view blush pink turban wrap-18.png",
+      "t": 1793126172331
+    },
+    {
+      "a": "34c3846d5ac13ae53341dc6a726966d7",
+      "n": "Eight-view blush silk scarf portrait-20.png",
+      "t": 1793126183655
+    }
+  ],
+  "got": "y",
+  "img": "ef060585436d7a4b57fe094c5c9d0d86",
+  "imgs": [
+    {
+      "c": 0,
+      "id": "ef060585436d7a4b57fe094c5c9d0d86",
+      "t": 1793105625422
+    }
+  ],
+  "lastWorn": "2026-10-27",
+  "lk": "y",
+  "tx": [
+    {
+      "L": [
+        "b29ce9a31a9397bf7f5b79693e825805~0",
+        "b29ce9a31a9397bf7f5b79693e825805~1",
+        "b29ce9a31a9397bf7f5b79693e825805~2",
+        "b29ce9a31a9397bf7f5b79693e825805~3",
+        "b29ce9a31a9397bf7f5b79693e825805~4",
+        "b29ce9a31a9397bf7f5b79693e825805~5",
+        "b29ce9a31a9397bf7f5b79693e825805~6",
+        "b29ce9a31a9397bf7f5b79693e825805~7"
+      ],
+      "cu": "bdc6839f4c6dd1fc37a77087997b889f",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "24. סלסול גדול על הכתף",
+      "p": "id:k27n24",
+      "s": "head",
+      "sh": null,
+      "src": "ccc9e1a135b75efe3182dc5e613bf470",
+      "t": 1793126051162
+    },
+    {
+      "L": [
+        "f0761db1248801cc3615ecae4a62982a~0",
+        "f0761db1248801cc3615ecae4a62982a~1",
+        "f0761db1248801cc3615ecae4a62982a~2",
+        "f0761db1248801cc3615ecae4a62982a~3",
+        "f0761db1248801cc3615ecae4a62982a~4",
+        "f0761db1248801cc3615ecae4a62982a~5",
+        "f0761db1248801cc3615ecae4a62982a~6",
+        "f0761db1248801cc3615ecae4a62982a~7"
+      ],
+      "cu": "1d128facd811accd448e4d7799f39bc5",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "3. שושנה בצד עם שובל",
+      "p": "id:k27n03",
+      "s": "head",
+      "sh": null,
+      "src": "031e23b6d45cca36b29200e3e3f7fa26",
+      "t": 1793126062855
+    },
+    {
+      "L": [
+        "f9b71babfa4053fe8c7e2e501348a261~0",
+        "f9b71babfa4053fe8c7e2e501348a261~1",
+        "f9b71babfa4053fe8c7e2e501348a261~2",
+        "f9b71babfa4053fe8c7e2e501348a261~3",
+        "f9b71babfa4053fe8c7e2e501348a261~4",
+        "f9b71babfa4053fe8c7e2e501348a261~5",
+        "f9b71babfa4053fe8c7e2e501348a261~6",
+        "f9b71babfa4053fe8c7e2e501348a261~7"
+      ],
+      "cu": "a99cc0e60a852cf552a26b558fa1b53a",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "11. טורבן עם שובל פרנזים מקדימה",
+      "p": "id:k27n11",
+      "s": "head",
+      "sh": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "src": "d38df8659fd1c1b39b6f3abb18bb7f08",
+      "t": 1793126074493
+    },
+    {
+      "L": [
+        "3435127438d6d5d2d9d5927037506dac~0",
+        "3435127438d6d5d2d9d5927037506dac~1",
+        "3435127438d6d5d2d9d5927037506dac~2",
+        "3435127438d6d5d2d9d5927037506dac~3",
+        "3435127438d6d5d2d9d5927037506dac~4",
+        "3435127438d6d5d2d9d5927037506dac~5",
+        "3435127438d6d5d2d9d5927037506dac~6",
+        "3435127438d6d5d2d9d5927037506dac~7"
+      ],
+      "cu": "b7f5ab081ce843dd9cc27a7e1b56982f",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "12. קשר אחורי עם שובלים לצדדים",
+      "p": "id:k27n12",
+      "s": "head",
+      "sh": null,
+      "src": "2bd8f4a1582089c9bc794fd313623803",
+      "t": 1793126086409
+    },
+    {
+      "L": [
+        "c89a6e3608c5a75fdbd775b335c54d68~0",
+        "c89a6e3608c5a75fdbd775b335c54d68~1",
+        "c89a6e3608c5a75fdbd775b335c54d68~2",
+        "c89a6e3608c5a75fdbd775b335c54d68~3",
+        "c89a6e3608c5a75fdbd775b335c54d68~4",
+        "c89a6e3608c5a75fdbd775b335c54d68~5",
+        "c89a6e3608c5a75fdbd775b335c54d68~6",
+        "c89a6e3608c5a75fdbd775b335c54d68~7"
+      ],
+      "cu": "13bcdc748fda276606bf19aac4274891",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "15. טורבן עם נפילה קדמית",
+      "p": "id:k27n15",
+      "s": "head",
+      "sh": [
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "src": "a591db14bcbc70cd0ba0bf6a746bcf23",
+      "t": 1793126098121
+    },
+    {
+      "L": [
+        "ddb259f7ec08a83e467eaf43e6f6287c~0",
+        "ddb259f7ec08a83e467eaf43e6f6287c~1",
+        "ddb259f7ec08a83e467eaf43e6f6287c~2",
+        "ddb259f7ec08a83e467eaf43e6f6287c~3",
+        "ddb259f7ec08a83e467eaf43e6f6287c~4",
+        "ddb259f7ec08a83e467eaf43e6f6287c~5",
+        "ddb259f7ec08a83e467eaf43e6f6287c~6",
+        "ddb259f7ec08a83e467eaf43e6f6287c~7"
+      ],
+      "cu": "cc39fb6bf86f10671983079536109b2c",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "19. פרח מסולסל גדול מאחור",
+      "p": "id:k27n19",
+      "s": "head",
+      "sh": null,
+      "src": "29ff21eed34b62e60e11647b59a91b59",
+      "t": 1793126111050
+    },
+    {
+      "L": [
+        "a7d309d4632e44ffe7d0c0f6b0e2e91f~0",
+        "a7d309d4632e44ffe7d0c0f6b0e2e91f~1",
+        "a7d309d4632e44ffe7d0c0f6b0e2e91f~2",
+        "a7d309d4632e44ffe7d0c0f6b0e2e91f~3",
+        "a7d309d4632e44ffe7d0c0f6b0e2e91f~4",
+        "a7d309d4632e44ffe7d0c0f6b0e2e91f~5",
+        "a7d309d4632e44ffe7d0c0f6b0e2e91f~6",
+        "a7d309d4632e44ffe7d0c0f6b0e2e91f~7"
+      ],
+      "cu": "a6ec27adbcf580cb07c3c2f2fd508559",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "22. קשר אחורי עם מפל סלסולים",
+      "p": "id:k27n22",
+      "s": "head",
+      "sh": null,
+      "src": "8c399f1fb936e0f3e5fa6d2476c68c66",
+      "t": 1793126147800
+    },
+    {
+      "L": [
+        "3957fc9e1c607a90f97abe70a06fd394~0",
+        "3957fc9e1c607a90f97abe70a06fd394~1",
+        "3957fc9e1c607a90f97abe70a06fd394~2",
+        "3957fc9e1c607a90f97abe70a06fd394~3",
+        "3957fc9e1c607a90f97abe70a06fd394~4",
+        "3957fc9e1c607a90f97abe70a06fd394~5",
+        "3957fc9e1c607a90f97abe70a06fd394~6",
+        "3957fc9e1c607a90f97abe70a06fd394~7"
+      ],
+      "cu": "b476cf8e2a2884104e16be99a5d7c781",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "26. צעיף ארוך מקדימה לשני הצדדים",
+      "p": "id:k27n26",
+      "s": "head",
+      "sh": null,
+      "src": "d29e32f94098577cd07a837bbdabadd1",
+      "t": 1793126160955
+    },
+    {
+      "L": [
+        "e07ed9850496df5575a8b0038c296e99~0",
+        "e07ed9850496df5575a8b0038c296e99~1",
+        "e07ed9850496df5575a8b0038c296e99~2",
+        "e07ed9850496df5575a8b0038c296e99~3",
+        "e07ed9850496df5575a8b0038c296e99~4",
+        "e07ed9850496df5575a8b0038c296e99~5",
+        "e07ed9850496df5575a8b0038c296e99~6",
+        "e07ed9850496df5575a8b0038c296e99~7"
+      ],
+      "cu": "cca62f9b648cd064379a3f0b1ebc291f",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "טורבן גבוה",
+      "p": "w2",
+      "s": "head",
+      "sh": null,
+      "src": "85f4b130e795dc673efe25d9e8d14ca2",
+      "t": 1793126172331
+    },
+    {
+      "L": [
+        "0ae53a41cbd2a67de7fbdf3ba01eb5bf~0",
+        "0ae53a41cbd2a67de7fbdf3ba01eb5bf~1",
+        "0ae53a41cbd2a67de7fbdf3ba01eb5bf~2",
+        "0ae53a41cbd2a67de7fbdf3ba01eb5bf~3",
+        "0ae53a41cbd2a67de7fbdf3ba01eb5bf~4",
+        "0ae53a41cbd2a67de7fbdf3ba01eb5bf~5",
+        "0ae53a41cbd2a67de7fbdf3ba01eb5bf~6",
+        "0ae53a41cbd2a67de7fbdf3ba01eb5bf~7"
+      ],
+      "cu": "38a4be79d1bd8f57b0352d665c51cde5",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "כתר צמה",
+      "p": "w15",
+      "s": "head",
+      "sh": null,
+      "src": "34c3846d5ac13ae53341dc6a726966d7",
+      "t": 1793126183655
+    }
+  ],
+  "wear": 1,
+  "wl": [
+    "2026-10-27"
+  ]
+}

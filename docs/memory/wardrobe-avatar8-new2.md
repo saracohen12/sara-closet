@@ -1,6 +1,6 @@
 ---
 name: wardrobe-avatar8-new2
-description: 25/10 17:35 Sara picked a NEW 8-angle cover doll (sheet_cover.png) as the 360 base; crop offsets, wig status, project-migration plan
+description: 25/10 new 8-angle cover doll (now ARCHIVED: 23:50 Sara went back to the previous smooth-hair avatar); crop offsets, wig, migration
 metadata:
   type: project
 ---
@@ -12,3 +12,6 @@ Still waiting: closet p6c_sheet1/2 with the new head (v180).
 Migration: Sara wants a NEW project after the avatar is done (uploads blocked here, chat-upload limit). Plan agreed: artifacts stay in her account; pack work files (src/work, avatar8, scripts, tasks.md) + memory into one archive artifact + handoff summary; new project reads it.
 17:42 F2YZ v19: wig button ON as a TEMP full-frame swap (lw1–8 = whole wig-sheet frames, old face). Replace lw*.png with real layers (wiglayer.py) once the wig-on-new-doll sheet arrives.
 17:45: Sara's working GPT recipe for avatar variants = SAME GPT chat, step 1 face close-up with the change, step 2 '8 זוויות, אל תשני את הפנים' with the cover sheet as template (direct sheet edits lost the face). She asked for this 2-step format explicitly; prompts in new2/wig_prompts.md. Result will NOT be pixel-aligned: align per frame (lower body), head zone from the wig sheet.
+17:55: Sara is moving to a NEW project now (packing thread 'להעביר את הארון לפרויקט חדש'). HANDOFF_new_avatar.md rewritten with full current state; previous copy new2/HANDOFF_before_1755.md; page sources in new2/pages/.
+23:20: Sara dislikes the new-doll wig (hair looks cut/stiff; F2YZ v24 lw = small layers made in a later session). She asked to see the previous smooth avatar (original 8-angle f1–f8 / cap c + loose-hair lh, which already has all clothes). F2YZ v25: old base button renamed '✨ האווטאר הקודם (השיער החלק)'; comparison closet/avatar8/compare_old_vs_wig.png. Waiting for her choice old vs new. Nothing deleted.
+23:50 DECISION: Sara stays with the PREVIOUS avatar ('נשאר עם הישן הוא יותר טוב'). F2YZ v26: default base = old (cap c + loose hair lh + all clothes layers), initial imgs f1–8; new doll kept as 'הבובה החדשה (בארכיון)'. New items go on the old cap pipeline (avatar8/cap). HANDOFF updated at top.

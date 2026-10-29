@@ -1,0 +1,56 @@
+{
+  "avbase": "p5",
+  "fit": {
+    "w": 121.1,
+    "x": 47.5,
+    "y": 58.8
+  },
+  "gn": "",
+  "gt": 1792708059403,
+  "h": 1231,
+  "id": "T147",
+  "img": "<img class=\"sl\" data-slot=\"skirt\"  style=\"left:47.5%;top:58.8%;width:121.1%;z-index:10;transform:translate(-50%,-50%) rotate(0deg) scale(1,1) skewX(0deg)\" alt=\"\" draggable=\"false\">",
+  "kind": "dbg114",
+  "slot": "skirt",
+  "t": 1792708115010,
+  "tf": {
+    "af": {
+      "front:": 1,
+      "half:": 1,
+      "side:": 1
+    },
+    "g112": 1792708059403,
+    "pv": {
+      "front": {
+        "q": 1,
+        "r": 0,
+        "w": 128.9,
+        "x": 50.5,
+        "y": 59.4
+      },
+      "half": {
+        "q": 1,
+        "r": 0,
+        "w": 117.7,
+        "x": 49.9,
+        "y": 58
+      },
+      "side": {
+        "q": 1,
+        "r": 0,
+        "w": 96.5,
+        "x": 42.9,
+        "y": 59.4
+      }
+    },
+    "pvv": "back",
+    "q": 1,
+    "r": 0,
+    "w": 121.1,
+    "x": 47.5,
+    "y": 58.8
+  },
+  "v": "back",
+  "ver": 114,
+  "w": 2560
+}

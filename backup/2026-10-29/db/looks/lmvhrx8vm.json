@@ -1,0 +1,29 @@
+{
+  "created": "2026-10-21",
+  "date": "2026-10-21",
+  "id": "lmvhrx8vm",
+  "items": {
+    "dress": "T11"
+  },
+  "name": "שמלת ולווט",
+  "notes": "",
+  "occ": "shab",
+  "rating": 1,
+  "studio": {
+    "avbase": "p5",
+    "base": {
+      "skirt": "orig",
+      "top": "orig"
+    },
+    "bg": "studio",
+    "head": "hair",
+    "tf": {
+      "dress": {
+        "r": 0,
+        "w": 160,
+        "x": 47.68003961546451,
+        "y": 41.31851503116626
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "avbase": "p5",
+  "fit": {
+    "w": 97.5,
+    "x": 49.6,
+    "y": 34.4
+  },
+  "gn": "",
+  "gt": 1792715117137,
+  "h": 711,
+  "id": "SNN8H_0",
+  "img": "<img class=\"sl sel\" data-slot=\"top\"  style=\"left:49.6%;top:34.4%;width:97.5%;z-index:30;transform:translate(-50%,-50%) rotate(0deg) scale(1,1) skewX(0deg)\" alt=\"\" draggable=\"false\">",
+  "kind": "dbg114",
+  "slot": "top",
+  "t": 1792741849884,
+  "tf": {
+    "g112": 1792715117137,
+    "pvman": {
+      "front": 1
+    },
+    "pvv": "front",
+    "q": 1,
+    "r": 0,
+    "w": 97.5,
+    "x": 49.6,
+    "y": 34.4
+  },
+  "v": "front",
+  "ver": 114,
+  "w": 411
+}

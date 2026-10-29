@@ -1,0 +1,34 @@
+{
+  "avbase": "p5",
+  "fit": {
+    "w": 161.3,
+    "x": 48.4,
+    "y": 64.3
+  },
+  "gn": "קטיפה חדשה",
+  "gt": 1792707400000,
+  "h": 1231,
+  "id": "T156",
+  "img": "<img class=\"sl\" data-slot=\"skirt\"  style=\"left:46.897626383299794%;top:65.74290889090706%;width:161.3%;z-index:10;transform:translate(-50%,-50%) rotate(0deg) scale(1,1) skewX(0deg)\" alt=\"\" draggable=\"false\">",
+  "kind": "dbg114",
+  "slot": "skirt",
+  "t": 1792715241106,
+  "tf": {
+    "af": {
+      "front:": 1
+    },
+    "g112": 1792707400000,
+    "pvman": {
+      "front": 1
+    },
+    "pvv": "front",
+    "q": 1,
+    "r": 0,
+    "w": 161.3,
+    "x": 46.897626383299794,
+    "y": 65.74290889090706
+  },
+  "v": "front",
+  "ver": 114,
+  "w": 2560
+}

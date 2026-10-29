@@ -1,0 +1,329 @@
+{
+  "a8": [
+    {
+      "L": [
+        "1ff51e26f769469ea0b9c52635a84624~0",
+        "1ff51e26f769469ea0b9c52635a84624~1",
+        "1ff51e26f769469ea0b9c52635a84624~2",
+        "1ff51e26f769469ea0b9c52635a84624~3",
+        "1ff51e26f769469ea0b9c52635a84624~4",
+        "1ff51e26f769469ea0b9c52635a84624~5",
+        "1ff51e26f769469ea0b9c52635a84624~6",
+        "1ff51e26f769469ea0b9c52635a84624~7"
+      ],
+      "cv": 5,
+      "k": "scarf",
+      "s": "head",
+      "sh": null,
+      "src": "e84f1e08878a5aa8f1be888a026e026b",
+      "t": 1793136512198
+    }
+  ],
+  "a8up": [
+    {
+      "a": "eff26c960879e91eabecd2f4d7d4678b",
+      "n": "tie-01_2_full-body.png",
+      "t": 1793136399587
+    },
+    {
+      "a": "4e4298745cf8fa0b98fc7c2e37724849",
+      "n": "tie-02_2_full-body.png",
+      "t": 1793136410890
+    },
+    {
+      "a": "febfb3bef2f5387e3ae53a3190d804fe",
+      "n": "tie-04_2_full-body.png",
+      "t": 1793136426013
+    },
+    {
+      "a": "269e286f559176a5d2f42aa797e918c3",
+      "n": "tie-03_2_full-body.png",
+      "t": 1793136437344
+    },
+    {
+      "a": "1e2259288ab00cff908013beb8247038",
+      "n": "tie-05_2_full-body.png",
+      "t": 1793136450778
+    },
+    {
+      "a": "216da40d17a89828ed89c9acbc80c57d",
+      "n": "tie-09_2_full-body.png",
+      "t": 1793136462216
+    },
+    {
+      "a": "edc7ec70c724ca1d57a87f153410e177",
+      "n": "tie-07_2_full-body.png",
+      "t": 1793136474009
+    },
+    {
+      "a": "240040884c7c195c632d3a00f1e51b5d",
+      "n": "tie-10_2_full-body.png",
+      "t": 1793136486600
+    },
+    {
+      "a": "e359e8b711583606c5342761afaad7f0",
+      "n": "tie-06_2_full-body.png",
+      "t": 1793136501035
+    },
+    {
+      "a": "e84f1e08878a5aa8f1be888a026e026b",
+      "n": "tie-08_2_full-body.png",
+      "t": 1793136512198
+    }
+  ],
+  "got": "y",
+  "img": "74d0f0e79bb07b0c2d8753008edb6ac4",
+  "imgs": [
+    {
+      "c": 1,
+      "id": "74d0f0e79bb07b0c2d8753008edb6ac4",
+      "t": 1793111108302
+    },
+    {
+      "id": "930d278af9ceb8d03b654162bf3b6cc3",
+      "raw": 1,
+      "t": 1793111110036
+    }
+  ],
+  "lk": "y",
+  "rc279": 1,
+  "tx": [
+    {
+      "L": [
+        "2106cdfaaace831a8ce35742e8bca35e~0",
+        "2106cdfaaace831a8ce35742e8bca35e~1",
+        "2106cdfaaace831a8ce35742e8bca35e~2",
+        "2106cdfaaace831a8ce35742e8bca35e~3",
+        "2106cdfaaace831a8ce35742e8bca35e~4",
+        "2106cdfaaace831a8ce35742e8bca35e~5",
+        "2106cdfaaace831a8ce35742e8bca35e~6",
+        "2106cdfaaace831a8ce35742e8bca35e~7"
+      ],
+      "cu": "6cb91a1c9c0ef9830100cf9820d9b483",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "24. סלסול גדול על הכתף",
+      "p": "id:k27n24",
+      "s": "head",
+      "sh": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "src": "eff26c960879e91eabecd2f4d7d4678b",
+      "t": 1793136399587
+    },
+    {
+      "L": [
+        "cb6605003f11fef7250c8358228593a5~0",
+        "cb6605003f11fef7250c8358228593a5~1",
+        "cb6605003f11fef7250c8358228593a5~2",
+        "cb6605003f11fef7250c8358228593a5~3",
+        "cb6605003f11fef7250c8358228593a5~4",
+        "cb6605003f11fef7250c8358228593a5~5",
+        "cb6605003f11fef7250c8358228593a5~6",
+        "cb6605003f11fef7250c8358228593a5~7"
+      ],
+      "cu": "a9708a30899ae5ec941597202a53184d",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "19. פרח מסולסל גדול מאחור",
+      "p": "id:k27n19",
+      "s": "head",
+      "sh": null,
+      "src": "4e4298745cf8fa0b98fc7c2e37724849",
+      "t": 1793136410890
+    },
+    {
+      "L": [
+        "1e99cbda9807f326a6b8f22b81af9479~0",
+        "1e99cbda9807f326a6b8f22b81af9479~1",
+        "1e99cbda9807f326a6b8f22b81af9479~2",
+        "1e99cbda9807f326a6b8f22b81af9479~3",
+        "1e99cbda9807f326a6b8f22b81af9479~4",
+        "1e99cbda9807f326a6b8f22b81af9479~5",
+        "1e99cbda9807f326a6b8f22b81af9479~6",
+        "1e99cbda9807f326a6b8f22b81af9479~7"
+      ],
+      "cu": "286359684b907b1c8d8bb6293a208097",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "21. נפילה ארוכה בצד",
+      "p": "id:k27n21",
+      "s": "head",
+      "sh": null,
+      "src": "febfb3bef2f5387e3ae53a3190d804fe",
+      "t": 1793136426013
+    },
+    {
+      "L": [
+        "6eb19a192ec4bc9a1dfa0d5fcde83400~0",
+        "6eb19a192ec4bc9a1dfa0d5fcde83400~1",
+        "6eb19a192ec4bc9a1dfa0d5fcde83400~2",
+        "6eb19a192ec4bc9a1dfa0d5fcde83400~3",
+        "6eb19a192ec4bc9a1dfa0d5fcde83400~4",
+        "6eb19a192ec4bc9a1dfa0d5fcde83400~5",
+        "6eb19a192ec4bc9a1dfa0d5fcde83400~6",
+        "6eb19a192ec4bc9a1dfa0d5fcde83400~7"
+      ],
+      "cu": "27f35c7c2c618d95b6151342a22904fd",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "11. טורבן עם שובל פרנזים מקדימה",
+      "p": "id:k27n11",
+      "s": "head",
+      "sh": null,
+      "src": "269e286f559176a5d2f42aa797e918c3",
+      "t": 1793136437344
+    },
+    {
+      "L": [
+        "cf8d825d582b6c45d007aac0100d70b3~0",
+        "cf8d825d582b6c45d007aac0100d70b3~1",
+        "cf8d825d582b6c45d007aac0100d70b3~2",
+        "cf8d825d582b6c45d007aac0100d70b3~3",
+        "cf8d825d582b6c45d007aac0100d70b3~4",
+        "cf8d825d582b6c45d007aac0100d70b3~5",
+        "cf8d825d582b6c45d007aac0100d70b3~6",
+        "cf8d825d582b6c45d007aac0100d70b3~7"
+      ],
+      "cu": "75d96b63f63c4a5b998a8ab1ecade9b5",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "20. קוקס מסולסל",
+      "p": "id:k27n20",
+      "s": "head",
+      "sh": null,
+      "src": "1e2259288ab00cff908013beb8247038",
+      "t": 1793136450778
+    },
+    {
+      "L": [
+        "a3f7c3f997bd4cfd41957cabccfa6d9d~0",
+        "a3f7c3f997bd4cfd41957cabccfa6d9d~1",
+        "a3f7c3f997bd4cfd41957cabccfa6d9d~2",
+        "a3f7c3f997bd4cfd41957cabccfa6d9d~3",
+        "a3f7c3f997bd4cfd41957cabccfa6d9d~4",
+        "a3f7c3f997bd4cfd41957cabccfa6d9d~5",
+        "a3f7c3f997bd4cfd41957cabccfa6d9d~6",
+        "a3f7c3f997bd4cfd41957cabccfa6d9d~7"
+      ],
+      "cu": "bda7d97a04b4cc0147db4ff84246562a",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "18. קוקס נמוך עם שובלים ארוכים מאחור",
+      "p": "id:k27n18",
+      "s": "head",
+      "sh": null,
+      "src": "216da40d17a89828ed89c9acbc80c57d",
+      "t": 1793136462216
+    },
+    {
+      "L": [
+        "ccc3cbfee6a84f24d32672dfd32ee589~0",
+        "ccc3cbfee6a84f24d32672dfd32ee589~1",
+        "ccc3cbfee6a84f24d32672dfd32ee589~2",
+        "ccc3cbfee6a84f24d32672dfd32ee589~3",
+        "ccc3cbfee6a84f24d32672dfd32ee589~4",
+        "ccc3cbfee6a84f24d32672dfd32ee589~5",
+        "ccc3cbfee6a84f24d32672dfd32ee589~6",
+        "ccc3cbfee6a84f24d32672dfd32ee589~7"
+      ],
+      "cu": "da47df4b2fb1111f618a0761f31d2a26",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "17. קשר צד עם שובל פרנזים",
+      "p": "id:k27n17",
+      "s": "head",
+      "sh": null,
+      "src": "edc7ec70c724ca1d57a87f153410e177",
+      "t": 1793136474009
+    },
+    {
+      "L": [
+        "80bd563d6ee220a28d32f797b0805c83~0",
+        "80bd563d6ee220a28d32f797b0805c83~1",
+        "80bd563d6ee220a28d32f797b0805c83~2",
+        "80bd563d6ee220a28d32f797b0805c83~3",
+        "80bd563d6ee220a28d32f797b0805c83~4",
+        "80bd563d6ee220a28d32f797b0805c83~5",
+        "80bd563d6ee220a28d32f797b0805c83~6",
+        "80bd563d6ee220a28d32f797b0805c83~7"
+      ],
+      "cu": "f74047a14a83d40b3ccad835d0378705",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "קוקס מלופף ועשיר בטקסטורה",
+      "p": "w8",
+      "s": "head",
+      "sh": null,
+      "src": "240040884c7c195c632d3a00f1e51b5d",
+      "t": 1793136486600
+    },
+    {
+      "L": [
+        "2e677c63c46db7bcb151ca728b5623ca~0",
+        "2e677c63c46db7bcb151ca728b5623ca~1",
+        "2e677c63c46db7bcb151ca728b5623ca~2",
+        "2e677c63c46db7bcb151ca728b5623ca~3",
+        "2e677c63c46db7bcb151ca728b5623ca~4",
+        "2e677c63c46db7bcb151ca728b5623ca~5",
+        "2e677c63c46db7bcb151ca728b5623ca~6",
+        "2e677c63c46db7bcb151ca728b5623ca~7"
+      ],
+      "cu": "46047d8d40f442666bb3865d5df1a24e",
+      "cu8": 1,
+      "cv": 5,
+      "k": "tiex",
+      "n": "כתר צמה",
+      "p": "w15",
+      "s": "head",
+      "sh": null,
+      "src": "e359e8b711583606c5342761afaad7f0",
+      "t": 1793136501035
+    }
+  ],
+  "txw": [
+    {
+      "n": "27. צעיף ארוך מקדימה עם פרנזים",
+      "p": "id:k27n27"
+    }
+  ]
+}

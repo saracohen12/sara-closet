@@ -1,0 +1,20 @@
+{
+  "errs": [
+    "rej: Cannot read properties of undefined (reading 'pairs')",
+    "rej: Cannot read properties of undefined (reading 'pairs')"
+  ],
+  "h": 711,
+  "kind": "bug",
+  "note": "לחצתי עוד בחרתי מסל ואז רקע \nולא היה × לצאת\nתבדוק בכול המסכים בנייד ובמחש שיש אפשרות לצאת",
+  "t": 1792646081755,
+  "ua": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Mobile Safari/537.36",
+  "ver": "גרסה 80",
+  "view": {
+    "items": {
+      "scarf": "T162"
+    },
+    "v": "half"
+  },
+  "w": 411,
+  "where": "studio,bug77"
+}

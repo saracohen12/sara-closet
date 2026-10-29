@@ -1,0 +1,92 @@
+{
+  "a8": [
+    {
+      "L": [
+        "82cbf4537c5c411b1f40dfc752bd6be4~0",
+        "82cbf4537c5c411b1f40dfc752bd6be4~1",
+        "82cbf4537c5c411b1f40dfc752bd6be4~2",
+        "82cbf4537c5c411b1f40dfc752bd6be4~3",
+        "82cbf4537c5c411b1f40dfc752bd6be4~4",
+        "82cbf4537c5c411b1f40dfc752bd6be4~5",
+        "82cbf4537c5c411b1f40dfc752bd6be4~6",
+        "82cbf4537c5c411b1f40dfc752bd6be4~7"
+      ],
+      "cv": 8,
+      "k": "dress",
+      "s": "body",
+      "sh": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          0
+        ]
+      ],
+      "src": "428965ba8bafdddbf36fcc63d229bd0f",
+      "t": 1793120036706
+    }
+  ],
+  "a8up": [
+    {
+      "a": "938c20f838d0ae60101f2abd56c3b47c",
+      "n": "Eight-angle navy velvet dress showcase-1.png",
+      "t": 1793119969514
+    },
+    {
+      "a": "428965ba8bafdddbf36fcc63d229bd0f",
+      "n": "Eight-angle navy velvet dress showcase-1.png",
+      "t": 1793120036706
+    }
+  ],
+  "fit": {
+    "b": "p5",
+    "r": 0,
+    "w": 160,
+    "x": 47.68,
+    "y": 41.32
+  },
+  "g250": 1793118897681,
+  "got": "y",
+  "img": "1b05af009addd29dc98d6292017d7b17",
+  "imgs": [
+    {
+      "c": 1,
+      "id": "1b05af009addd29dc98d6292017d7b17",
+      "t": 1792533457351
+    },
+    {
+      "id": "cd3f819aa14860f6603c67f9f06d5f6b",
+      "raw": 1,
+      "t": 1792533459870
+    }
+  ],
+  "lk": "y",
+  "rc279": 1,
+  "s": "kept"
+}

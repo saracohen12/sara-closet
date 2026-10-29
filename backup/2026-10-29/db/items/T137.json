@@ -1,0 +1,92 @@
+{
+  "a8": [
+    {
+      "L": [
+        "a7a4fa1d8d38b04c2b9d860f37ee7acc~0",
+        "a7a4fa1d8d38b04c2b9d860f37ee7acc~1",
+        "a7a4fa1d8d38b04c2b9d860f37ee7acc~2",
+        "a7a4fa1d8d38b04c2b9d860f37ee7acc~3",
+        "a7a4fa1d8d38b04c2b9d860f37ee7acc~4",
+        "a7a4fa1d8d38b04c2b9d860f37ee7acc~5",
+        "a7a4fa1d8d38b04c2b9d860f37ee7acc~6",
+        "a7a4fa1d8d38b04c2b9d860f37ee7acc~7"
+      ],
+      "cv": 8,
+      "k": "dress",
+      "s": "body",
+      "sh": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "src": "6b68e7feb76faba9107d6f2321002e61",
+      "t": 1793120059049
+    }
+  ],
+  "a8up": [
+    {
+      "a": "cd9b3bd718b32b94c0c547ee75b0883d",
+      "n": "Midnight navy velvet dress, eight-view sheet-3.png",
+      "t": 1793119991240
+    },
+    {
+      "a": "6b68e7feb76faba9107d6f2321002e61",
+      "n": "Midnight navy velvet dress, eight-view sheet-3.png",
+      "t": 1793120059049
+    }
+  ],
+  "fit": {
+    "b": "short",
+    "r": 0,
+    "w": 160,
+    "x": 55.63,
+    "y": 50.62
+  },
+  "g250": 1793118898601,
+  "img": "4315bd2f4a348a2b9c521912aa23ab9b",
+  "imgs": [
+    {
+      "c": 1,
+      "id": "4315bd2f4a348a2b9c521912aa23ab9b",
+      "t": 1792533918658
+    },
+    {
+      "id": "9a0183c84e1b41ffe783b2c49434e74f",
+      "raw": 1,
+      "t": 1792533920937
+    }
+  ],
+  "rc279": 1,
+  "tg": [
+    "שבת וחג"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "avbase": "p5",
+  "fit": {
+    "w": 144.2,
+    "x": 47.9,
+    "y": 64
+  },
+  "gn": "",
+  "gt": 1792708563040,
+  "h": 1231,
+  "id": "S1CNR_0",
+  "img": "<img class=\"sl\" data-slot=\"skirt\"  style=\"left:47.9%;top:64%;width:144.2%;z-index:10;transform:translate(-50%,-50%) rotate(0deg) scale(1,1) skewX(0deg)\" alt=\"\" draggable=\"false\">",
+  "kind": "dbg114",
+  "slot": "skirt",
+  "t": 1792708905931,
+  "tf": {
+    "g112": 1792708563040,
+    "pvv": "front",
+    "q": 1,
+    "r": 0,
+    "w": 144.2,
+    "x": 47.9,
+    "y": 64
+  },
+  "v": "front",
+  "ver": 114,
+  "w": 2560
+}
