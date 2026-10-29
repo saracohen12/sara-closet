@@ -30,9 +30,23 @@
 @media (min-width:1200px){
  #r360 .r3w{max-width:min(1640px,96vw)!important;width:min(1640px,96vw)!important}
  #r360 .r3fig{height:min(calc(100dvh - 190px),980px)!important}
+ #r360 .r3w{grid-template-columns:minmax(0,1fr) 580px!important}
+ #r360 .r3grid{gap:12px!important}
 }
 
 /* ---------- orders: a wide window on the computer, three orders in a row ---------- */
 @media (min-width:1200px){
  #ord123{width:min(1400px,96vw)!important;height:min(94dvh,1100px)!important}
+}
+
+/* ---------- "עוד" – everything on the site: icons in soft circles, wide on the computer ---------- */
+#z5m .z5mg i,#z5m .z5mg i.e71{display:grid!important;place-items:center;width:46px;height:46px;border-radius:14px;background:var(--z-acc-soft,#f6e7df);font-size:1.35rem;flex:none}
+#z5m .z5mg button{transition:transform .12s ease,box-shadow .12s ease}
+#z5m .z5mg button:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(23,22,26,.08)}
+#z5m h3{font-size:1rem;color:var(--z-ink,#17161a);font-weight:700;margin-top:20px}
+@media (min-width:1000px){
+ #z5m{width:min(1120px,94vw)!important;max-height:90svh}
+ #z5m .z5mg{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+ #z5m .z5mg button{min-height:78px;padding:14px 16px;border-radius:20px}
+ #z5m .z5mg b{font-size:1rem}#z5m .z5mg small{font-size:.8rem}
 }
