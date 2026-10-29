@@ -103,6 +103,16 @@ for k,(acc,full,d,sm,L) in TN.items():
         im=f'temu/app/{k}_{j}.jpg'
         items.append(dict(id=f'T{k}_{j}',src=acc,cat=cat,short=n,color=c,size=sz,full=fl,file=TNFILE.get(k) or (f'קובץ {fno}' if acc=='t1' else f'חשבון נוסף {fno}' if acc=='t2' else f'חשבון 3 · {fno}'),order=full,date=d,
             price=pr,qty=1,paid=pd,tn=1,osub=sm['osub'],credit=sm['credit'],refund=0,onet=sm['total'],onote=TNNOTE.get(k,''),img=timg(im) if _os.path.exists(im) else None))
+# v329: lines the receipt OCR missed – Sara showed them in her Temu order (29/10). Same receipt and order as the item named in 'like'
+LATE=[dict(id='Tlate1',like='T338',cat='belts',short='2 חגורות שרשרת עם ריבועים – זהב וכסף',full='2 חתיכות חגורה לנשים Y2K – שילוב זהב וכסף, שרשרת ריבועים',color='זהב+כסף',size='מידה אחת',price=34.13,paid=15.96,img='temu/app/late1_0.jpg'),
+      dict(id='Tlate2',like='T338',cat='belts',short='2 חגורות אלסטיות שחורות עם פפיון',full='חגורות נשים 2 יחידות, מחטב מותניים אלסטי – פפיון פנינים ופפיון בד',color='שחור',size='מידה אחת',price=30.47,paid=20.7,img='temu/app/late2_0.jpg')]
+for L0 in LATE:
+    b0=next((x for x in items if x['id']==L0['like']),None)
+    if not b0: continue
+    x=dict(b0);x.pop('dup',None);x.pop('dupnote',None)
+    x.update({k:v for k,v in L0.items() if k not in ('like','img')});x['qty']=1;x['late']=1
+    x['img']=timg(L0['img']) if _os.path.exists(L0['img']) else None
+    items.append(x)
 ID={x['id']:x for x in items}
 SKUM=json.load(open('shein/sku_map.json')) if _os.path.exists('shein/sku_map.json') else {}
 for x in items:
