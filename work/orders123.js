@@ -153,13 +153,25 @@ function avStrip(o){const a=avSum(o),on=a.mark||a.has>=a.need;if(!a.need&&!a.mar
  return `<button class="o3pdc o3adc${on?' on':''}" data-o3ad="${H(o.k)}" aria-pressed="${on}"><span class="bx">${on?'✓':''}</span><b>${on?'האווטאר מוכן':'סיימתי אווטאר'}</b><small>🧍 <bdi>${a.has}/${a.need}</bdi></small></button>`}
 function avRow(id){if(!needAv(id))return '';const ok=avOk(id),n=(window.up188&&up188(id))||0,e=H(id);let s='';try{s=window.mkst188?mkst188(id):''}catch(_){}
  return `<div class="o3seg why o3av${ok?' on':''}"><small>🧍 אווטאר</small><em data-mkst188="${e}">${H(ok?'✓ על האווטאר':s||(n?'⏳ הועלתה':'עוד אין'))}</em>${ok?`<button type="button" data-up188="${e}">🔄 להחליף</button>`:`<button type="button" data-mk188="${e}">📋 פרומפט</button><button type="button" class="go" data-up188="${e}">📤 להעלות 8 זוויות</button>`}</div>`}
+// v330 (Sara 29/10 04:29 "כל אחד שיש לו כפול, תרשום לי… על התמונה, אם יש כפול או לא – יחסוך לי לחפש"): every item in an order says right away
+// whether she has it twice – the other copies with their picture, order and state (tap opens it) – or "אין כפול"
+function dupsOf(id){let g=null;try{g=window.DUPOF85&&DUPOF85(id)}catch(_){}const L=(g||[]).concat((D[id]&&D[id].dup)||[]);return [...new Set(L)].filter(o=>o!=id&&D[o])}
+const DST={y:'✅ הגיע',n:'⏳ בדרך',m:'❌ חסר',c:'🚫 בוטל','':'⚪ לא סומן'};
+function dupBox(id){const L=dupsOf(id);
+ if(!L.length)return '<div class="o3dup no">✓ אין לך כפול של זה</div>';
+ loadThumbs(L);
+ return `<div class="o3dup"><b>👯 יש לך כפול! ${L.length==1?'עוד אחד':'עוד '+L.length}:</b>${L.map(o=>{const y=D[o],t=IT[o]||{},s=st(o);
+  const w=[y.file,y.date,y.size&&('מידה '+y.size),y.color].filter(Boolean).map(v=>'<bdi>'+H(v)+'</bdi>').join(' · ');
+  const k=t.s=='kept'?' · 🏠 משאירה':t.s=='ret'?' · ↩ מחזירה':'';
+  return `<button class="o3dupi" data-o3item="${H(o)}">${th(o,'o3dt')}<span><b>${H(t.tname||y.short)}</b><small>${w}</small><small>${DST[s]||''}${k}${y.order==D[id].order?' · באותה הזמנה':''}</small></span></button>`}).join('')}</div>`}
 function itemRow(id){const x=D[id],it=IT[id]||{},s=st(id);
  const b=(k,v,t,on)=>`<button data-o3set="${k}" data-v="${v}" data-id="${H(id)}" aria-pressed="${!!on}">${t}</button>`;
  const meta=[catName(id),x.size&&('מידה '+x.size),x.color,money(+x.paid||0)+(x.qty>1?` · ${x.qty} יח׳`:'')].filter(Boolean).map(x=>'<bdi>'+H(x)+'</bdi>').join(' · ');
  if(it.oos)return oosRow(id,b,meta);
  return `<div class="o3it s${s||'u'}${V.hl==id?' hl':''}" data-o3row="${H(id)}">
- <button class="o3ph" data-o3item="${H(id)}" aria-label="פתיחת המוצר">${th(id)}</button>
+ <button class="o3ph" data-o3item="${H(id)}" aria-label="פתיחת המוצר">${th(id)}${dupsOf(id).length?'<span class="o3dpb">👯 כפול</span>':''}</button>
  <div class="o3in"><b>${H(it.tname||x.short)}</b><small>${meta}</small><small class="o3id">${H(id)}${transitNote(id)}</small>
+ ${dupBox(id)}
  <div class="o3seg got">${b('got','y','✅ הגיע',s=='y')}${b('got','n','⏳ בדרך',s=='n')}${b('got','m','❌ חסר',s=='m')}</div>
  <div class="o3seg two"><span>${b('lk','y','😍 אוהבת',it.lk=='y')}${b('lk','m','🤔 לא בטוחה',it.lk=='m')}${b('lk','n','😕 לא אוהבת',it.lk=='n')}</span><span>${b('s','kept','🏠 משאירה',it.s=='kept')}${b('mb','1','❓ מתלבטת',!!it.mb&&!it.s)}${b('s','ret','↩ מחזירה',it.s=='ret')}</span></div>
  ${it.mb&&!it.s?`<div class="o3seg why"><small>למה?</small>${b('mbr','model','מחכה לדגם אחר',it.mbr=='model')}${b('mbr','size','מחכה למידה אחרת',it.mbr=='size')}${b('mbr','other','משהו אחר',it.mbr=='other')}</div>`:''}

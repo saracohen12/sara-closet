@@ -272,6 +272,7 @@ function dupGroups(){const nd=new Set(ND());const par={};const f=x=>{while(par[x
  GRP=Object.values(by).filter(g=>g.length>1).map(g=>g.sort((a,b)=>order(a)-order(b)));HID=new Set();GOF={};
  for(const g of GRP){const k=gKey(g);const ret=id=>(IT[id]||{}).s=='ret';let keep=DK()[k];if(!g.includes(keep))keep=g.find(id=>!ret(id)&&avReady(id))||g.find(id=>!ret(id))||g[0];
   g.forEach(id=>{GOF[id]=g;if(id!=keep)HID.add(id)});g.keep=keep}}
+window.DUPOF85=id=>{try{if(!GRP.length)dupGroups()}catch(_){}return GOF[id]||null}; /* v330: the orders window shows each item's doubles */
 function paintDups(){for(const c of document.querySelectorAll('.grid .card')){const id=c.dataset.id;const g=GOF[id];const ph=c.querySelector('.ph');
   if(!g){if(c.dataset.dup){delete c.dataset.dup;const b=c.querySelector('.dup');if(b)b.remove()}continue}
   c.dataset.dup='1';let b=c.querySelector('.dup');if(!b&&ph){ph.insertAdjacentHTML('beforeend','<span class="dup"></span>');b=c.querySelector('.dup')}
