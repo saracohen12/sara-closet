@@ -163,7 +163,7 @@ function dupBox(id){const L=dupsOf(id);
  return `<div class="o3dup"><b>👯 יש לך כפול! ${L.length==1?'עוד אחד':'עוד '+L.length}:</b>${L.map(o=>{const y=D[o],t=IT[o]||{},s=st(o);
   const w=[y.file,y.date,y.size&&('מידה '+y.size),y.color].filter(Boolean).map(v=>'<bdi>'+H(v)+'</bdi>').join(' · ');
   const k=t.s=='kept'?' · 🏠 משאירה':t.s=='ret'?' · ↩ מחזירה':'';
-  return `<button class="o3dupi" data-o3item="${H(o)}">${th(o,'o3dt')}<span><b>${H(t.tname||y.short)}</b><small>${w}</small><small>${DST[s]||''}${k}${y.order==D[id].order?' · באותה הזמנה':''}</small></span></button>`}).join('')}</div>`}
+  return `<button class="o3dupi" data-o3item="${H(o)}">${th(o,'o3dt')}<span><b>${H(t.tname||y.short)}</b><small><span class="sb2 ${H(y.src)}">${H(ACC[y.src]||y.src)}</span> ${w}</small><small>${DST[s]||''}${k}${y.order==D[id].order?' · באותה הזמנה':''}</small></span></button>`}).join('')}</div>`}
 function itemRow(id){const x=D[id],it=IT[id]||{},s=st(id);
  const b=(k,v,t,on)=>`<button data-o3set="${k}" data-v="${v}" data-id="${H(id)}" aria-pressed="${!!on}">${t}</button>`;
  const meta=[catName(id),x.size&&('מידה '+x.size),x.color,money(+x.paid||0)+(x.qty>1?` · ${x.qty} יח׳`:'')].filter(Boolean).map(x=>'<bdi>'+H(x)+'</bdi>').join(' · ');
