@@ -1,0 +1,99 @@
+- **a11y182.js**: v182: נגישות – text size, high contrast and "no movement" for the whole site, from one button next to 🎨 (Sara's upgrade list, 25/10).
+- **adv187.js**: ===== v187: 🛍 יועץ קניות, stage C of the smart-closet plan (24/10, row 269): before she buys, a photo or screenshot of the product (or just its name).
+- **av188.js**: ===== v188: avatar pictures go only to the NEW (360) avatar, and the card dot shows it (Sara 26/10 00:01):
+- **base210.js**: v210 (Sara 26/10 14:24 "תוסיף לי קטגוריה של חולצות בסיס ... אני אעביר אותם לקטגוריה שם"): while it is empty, say how to move a shirt into it
+- **bg293.js**: v295 (Sara 28/10 15:38 "התסרוקות … הכיסוי … שיגזרו בדיוק … על רקע שחור … על הכיסויים הקהים רקע בהיר … אתה תחליט לפי התמונה … ואם אני חושבת שצריך
+- **bk337.js**: ===== v337 (Sara 29/10 16:46 "למה התמונות לא עוברות במאגר?" – the Max plan ends, she may move to her other account):
+- **cat180.js**: v180 Sara picks the picture of every category herself (25/10: "אני לא רוצה שתבחר לי לבד"). Saved in settings/main.catCover {sectionId: itemId};
+- **clean262.js**: ===== v262 (Sara 27/10 22:03 "File storage – Full … מה אני עושה?"): the site keeps every picture it ever stored (5,000 files at most), and pictures replaced
+- **col184.js**: ===== v184: a colour filter she can see (25/10 plan "מסך ארון וסינון צבע"). The colours used to be dots off the edge of the phone and a chip
+- **cut8.js**: ===== v190: one GPT picture with the 8 angles → 8 transparent layers that sit exactly on the doll (Sara 26/10 06:59:
+- **cut89.js**: ===== v89 (2026-10-22): background removal for the 5-pose garment sheets and the covering (tichel) sheets – see comment inside
+- **d180.js**: v180 "2050": a new home around the 360 avatar + three designs to choose from (html[data-d180]) – the palette button opens the chooser.
+- **diary306.js**: v306 (Sara 28/10 16:10 "תפעיל את הכפתור הלוק של היום ואז יפתח לי חלונית מה לבשתי היום וגם יומן מה לבשתי כל יום במשך החודש,
+- **err300.js**: v300: errors in Sara's own browser come to me without her reporting them. A 💬 report showed that the daily backup had failed for a day
+- **fix85.js**: ===== v85–v87 (2026-10-22): free search over the whole site – typing in the search bar also finds screens, tools,
+- **fix91.js**: ===== v91: the garment on the avatar – one size for all poses, dresses fitted shoulder→waist, clone brush, wig without a covering, drawer item window =====
+- **fix93.js**: ===== v93 (2026-10-22): vest slot, the jewelry part row wraps, frame + backgrounds around the avatar =====
+- **fix96.js**: ---- v96 (2026-10-22): the NEW avatar from Sara's own two GPT files (file 1: front / side / back, file 2: half-side / hand on hip),
+- **fix99.js**: ---- v99 (2026-10-22): a garment from GPT in TWO files, drawn on the new avatar's own two files (file 1: front / side / back,
+- **fix100.js**: 
+- **fix102.js**: 
+- **fix114.js**: const ERR114=(t,e)=>{try{(window.ERRS=window.ERRS||[]).push("v114 "+t+": "+(e&&e.message||e))}catch(_){}};
+- **fix120.js**: 
+- **fix121.js**: 
+- **fix127.js**: 
+- **fix144.js**: 
+- **fix157.js**: ===== v157: photo uploads from the phone (Sara 24/10: "אני לא מצליחה, זה תקוע")
+- **fix161.js**: ===== v161: "🗃 הרשימה הכללית" (Sara 24/10: clothes she doesn't want in the closet, e.g. event dresses)
+- **fix163.js**: ===== v163: "הארון" in the bottom bar opens "הארון שלי" – every category as a tile (photo + count); one tap shows only that category
+- **fix172.js**: ===== v172–v173: "⚙️ פאנל ניהול" (Sara 25/10: "תבנה לי בבקשה פאנל ניהול"; v173: "גם כל הפרומטים וכל התוכנית למשימות")
+- **fix179.js**: ===== v179: "מה יש לי בארון" tile on the home screen – one tap opens "הארון שלי" (every category as a tile, fix163)
+- **fix237.js**: ===== v237: "✨ לתקן ב-GPT" (Sara 22/10 row 125, asked again 27/10 09:43 "כן"): a garment on the 360 doll with one flaw – she marks the flaw
+- **fix335.js**: v335 (Sara 29/10 14:21 "יש לי מלא דברים שנעלמו לי תמונות"): her photos were all still there – the store sometimes answers "unavailable" for a moment
+- **gpt250.js**: ===== v250 (Sara 27/10 16:53 "בכל המוצרים אני יכולה בלחצן אחד שהוא ייתן לי את הפרומט, את הבגד, את הדמויות שלי … זיפ אחד"):
+- **hub.js**: ===== hub: looks, planner, insights, returns, home ===== */
+- **hub2.js**: ===== hub2: alerts, try-on, kids, AI stylist ===== */
+- **imgup.js**: ---- תמונה שלי לבגד: חיתוך אוטומטי של צילום מסך, היסטוריית תמונות, הדבקה, הודעת שמירה ברורה
+- **inbox334.js**: v334 (Sara 29/10 13:27 "יצאתי מהמסך ... אני פשוט לא מוצאת איפה להעלות אותם ... במסך הראשי ... לפתוח תיבה, ואז זה יפתח לי את התיבה של כל דבר שהורדתי קובץ
+- **jw.js**: ---- v53 (2026-10-21): תכשיטים על האווטאר — GPT draws the set as 3 panels (necklace / one earring / bracelet); the site cuts them and puts
+- **keep307.js**: v307 (Sara 28/10 16:19 "בגד שעלה לאווטאר ויצא טוב – נשאיר רק את התמונה הראשית שאני העליתי, ואת השאר אני לא צריכה, זה סתם תופס מקום"):
+- **lay91.js**: ===== v91 screen space: compact garment bar91 (tools behind "🛠 כלים"), only worn slots + "➕ עוד", drag to move a zoomed stage, 🔍 full-screen magnifier =====
+- **layers68_74.js**: v68–v74 layers: merged in v84 from v68.js, new69.js, rule70.js, design71.js, fix72.js, design73.js, edit74.js – same order, same content. New changes go in a new file at the end.
+- **layers77_84.js**: v77–v84 layers: merged in v84 from fix77.js, design78.js, fix79.js, fix80.js, fix83.js, fix84.js – same order, same content. New changes go in a new file at the end.
+- **looks2.js**: ===== looks2 (2026-10-21): real colour matching, explanations, feedback that the site learns from =====
+- **nm209.js**: v210 (Sara 26/10 14:19 "בשם מופיע לי קשקושים, אז תן לי אפשרות ... לתקן את השם, את הכביכול עיפרון ואני יכולה לתקן"):
+- **orders123.js**: v123 – "📦 ההזמנות שלי": items grouped by order (טמו 1 / טמו 2 / שיין), per item: arrived / on the way / missing,
+- **p5.js**: ---- אווטאר חדש ב-5 תנוחות: חזית וגב מלבישים לבד, צד / חצי צד / יד על המותן מגיעים מתמונת GPT של הבגד
+- **p5g.js**: ---- v43: garment-only 5-pose renders (GPT draws ONLY the garment on a ghost mannequin in the avatar's 5 poses) → IT[id].p5g
+- **pack256.js**: ===== v256 (Sara 27/10 19:05 "אתה עושה לי שלוש תיקיות על המסך … חולצה אחת, שתיים, שלוש. וככה אני יכולה לבחור אותם בנפרד, כאילו שקניתי שלוש חולצות בנפרד"):
+- **pc293.js**: v293 (Sara 28/10 15:49 "אני חייבת לראות פה רק חולצה אחת בלבד"): a piece of a pack shows its own picture (r360 pimTag: part.img, else her avatar wearing it).
+- **perf273.js**: ===== v273 stage ו of the site analysis (bug "about 15 timers run all the time and scan 700 cards – battery and stutter on the phone"):
+- **r360.js**: v181: הסטודיו = the new 8-angle avatar (a8/*.webp, cut from Sara's GPT sheets on the new doll). Sara 25/10 21:00: "הסטודיו נשאר עם האווטאר הישן... לתקן אותו עם כל החדש".
+- **rcpt299.js**: v299 (Sara 28/10 16:00 "איך אני יכולה גם לשדרג את ההזמנות … לעשות את זה בקלות"): a new order goes in from the site itself – she picks the receipt
+- **rcv296.js**: v296 (Sara 28/10 16:00 "איך אני יכולה גם לשדרג את ההזמנות, אם עשיתי הזמנות, קיבלתי את הסחורה, לעשות את זה בקלות"): a parcel arrives – she lays
+- **ret300.js**: v301 (28/10 pass "יותר אוטומציה, קל יותר בהזמנות"): 51 Shein items reached their last return day with none of them marked, and marking means
+- **ret313.js**: v313 (Sara 17:52 "יש דברים שאני לא רוצה להחזיר… כשאני לוחצת על ההתראות, אם החלטתי לא להחזיר – שזה פשוט לא יופיע לי. שיישארו רק התראות שבאמת רלוונטיות"):
+- **sc185.js**: ===== v185: הארון החכם, stage A of the smart-closet plan (24/10, rows 267–271): where every item lives (her own map of the house, "חדר שינה › ארון לבן › מדף 2"),
+- **search183.js**: v183: חיפוש אחד – one search for the whole site (Sara's upgrade list, 25/10): clothes in the closet, the general list,
+- **slim272.js**: ===== v272 (Sara 27/10 23:14 "יש גם מגבלה של שטח … תמונות ששוקלות פחות, איכותיות"): the store holds 1 GB and GPT's 8-angle pictures come as PNG of ~1.8 MB.
+- **sp262.js**: ===== v263 (Sara 27/10 22:21 "כן – לשמור את 8 הזוויות בקובץ אחד, ובבקשה שלא להרוס כל מה שבנינו"): the store counts FILES (5,000), and every item / tie / hairstyle /
+- **studio.js**: ===== studio: personal look builder ===== */
+- **studio2.js**: ===== studio2: GPT import, fit memory, suggestions, cycling, calendar, compare, looks-per-item ===== */
+- **studio3.js**: ---- studio3 (v35): zoom in/out/reset, free size, picture per layer, turntable (360°), dress+top together, tidy bottom panel
+- **sty199.js**: ===== v199: "🎨 תסרוקות, קשירות ואיפור" – one place for her styles on the 8-angle avatar.
+- **sty199p.js**: v199: the GPT prompts of the styles library (sty199.js) – hairstyles for her wig, ties for a head cover, makeup.
+- **t123.js**: const {chromium,devices}=require('playwright');const fs=require('fs');const M=process.argv[2]||'phone';const O=process.argv[3];
+- **t124.js**: const {chromium,devices}=require('playwright');const M=process.argv[2]||'phone';const O=process.argv[3];
+- **t124b.js**: await new Promise(r=>setTimeout(r,500));openOrders123('P0-097-00209037804151091');await new Promise(r=>setTimeout(r,800));
+- **t125.js**: await new Promise(r=>setTimeout(r,500));openOrders123('P0-097-00209037804151091');await new Promise(r=>setTimeout(r,800));
+- **t125b.js**: const W=ms=>new Promise(r=>setTimeout(r,ms));await W(500);openOrders123('P0-097-00209037804151091');await W(800);const row=i=>document.querySelectorAll('.o3it')[i];
+- **t125c.js**: const W=ms=>new Promise(r=>setTimeout(r,ms));await W(500);openOrders123('P0-097-00209037804151091');await W(800);const row=i=>document.querySelectorAll('.o3it')[i];
+- **t125d.js**: const W=ms=>new Promise(r=>setTimeout(r,ms));await W(500);openOrders123('P0-097-00209037804151091');await W(800);const row=i=>document.querySelectorAll('.o3it')[i];
+- **t126.js**: const {chromium,devices}=require('playwright');
+- **t127.js**: const {chromium,devices}=require('playwright');const fs=require('fs');const S=process.argv[2];const M=process.argv[3]||'desk';
+- **t128.js**: const W=ms=>new Promise(r=>setTimeout(r,ms));await W(500);openOrders123('P0-097-00209037804151091');await W(800);const row=i=>document.querySelectorAll('.o3it')[i];
+- **t129.js**: const {chromium,devices}=require('playwright');
+- **t129b.js**: const {chromium,devices}=require('playwright');
+- **t130.js**: const {chromium,devices}=require('playwright');
+- **t131.js**: const LB=`[...document.querySelectorAll('#pk102 figure')].map(f=>{const s=f.querySelector('select');return s?s.value:f.querySelector('figcaption').textContent})`;
+- **t174.js**: const {chromium,devices}=require('playwright');
+- **tasks172.js**: window.TASKS172=[{"n":638,"a":"(29/10 16:26) \"הזמנה חדשה תכניס אותה\" – PDF טמו","d":"✓ v336: הזמנה P0-097-20137619937911091 (טמו 1, 29/10, ₪107 בויזה): 7 שורות / 8 יחידות – גומיות שיער, סיכות SIM ×2, 2 מעמדים למחשב, מפצל USB, 2 עכברים. T911091_0..6, תמונות מהקבלה. הערתי: כבר יש סיכ�
+- **tell282.js**: v282 (Sara 28/10 10:19 "איך אני יכולה לכתוב לך… מה לא תקין, שתוכל להסתכל על המסך שאני נמצאת"): 💬 on every screen.
+- **tidy198.js**: ===== v198: a calm item window on the phone (Sara 26/10 09:18: "שלושה כפתורים ליד פרטי המוצר ... שכולם יהיו בשורה אחת ... בוטל אזל מהמלאי
+- **tie202.js**: ===== v202: ties, hairstyles and makeup as closet categories, and a tie for every cover (Sara 26/10 11:04:
+- **ties.js**: ---- ties (v36): קשירות למטפחת — גיליון 4 מבטים (חזית / צד / גב / חצי צד) נחתך, הרקע האפור יורד, והקשירה יושבת על הראש בכל התנוחות
+- **ui.js**: ===== ui round 1 (2026-10-20): thumbnails out of the page, bottom nav, collapsing header, item dialog layout =====
+- **v52.js**: ---- v52 (2026-10-21): Sara's studio round — new avatar by default + base chooser, "⋯ עוד" menu, drawer inside the column on desktop,
+- **wore234.js**: ===== v234: "השבוע שלי" – every day circle opens that day (27/10, rows 450–451).
+- **wx332.js**: v332 (Sara 29/10 10:02 "תלביש לי כל יום 5 בובות … מה כדאי לי ללבוש היום … אני גרה במודיעין אלית … אם יורד גשם … אל תשכחי לקחת מטריה, ואם ממש קר, לקחת מעיל …
+- **z277.js**: v277 redesign, screen 1 (Sara 28/10 04:57 "התוכנית מאושרת"): the clean look html[data-d180=z50] – a home that fits one phone screen
+- **z283.js**: v283 redesign, screen 2 – the closet tab (Sara 28/10 10:19 "בתוך הארון שיהיה יותר קל לי, יותר שימושי, להוסיף כפתורים").
+- **z284.js**: v290: "🚀 מחדש" opens the item's GPT window (new prompt, ZIP, upload) – for a result that came out bad (Sara 15:22).
+- **z288.js**: v288b (15:18): smaller, all of them in view (wrap to rows, two-word names one above the other), smaller 📌 ♡, and ↺ איפוס.
+- **z291.js**: v291 (Sara 28/10 15:25 + 15:31): one "✏ עריכה" window on the avatar, like the 📿 one – everything she changes on the look is there:
+- **z313.js**: v313 redesign of the closet tab (Sara 28/10 17:52 "יש לי דברים ימינה-שמאלה, אני לא רואה את כולם", 18:01 "חזרת לעיצוב הישן, בלגן", 18:17 "2080, נקי, מסודר, ברור ונוח"):
+- **z324.js**: v324 (redesign, screen 3 – the item window; row 534/540 "בתוך הארון שיהיה יותר קל ושימושי"): the item window was one long page (3,300 px on a phone).
+- **z326.js**: v326: the studio's category buttons are one clean line now – their two-line labels (a <br>) become one line with a space
+- **z328.js**: v328 (Sara 29/10 00:51 "תבנה לי את זה כמו דף אינטרנט, כמו אתר, שיש לזה קטגוריות, ואז כאילו יש לי סרגל למעלה, ואז זה פותח לי כאילו דף אחר, ולא לגלגל את זה"):
+- **zip259.js**: ===== v259 (Sara 27/10 20:14 "שתכתוב לו בסוף ... שבנוסף לזה הוא ייצר לי קובץ זיפ, שאני יכולה להוריד את כל התמונות בבת אחת ... בכל מקום תשנה את הפרומט"):
