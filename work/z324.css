@@ -1,0 +1,20 @@
+/* v324: the item window in three tabs */
+#dlbody .z324t{grid-column:1/-1;order:0;position:sticky;top:0;z-index:5;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;margin:0 0 4px;border-radius:999px;background:var(--z-tile,#efebe6);box-shadow:0 4px 14px rgba(23,22,26,.06)}
+#dlbody .z324t button{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;border:0;border-radius:999px;background:none;color:var(--z-ink,#17161a);font:600 .92rem var(--z-body,inherit);cursor:pointer;padding:0 8px}
+#dlbody .z324t button[aria-selected=true]{background:var(--z-ink,#17161a);color:#fff}
+#dlbody .z324t button:focus-visible{outline:2px solid #b4532a;outline-offset:2px}
+#dlbody[data-z324=item] :is(.dtools,.drest),
+#dlbody[data-z324=avatar] :is(.dinfo,.o3dl,.o3oosw,.drest),
+#dlbody[data-z324=manage] :is(.dmedia,.dinfo,.o3dl,.o3oosw,.dtools){display:none!important}
+/* avatar tab: the product picture stays as a small reference beside the avatar tools */
+#dlbody[data-z324=avatar] .dmedia{max-height:34svh;overflow:hidden;border-radius:16px}
+#dlbody[data-z324=avatar] .dmedia img{max-height:34svh;width:100%;object-fit:contain}
+@media (min-width:760px){
+ #dlbody[data-z324=avatar] .dright,#dlbody[data-z324=manage] .dleft{display:none!important}
+ #dlbody[data-z324=avatar] .dleft{grid-column:1/-1;grid-template-columns:minmax(220px,320px) minmax(0,1fr);align-items:start;gap:16px}
+ #dlbody[data-z324=avatar] .dmedia{max-height:none;position:sticky;top:64px}
+ #dlbody[data-z324=avatar] .dmedia img{max-height:60svh}
+ #dlbody[data-z324=manage] .dright{grid-column:1/-1;max-width:760px;justify-self:center;width:100%}
+ #dlbody .z324t{max-width:560px;justify-self:center;width:100%}
+}
+#dlbody>.dright>.o3dl,#dlbody>.dright>.o3oosw{order:2}
