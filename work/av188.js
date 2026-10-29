@@ -139,7 +139,7 @@ async function cut(id,src,ua,t,at){if(PROC[id]&&PROC[id].v){toast_('רגע, עו
  if(!re&&WH.has(id)){kind='tiex';WH.delete(id)}   // v202: her exact scarf tied by the tie prompt – the whole head, like the ties
  if(re)kind=P[at].k;else if(KO[id]){kind=KO[id];delete KO[id];P=[]}else if(TWIN[kind]){const w=TWIN[kind];if(P.length>=w.length)P=[];kind=w[P.length]}else P=[];
  PROC[id]={v:1};rebox(id);const t0=Date.now(),nt=note(id).trim();log('cut8_start',{id,kind,note:nt.length});
- try{const r=await cut8.run(src,kind,v=>{PROC[id]={v:v+1};paintSt(id)},{note:kind=='belt'?nt+' '+beltName(id):nt});
+ try{const r=await cut8.run(src,kind,v=>{PROC[id]={v:v+1};paintSt(id)},{note:kind=='belt'?nt+' '+beltName(id):nt+(window.SBK323&&SBK323(id.split('~')[0])?' גוף-שחור':'')});
   if(r.px.filter(x=>x>150).length<5)throw Object.assign(new Error('empty'),{code:'empty'});
   PROC[id]={v:9};paintSt(id);
   try{a=await claude.use('assets')}catch(_){}if(!a)throw Object.assign(new Error('assets'),{code:'assets'});

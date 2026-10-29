@@ -202,9 +202,9 @@ function palette(m,bs,ds,diff,dbg,o){const conf=erode(m,2),Ld=lab3(ds),X=[];for(
   let dG=Infinity;for(const q of C){const e=dd(k,q);if(e<dG)dG=e}if(Math.sqrt(dG)<ratio*dB)add.push(i)}
  for(const i of add)m[i]=1}
 // her notes for the cut (v233, Sara 07:07 "שנרשום לך אם יש משהו מיוחד כדי שתשים לב כשאתה חותך ... לבן, שקוף, שמנת"): the words the site understands
-const NOTEW={light:/לבן|לבנה|שמנת|קרם|או?ף[ -]?וו?יט|שנהב|ניוד|בז['׳]|בהיר|פנינה|פודרה|white|cream|ivory|beige|nude/i,
+const NOTEW={bk:/גוף-שחור/,light:/לבן|לבנה|שמנת|קרם|או?ף[ -]?וו?יט|שנהב|ניוד|בז['׳]|בהיר|פנינה|פודרה|white|cream|ivory|beige|nude/i,
  sheer:/שקו?ף|שקופה|שקיפות|שיפון|תחרה|רשת|טול|אוורירי|sheer|lace|mesh|chiffon|tulle/i,chain:/שרשרת|שרשראות|chain/i};
-const NOTET={light:'בגד בהיר (לבן, שמנת, בז׳): גוזרת עדין יותר ליד הבובה',sheer:'בגד שקוף: משאירה גם את מה שרואים דרכו',chain:'שרשרת: גוזרת דק, גם מה שמשתלשל'};
+const NOTET={bk:'בגד שקוף על בגד גוף שחור: כמה הבד שקוף לפי הבהירות',light:'בגד בהיר (לבן, שמנת, בז׳): גוזרת עדין יותר ליד הבובה',sheer:'בגד שקוף: משאירה גם את מה שרואים דרכו',chain:'שרשרת: גוזרת דק, גם מה שמשתלשל'};
 function flags(t){t=String(t||'');const f={};for(const k in NOTEW)if(NOTEW[k].test(t))f[k]=1;return f}
 const says=t=>Object.keys(flags(t)).map(k=>NOTET[k]);
 // the same move as cv2.warpAffine(turn.json) in norm.py (pixel centres → +.5(1-s)); the canvas keeps the alpha premultiplied, like norm.py
@@ -494,6 +494,25 @@ function keyBlack(d,b,sheer){const body=dilate(dollBody(b),8),sk=dilate(dollSkin
  const m=new Uint8Array(N);for(let i=0;i<N;i++)m[i]=A[i]>.25?1:0;const [Lb,n]=label(dilate(m,2)),sz=new Int32Array(n+1);for(let i=0;i<N;i++)if(m[i])sz[Lb[i]]++;
  for(let i=0;i<N;i++)if(A[i]&&sz[Lb[i]]<10)A[i]=0;
  return layerA(o,A)}
+// v323 (row 595): a light see-through garment made on the doll in a black bodysuit. What GPT did not change (her face, head cover, hands, feet,
+// a light backdrop) is not the garment; the rest is the garment over black – a pixel's brightness against the garment's own full colour is how
+// much fabric is there, so on the avatar what she wears under it shows through. onBlack: GPT really dressed the doll in black (else the usual cut).
+function onBlack(d,b){const bd=erode(dollBody(b),6);let n=0,k=0,same=0;for(let r=Math.floor(H*.15);r<Math.floor(H*.95);r++)for(let c=0;c<W;c++){const i=r*W+c;if(!bd[i])continue;n++;const q=i*3;
+ if(Math.max(d[q],d[q+1],d[q+2])<55)k++;if((d[q]-b[q])**2+(d[q+1]-b[q+1])**2+(d[q+2]-b[q+2])**2<26*26)same++}return n>500&&k>.06*n&&same<.35*n}
+function keyBlackG(d,b){const body=dilate(dollBody(b),40),sk=dilate(dollSkin(b),10),A=new Float32Array(N),o=Float32Array.from(d),rh=Math.floor(H*.15)*W;
+ let BG=[0,0,0],bn=0;for(let r=0;r<12;r++)for(const x of [0,1,2,3,4,W-5,W-4,W-3,W-2,W-1]){const q=(r*W+x)*3;BG[0]+=b[q];BG[1]+=b[q+1];BG[2]+=b[q+2];bn++}BG=BG.map(v=>v/bn);   // the doll's light backdrop
+ let K=[0,0,0],kn=0;const bd=erode(dollBody(b),6);for(let i=0;i<N;i++){const q=i*3;if(bd[i]&&Math.max(d[q],d[q+1],d[q+2])<45){K[0]+=d[q];K[1]+=d[q+1];K[2]+=d[q+2];kn++}}
+ if(kn)K=K.map(x=>x/kn);const kl=Math.max(...K);
+ const keep=i=>{const q=i*3;if(!body[i]||i<rh||i>=(H-5)*W)return false;if((d[q]-BG[0])**2+(d[q+1]-BG[1])**2+(d[q+2]-BG[2])**2<45*45)return false;   // the head; the backdrop's rim
+ if((d[q]-b[q])**2+(d[q+1]-b[q+1])**2+(d[q+2]-b[q+2])**2<24*24)return false;   // GPT left it as the doll had it
+  const R=d[q],G=d[q+1],B=d[q+2];if(sk[i]&&R>G&&G>B&&R-B>18&&R-B<95&&G>.66*R&&Math.max(R,G,B)>95)return false;return true};   // her own skin
+ const Ls=[];for(let i=0;i<N;i++)if(keep(i)){const q=i*3,L=Math.max(d[q],d[q+1],d[q+2]);if(L>kl+30)Ls.push(L)}
+ if(Ls.length<200)return layerA(o,A);Ls.sort((x,y)=>x-y);const top=Math.max(kl+60,Ls[Math.floor(Ls.length*.9)]);   // the fabric's full colour (where it is doubled or opaque)
+ for(let i=0;i<N;i++){if(!keep(i))continue;const q=i*3,L=Math.max(d[q],d[q+1],d[q+2]);const a=Math.min(1,Math.max(0,(L-kl-10)/(top-kl-10)));if(a<.06)continue;A[i]=a;
+  for(let z=0;z<3;z++)o[q+z]=Math.max(0,Math.min(255,K[z]+(d[q+z]-K[z])/a))}
+ const m=new Uint8Array(N);for(let i=0;i<N;i++)m[i]=A[i]>.2?1:0;const [Lb,n]=label(dilate(m,2)),sz=new Int32Array(n+1);for(let i=0;i<N;i++)if(m[i])sz[Lb[i]]++;
+ for(let i=0;i<N;i++)if(A[i]&&sz[Lb[i]]<40)A[i]=0;
+ return layerA(o,A)}
 // the doll's own pixels (not her light-blue backdrop) of one view
 // v315 (Sara 19:11 "גזירה על הפנים" – a beige dress with a brown print, T591091_12, came out in pieces): where a garment is the doll's own beige the colours
 // differ by less than 40, but the garment has a print and the doll is smooth. When most of the doll's body under the garment is missing from the mask
@@ -561,6 +580,7 @@ async function run(src,kind,onStep,opt){const img=await toImg(src);const S=sheet
    {let br=-1,bw=0;for(let r=0;r<H;r++){let n=0;for(let c=0;c<W;c++)n+=m[r*W+c];if(n>bw){bw=n;br=r}}if(br>8)m.fill(0,0,(br-8)*W)}   // a chain hangs down from the waist line, never up   // a chain is gold or crystal: bright, not her nails or a dark edge
    views.push(turn(layer(d,m),v))}
   else if(kind=='belt'&&o.sheer)views.push(turn(layerA(d,maskClear(b,d)),v));
+  else if(o.bk&&CLOTH.includes(kind)&&onBlack(d,b))views.push(turn(keyBlackG(d,b),v));   // v323: a light see-through garment GPT made over a black bodysuit
   else{let m=mask(b,d,kind=='dress'?Object.assign({},o,{fillBody:1}):o);if(TOPK.includes(kind)){const r=slide(d,m,b);m=r[1];views.push(turn(finish(kind,neckSkin(defringe(layer(r[0],m),b),b),b,qc,v),v))}else views.push(turn(finish(kind,kind=='belt'?matte(d,b,m):FRK.includes(kind)?defringe(layer(d,m),b,OPENK.includes(kind)):kind=='dress'?neckSkin(unBack(layer(d,m),b),b):kind=='skirt'?unBack(layer(d,m),b):layer(d,m),b,qc,v),v))}}
  lum.sort((x,y)=>x-y);
  return {views,shifts,qc:qc.length?qc:null,px:views.map(c=>c.px),fab:fab.length?fab:null,lum:lum.length?Math.round(lum[lum.length>>1]):0,black:!!BM}}

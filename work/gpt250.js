@@ -68,6 +68,10 @@ const bbOf=(id,i)=>{const b=it(id).bb;if(Array.isArray(b)&&i!=null&&b[i]!=null)r
 // holes in the fabric (lace, eyelet, mesh): 'open' = through the holes you see what she wears under it (the cut leaves them see-through, a base shirt shows),
 // 'lined' = a lining is sewn under the holes and is part of the garment                                                        → IT.hol
 const HOLE=/תחרה|תחרת|רשת|חורים|אג'ור|אז'ור|קרושה|סרוג ביד|lace|mesh|eyelet|crochet|openwork/i;
+// v323 (row 595, Sara 18:06 "בגדים עם שקיפות – שה-GPT ילביש את הבובה בבגד שחור?"): a light see-through garment is made on the doll in a black bodysuit;
+// through the fabric GPT shows black, so the site can tell how see-through each spot is (on the avatar her own base shows through it)
+const SHEER=/שקוף|שקופה|שיפון|טול|אורגנזה|וואל|sheer|chiffon|tulle|organza|voile|see.?through/i;
+const sbkOf=id=>it(id).sbk!=null?!!it(id).sbk:SHEER.test(txt(id));window.SBK323=id=>{try{return wbgOf(id)&&sbkOf(id)}catch(_){return false}};
 const holOf=id=>it(id).hol!=null?it(id).hol:(HOLE.test(txt(id))?'open':'');
 const bltOf=id=>it(id).blt||'';
 const namesOf=id=>{const n=npOf(id),k=kd(id),s=it(id).pn||[],g=guess(id),G=g&&g.n==n?g.names:[];return Array.from({length:n},(_,i)=>s[i]||G[i]||`${TN[k]||'פריט'} ${i+1}`)};
@@ -81,7 +85,7 @@ function outs(id){const k=kd(id),O=[];
   if(J.includes('earrings'))O.push({role:'cu',n:'תקריב פנים עם העגילים',cuOf:'earrings'});return O}
  if(k=='bag'){O.push({role:'sheet',kind:'bag',n:'התיק',pk:''});O.push({role:'cu',n:'תקריב חצי גוף עם התיק',cuOf:'bag',half:1});return O}
  const n=MULTI.includes(k)?npOf(id):1;if(n>1){const C=colsOf(id);namesOf(id).forEach((x,i)=>O.push({role:'sheet',kind:k,n:x,pk:'g'+(i+1),pn:x,col:C[i]||'',bk:k=='belt'?false:pbOf(id,i),bb:k=='belt'?bbOf(id,i):false}));return O}
- O.push({role:'sheet',kind:k,n:TN[k]||'הפריט',pk:'',bb:k=='belt'?bbOf(id):false});return O}
+ O.push({role:'sheet',kind:k,n:TN[k]||'הפריט',pk:'',bb:k=='belt'?bbOf(id):false,sb:k!='belt'&&wbgOf(id)&&sbkOf(id)});return O}
 // which sheets get a black backdrop (jewelry / shoes / bags never)
 function blk(id,k){if(['jw','shoes','bag','belt'].includes(k))return {all:false,any:false,L:[]};const S=outs(id).filter(o=>o.role!='cu');
  const L=S.map(o=>o.bk!=null?o.bk:(o.role=='whole'||o.role=='sheet')&&wbgOf(id));return {all:L.length&&L.every(Boolean),any:L.some(Boolean),L,S}}
@@ -121,12 +125,14 @@ function rulesOf(id,k,sheets){const P=[],ME=(R()&&R().ME)||'';
  if(cloth)P.push(`המידות שלי: ${ME}. הדמות כבר בנויה לפי המידות האלה, אל תשני את הגוף. שמרי על אותו אורך ביחס לגוף כמו בתמונת המוצר, ואותו אורך בכל 8 הזוויות.\nהבגד צריך להיראות אמיתי על הגוף: קפלים, צללים, הבד נופל לפי התנוחה.`);
  const BB=sheets.filter(o=>o.bb);
  if(BB.length){const all=BB.length==sheets.length;P.push(`חשוב מאוד, כדי שאפשר יהיה לגזור את החגורה בדיוק: ${all?'בכל הגיליונות':'בגיליונות של '+BB.map(o=>o.n).join(', ')+' (ורק בהם)'} הלבישי קודם את הדמות בבגד גוף שחור מט, חלק לגמרי, במקום השמלה בצבע עור: צווארון עגול צמוד בבסיס הצוואר, שרוולים ארוכים עד שורש כף היד, ומכנסיים צמודים עד הקרסוליים. בלי קפלים, בלי ברק, בלי הדפס ובלי תפרים בולטים – שחור אחיד. הפנים, כיסוי הראש, כפות הידיים, הנעליים והרקע נשארים בדיוק כמו ב-doll-8. רק אז שימי עליו את החגורה, בדיוק כמו בתמונת המוצר: אותו צבע, אותו אבזם, אותו רוחב, אותו מקום על המותן. שום חלק של החגורה לא נצבע בשחור. חלק שקוף בחגורה נשאר שקוף ורואים דרכו את השחור; זהב, כסף, אבנים וברק נשארים בצבע שלהם. שרשרת שמשתלשלת נשארת באורך שלה.`)}
+ const SB=sheets.filter(o=>o.sb);
+ if(SB.length)P.push(`חשוב מאוד, כדי שאפשר יהיה לגזור את הבגד בדיוק ושהשקיפות שלו תישאר: הלבישי קודם את הדמות בבגד גוף שחור מט, חלק לגמרי, במקום השמלה בצבע עור: צווארון עגול צמוד בבסיס הצוואר, שרוולים ארוכים עד שורש כף היד, ומכנסיים צמודים עד הקרסוליים. בלי קפלים, בלי ברק, בלי הדפס – שחור אחיד. הפנים, כיסוי הראש, כפות הידיים והנעליים נשארים בדיוק כמו ב-doll-8. רק אז שימי עליו את הבגד בדיוק כמו בתמונת המוצר: אותו צבע, אותו בד, אותה שקיפות. איפה שהבד שקוף רואים דרכו את השחור של בגד הגוף; איפה שהבד כפול, אטום או רקום – הוא בצבע שלו. שום חלק של הבגד עצמו לא נצבע בשחור.`);
  const B=blk(id,k);
- if(B.all)P.push('חשוב מאוד: הבגד לבן, שמנת או שקוף. כדי שאפשר יהיה לגזור אותו בדיוק, בכל הגיליונות של הדמות צבעי את הרקע מסביב לדמות בשחור אחיד, מכל הצדדים ועד הרצפה. הדמות, הבגד והקווים הלבנים בין המשבצות נשארים. הלבן בבגד נשאר לבן, ובד שקוף נשאר שקוף ורואים דרכו את הגוף (השמלה בצבע עור), לא את השחור.');
+ if(B.all)P.push('חשוב מאוד: הבגד לבן, שמנת או שקוף. כדי שאפשר יהיה לגזור אותו בדיוק, בכל הגיליונות של הדמות צבעי את הרקע מסביב לדמות בשחור אחיד, מכל הצדדים ועד הרצפה. הדמות, הבגד והקווים הלבנים בין המשבצות נשארים. הלבן בבגד נשאר לבן'+(SB.length?', ובד שקוף נשאר שקוף ורואים דרכו את בגד הגוף השחור.':', ובד שקוף נשאר שקוף ורואים דרכו את הגוף (השמלה בצבע עור), לא את השחור.'));
  else if(B.any)P.push(`חשוב מאוד – הרקע שונה בכל גיליון: רקע שחור אך ורק בגיליון של בגד לבן, שמנת או שקוף – כאן: ${B.S.filter((o,i)=>B.L[i]).map(o=>o.n).join(', ')}. שם צבעי את הרקע מסביב לדמות בשחור אחיד, מכל הצדדים ועד הרצפה; הלבן בבגד נשאר לבן, ובד שקוף נשאר שקוף ורואים דרכו את הגוף (השמלה בצבע עור), לא את השחור. בכל שאר הגיליונות – ${B.S.filter((o,i)=>!B.L[i]).map(o=>o.n).join(', ')} – הרקע נשאר בדיוק כמו ב-doll-8, בהיר. אף פעם לא רקע שחור מאחורי בגד שחור, חום, בז׳ או צבעוני – אי אפשר לגזור אותו.`);
  const h=holOf(id);if(cloth&&h=='open')P.push(`בבד יש חורים (תחרה, רשת או רקמה עם חורים). דרך החורים רואים בדיוק מה שהדמות לובשת מתחת – השמלה בצבע עור או העור – כמו בגוף אמיתי. אל תמלאי את החורים בשחור, בלבן, ברקע או בצבע הבגד${B.any?', גם בגיליון עם רקע שחור':''}. אל תוסיפי בטנה.`);
  else if(cloth&&h=='lined')P.push('לבגד יש בטנה תפורה מתחת לחורים או לתחרה, באותו צבע כמו בתמונת המוצר: היא חלק מהבגד ונשארת, ודרך החורים רואים את הבטנה ולא את הגוף.');
- P.push(`אל תשני שום דבר אחר: אותו גיליון, אותו סדר זוויות, אותו מיקום ואותו גודל של הדמות בכל משבצת, אותם פנים בדיוק, אותה תנוחה${B.all?'':B.any?', אותו רקע (חוץ מהגיליונות שכתוב בהם רקע שחור)':', אותו רקע'}, אותם קווים לבנים בין המשבצות. כל מה שהדמות כבר לובשת בגיליון (כיסוי ראש בז׳, שמלה בצבע עור) נשאר בדיוק אותו דבר. השמלה בצבע עור נשארת בכל מקום שהפריט לא מכסה.`);
+ P.push(`אל תשני שום דבר אחר: אותו גיליון, אותו סדר זוויות, אותו מיקום ואותו גודל של הדמות בכל משבצת, אותם פנים בדיוק, אותה תנוחה${B.all?'':B.any?', אותו רקע (חוץ מהגיליונות שכתוב בהם רקע שחור)':', אותו רקע'}, אותם קווים לבנים בין המשבצות. כל מה שהדמות כבר לובשת בגיליון (כיסוי ראש בז׳, שמלה בצבע עור) נשאר בדיוק אותו דבר. ${SB.length?'בגד הגוף השחור נשאר בכל מקום שהבגד לא מכסה.':'השמלה בצבע עור נשארת בכל מקום שהפריט לא מכסה.'}`);
  return P}
 window.prompt250=prompt;window.outs250=outs;
 // ---------- the zip ----------
@@ -383,6 +389,7 @@ function dlg(){if(DL)return DL;DL=document.createElement('dialog');DL.id='g250';
   if(q.g250k)return save({kd:q.g250k});
   if(q.g250b!=null)return save({blt:q.g250b});
   if(q.g250w!=null)return save({wbg:+q.g250w});
+  if(q.g323s!=null)return save({sbk:+q.g323s});
   if(q.g290bb!=null)return save({bb:+q.g290bb});
   if(q.g290pb!=null){const n=npOf(ID),L=Array.from({length:n},(_,i)=>bbOf(ID,i)?1:0),i=+q.g290pb;L[i]=L[i]?0:1;return save({bb:L})}
   if(q.g257h)return save({hol:q.g257h=='no'?'':q.g257h});
@@ -425,7 +432,7 @@ function open(id){ID=id;if(B&&!B.sel.includes(id))B.from=0;const d=dlg(),k=kd(id
  if(MULTI.includes(k))q.push(packQ(id,k));
  if(BELTK.includes(k)){const b=bltOf(id);q.push(`<div class="g250q"><b>${q.length+1}. הגיע עם חגורה?</b><div class="g250cs">${chip(!b||b=='no','data-g250b','no','אין חגורה')}${chip(b=='off','data-g250b','off','חגורה נפרדת – להוריד')}${chip(b=='on','data-g250b','on','חגורה תפורה, מאותו בד – להשאיר')}</div></div>`)}
  if(k=='belt'&&npOf(id)<=1){const w=bbOf(id);q.push(`<div class="g250q"><b>${q.length+1}. זהב, כסף, שקופה, אבנים או שרשרת?</b><div class="g250cs">${chip(w,'data-g290bb',1,'כן – על בגד גוף שחור')}${chip(!w,'data-g290bb',0,'לא (חגורה כהה)')}</div>${w?'<small>GPT ילביש את הבובה בבגד גוף שחור ורק עליו את החגורה – כך גוזרים בדיוק, ושקוף נשאר שקוף.</small>':''}</div>`)}
- else if(k!='jw'&&k!='shoes'&&k!='bag'&&!(MULTI.includes(k)&&npOf(id)>1)){const w=wbgOf(id);q.push(`<div class="g250q"><b>${q.length+1}. הבגד לבן, שמנת או שקוף?</b><div class="g250cs">${chip(w,'data-g250w',1,'כן – רקע שחור')}${chip(!w,'data-g250w',0,'לא')}</div>${w?'<small>GPT יעשה רקע שחור, וכך האתר גוזר בדיוק בלי חורים.</small>':''}</div>`)}
+ else if(k!='jw'&&k!='shoes'&&k!='bag'&&!(MULTI.includes(k)&&npOf(id)>1)){const w=wbgOf(id);q.push(`<div class="g250q"><b>${q.length+1}. הבגד לבן, שמנת או שקוף?</b><div class="g250cs">${chip(w,'data-g250w',1,'כן – רקע שחור')}${chip(!w,'data-g250w',0,'לא')}</div>${w?'<small>GPT יעשה רקע שחור, וכך האתר גוזר בדיוק בלי חורים.</small>':''}</div>`);if(w&&k!='belt'){const sb=sbkOf(id);q.push(`<div class="g250q"><b>${q.length+1}. רואים דרכו (שקוף, שיפון, טול)?</b><div class="g250cs">${chip(sb,'data-g323s',1,'כן – על בגד גוף שחור')}${chip(!sb,'data-g323s',0,'לא, הבד אטום')}</div>${sb?'<small>GPT ילביש את הבובה בבגד גוף שחור ורק עליו את הבגד. כך האתר יודע כמה הבד שקוף בכל מקום, ובאווטאר רואים דרכו את מה שאת לובשת מתחת.</small>':''}</div>`)}}
  if(k!='jw'&&k!='shoes'&&k!='bag'){const h=holOf(id);q.push(`<div class="g250q"><b>${q.length+1}. יש בבד חורים, תחרה או רשת?</b><div class="g250cs">${chip(!h,'data-g257h','no','אין')}${chip(h=='open','data-g257h','open','יש – רואים מה שמתחת')}${chip(h=='lined','data-g257h','lined','יש – עם בטנה תפורה')}</div>${h=='open'?'<small>GPT ישאיר את החורים פתוחים, והאתר גוזר אותם שקופים. בסטודיו לובשים מתחת חולצת בסיס, והיא נראית דרך החורים.</small>':h=='lined'?'<small>הבטנה היא חלק מהבגד ונשארת.</small>':''}</div>`)}
  const ps=(it(id).parts||[]).filter(x=>/^g\d+$/.test(x.k));
  d.innerHTML=`<div class="mk"><div class="mkh"><h3 id="g250t">🚀 ${es(nm(id))} – הכול ל-GPT</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>
