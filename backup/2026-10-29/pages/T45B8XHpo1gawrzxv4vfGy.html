@@ -1,0 +1,82 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>אווטאר 360 ל-GPT</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+:root{--bg:#eef0f3;--fg:#2c2420;--muted:#6e625a;--accent:#8a5a3c;--card:#fff;--line:#d9dce2;--ok:#3f7d55}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1c1d20;--fg:#f1ebe5;--muted:#b3a89f;--accent:#e0ad86;--card:#26272b;--line:#3a3c42;--ok:#7cc495;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1c1d20;--fg:#f1ebe5;--muted:#b3a89f;--accent:#e0ad86;--card:#26272b;--line:#3a3c42;--ok:#7cc495;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:system-ui,"Segoe UI",Arial,sans-serif;direction:rtl;line-height:1.55}
+.w{max-width:620px;margin:0 auto;padding-block:16px 36px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
+h1{font-size:1.35rem;margin:0}
+h2{font-size:1.08rem;margin:0}
+p{margin:0}
+.m{color:var(--muted);font-size:.93rem}
+ol{margin:0;padding-inline-start:1.3em;display:flex;flex-direction:column;gap:4px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px}
+img{width:100%;max-width:100%;border-radius:12px;display:block}
+button{font:inherit;font-weight:700;border:0;border-radius:999px;padding:11px 20px;background:var(--accent);color:var(--card);cursor:pointer;align-self:flex-start}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+label{font-weight:600;font-size:.92rem}
+input{font:inherit;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--fg);min-width:0}
+.row{display:grid;grid-template-columns:2fr 1fr;gap:10px}
+@media(max-width:400px){.row{grid-template-columns:1fr}}
+.f{display:flex;flex-direction:column;gap:4px;min-width:0}
+textarea{font:inherit;font-size:.92rem;line-height:1.5;width:100%;box-sizing:border-box;min-height:18em;padding:12px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--fg);resize:vertical}
+.ok{color:var(--ok);font-weight:600;font-size:.9rem}
+.kinds{display:flex;flex-wrap:wrap;gap:8px}
+.kind{background:var(--bg);color:var(--fg);border:1px solid var(--line);font-weight:600;padding:8px 14px}
+.files button{align-self:stretch}
+.files{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media(max-width:560px){.files{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.files figure{margin:0;display:flex;flex-direction:column;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:8px;min-width:0}
+.files img{width:100%;height:120px;object-fit:contain;border-radius:8px;background:var(--card)}
+.files figcaption{display:flex;flex-direction:column;font-size:.85rem;line-height:1.3}
+.files figcaption span{color:var(--muted);font-size:.78rem}
+.files .btn,.files button{align-self:stretch;padding:8px 10px;font-size:.85rem}
+.filesNote{color:var(--muted);font-size:.85rem}
+.kind[aria-pressed="true"]{background:var(--fg);color:var(--card);border-color:var(--fg)}
+</style>
+<div class="w">
+ <h1>האווטאר ב-360 מעלות: הלבשה</h1>
+ <p class="m">שולחים ל-GPT את גיליון 8 הזוויות ואת תמונת הפריט, והוא מלביש את כל 8 הזוויות ביחד. אחר כך אני חותכת, מיישרת ומסובבת אותה לבושה.</p>
+
+
+ <section class="card">
+  <h2>מה עושים</h2>
+  <ol>
+   <li>שומרים את הבובה החדשה מלמטה.</li>
+   <li>ב-GPT פותחים שיחה <b>חדשה</b>.</li>
+   <li>מצרפים קודם את תמונת הפריט שקנית, ואחריה את הגיליון. אפשר גם גיליון שכבר יש עליו פריט (למשל עם מטפחת).</li>
+   <li>מדביקים את הפרומפט ושולחים. הכל בהודעה אחת.</li>
+   <li>את הגיליון הלבוש שחוזר מעלים לי בצ'אט.</li>
+  </ol>
+ </section>
+
+ <section class="card">
+  <h2>מה מצרפים</h2>
+  <p class="m">מלבישים תמיד על הבובה החדשה. לפאה מצרפים גם את תמונת הפאה שלך.</p>
+  <div class="files" id="files">
+   <figure><img src="sheet_new.png" alt="הבובה החדשה ב-8 זוויות, עם כיסוי ראש ויד על המותן"><figcaption><b>הבובה החדשה</b><span>לכל פריט: בגדים, נעליים, תכשיטים, מטפחות, פאה</span></figcaption><button type="button" data-src="sheet_new.png" data-name="avatar-new-8-angles.png">⬇ לשמור</button></figure>
+   <figure><img src="sheet8_hair.png" alt="הפאה שלי מכל הכיוונים"><figcaption><b>הפאה שלי</b><span>לצרף לפרומפט של הפאה</span></figcaption><button type="button" data-src="sheet8_hair.png" data-name="my-wig-8-angles.png">⬇ לשמור</button></figure>
+   <figure><img src="n1.png" alt="אני מקדימה, הבובה החדשה"><figcaption><b>חזית שלי</b><span>לתמונות הקשירות והאיפור</span></figcaption><button type="button" data-src="n1.png" data-name="me-front.png">⬇ לשמור</button></figure>
+  </div>
+  <small class="filesNote" id="saveNote">אפשר גם לחיצה ארוכה על תמונה ← "הורדת תמונה"</small>
+ </section>
+
+ <section class="card">
+  <h2>הפרומפט</h2>
+  <div id="p3f"></div>
+ </section>
+</div>
+<script src="sty.js"></script>
+<script src="p360.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+P360($('p3f'),'pf');
+// save the sheets and photos to attach
+(async()=>{let dl=null;try{dl=await window.claude?.use?.('downloads')}catch(_){}
+ const bs=document.querySelectorAll('#files button');if(!dl){bs.forEach(b=>b.hidden=true);$('saveNote').textContent='לשמירה: לחיצה ארוכה על תמונה ← "הורדת תמונה"';return}
+ bs.forEach(b=>b.onclick=async()=>{try{const r=await fetch(b.dataset.src);await dl.save({filename:b.dataset.name,data:await r.blob()})}catch(e){if(e&&e.code!='declined')$('saveNote').textContent='לא הצלחתי לשמור. לחיצה ארוכה על התמונה ← "הורדת תמונה"'}})})();
+</script>
+
+</body></html>

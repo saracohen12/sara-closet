@@ -1,0 +1,127 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>מה אני רוצה לקנות</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Suez+One&display=swap">
+<style>
+/* layout: a shop-window wall – each wished item is a card: her shop photo big, then a strip of what she already owns, then her three choice buttons */
+:root{
+ --bg:#f4efe9;--card:#fffcf8;--fg:#2a201b;--mute:#7d6c61;--line:#e5d9ce;--accent:#8c4a2f;--accentfg:#fff;
+ --dup:#b3262f;--dupbg:#fbe7e8;--sim:#94660a;--simbg:#fbf0d6;--have:#1d7442;--havebg:#e0f2e6;--none:#5b6470;--nonebg:#eceff2;
+ --buy:#1d7442;--buybg:#dff1e5;--may:#94660a;--maybg:#fbf0d6;--no:#6b7280;--nobg:#eceff2;
+ --disp:"Suez One",Georgia,serif;--body:"Rubik",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a1512;--card:#241e1a;--fg:#f3ebe4;--mute:#b4a397;--line:#3a302a;--accent:#e39a74;--accentfg:#1a1512;
+ --dup:#ff8d92;--dupbg:#3b1e21;--sim:#f1c45d;--simbg:#372c15;--have:#72d39c;--havebg:#183224;--none:#b0b7c1;--nonebg:#2a2e33;
+ --buy:#72d39c;--buybg:#183224;--may:#f1c45d;--maybg:#372c15;--no:#b0b7c1;--nobg:#2a2e33;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1a1512;--card:#241e1a;--fg:#f3ebe4;--mute:#b4a397;--line:#3a302a;--accent:#e39a74;--accentfg:#1a1512;
+ --dup:#ff8d92;--dupbg:#3b1e21;--sim:#f1c45d;--simbg:#372c15;--have:#72d39c;--havebg:#183224;--none:#b0b7c1;--nonebg:#2a2e33;
+ --buy:#72d39c;--buybg:#183224;--may:#f1c45d;--maybg:#372c15;--no:#b0b7c1;--nobg:#2a2e33;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.5 var(--body);direction:rtl}
+main{max-width:1180px;margin:0 auto;padding-block:20px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+h1{font:400 clamp(1.8rem,5vw,2.6rem)/1.1 var(--disp);margin:0;color:var(--accent);text-wrap:balance}
+.lead{margin:4px 0 0;color:var(--mute);max-width:60ch}
+.bar{display:flex;flex-wrap:wrap;gap:8px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--fg);font:500 .92rem var(--body);padding:7px 13px;border-radius:999px;cursor:pointer;font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accentfg);border-color:var(--accent)}
+.cartchip{border:2px solid var(--buy);color:var(--buy);font-weight:700}
+.cartchip[aria-pressed="true"]{background:var(--buy);border-color:var(--buy);color:var(--card)}
+.chip:focus-visible,.ch button:focus-visible,.shots button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:16px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.card.st-no{opacity:.55}
+.shots{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;background:#fff;position:relative}
+.shots button{flex:0 0 100%;scroll-snap-align:start;border:0;padding:0;background:none;cursor:zoom-in}
+.shots img{display:block;width:100%;aspect-ratio:4/5;object-fit:contain;background:#fff}
+.dots{display:flex;gap:5px;justify-content:center;padding:6px 0 0}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.top{display:flex;gap:8px;align-items:flex-start}
+.num{flex:none;min-width:1.9em;height:1.9em;border-radius:50%;display:grid;place-items:center;background:var(--line);color:var(--fg);font-size:.8rem;font-weight:700;font-variant-numeric:tabular-nums}
+.top h2{margin:0;font:500 1.05rem/1.35 var(--body);flex:1;min-width:0;text-wrap:balance}
+.badge{flex:none;font-size:.82rem;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--b);color:var(--c);white-space:nowrap}
+.v-dup{--c:var(--dup);--b:var(--dupbg)}.v-sim{--c:var(--sim);--b:var(--simbg)}.v-have{--c:var(--have);--b:var(--havebg)}.v-none{--c:var(--none);--b:var(--nonebg)}
+.note{margin:0;color:var(--fg)}
+.mine{display:flex;flex-direction:column;gap:6px}
+.mine h3{margin:0;font:500 .78rem var(--body);letter-spacing:.05em;color:var(--mute)}
+.mrow{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.m{flex:0 0 132px;display:flex;flex-direction:column;gap:3px;border:2px solid var(--c,var(--line));border-radius:10px;overflow:hidden;background:var(--card)}
+.m img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;background:#fff}
+.m span{font-size:.74rem;line-height:1.3;padding:0 6px}
+.m small{font-size:.7rem;color:var(--mute);padding:0 6px 6px}
+.empty{font-size:.85rem;color:var(--mute);margin:0}
+.ch{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ch button{font:500 .88rem var(--body);padding:9px 4px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer}
+.ch button[aria-pressed="true"].b-buy{background:var(--buybg);color:var(--buy);border-color:var(--buy)}
+.ch button[aria-pressed="true"].b-may{background:var(--maybg);color:var(--may);border-color:var(--may)}
+.ch button[aria-pressed="true"].b-no{background:var(--nobg);color:var(--no);border-color:var(--no)}
+.saved{font-size:.78rem;color:var(--mute);min-height:1em;margin:0}
+.round{grid-column:1/-1;margin:10px 0 -4px;font:500 .8rem var(--body);letter-spacing:.06em;color:var(--mute);border-bottom:1px solid var(--line);padding-bottom:6px}
+dialog{border:0;padding:0;background:transparent;max-width:min(96vw,900px);max-height:94vh}
+dialog::backdrop{background:rgba(0,0,0,.8)}
+dialog img{max-width:100%;max-height:90vh;display:block;border-radius:10px;background:#fff}
+dialog button{position:absolute;top:8px;left:8px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:1.2rem;cursor:pointer}
+.msg{font-size:.85rem;color:var(--mute);margin:0}
+
+.cartbar{position:fixed;inset:auto 0 0;z-index:8;display:flex;justify-content:center;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));pointer-events:none}
+.cartbar button{pointer-events:auto;font:700 1.05rem var(--body);padding:13px 26px;border-radius:999px;border:0;background:var(--accent);color:var(--accentfg);box-shadow:0 6px 20px rgba(0,0,0,.25);cursor:pointer;font-variant-numeric:tabular-nums}
+.cartbar button:focus-visible{outline:3px solid var(--fg);outline-offset:3px}
+.carthd{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:space-between}
+.carthd h2{margin:0;font:400 1.6rem var(--disp);color:var(--accent)}
+.carthd button{font:500 .92rem var(--body);padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer}
+.ch{grid-template-columns:1fr 1fr}
+.ch .b-cart{grid-column:1/-1;font-size:1rem;padding:12px 6px;font-weight:700;background:var(--accent);color:var(--accentfg);border-color:var(--accent)}
+.ch .b-cart[aria-pressed="true"]{background:var(--buybg);color:var(--buy);border-color:var(--buy)}
+.card.st-cart{border-color:var(--buy);box-shadow:0 0 0 2px var(--buy)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+<main>
+ <header>
+  <h1>מה אני רוצה לקנות</h1>
+  <p class="lead">כל מה ששלחת מהחנות: <b id="total"></b>, כל תמונה בנפרד. ליד כל דבר: מה כבר יש לך בארון ובהזמנות. מה שאת רוצה: 🛒 להוסיף לעגלה. ב"🛒 העגלה שלי" למעלה רואים את כל מה שבחרת, עם ההשוואה.</p>
+ </header>
+ <div class="bar" id="bar" role="group" aria-label="סינון"></div>
+ <p class="msg" id="msg" hidden></p>
+ <div class="grid" id="grid"></div>
+</main>
+<div class="cartbar" hidden><button type="button" id="cartb" data-cart="1">🛒 העגלה שלי · 0</button></div>
+<dialog id="zoom" aria-label="תמונה בגדול"><button type="button" id="zx" aria-label="סגירה">✕</button><img id="zimg" alt=""></dialog>
+<script>
+const DATA={"mine": {"T237": {"n": "גלימה שחורה עם פרווה", "s": "טמו 2", "st": ""}, "T223": {"n": "צעיף שרוולים חום עם פאייטים", "s": "טמו 2", "st": ""}, "T165": {"n": "חולצת תחרה חומה גולף", "s": "טמו 2", "st": ""}, "T200": {"n": "קרדיגן קפה עם לשוניות כפתורים", "s": "טמו 2", "st": ""}, "T313": {"n": "וסט שחור עם פרווה", "s": "טמו 2", "st": ""}, "T307": {"n": "קרדיגן שחור עם צווארון פרווה", "s": "טמו 2", "st": ""}, "S17QJ_3": {"n": "2 חגורות גומי עם אבזם זהב", "s": "שיין", "st": ""}, "T215": {"n": "חגורת גומי שחורה", "s": "טמו 2", "st": ""}, "T216": {"n": "חגורת גומי סגולה", "s": "טמו 2", "st": ""}, "T151206_0": {"n": "נעלי עקב מוקסין שחורות", "s": "טמו 3", "st": "בדרך"}, "T17": {"n": "נעלי פלטפורמה שחורות עם שרשרת", "s": "טמו 1", "st": ""}, "T220": {"n": "חולצת ריב שחורה גולף", "s": "טמו 2", "st": ""}, "T56": {"n": "ז'קט טדי חום עם רוכסן", "s": "טמו 1", "st": ""}, "T192": {"n": "מעיל חום קטיפתי", "s": "טמו 2", "st": ""}, "T229": {"n": "גלימה סרוגה סגולה עם פרווה", "s": "טמו 2", "st": ""}, "T227": {"n": "שאל חאקי עם פרווה ופרנזים", "s": "טמו 2", "st": ""}, "T356": {"n": "חגורה קלועה חומה, אבזם עגול", "s": "טמו 2", "st": ""}, "T74": {"n": "סוודר שחור גולף שרוולי בלון", "s": "טמו 1", "st": ""}, "T116": {"n": "חצאית קטיפה שחורה ארוכה", "s": "טמו 1", "st": ""}, "SNN8H_2": {"n": "חצאית קטיפה שחורה A", "s": "שיין", "st": "בדרך"}, "T167": {"n": "ז'קט פליז שחור עם רוכסן", "s": "טמו 2", "st": ""}, "T304": {"n": "ז'קט פליז שחור עם רוכסן", "s": "טמו 2", "st": ""}, "T127": {"n": "קרדיגן קורדרוי שחור עם קפוצ'ון", "s": "טמו 1", "st": ""}, "SMEX3_2": {"n": "חולצת קטיפה כחולה גולף", "s": "שיין", "st": "בדרך"}, "SNN8H_0": {"n": "חולצת קטיפה שחורה", "s": "שיין", "st": "בדרך"}, "T44": {"n": "חולצת בסיס חומה", "s": "טמו 1", "st": ""}, "T364": {"n": "חולצת בסיס שחורה", "s": "טמו 2", "st": ""}, "SMSCW_14": {"n": "כריות עקב", "s": "שיין", "st": ""}, "T121": {"n": "מעיל שחור ארוך עם קפוצ'ון פרווה", "s": "טמו 1", "st": ""}, "SM3PB_1": {"n": "חגורת עור חומה", "s": "שיין", "st": ""}, "SM39K_10": {"n": "חגורת עור חום שוקולד", "s": "שיין", "st": ""}, "T131": {"n": "חצאית טול מדורגת עם תחרה", "s": "טמו 1", "st": ""}, "T60": {"n": "חצאית טול שחורה", "s": "טמו 1", "st": ""}, "S2QB0_6": {"n": "חולצת קטיפה שחורה עם תחרה", "s": "שיין", "st": "בדרך"}, "SMX0C_21": {"n": "גופיית תחרה שחורה", "s": "שיין", "st": ""}, "SM39K_9": {"n": "גופיית תחרה חומה", "s": "שיין", "st": ""}}, "products": [{"id": "p01", "r": 1, "t": "גלימה שחורה עם פאייטים ופרווה", "img": 1, "v": "sim", "note": "יש לך גלימה שחורה עם פרווה, בלי פאייטים", "m": ["T237"]}, {"id": "p02", "r": 1, "t": "ז'קט ג'ינס כהה עם רוכסן", "img": 1, "v": "none", "note": "אין לך ז'קט ג'ינס", "m": []}, {"id": "p03", "r": 1, "t": "גלימה חומה עם פאייטים ופרווה", "img": 1, "v": "sim", "note": "יש לך צעיף שרוולים חום עם פאייטים, בלי פרווה", "m": ["T223"]}, {"id": "p04a", "r": 1, "t": "חולצה ירוק זית עם פרחים תלת־ממדיים", "img": 1, "v": "none", "note": "אין. הכי קרוב: חולצת תחרה חומה", "m": ["T165"]}, {"id": "p04b", "r": 1, "t": "חולצה חומה עם פרחים תלת־ממדיים", "img": 1, "v": "none", "note": "אין. הכי קרוב: חולצת תחרה חומה", "m": ["T165"]}, {"id": "p05", "r": 1, "t": "בלייזר שחור עם לשוניות כפתורים", "img": 1, "v": "sim", "note": "יש לך את אותה גזרה בחום", "m": ["T200"]}, {"id": "p06", "r": 1, "t": "מעיל זמש שחור עם צווארון פרווה", "img": 1, "v": "none", "note": "אין מעיל כזה. יש וסט וקרדיגן עם פרווה", "m": ["T313", "T307"]}, {"id": "p07", "r": 1, "t": "3 חגורות גומי שחורות, אבזם זהב", "img": 1, "v": "sim", "note": "יש לך חגורות גומי, אבל לא את האבזמים האלה", "m": ["S17QJ_3", "T215", "T216"]}, {"id": "p08", "r": 2, "t": "מוקסין עקב חום עם שרשרת", "img": 1, "v": "sim", "note": "הזמנת היום מוקסין עקב בשחור", "m": ["T151206_0", "T17"]}, {"id": "p09", "r": 2, "t": "מוקסין עקב שחור, דמוי תנין", "img": 1, "v": "dup", "note": "כמעט כמו מה שהזמנת היום", "m": ["T151206_0"]}, {"id": "p10", "r": 2, "t": "ז'קט זמש חום עם רוכסן", "img": 1, "v": "none", "note": "אין", "m": []}, {"id": "p11", "r": 2, "t": "3 גופיות ריב גולף (שחור, לבן, ירוק)", "img": 1, "v": "none", "note": "אין גופיות כאלה. יש חולצת ריב גולף עם שרוולים", "m": ["T220"]}, {"id": "p12", "r": 2, "t": "מעיל טדי חום עם כפתורים", "img": 1, "v": "sim", "note": "יש לך ז'קט טדי חום עם רוכסן", "m": ["T56", "T192"]}, {"id": "p13a", "r": 2, "t": "גלימה סרוגה שחורה עם פרנזים ופרווה", "img": 1, "v": "dup", "note": "יש לך את אותו דגם בסגול, ודומה בחאקי", "m": ["T229", "T227"]}, {"id": "p13b", "r": 2, "t": "גלימה סרוגה ירוק זית עם פרנזים ופרווה", "img": 1, "v": "dup", "note": "יש לך את אותו דגם בסגול, ודומה בחאקי", "m": ["T229", "T227"]}, {"id": "p14a", "r": 2, "t": "חגורה קלועה כהה, אבזם עגול", "img": 1, "v": "sim", "note": "דומה מאוד לחגורה הקלועה החומה שלך", "m": ["T356"]}, {"id": "p14b", "r": 2, "t": "חגורת קש קלועה, אבזם עגול קלוע", "img": 1, "v": "none", "note": "אין חגורת קש. הכי קרוב: הקלועה החומה", "m": ["T356"]}, {"id": "p14c", "r": 2, "t": "חגורה קלועה לבנה, אבזם מרובע", "img": 1, "v": "none", "note": "אין חגורה קלועה בהירה", "m": ["T356"]}, {"id": "p15a", "r": 3, "t": "סוודר ריב גולף ירוק, שרוולי בלון", "img": 1, "v": "sim", "note": "יש לך את אותו סגנון בשחור", "m": ["T74"]}, {"id": "p15b", "r": 3, "t": "סוודר ריב גולף שחור, שרוולי בלון", "img": 1, "v": "dup", "note": "כמעט אותו דבר יש לך בשחור", "m": ["T74"]}, {"id": "p15c", "r": 3, "t": "סוודר ריב גולף חום, שרוולי בלון", "img": 1, "v": "sim", "note": "יש לך את אותו סגנון בשחור", "m": ["T74"]}, {"id": "p15d", "r": 3, "t": "סוודר ריב גולף שחור, שרוולי בלון (עוד תמונה)", "img": 1, "v": "dup", "note": "כמעט אותו דבר יש לך בשחור", "m": ["T74"]}, {"id": "p16", "r": 3, "t": "חצאית קורדרוי שחורה ארוכה עם קשירה", "img": 1, "v": "none", "note": "אין קורדרוי. יש חצאיות קטיפה שחורות ארוכות", "m": ["T116", "SNN8H_2"]}, {"id": "p17", "r": 3, "t": "ז'קט פליז שחור עם קפוצ'ון", "img": 1, "v": "dup", "note": "יש לך 2 ז'קטי פליז שחורים עם רוכסן", "m": ["T167", "T304"]}, {"id": "p18", "r": 3, "t": "ז'קט זמש שחור עם רוכסן", "img": 1, "v": "none", "note": "אין", "m": []}, {"id": "p19", "r": 3, "t": "בלייזר קורדרוי שחור עם דש עור", "img": 1, "v": "none", "note": "אין. יש קרדיגן קורדרוי עם קפוצ'ון", "m": ["T127"]}, {"id": "p20a", "r": 3, "t": "חולצת קטיפה גולף כחולה", "img": 1, "v": "dup", "note": "חולצת קטיפה כחולה גולף כבר בדרך אלייך", "m": ["SMEX3_2"]}, {"id": "p20b", "r": 3, "t": "חולצת קטיפה גולף שחורה", "img": 1, "v": "dup", "note": "חולצת קטיפה שחורה כבר בדרך אלייך", "m": ["SNN8H_0", "S2QB0_6"]}, {"id": "p20c", "r": 3, "t": "חולצת קטיפה גולף ירוק זית", "img": 1, "v": "sim", "note": "אותו סגנון יש לך בכחול ובשחור. בזית אין", "m": ["SMEX3_2", "SNN8H_0"]}, {"id": "p20d", "r": 3, "t": "חולצת קטיפה גולף בורדו", "img": 1, "v": "sim", "note": "אותו סגנון יש לך בכחול ובשחור. בבורדו אין", "m": ["SMEX3_2", "SNN8H_0"]}, {"id": "p21a", "r": 3, "t": "3 חולצות בסיס גולף: זית, חום, שחור", "img": 1, "v": "sim", "note": "יש לך חולצות בסיס בשחור ובחום. זית אין", "m": ["T220", "T44", "T364"]}, {"id": "p21b", "r": 3, "t": "3 חולצות בסיס גולף: לבן, חום, שחור", "img": 1, "v": "sim", "note": "יש לך חולצות בסיס בשחור ובחום. לבן אין", "m": ["T220", "T44", "T364"]}, {"id": "p21c", "r": 3, "t": "3 חולצות בסיס גולף: קאמל, חום, שחור", "img": 1, "v": "sim", "note": "יש לך חולצות בסיס בשחור ובחום. קאמל אין", "m": ["T220", "T44", "T364"]}, {"id": "p22", "r": 3, "t": "6 כריות עקב", "img": 1, "v": "have", "note": "יש לך כריות עקב", "m": ["SMSCW_14"]}, {"id": "p23", "r": 4, "t": "3 גופיות ריב (שחור, בז', לבן)", "img": 1, "v": "none", "note": "אין. יש רק גופיות תחרה", "m": ["SMX0C_21", "SM39K_9"]}, {"id": "p24", "r": 4, "t": "מעיל קטיפה שחור ארוך עם פרווה", "img": 1, "v": "none", "note": "אין. הכי קרוב: מעיל שחור ארוך עם קפוצ'ון פרווה", "m": ["T121"]}, {"id": "p25", "r": 4, "t": "מעיל פרווה חום ארוך", "img": 1, "v": "none", "note": "אין", "m": []}, {"id": "p26", "r": 4, "t": "2 חגורות עור מוטבעות (חום, בורדו)", "img": 1, "v": "sim", "note": "יש חגורות עור חומות פשוטות, מוטבעות אין", "m": ["SM3PB_1", "SM39K_10"]}, {"id": "p27a", "r": 4, "t": "חצאית טול מדורגת שחורה", "img": 1, "v": "sim", "note": "יש לך חצאיות טול שחורות", "m": ["T131", "T60"]}, {"id": "p27b", "r": 4, "t": "חצאית טול מדורגת חומה", "img": 1, "v": "none", "note": "בחום אין. בשחור יש", "m": ["T131", "T60"]}, {"id": "p28", "r": 4, "t": "מוקסין עקב לקה שחור", "img": 1, "v": "dup", "note": "אותה גזרה כמו מה שהזמנת היום", "m": ["T151206_0"]}, {"id": "p29", "r": 4, "t": "חולצת קטיפה שחורה עם שרוולי נצנץ", "img": 1, "v": "sim", "note": "2 חולצות קטיפה שחורות בדרך אלייך", "m": ["SNN8H_0", "S2QB0_6"]}, {"id": "p30", "r": 4, "t": "קרדיגן שחור עם פרווה ואבזמים", "img": 1, "v": "sim", "note": "יש לך קרדיגן שחור עם צווארון פרווה", "m": ["T307"]}]};
+const V={dup:'⚠️ כבר יש לך כמעט',sim:'🟡 יש לך דומה',have:'✅ יש לך',none:'⬜ אין לך'};
+const RN={1:'סבב 1',2:'סבב 2',3:'סבב 3',4:'סבב 4'};
+const ST={cart:'🛒 להוסיף לעגלה',buy:'✓ כבר קניתי',no:'✕ לא רוצה'};const STON={cart:'✓ בעגלה (לחיצה מוציאה)'};
+let S={},F='all',CART=false,db=null,canWrite=true;
+const $=s=>document.querySelector(s);
+const es=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const FILTERS=[['all','הכל'],['dup','⚠️ כבר יש'],['sim','🟡 דומה'],['none','⬜ אין'],['open','עוד לא בחרתי'],['buy','✓ קניתי'],['no','✕ לא רוצה']];
+function match(p){const s=(S[p.id]||{}).st;if(CART&&s!='cart')return false;if(F=='all')return true;if(F=='buy'||F=='no')return s==F;if(F=='open')return !s;return p.v==F||(F=='dup'&&p.v=='have')}
+function bar(){const nc=DATA.products.filter(p=>(S[p.id]||{}).st=='cart').length;$('#bar').innerHTML=`<button type="button" class="chip cartchip" data-cart="${CART?0:1}" aria-pressed="${CART}">🛒 העגלה שלי · ${nc}</button>`+(CART?FILTERS.filter(([k])=>!['open','buy','no'].includes(k)):FILTERS).map(([k,l])=>{const n=DATA.products.filter(p=>{const o=F;F=k;const r=match(p);F=o;return r}).length;return `<button type="button" class="chip" data-f="${k}" aria-pressed="${F==k}">${l} · ${n}</button>`}).join('')}
+function mine(p){if(!p.m.length)return '<p class="empty">אין לך שום דבר דומה</p>';const vc=p.v=='none'?'':` style="--c:var(--${p.v})"`;
+ return `<div class="mrow">${p.m.map(i=>{const m=DATA.mine[i];return `<div class="m"${vc}><img loading="lazy" src="m/${i}.jpg" alt="${es(m.n)}"><span>${es(m.n)}</span><small>${es(m.s)}${m.st?' · '+m.st:''}</small></div>`}).join('')}</div>`}
+function card(p){const s=(S[p.id]||{}).st||'';const shots=Array.from({length:p.img},(_,k)=>`<button type="button" data-z="s/${p.id}_${k}.jpg" aria-label="להגדיל"><img loading="lazy" src="s/${p.id}_${k}.jpg" alt="${es(p.t)}${p.img>1?' '+(k+1):''}"></button>`).join('');
+ return `<article class="card st-${s}" id="${p.id}"><div class="shots">${shots}</div>${p.img>1?`<div class="dots" aria-hidden="true">${'<i></i>'.repeat(p.img)}</div>`:''}
+ <div class="body"><div class="top"><span class="num">${DATA.products.indexOf(p)+1}</span><h2>${es(p.t)}</h2><span class="badge v-${p.v}">${V[p.v]}</span></div><p class="note">${es(p.note)}</p>
+ <div class="mine"><h3>${p.v=='none'?'הכי קרוב שיש לך':'מה שיש לך'}</h3>${mine(p)}</div>
+ <div class="ch" role="group" aria-label="מה החלטת">${Object.entries(ST).map(([k,l])=>`<button type="button" class="b-${k}" data-p="${p.id}" data-st="${k}" aria-pressed="${s==k}" ${canWrite?'':'disabled'}>${s==k&&STON[k]?STON[k]:l}</button>`).join('')}</div>
+ <p class="saved" id="sv-${p.id}" aria-live="polite"></p></div></article>`}
+function render(){bar();const nc=DATA.products.filter(p=>(S[p.id]||{}).st=='cart').length;$('#cartb').textContent=CART?'→ חזרה לכל המוצרים':`🛒 העגלה שלי · ${nc}`;
+ let h=CART?`<div class="carthd"><h2>🛒 העגלה שלי · ${nc}</h2><button type="button" data-cart="0">→ לכל המוצרים</button></div>`:'',last=0;DATA.products.filter(match).forEach(p=>{if(!CART&&F=='all'&&p.r!=last){h+=`<div class="round">${RN[p.r]}</div>`;last=p.r}h+=card(p)});
+ if(CART&&!nc)h+='<p class="empty">העגלה ריקה. בכל מוצר לוחצים 🛒 להוסיף לעגלה.</p>';else if(!DATA.products.some(match))h+='<p class="empty">אין כאן כלום בסינון הזה</p>';$('#grid').innerHTML=h}
+document.addEventListener('click',async e=>{const c=e.target.closest('[data-cart]');if(c){CART=c.id=='cartb'?!CART:c.dataset.cart=='1';F='all';render();window.scrollTo(0,0);return}
+ const f=e.target.closest('[data-f]');if(f){F=f.dataset.f;render();return}
+ const z=e.target.closest('[data-z]');if(z){$('#zimg').src=z.dataset.z;$('#zoom').showModal();return}
+ if(e.target.id=='zx'||e.target.id=='zoom'){$('#zoom').close();return}
+ const b=e.target.closest('[data-st]');if(!b)return;const id=b.dataset.p,cur=(S[id]||{}).st,st=cur==b.dataset.st?'':b.dataset.st;
+ S[id]={st,at:Date.now()};render();const sv=$('#sv-'+id);
+ if(!db){if(sv)sv.textContent='לא נשמר: אין חיבור לשמירה כרגע';return}
+ try{st?await db.collection('wish').doc(id).set({st,at:Date.now()}):await db.collection('wish').doc(id).delete();const v=$('#sv-'+id);if(v)v.textContent=st?'✓ נשמר':'✓ הסימון הוסר'}
+ catch(er){const v=$('#sv-'+id);if(v)v.textContent='לא נשמר, נסי שוב';if(er&&er.code=='invalid_argument'){canWrite=false;render()}}});
+document.getElementById('total').textContent=DATA.products.length+' מוצרים';render();
+(async()=>{try{db=await claude.use('db')}catch(_){db=null}
+ if(!db){const m=$('#msg');m.hidden=false;m.textContent='הסימונים לא נשמרים כרגע. אפשר לראות הכל.';return}
+ try{const u=await claude.use('user');if(u){const w=await u.can('data.write');if(w===false){canWrite=false;render()}}}catch(_){}
+ db.collection('wish').onSnapshot(q=>{const n={};q.docs.forEach(d=>{const x=d.data();if(x&&x.st)n[d.id]=x.st=='may'?{...x,st:'cart'}:x});S=n;render()},()=>{})})();
+</script>
+
+</body></html>

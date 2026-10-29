@@ -1,0 +1,580 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>המעבר של הארון</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Frank+Ruhl+Libre:wght@700&display=swap">
+<style>
+/* one calm column, like a moving-box label: steps first, then the full record */
+:root{
+  --bg:#fbf6f1; --card:#fffdfa; --fg:#3a2a22; --mute:#7a665a; --line:#eadccf;
+  --acc:#a0522d; --accs:#f4e3d6;
+  --ok:#2f7d4f; --oks:#e2f2e7; --wait:#9a6a00; --waits:#fbf0d4; --open:#a0522d; --opens:#f7e1d6; --no:#7a7a7a; --nos:#ececec;
+  --display:"Frank Ruhl Libre",Georgia,serif; --body:"Rubik",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1e1713; --card:#271e19; --fg:#f2e7dd; --mute:#bba899; --line:#3e3029; --acc:#e7a77f; --accs:#3a281f;
+  --ok:#7fd3a0; --oks:#1f3528; --wait:#f0c860; --waits:#3a3018; --open:#f0a888; --opens:#3d261d; --no:#b0b0b0; --nos:#333; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1e1713; --card:#271e19; --fg:#f2e7dd; --mute:#bba899; --line:#3e3029; --acc:#e7a77f; --accs:#3a281f;
+  --ok:#7fd3a0; --oks:#1f3528; --wait:#f0c860; --waits:#3a3018; --open:#f0a888; --opens:#3d261d; --no:#b0b0b0; --nos:#333; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.65 var(--body);direction:rtl;margin:0;padding-block:28px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:30px}
+h1{font-family:var(--display);font-size:34px;line-height:1.15;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-size:23px;margin:0 0 10px;text-wrap:balance}
+h3{font-size:17px;margin:16px 0 6px}
+p{margin:0 0 10px} .lead{color:var(--mute);font-size:17px}
+a{color:var(--acc);word-break:break-all}
+section{display:flex;flex-direction:column}
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:12px}
+ol.steps>li{counter-increment:s;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px 14px 16px;display:grid;grid-template-columns:34px 1fr;gap:10px}
+ol.steps>li::before{content:counter(s);width:30px;height:30px;border-radius:50%;background:var(--acc);color:var(--bg);display:grid;place-items:center;font-weight:700}
+ol.steps>li>div{min-width:0}
+.paste{background:var(--accs);border-radius:12px;padding:14px;white-space:pre-wrap;font-size:15px;margin:8px 0;user-select:all}
+button{font:inherit;background:var(--acc);color:var(--bg);border:0;border-radius:999px;padding:9px 18px;font-weight:500;cursor:pointer}
+button:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+.note{font-size:14px;color:var(--mute)}
+ul.plain{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px}
+.links{display:grid;grid-template-columns:1fr;gap:8px}
+.links a.row{display:flex;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;text-decoration:none;color:var(--fg);word-break:normal}
+.links a.row span:last-child{color:var(--acc);white-space:nowrap}
+.warn li{margin-bottom:4px}
+.warn b{color:var(--acc)}
+.counts{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:13px;white-space:nowrap}
+.pill.done{background:var(--oks);color:var(--ok)} .pill.wait{background:var(--waits);color:var(--wait)}
+.pill.open{background:var(--opens);color:var(--open)} .pill.no{background:var(--nos);color:var(--no)}
+.filt{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.filt button{background:var(--card);color:var(--fg);border:1px solid var(--line)}
+.filt button[aria-pressed="true"]{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+th,td{text-align:right;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{position:sticky;top:0;background:var(--card);font-weight:500;color:var(--mute)}
+td.n{font-variant-numeric:tabular-nums;color:var(--mute)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+summary{cursor:pointer;font-weight:500}
+.topic{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+.topic h3{margin-top:0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<main>
+<header>
+  <h1>המעבר של הארון</h1>
+  <p class="lead">כל מה שצריך כדי להמשיך בפרויקט חדש מאותה נקודה בדיוק: צעדים מהטלפון, ההודעה להדבקה, כל הקישורים, מה עוד פתוח, ממה להיזהר, וכל מה שביקשת מההתחלה.</p>
+  <p class="note">עודכן 25/10/2026, 18:05 · האתר בגרסה 179</p>
+</header>
+
+<section>
+  <h2>הצעדים מהטלפון</h2>
+  <ol class="steps">
+    <li><div><b>יוצרים מאגר ב-GitHub</b> (פעם אחת, 2 דקות). שם נשמרים כל הקבצים, 443MB, בצורה בטוחה.<br>
+      ✓ נעשה (25/10, 18:09): <a href="https://github.com/saracohen12/sara-closet">saracohen12/sara-closet</a></div></li>
+    <li><div><b>הכל במאגר ✓</b> 5,336 קבצים עלו ונבדקו (הורדה מחדש, אותו מספר, גרסה 179).</div></li>
+    <li><div><b>פותחים פרויקט חדש</b> באפליקציה של Claude: Projects · New project. שם מוצע: <b>הארון של שרה 2</b>.<br>
+      בהגדרות הפרויקט החדש, ב"Repositories", מוסיפים את <b>sara-closet</b>.</div></li>
+    <li><div><b>מדביקים את ההודעה הזו</b> בצ'אט של הפרויקט החדש:
+      <div class="paste" id="msg">שלום Claude 💜 זה ההמשך של הפרויקט "ארון הבגדים של שרה" (שם נגמר המקום להעלאת תמונות).
+כל מה שצריך נמצא בדף "המעבר של הארון": https://claude.ai/artifact/GSxo7vCKSKphQ4LYH2iS9a
+1. תקרא שם את HANDOFF.md ואת כל הקבצים בתיקייה docs (החוקים, הזיכרון, טבלת המשימות).
+2. תבדוק אם המאגר saracohen12/sara-closet מחובר לפרויקט, ואם לא, תחבר אותו בעצמך. אחר כך תשחזר ממנו את כל הקבצים לתיקייה closet של הפרויקט, כמו שכתוב ב-HANDOFF. השיחות הישנות נמצאות במאגר בתיקייה docs/conversations.
+3. תשמור את כל הזיכרון ואת החוקים בזיכרון של הפרויקט החדש.
+4. תענה לי בעברית, קצר וחם, עם הטבלה: מה ביקשת / מה עשיתי / מה עוד לא, ותגיד לי מאיפה ממשיכים.</div>
+      <button type="button" id="cp">העתיקי את ההודעה</button> <span class="note" id="cpst"></span></div></li>
+    <li><div><b>ממשיכים משם.</b> הדבר הראשון: גיליון הפאה מ-GPT (שלחי אותו בצ'אט החדש).</div></li>
+    <li><div><b>לא מוחקים את הפרויקט הישן</b>, ולא ממשיכים לעבוד בו. הוא נשאר כגיבוי לקריאה.</div></li>
+  </ol>
+</section>
+
+<section>
+  <h2>מה עובר לבד, ומה צריך לחבר</h2>
+  <ul class="plain">
+    <li><b>עובר לבד (שייך לחשבון שלך):</b> כל הדפים והקישורים, האתר עם הסימונים וההזמנות, תיבת התמונות, הסקילים ששמרת, וחשבון ה-GitHub.</li>
+    <li><b>מחברים בפרויקט החדש (פעם אחת):</b> המאגר <b>sara-closet</b> בהגדרות הפרויקט ← Repositories (צעד 3 למעלה).</li>
+    <li><b>עובר דרך ההודעה שמדביקים:</b> הזיכרון של הפרויקט (החוקים, ההיסטוריה) וטבלת המשימות. Claude החדש מעתיק אותם מהדף הזה.</li>
+    <li><b>סקילים:</b> שני הסקילים שהוצעו ב-25/10 לא נשמרו. הצעתי שניים חדשים בשיחה: <b>sara-closet</b> (איך עובדים על האתר והחוקים שלך) ו-<b>sara-avatar</b> (פרומפטים ואווטאר). ✓ שניהם נשמרו (25/10, 18:26) ועובדים בכל פרויקט.</li>
+    <li><b>מחברים (Connectors):</b> אין כרגע אף אחד מחובר, אז אין מה להעביר. חיבור המייל להזמנות עדיין מחכה להחלטה שלך.</li>
+    <li><b>הוראות קבועות לפרויקט:</b> לפרויקט הישן לא היו כאלה. אם תרצי, אפשר להדביק בהגדרות הפרויקט החדש שורה אחת: "תמיד לקרוא קודם את HANDOFF.md במאגר sara-closet ולענות בעברית עם הטבלה".</li>
+  </ul>
+</section>
+
+<section>
+  <h2>מה עלול להשתבש, ומה עושים</h2>
+  <ul class="plain warn">
+    <li><b>העלאת תמונות בפרויקט החדש.</b> החסימה הייתה של הפרויקט הישן, אז בחדש זה אמור לעבוד מחדש. אם גם שם זה ייחסם: שולחים דרך <a href="https://claude.ai/artifact/6QchawxHTNjJ14ZQxeok6F">תיבת התמונות</a> מהמחשב, כמו היום.</li>
+    <li><b>Claude החדש לא זוכר את השיחות עצמן.</b> הוא יודע רק מה שבארכיון (וזה הרבה: 36 קבצי זיכרון, 349 שורות משימות, הוראות מסירה). אם הוא שואל משהו שכבר סיכמנו, תגידי לו "תבדוק בדף המעבר".</li>
+    <li><b>הסימונים, ההזמנות, הלוקים והתמונות שהעלית באתר</b> שמורים בתוך האתר עצמו, באותו קישור. הם לא הולכים לאיבוד. הסכנה היחידה: אם Claude החדש יפרסם את הארון כקישור חדש, שם הם לא יופיעו. כתבתי לו במפורש לעדכן תמיד את אותו קישור. אם פתאום הארון ריק, זה מה שקרה, והפתרון: "תעדכן את הקישור HY6no4…".</li>
+    <li><b>שני מקומות עובדים יחד.</b> אם ממשיכים גם בפרויקט הישן וגם בחדש על אותו אתר, הגרסאות יכולות לדרוס אחת את השנייה. מהרגע שעוברים, עובדים רק בחדש.</li>
+    <li><b>אם לא יוצרים מאגר GitHub:</b> הקוד המלא נשאר רק בפרויקט הישן. Claude החדש עדיין יכול להמשיך מהאתר המפורסם ומהארכיון, אבל זה פחות בטוח, ובניית האתר מחדש עלולה להיות חלקית.</li>
+    <li><b>הפאה בדף ה-360 זמנית</b> (עם הפנים של הבובה הקודמת) עד שיגיע הגיליון מ-GPT. זה ידוע, לא תקלה.</li>
+    <li><b>בפעם הראשונה</b> האתר עשוי לבקש שוב אישורים (העלאה, שליחת תמונה ל-Claude). מאשרים כרגיל. ובטלפון פותחים את האתר ב-Chrome, לא בתוך האפליקציה של Claude.</li>
+    <li><b>בטבלה המלאה יש שורות "מחכה" ישנות</b> שכבר התקדמו בשורות מאוחרות יותר. הרשימה "מה עוד פתוח" למטה היא המצב האמיתי.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>מה עוד פתוח (המצב האמיתי עכשיו)</h2>
+  <div class="topic"><h3>האווטאר החדש ב-360</h3>
+  <ul class="plain">
+    <li><b>פאה:</b> את מריצה ב-GPT את הפרומפט בשני חלקים (צילום מקדימה עם הפאה, ואז 8 זוויות). כשהגיליון מגיע, Claude מיישר אותו על הבובה ומחליף את הפאה הזמנית.</li>
+    <li><b>האווטאר בארון:</b> רק האווטאר החדש, הישנים יורדים מהבחירה. מחכה ל-2 תמונות הארון עם הראש החדש (אמרת: קודם הפאה).</li>
+    <li><b>להלביש מחדש את הבובה החדשה</b>, פריט אחד כל פעם: חצאית ג'ינס, חולצה כחולה, חגורה עם אבנים, נעליים שחורות, שרשרת, עגילים, מטפחת כחולה.</li>
+    <li>אחר כך: האווטאר ה-360 נכנס לסטודיו בארון כאפשרות נוספת, וכל פריט מתחלף לבד (חצאית, ג'קט, נעליים, כיסוי/מטפחת/פאה, איפור).</li>
+  </ul></div>
+  <div class="topic"><h3>הזמנות</h3>
+  <ul class="plain">
+    <li>הזמנת טמו מ-25/10 (17 מוצרים): מחכה לתמונות הגדולות.</li>
+    <li>הזמנות שיין הקודמות: מחכות לתמונות אמיתיות ממך.</li>
+    <li>החולצה שבוטלה: לסמן "💰 הכסף חזר" כשההחזר מגיע.</li>
+    <li>החולצה עם הפס בצבע אחר: צריך להעלות שוב.</li>
+    <li>חיבור המייל להזמנות אוטומטיות: הוצע, מחכה להחלטה שלך.</li>
+    <li>שהמסך לא יקפוץ למעלה ב"ניהול הפריט", ורשימת החזרות לפי הזמנות: נבנה ברובו בגרסה 178, לבדוק איתך.</li>
+  </ul></div>
+  <div class="topic"><h3>הארון החכם (3 פיתוחים גדולים, מחכים לאישור שלך)</h3>
+  <ul class="plain">
+    <li>מיקום וכביסה: צריך ממך שמות של החדרים והארונות, או תמונה של כל ארון.</li>
+    <li>מיון בגדים ישנים · יועצת קניות עם ארכיון. <a href="https://claude.ai/artifact/BaWyW7D1pks6ks8rezvnaD">התוכנית</a></li>
+    <li>אפליקציה לאחרות / Lovable: נגנז עד שהארון שלך גמור.</li>
+  </ul></div>
+  <div class="topic"><h3>דברים קטנים</h3>
+  <ul class="plain">
+    <li>היקף ראש, בשביל אורך המטפחות.</li>
+    <li>תמונות לתסרוקות 6–20, ל-13 הקשירות ול-20 האיפורים.</li>
+    <li>ידיים מעל שמלות וחולצות, צווארון בחצי צד, כפתור "✨ לתקן ב-GPT".</li>
+  </ul></div>
+</section>
+
+<section>
+  <h2>הקישורים שלך (לא משתנים)</h2>
+  <div class="links">
+    <a class="row" href="https://claude.ai/artifact/HY6no4fCJwNunBtm6GVA8V"><span>הארון של שרה (האתר)</span><span>פתיחה</span></a>
+    <a class="row" href="https://claude.ai/artifact/F2YZkYe3XnrEbBm2HFRGo2"><span>האווטאר שלי ב-8 זוויות</span><span>פתיחה</span></a>
+    <a class="row" href="https://claude.ai/artifact/T45B8XHpo1gawrzxv4vfGy"><span>אווטאר 360 ל-GPT (פרומפטים)</span><span>פתיחה</span></a>
+    <a class="row" href="https://claude.ai/artifact/6QchawxHTNjJ14ZQxeok6F"><span>תיבת התמונות</span><span>פתיחה</span></a>
+    <a class="row" href="https://claude.ai/artifact/N7e2QR7GghzC89Cc2F153a"><span>פרומפטים לאווטאר (5 תנוחות)</span><span>פתיחה</span></a>
+    <a class="row" href="https://claude.ai/artifact/J8xXwYNTqfBmR2wKadpPaA"><span>מערכת העיצוב</span><span>פתיחה</span></a>
+    <a class="row" href="https://claude.ai/artifact/BaWyW7D1pks6ks8rezvnaD"><span>תוכנית הארון החכם</span><span>פתיחה</span></a>
+    <a class="row" href="https://claude.ai/artifact/HBXg1gssefG2GfAQ8Upo22"><span>סיכום להמשך ב-Lovable</span><span>פתיחה</span></a>
+  </div>
+</section>
+
+<section>
+  <h2>החוקים שלך (עוברים לפרויקט החדש)</h2>
+  <ul class="plain">
+    <li>עברית, פשוט, חם וקצר. רוב העבודה מהטלפון, בלי עומס במסך.</li>
+    <li>כל עדכון נגמר בטבלה: מה ביקשת / מה עשיתי / מה עוד לא, כולל בקשות קודמות. לא שוכחים הוראות.</li>
+    <li>על האווטאר רק תמונות שהעלית במיוחד לאווטאר. אף פעם לא מהארון, ואף פעם לא הסרת רקע אוטומטית של האתר.</li>
+    <li>בחיתוך גיליונות מ-GPT מורידים רק את הרקע האפור. לבן הוא צבע של בגד ונשאר.</li>
+    <li>כל פרומפט ל-GPT = הודעה אחת, וכתוב בו מה קנית בדיוק. כשאת מבקשת "אותו פרומפט רק עם..." מקבלים בדיוק אותו נוסח עם השינוי.</li>
+    <li>הדרך שעובדת ב-GPT: אותה שיחה, קודם תמונה אחת (או תקריב פנים), אחר כך "8 זוויות, אל תשני את הפנים".</li>
+    <li>שומרים תמיד את התמונות המקוריות. עיצוב חמים. בודקים בטלפון ובמחשב לפני כל פרסום. אומרים בכנות מה אי אפשר, ואיך כן אפשר.</li>
+    <li>המידות שלך: גובה 156, חזה 94, מותן 73, ירכיים 96.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>מה עשינו עד היום, בקצרה</h2>
+  <ul class="plain">
+    <li><b>20–21/10:</b> העברת האתר מהחשבון הקודם, 658 פריטים מטמו ושיין, כפולים וזמני החזרה, תמונות מהירות, סרגל בנייד, חיפוש חכם, צבעים ודירוג לוקים, סטודיו עם אווטאר 5 תנוחות, קשירות למטפחות, עיצוב חדש (גרסאות 24–83).</li>
+    <li><b>22/10:</b> חיפוש חופשי, אווטאר עם כובע ועם פאה, גיליונות GPT בשני קבצים, העלאת בגד מ-GPT, התאמת חצאיות/שמלות לגוף, שכבת ידיים, מידות אמיתיות בפרומפטים (84–115).</li>
+    <li><b>23/10 (כולל שבת):</b> חולצות לפי כתפיים, 13 קשירות, "📦 ההזמנות שלי" עם הגיע/בדרך/חסר ואוהבת/מחזירה, צילום מוצר שמוצא את ההזמנה, התאמה אוטומטית (116–148).</li>
+    <li><b>24/10:</b> תיקון העלאה מהטלפון, הרשימה הכללית, תוכנית הארון החכם, הערכת עלות לאפליקציה (149–163).</li>
+    <li><b>25/10:</b> עלי אקספרס, פאנל ניהול עם כל המשימות, "בוטל – אזל מהמלאי", הזמנות טמו ושיין חדשות, מסך החזרות עם תמונות, "מה יש לי בארון" (164–179). והאווטאר ב-360: 7 פריטים כשקפים, בובה עם כיסוי ופנים חדשים, תיבת התמונות, פאה זמנית.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>כל מה שביקשת, שורה אחרי שורה</h2>
+  <p class="note">349 בקשות מכל השיחות, מטבלת המשימות של הארון.</p>
+  <div class="counts">
+    <span class="pill done">נעשה 297</span><span class="pill wait">נעשה, מחכה למשהו ממך 31</span><span class="pill open">פתוח 19</span><span class="pill no">לא אפשרי 2</span>
+  </div>
+  <div class="filt" role="group" aria-label="סינון">
+    <button type="button" data-f="all" aria-pressed="true">הכל</button>
+    <button type="button" data-f="wait" aria-pressed="false">מחכה</button>
+    <button type="button" data-f="open" aria-pressed="false">פתוח</button>
+    <button type="button" data-f="done" aria-pressed="false">נעשה</button>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>#</th><th>מה ביקשת</th><th>מה נעשה</th><th>הערה / עוד לא</th><th>מצב</th></tr></thead>
+    <tbody id="tb">
+<tr class="done"><td class="n">1</td><td>להסיר כיתוב &quot;קדמי&quot; מהגיליון, הבגד לא על הפנים</td><td>✓ גרסה 51 (אוטומטי בהעלאה) + גרסה 52 (ניקוי בגדים שכבר הועלו)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">2</td><td>השיער/הראש מעל החולצה, הראש בתוך הצווארון</td><td>✓ 51–52</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">3</td><td>רצועת צבעים/גרסאות לבגד (3 צבעים)</td><td>✓ 51</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">4</td><td>הראש לא חתוך טוב עם פאה/כיסוי</td><td>✓ 52 (באג רוחב הגוף) + 53 (שני ראשים, ראש רפאים בסיבוב)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">5</td><td>&quot;עם כיסוי&quot; לא עובד / 360 לא עובד</td><td>✓ 51</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">6</td><td>הכפתורים חתוכים במחשב</td><td>✓ 51 (שתי שורות) → 52 (סרגל מצומצם + &quot;⋯ עוד&quot;)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">7</td><td>סוודרים במשבצת</td><td>✓ 52 &quot;חולצה / סוודר&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">8</td><td>המגירה בתוך העמודה, לא על האווטאר</td><td>✓ 52</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">9</td><td>נקודה ירוקה + מיון &quot;מוכן לאווטאר&quot;</td><td>✓ 52 (מגירה + ארון)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">10</td><td>האווטאר החדש (מסורק, נעליים) ולא הישן</td><td>✓ 52 ברירת מחדל + בחירת בסיס</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">11</td><td>להגדיל יותר</td><td>✓ 52 זום עד ×5</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">12</td><td>פרומפט לתכשיטים: שרשרת / עגיל לכל אוזן / צמיד, לא מסתירים</td><td>✓ 53</td><td>לאווטאר יש חישוקי זהב משלו – אם תרצי, אווטאר בלי עגילים מ-GPT</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">13</td><td>בגד בלי גזירה מראה דוגמנית</td><td>✓ 53 אזהרה בסטודיו</td><td>הגזירה עצמה: 📥 5 תנוחות מ-GPT לכל בגד</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">14</td><td>עמודה רחבה יותר, צבעים בשורה/חלונית</td><td>✓ 54</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">15</td><td>משבצות קטנות בשורה (כולל ז׳קט)</td><td>✓ 56</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">16</td><td>סרגל גודל/הזזה נעלם אחרי בחירת חולצה</td><td>✓ 56 שורה דקה מתחת לכפתורים</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">17</td><td>סינון המגירה בשורה אחת</td><td>✓ 56</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="no"><td class="n">18</td><td>מקט בשיין ל-S17QJ_11</td><td>✗ אין מקט בהזמנה הזו</td><td></td><td><span class="pill no">לא אפשרי</span></td></tr>
+<tr class="done"><td class="n">19</td><td>שלישייה: לבחור צבע בסטודיו</td><td>✓ 57 &quot;🎨 צבע:&quot; בסרגל הדק</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">20</td><td>שורת הסינון חתוכה, כפתור חבוי ליד &quot;סיימתי&quot;</td><td>✓ 57 גופן קטן, נכנס ב-440px</td><td>בטלפון צר מאוד עדיין גלילה קלה</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">21</td><td>קטגוריות חסרות במשבצות</td><td>✓ 57 גרביונים, אביזר שיער, שמלות ערב</td><td>פיג׳מות/ילדים/גברים לא בלוקים</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">22</td><td>פסים אדומים שייעלמו כשלא נוגעים</td><td>✓ 57</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">23</td><td>הצוואר מעל החולצה, &quot;קדמי&quot; שנשאר</td><td>✓ 57 שכבת ראש עד הסנטר, ניקוי חזק יותר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">24</td><td>רואים זרועות ליד השרוולים</td><td>✓ 57 חולצות רחבות יותר (עד הזרועות)</td><td>תלוי בציור של GPT</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">25</td><td>תכשיט: לבחור מה יש בסט (רק שרשרת / שרשרת+צמיד…), גיליון 5 תצוגות התבלגן</td><td>✓ 58 צ&#x27;יפים &quot;בסט יש&quot;, פרומפט וחיתוך מותאמים, מגיליון לוקח את החזית</td><td>אפשר להעלות מחדש את הגיליון הקיים</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">26</td><td>&quot;מחקי&quot; בתכשיט לא מוחק</td><td>✓ 59 לחיצה אחת + ביטול</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">27</td><td>סימון &quot;שרשרת&quot; תקוע, לא יורד</td><td>✓ 60 אפשר להוריד כל סימון</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">28</td><td>שרשרת מכל הכיוונים כמו בחולצות</td><td>✓ 61 גיליון 5 כיוונים → צד/גב/חצי צד/יד על המותן</td><td>צד/גב הם קירוב – תגידי אם לא יושב טוב</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">29</td><td>הפרדה: להעלות עגילים בנפרד מהשרשרת</td><td>✓ 61 שורה לכל חלק עם פרומפט והעלאה משלו</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">30</td><td>השרשרת לא זזה / לא מגיבה לכפתורים</td><td>✓ 62 גרירה, צביטה, ↺ למקום</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">31</td><td>חצאיות צרות במותן, להרחיב בגד לא רק &quot;גודל&quot;</td><td>✓ 62 סליידרים רוחב/גובה/אלכסון + מותן רחב יותר כברירת מחדל באווטאר הישן</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">32</td><td>שרשרת מופיעה עם רקע / תמונת דוגמנית</td><td>✓ 62 תמונה מקורית לא עולה על הגוף, הערה מסבירה</td><td>להעלות גזירה מ-GPT בשורת השרשרת</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">33</td><td>בחלון התכשיט לראות את כל הכיוונים כמו בחולצות</td><td>✓ 62 5 תמונות כיוון בשורת השרשרת</td><td>צריך להעלות גיליון 5 כיוונים</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">34</td><td>מגירת חולצות ריקה / לא נותן להוסיף פריט שני</td><td>✓ 66 (ראו שורה 34 השנייה)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">35</td><td>גיליונות עגיל + שרשרת ירוק-זהב ב-5 כיוונים</td><td>✓ 63 שניהם נחתכים ל-5 כיוונים, כיתובים נמחקים, עגיל בגודל אמיתי</td><td>להעלות: שורת שרשרת ← גיליון שרשרת, שורת עגיל ← גיליון עגיל</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">36</td><td>להגדיל עגילים בנפרד מהשרשרת</td><td>✓ 64 ➖/➕ לכל חלק</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">37</td><td>שרשרת מסביב לצוואר, הקצוות מאחורה</td><td>✓ 65 הקצוות נעלמים מאחורי הצוואר, השרשרת גבוהה יותר</td><td>אם צריך – גררי / ➕ ➖</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">38</td><td>&quot;גודל&quot; מגדיל רק שרשרת, לבחור חלק</td><td>✓ 66 נוגעים בחלק → הוא נבחר → &quot;גודל&quot; רק עליו</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">34</td><td>מגירת חולצות ריקה / פריט שני חסום</td><td>✓ 66 הסיבה: סינון צבע שנשאר מהתכשיטים. עכשיו מתאפס + הודעה ו&quot;נקי סינון&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">39</td><td>איך מוצאים בארון מה שהכנתי לאווטאר</td><td>✓ 67 מיון &quot;🟢 מוכן לאווטאר קודם&quot; מציג רק מוכנים (או &quot;רק: 🟢 מסודר לאווטר&quot;)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">40</td><td>שיער/זרוע של האווטאר הישן מעל הבגד</td><td>✓ 67 שכבת הראש נחתכה מחדש: ראש+שיער+צוואר בלבד</td><td>הזרועות החשופות ליד שרוול רחב – סליידר רוחב או גיליון GPT</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">41</td><td>חולצה פתוחה: לראות את הצוואר, לא את הגב של החולצה</td><td>✓ 67 כפתור &quot;👤 צוואר מעל&quot; (אווטאר חדש); בישן תמיד</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">42</td><td>חולצה בפנים או בחוץ</td><td>✓ 67 כפתור &quot;👕 חולצה בפנים/בחוץ&quot; גם מהחצאית</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">43</td><td>לעבור שעה על כל הבאגים בסטודיו כמנהל מוצר ביקורתי, לתקן, רשימה ממוספרת</td><td>✓ 68 27 באגים תוקנו + 12 שדרוגים – רשימה: audit_v68/findings.md</td><td>ביקשת 1500 – נמצאו 47 אמיתיים (לא ממלאים מספר)</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">44</td><td>שדרוגים רציניים + סדר עבודה כתוב</td><td>✓ 68 התאימי לגוף, טיוטה, שמירה על סגירה, צביטה, גרירה בכל תנוחה, איך זה עובד; תוכנית: audit_v68/plan.md</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">45</td><td>מראה חדש &quot;2050&quot;: גופן, כפתורים, נראות, קל לתפעול</td><td>✓ 68 theme68: Heebo, גלולות, זכוכית, כרטיסים/חלונות מעוגלים, רקע בהיר חם</td><td>אם משהו פחות נוח – כתבי לי מה</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">46</td><td>האפליקציה תרוץ ממש מהר</td><td>✓ 68 WebP (−46%), קוד מכווץ, רינדור עצל</td><td>שלב הבא: טעינת קטגוריות לפי דרישה (שינוי גדול)</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="open"><td class="n">47</td><td>לנקות כל מה שלא רלוונטי (העלאות ישנות ל-GPT)</td><td>○</td><td>גרסה 70</td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="done"><td class="n">48</td><td>איך לשנות את האווטאר</td><td>✓ 96: האווטאר החדש (כובע ופאה) באתר; שינוי נוסף = כרטיס &quot;האווטאר החדש&quot; בדף הפרומפטים</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">49</td><td>&quot;הכל נראה אותו דבר&quot; – שינוי טוטלי: סדר, כותרות, עיצוב</td><td>✓ 69 מסך בית חדש, כרטיסים חדשים, סינון כגיליון תחתון, תפריט צף, גופן Rubik</td><td>מחכה למשוב שלך</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">50</td><td>הסטטיסטיקה (פריטים/טמו/שיין/שולם) תחת &quot;פרטים נוספים&quot;</td><td>✓ 69 אריח &quot;📊 פרטים נוספים&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">47</td><td>לנקות זרימות GPT ישנות</td><td>✓ 69</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">51</td><td>עוד 20 רמות: נראות, נוחות, התאמה לאווטאר</td><td>✓ 70 התאמה חכמה לכתפיים בכל תנוחה, צווארון פתוח, מגירה עם תמונות</td><td>המשך בתוכנית השדרוג</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">52</td><td>סט 3 חולצות: רק חולצה אחת עולה</td><td>✓ 70 כל צבע = אריח נפרד במגירה עם שם צבע (שחור/כתום/בורדו)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">53</td><td>צווארון: רואים את הגב של החולצה בפנים</td><td>✓ 70 החלק האחורי נחתך בתצוגה (חזית), כפתור &quot;⭕ צווארון&quot;</td><td>חצי צד: עוד לא</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">54</td><td>כיסויים לא עובדים, אי אפשר לבחור כיסוי שני</td><td>✓ 70 אפשר להחליף כיסוי תמיד, גם במצב פאה</td><td>רק ל-3 כיסויים יש תמונת אווטאר</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">55</td><td>מגירה מראה רק מחירים</td><td>✓ 70 תמונות ושמות, בלי מחירים</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">56</td><td>חוק: באווטאר רק תמונות אווטאר שהעלית, לא מהבוק ולא מה שהאתר עיבד</td><td>✓ 70 כל תמונה אחרת נחסמת; האתר גם לא מחליף יותר את התמונות שלך בעותקים &quot;מנוקים&quot;</td><td>31 פריטים מוכנים לאווטאר</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">57</td><td>תוכנית שדרוג מלאה</td><td>✓ 70 מסמך &quot;תוכנית שדרוג – הארון של שרה&quot;</td><td>מחכה לבחירת סדר</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">58</td><td>מסך 5 התנוחות: החולצה לא במידה, &quot;קדמי&quot;, אי אפשר להגדיל</td><td>✓ 71 אותה התאמה חכמה, ➖➕⬆⬇↺ נשמר לבגד</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">59</td><td>תוכנית עיצוב + שדרוג עיצוב גדול</td><td>✓ 72 עיצוב ראשון; ✓ 73 סוכן עיצוב: 3 כיוונים A/B/C בשחור-לבן עם קאמל, מתג באתר</td><td>מחכה לבחירה שלך, ואז כל האתר בכיוון שנבחר</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">60</td><td>לחפש באגים לבד, בלי צילומים</td><td>✓ 72 רובוט לוחץ על כל כפתור ב-17 מסכים + סקירת צילומים; תוקנו 8</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">61</td><td>אווטאר חתוך במסך הבית, גם עם פאה</td><td>✓ 73 דמות מלאה, מתחלפת כיסוי/פאה (במחשב שתיהן)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">62</td><td>בחירה ריאלית בין כמה עיצובים לפני בניית כל האתר</td><td>✓ 73 כפתור A/B/C בראש האתר</td><td>מחכה לבחירה</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">63</td><td>&quot;פרטים נוספים&quot; תקוע, גלילה וגבולות מסך בכל האתר</td><td>✓ 73 נגלל; רובוט בדק 19 מסכים בטלפון ובשני גדלי מחשב; תוקנו גם המגירה ותפריט &quot;עוד&quot; בסטודיו</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">64</td><td>הנקודה הירוקה &quot;מוכן לאווטאר&quot; על הכרטיסים</td><td>✓ 74 חזרה (נשברה ב-72: פונקציה בעיצוב דרסה את ציור הכרטיסים)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">65</td><td>בסטודיו מגירה ריקה (חצאיות וכו&#x27;)</td><td>✓ 74 במסך נמוך המגירה התכווצה לאפס; בטלפון שורת החיפוש הסתתרה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">66</td><td>פנים כפולים בתנוחת צד</td><td>✓ 74 כנראה תמונה ישנה שמורה בדפדפן – עכשיו כל תמונות האווטאר נטענות מחדש בכל גרסה</td><td>לבדוק אצלך</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">67</td><td>עיצוב A – מגזין לכל האתר</td><td>✓ 76 כל המסכים, B/C נמחקו, נקודות מוכנות גדולות יותר</td><td>משוב שלך</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">68</td><td>סיבוב שרשרת</td><td>✓ 75 ↺↻ לכל תנוחה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">69</td><td>מחק לבגד על הדמות + כלים כמו פוטושופ (מתיחה)</td><td>✓ 75 🧽 מחק (3 גדלים, ביטול, ניקוי) לכל תנוחה; מתיחה = רוחב/גובה/לכסון</td><td>כלים נוספים לפי בקשה</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">70</td><td>עריכה ותיקון בתוך &quot;כל התנוחות&quot;</td><td>✓ 75 + תוקן באג: חזית וגב קיבלו מידות של צד</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">71</td><td>חולצות בסיס בצבעים מתחת לבגד עם פתח</td><td>✓ 75 משבצת &quot;גופיית בסיס&quot;, 13 צבעים + צבע חופשי, סימון בחלון הפריט</td><td>צריך לסמן חולצה עם תמונת אווטאר</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">72</td><td>שדרוגים מהתוכנית (עברת על הכל)</td><td>✓ 77 &quot;מה חסר לאווטאר&quot; לפי לבישות + העלאה; &quot;לנסות עליי&quot; ו-✓/✗ ל-5 תנוחות בחלון הפריט; עיגולי צבע וגודל תצוגה מעל הארון; החלקה על הדמות להחלפת תנוחה; שורת כיסויי ראש מתחת לדמות; &quot;משהו לא עובד&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">73</td><td>עיצוב ושיפורים</td><td>✓ 77 &quot;לוק היום&quot; במסך הבית + פס &quot;כמה מוכנים על הדמות&quot;; טיפים בפעם הראשונה בבניית לוק</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">74</td><td>עוד מהתוכנית</td><td>✓ 83 (ראו שורה 79)</td><td>היה: העלאת כמה גיליונות GPT בבת אחת; התאמה חכמה לגב/יד על המותן ושמלות לפי מותניים; עמוד בדיקה אוטומטי לכל בגד; החלקה על בגד לפריט הבא; חיפוש קולי; טעינה מהירה יותר; לוח שבועי ואלבום אירועים</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">75</td><td>עוד שדרוגים ויזואליים: &quot;מה לובשים היום&quot; גדול מדי, הכל מרובע ויבש, אתר 2050</td><td>✓ 78 כותרת קטנה בגרדיאנט, פינות מעוגלות בכל האתר, רקע רך, כרטיסי זכוכית, סרגל תחתון צף, כפתורים בגרדיאנט, כניסה עדינה</td><td>משוב שלך</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">76</td><td>לחפש 50 שדרוגים</td><td>✓ 79 רשימה במסמך &quot;50 שדרוגים&quot; (<a href="https://claude.ai/artifact/6akg5GFJ3imJLPD4a2eEtJ">https://claude.ai/artifact/6akg5GFJ3imJLPD4a2eEtJ</a>); 12 בוצעו בגרסה 79</td><td>38 נשארו ברשימה</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">77</td><td>פרומטים ל-GPT לכל סוג בגד (5 זוויות)</td><td>✓ 80 כפתור &quot;פרומטים ל-GPT&quot; ב&quot;מה חסר&quot;, ב&quot;פרטים נוספים&quot; ובסטודיו; 📋 לכל בגד ברשימה עם השם והצבע</td><td>✓ 86 חגורה/נעליים/תיק: יש מקום להעלות 5 תנוחות</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">78</td><td>הזמנה חדשה בשיין (22/10)</td><td>✓ 81 נוספו 11 פריטים: 10 מהזמנה GSH19824X0015Y6 (₪291.63) + רפידות עקב מ-GSH19824X0015R2 (₪7.10), עם תמונות שנחתכו מהצילומים</td><td>✓ 82 התמונות שלך: תמונה ראשית חדה + 1–6 תמונות נוספות לכל אחד מ-11 הפריטים (גלריה בחלון הפריט)</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">79</td><td>להשלים את 38 השדרוגים שנשארו מתוך 50</td><td>✓ 83 – 31 חדשים + 1 חלקי; 4 כבר היו (כותרת נדבקת, סרגל אחד, השוואה, שמירה כתמונה); פרומטים נכנסו ב-80, פירוט במסמך &quot;50 שדרוגים&quot;</td><td>✓ 84: #32 גב/יד על המותן גם לפי הידיים והמרפק; #49 קבצי הקוד אוחדו (האתר יצא זהה). כל 50 הושלמו</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">80</td><td>טבלה מסודרת של כל השינויים מגרסה 50, לפי גרסה</td><td>✓ מסמך &quot;כל השינויים מגרסה 50&quot;: <a href="https://claude.ai/artifact/VKEMzizpkT8jy5QvkpEBzJ">https://claude.ai/artifact/VKEMzizpkT8jy5QvkpEBzJ</a></td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">81</td><td>שדרוג לנייד: מסכים שלא נפתחים, אי אפשר לשנות גודל בגד מהצד</td><td>✓ 84 שתי אצבעות ליד הבגד משנות את הגודל בכל 5 התנוחות (גם צד), כפתורי ➖ גודל ➕; תפריט &quot;⋯ עוד&quot; כבר לא פותח מסך אחר; פס הקטגוריות נעלם כשלא גוללים; המיקרופון לא מסתיר את החיפוש</td><td>לשלוח צילום מסך של מסך שעדיין לא נפתח בטלפון</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">82</td><td>להשלים מה שלא נעשה ב-83</td><td>✓ 84 #32 + #49</td><td>בגב/מותן: כשהשרוול ב-GPT צר מהזרוע רואים פס דק של יד, מתקנים ב-➖ ➕</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">83</td><td>סרגל חיפוש חופשי בכל האתר (כמו פרומטים)</td><td>✓ 85 שורת החיפוש מוצאת גם מסכים, כלים, פרומטים ולוקים שמורים</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">84</td><td>תמונות האווטאר ב-5 תנוחות בפרומטים, להעתיק ולהוריד</td><td>✓ 85 עם כיסוי / עם פאה, כל תנוחה + גיליון אחד, 📋 ו-⬇</td><td>אם ההעתקה חסומה בטלפון: לחיצה ארוכה על התמונה</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">85</td><td>שדה בפרומט לכתוב מה לשפר</td><td>✓ 85 &quot;מה לשפר בפרומט&quot; → מתוקן במקום ונשמר כגרסה שלך, ↺ חזרה למקור</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">86</td><td>גיליון אווטאר גם עם כיסוי ראש</td><td>✓ 85</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">87</td><td>איפה פרטי המוצר (צבע, מידה וכו&#x27;)</td><td>✓ 85 כרטיס &quot;פרטי המוצר&quot; בראש חלון הבגד + העתקה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">88</td><td>איפה מעלים 5 תנוחות לחגורה (נמחק)</td><td>✓ 86 חלון החגורה (וגם נעליים ותיק): &quot;👗 החגורה על האווטר ב-5 תנוחות&quot;; החגורה נכנסת לבד לקו המותן בכל תנוחה</td><td>נעליים ותיק: מיקום התחלתי, אפשר להזיז ולהגדיל</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">89</td><td>כמה פריטים במוצר אחד (3 חגורות, סט ז&#x27;קט + שמלה): כל אחד לחוד באווטאר, לבדוק בכל האתר</td><td>✓ 87 האתר מזהה לבד 18 מוצרים כאלה; בחלון המוצר &quot;✂ לפרק לפריטים נפרדים&quot;, ולכל פריט העלאת 5 תנוחות משלו; רשימה &quot;פירוק סטים וחבילות&quot; בחיפוש</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">90</td><td>3 חגורות: לבחור אחת מהן באווטאר כמו בחולצות</td><td>✓ 87 כל חגורה שהועלתה ב&quot;➕ עוד גרסה (צבע אחר)&quot; היא אריח נפרד בבניית לוק (גם נעליים ותיק)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">91</td><td>הנקודה הירוקה על הכרטיס (יש/אין אווטאר) נעלמה</td><td>✓ 87 חזרה גם לחגורות, נעליים ותיקים (לא היתה להם כי עד 86 הם לא היו באווטאר). בסט מפורק: ירוק כשלכל הפריטים יש אווטאר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">92</td><td>הנקודה באמצע הכרטיס מכוערת, לשים למעלה בקצה</td><td>✓ 88 הנקודה בפינה העליונה של התמונה; תווית &quot;חול/שבת&quot; זזה קצת הצידה כדי לא להתנגש</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">93</td><td>לעבור על כל מה שביקשתי היום</td><td>✓ 89 עברתי על כל ההודעות מ-22/10; נמצא ותוקן: אחרי פירוק סט, החלקים נספרו פעמיים ב&quot;תובנות&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">94</td><td>כפולים מופיעים פעמיים בארון; גלריית כפולים + &quot;זה לא כפול&quot;</td><td>✓ 89 כל קבוצת כפולים מופיעה פעם אחת (20 קבוצות, 23 כרטיסים הוסתרו); &quot;👯 כפולים&quot; בשורת הכלים ועל הכרטיס; &quot;↩ זה לא כפול&quot;, &quot;⭐ שזה יוצג בארון&quot;, &quot;↺ להחזיר לכפולים&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">95</td><td>&quot;פרומפט ל-GPT&quot; בחלון הבגד יקפיץ לפרומט של אותו סוג</td><td>✓ 89 נפתח חלון הפרומטים על הסוג של הבגד, עם שם הבגד, וגולל לשדה &quot;💬 מה לשפר&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">96</td><td>אין שדה לכתוב מה לשפר בפרומט</td><td>✓ 89 השדה נוסף מיד כשהחלון נפתח ומודגש בכרטיס צבעוני</td><td>אם עדיין לא רואים: לסגור ולפתוח את האתר</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">97</td><td>החיתוך מ-GPT הוריד לבן מהבגד (שמלה לבנה עם פרחים, שמלת שמנת, כיסויים לבנים)</td><td>✓ 90 חותך חדש: מוריד רק את הרקע האפור, כל לבן בבגד נשאר. נבדק על שתי השמלות שלך ועל כיסוי לבן</td><td>בגדים שכבר הועלו נשמרו חתוכים: צריך להעלות שוב את השמלה הלבנה, שמלת השמנת והכיסויים הלבנים</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">98</td><td>חוק חדש: מ-GPT מורידים רק את האפור, הלבן הוא צבע אמיתי</td><td>✓ 90 נכנס לחוקים ולזיכרון</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">99</td><td>כפתור &quot;להעביר לכפולים&quot; בחלון הבגד (אותה שמלה ב-S וב-M), ואפשרות להחזיר</td><td>✓ 90 &quot;👯 להעביר לכפולים&quot; בכרטיס &quot;פרטי המוצר&quot; → בוחרים את הפריט השני (הדומים למעלה + חיפוש). בגלריה: &quot;↩ זה לא כפול&quot; מחזיר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">100</td><td>הכפתור &quot;כפולים 20&quot; לא פותח, וכפולים עדיין מופיעים פעמיים</td><td>✓ 90 חיזקתי את הכפתור ואת ההסתרה; אצלי נפתח בטלפון ובמחשב גם עם הנתונים שלך</td><td>לסגור ולפתוח את האתר. אם עדיין לא נפתח: צילום מסך</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">101</td><td>דאבל-קליק על מטפחת במגירה של האווטאר יפתח את חלון המטפחת (העיצובים)</td><td>✓ 91 · נכתב: ⓘ על כל פריט במגירה + לחיצה כפולה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">102</td><td>המחק לא מופיע / לא עובד</td><td>✓ 91 · המחק קיים בשורת הבגד; עכשיו &quot;🧽 מחק&quot; בולט יותר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">103</td><td>נוגעת בצד ימין והבגד זז שמאלה</td><td>✓ 91 · נמצא: בצד ובחצי צד מהכיוון השני הגרירה (וגם המחק) היו הפוכים. תוקן</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">104</td><td>העורף של השמלה נראה, לא נראה שאני בתוך השמלה</td><td>✓ 91 · ההתאמה החדשה שמה את הצווארון על הצוואר</td><td>בעבודה</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">105</td><td>בצד השמלה הפוכה ולא יושבת על הגוף</td><td>✓ 91 · נמצא: מרכז הגוף בצד היה מחושב לא נכון (הבגד זז אחורה)</td><td>בעבודה</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">106</td><td>לא נותן להגדיל עוד</td><td>✓ 91 · אצלי עולה עד פי 4; בודקת שוב</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">107</td><td>הפאה לא גזורה טוב, רואים זרועות</td><td>✓ 91 · נבדק: השיער נקי, מה שמציץ הוא הכתפיים של הדמות כשהבגד צר/גבוה. מתוקן בהתאמה החדשה</td><td>בעבודה</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">108</td><td>בפאה, סיבוב 360 מראה כיסוי</td><td>✓ 91 · נמצא: &quot;בלי&quot; כיסוי השאיר מצב כיסוי; חזית/גב הראו שיער ושאר התנוחות כיסוי. תוקן: בלי כיסוי = פאה בכל התנוחות</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">109</td><td>הגדלה/מתיחה בתנוחה אחת תחול על כל התנוחות</td><td>✓ 91 · נכתב</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">110</td><td>מברשת שמעתיקה בד ממקום למקום (להאריך שרוול, לכסות)</td><td>✓ 91 · &quot;🖌 מברשת בד&quot; נכתב</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="no"><td class="n">111</td><td>השלמה אוטומטית עם AI</td><td>✗ אי אפשר בתוך האתר (אין כלי שמצייר תמונות). בשביל זה GPT</td><td></td><td><span class="pill no">לא אפשרי</span></td></tr>
+<tr class="done"><td class="n">112</td><td>לשלוח שוב תמונת אווטאר לפאה?</td><td>✓ ענינו: לא צריך כרגע</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">113</td><td>מברשת צבע: דוגמים צבע ומורחים</td><td>✓ 91 · &quot;🎨 מברשת צבע&quot; + &quot;💧 דגימה&quot; + בחירת צבע, נכתב</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">114</td><td>גודל מברשת ➖ ➕ מקטן מאוד לגדול, גם למחק</td><td>✓ 91 · נכתב (אותו גודל למחק ולשתי המברשות)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">115</td><td>הבגד נראה מודבק ולא לבוש</td><td>✓ 91 התאמה חדשה לשמלות: כתפיים, מותן, אורך. הכפתורים: לפשט ולהסביר</td><td>בעבודה</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">116</td><td>הכפתורים מבלבלים (צוואר מעל, קדימה, אחורה, היפוך, עם רקע...)</td><td>✓ 91 מוסתרים תחת &quot;🛠 כלים&quot;, עם הסבר בכל כפתור ו&quot;❓ מה עושים הכפתורים?&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">117</td><td>פרומפט עם המידות שלי, שהבגדים יגיעו במידה הנכונה</td><td>✓ 91 · קיבלתי: גובה 156, חזה 85, מותן 70, ירכיים 95. נכנסות לכל פרומפט בגד + קווי הגוף של האווטאר; שדה &quot;📏 המידות שלי&quot; בחלון הפרומפטים</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">118</td><td>ב&quot;כל התנוחות&quot; לא עלתה השמלה בחזית ובגב</td><td>✓ 91 · נמצא ותוקן: אחרי לחיצה על &quot;📷 תמונה על הדמות&quot; (תמונת מוצר), החזית והגב מנסים להציג תמונת מוצר והחוק מסתיר אותה. מתקנת: לבגד עם תמונות אווטאר תמיד תמונת האווטאר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">119</td><td>לגרור את הבגד בעכבר (לא רק בכפתורים)</td><td>✓ 91 · בבמה זה עובד; ב&quot;כל התנוחות&quot; להוסיף גרירה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="open"><td class="n">120</td><td>בצד הפנים כפולות</td><td>✱ לא חוזר אצלי ב-91</td><td>אם יחזור: צילום מסך</td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="done"><td class="n">121</td><td>רקע צבעוני מאחורי האווטאר, גלריה של כ-50 רקעים יפים</td><td>✓ גרסה 93: 24 רקעים מצוירים + רקע שלך (תמונה או תיאור), בחלון &quot;🖼 רקע ומסגרת&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">122</td><td>מסגרת: האווטאר קצת יותר קטן, עם ריווח 3 ס״מ למעלה ולמטה ו-6 ס״מ בצדדים</td><td>✓ גרסה 93: מסגרת בצבע סביב האווטאר, 3 רוחבים (צמוד = 6 ס&quot;מ בצדדים / רחב / מלא)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">123</td><td>כפתור AI שמכין רקע לפי תיאור</td><td>✓ גרסה 93: &quot;✨ צרי רקע&quot; – כותבים תיאור ו-Claude מצייר רקע מאויר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">124</td><td>הטבלה תמיד מעודכנת, כל הודעה חדשה נכנסת לטבלה</td><td>✓ אחרי כל הודעה שלה: טבלה מלאה של כל הפתוחים בצ&#x27;אט</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">125</td><td>כשמשהו &quot;אי אפשר&quot; – להגיד איך כן אפשר (השלמה עם AI)</td><td>✓ הוסבר. ○ כפתור &quot;✨ לתקן ב-GPT&quot;: מסמנים אזור, מורידים תמונה מסומנת + פרומפט מוכן, מעלים חזרה ב&quot;🔄 החליפי&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">126</td><td>למתוח את כל הבגדים ישר על הבובה, בלי להעלות שוב</td><td>✓ 91 שמלות וסטים: אוטומטי (כתפיים, מותן, אורך). ○ חולצות/סוודרים/חצאיות בשלב הבא. לוק ישן: &quot;↺ למקום&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">127</td><td>הסרגל של הבגד (הקודם/הבא, מחוונים, שורות כפתורים, תמונה על הדמות) תופס מלא מקום ומקטין את המסך</td><td>✓ 91 שורה אחת: שם, → ←, ➖ גודל ➕, &quot;🛠 כלים&quot; פותח את כל השאר. במחשב הסרגל עבר לצד שמאל</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">128</td><td>הריבועים שמלה/חולצה/גופייה/חצאית... תופסים מקום</td><td>✓ 91 רק מה שלבוש + &quot;➕ עוד בגד&quot;; אחרי שבוחרים, הרשימה נסגרת</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">129</td><td>לראות את עצמי גדול + זכוכית מגדלת לתמונה הסופית</td><td>✓ 91 במחשב הדמות כמעט פי 2 (635 במקום 376). 🔍 ליד ➕➖ פותח את הלוק במסך מלא עם הגדלה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">130</td><td>ההגדלה (+) מגדילה רק את הפנים ולא נותנת לזוז</td><td>✓ 91 כשמוגדל: גוררים כדי לזוז למעלה/למטה; הגלגלת מגדילה איפה שהעכבר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">131</td><td>שרשרת זזה הפוך (ימינה↔שמאלה)</td><td>✓ 91 נבדק: בצד מהכיוון השני השרשרת זזה לאותו כיוון של היד</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">132</td><td>&quot;לוק היום&quot; במסך הראשי ענק</td><td>✓ 91 שורה קטנה: תמונות קטנות וכפתורים קטנים</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">133</td><td>הכלים (גודל, סיבוב, מחוונים, כפתורים) נעלמו מאחורי &quot;🛠 כלים&quot; – ביקשתי רק להוציא אותם מלמעלה, לא להסתיר</td><td>✓ 92 הכל גלוי תמיד, בצד שמאל (במחשב)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">134</td><td>לחיצה על הדמות תפתח חלון נפרד רק עם התמונה שלי בבגד</td><td>✓ 92 לחיצה על הפנים/ידיים/רקע (לא על בגד) או לחיצה כפולה פותחת חלון עם הגדלה וגרירה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">135</td><td>נתקעתי מוגדלת על הפנים, אי אפשר להקטין/לזוז/לאפס</td><td>✓ 92 נמצא: לחיצה כפולה הפעילה &quot;זום פנים&quot; ישן ונעל את המסך. בוטל. הכפתור &quot;↺ כל הגוף&quot; תמיד גלוי כשמוגדל, הגלגלת כבר לא מגדילה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">136</td><td>העלאה מ-GPT בשני קבצים: קובץ 1 = 3 תמונות (קדמי, צד, גב), קובץ 2 = 2 תמונות (חצי צד, יד על המותן). לכל סוגי הבגדים</td><td>✓ גרסה 99: &quot;📥 בגד מ-GPT · 2 קבצים&quot; לכל סוגי הבגדים</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">137</td><td>כל הפרומפטים: לבקש 2 קבצים (3+2), עם המידות שלי, מותאם לאווטאר</td><td>✓ גרסאות 99–114, ושוב בשבת (גרסה 148): 2 קבצים, המידות שלך, השם המלא והצבע, כתפיים ושרוולים על הגוף</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="open"><td class="n">138</td><td>היקף ראש + אורך מטפחות שיתאימו לראש</td><td>○ ממתין להיקף ראש ממך</td><td></td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="done"><td class="n">139</td><td>פרומפט לאווטאר חדש (עם כיסוי ובלי), גם הוא 2 קבצים 3+2</td><td>✓ גרסה 96: האווטאר החדש עם כובע ועם פאה, 2 קבצים</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">140</td><td>מסגרת סביב האווטאר: 6 ס&quot;מ לכל צד, 3 למעלה ו-3 למטה, הכל במסך בלי גלילה</td><td>✓ גרסה 93 (כמו 122)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">141</td><td>לראות את הלוק בגדול בחלון חדש, כמו חלון &quot;כל התנוחות&quot;</td><td>✓ גרסה 149: בחלון &quot;🧍 הלוק בכל התנוחות&quot; כפתור &quot;⛶ בגדול&quot; – תנוחה אחת על כל המסך, ‹ › או החלקה לתנוחה הבאה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="open"><td class="n">142</td><td>תסרוקות לפאה: כ-20 לבחירה (חול, שבת, קוקו, סרט, אירוע, חתונה, עבודה, ספורט, קצר)</td><td>○ בתוכנית: כל תסרוקת = שכבת פאה נפרדת (2 קבצים), בוחרים בסטודיו</td><td></td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="done"><td class="n">143</td><td>10 קשירות לכל כיסוי ראש בתמונה אחת (2 שורות של 5), לפי מידות הראש שלי</td><td>✓ גרסאות 119–120: 13 קשירות, פרומפט לכל אחת; בשבת (148) המטפחת יושבת על הראש גם ביד על המותן</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="open"><td class="n">144</td><td>פנים: אותם פנים בדיוק, פחות חיוורת, קצת צבע וחיוך קטן</td><td>○ בתוכנית האווטאר החדש</td><td></td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="open"><td class="n">145</td><td>10 אפשרויות איפור לבחירה (בסיס + איפור כשכבה)</td><td>○ בתוכנית: 10 איפורים בתמונה אחת לבחירה, לאהובים 3+2</td><td></td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="done"><td class="n">146</td><td>להוריד את העגילים מהאווטאר; עגילים, שרשרת וצמיד כקטגוריות נפרדות, סט נשאר יחד אבל אפשר לערבב</td><td>✓ לאווטאר אין עגילים (נבדק 23/10). עגיל, שרשרת וצמיד – כל אחד בשורה משלו בחלון התכשיט</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="open"><td class="n">147</td><td>נעליים עם עקב: איך האווטאר מתאים כשהנעל גבוהה</td><td>✱ דף הפרומפטים 12: כרטיס &quot;על נעל עם עקב&quot; (6 ס״מ מאחור, 1 מקדימה). כששני הקבצים חוזרים מ-GPT – לשלוח, ואני מחברת: האווטאר עולה על העקב לבד כשבוחרים נעל עם עקב</td><td></td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="open"><td class="n">148</td><td>האיפור והאווטאר לא משנים את הפנים ואת מבנה הגוף – שאראה אני. גם תמונה אחת טבעית בלי איפור + 10 עם איפור</td><td>○ בתוכנית: חוק בכל פרומפט, 1 טבעי + 10 איפורים</td><td></td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="done"><td class="n">149</td><td>בגד מסתובב (תלת מימד / GIF) מ-GPT</td><td>✓ 150: כפתור 🎞 360 – פרומפט ל-GPT/סרטון, העלאה, נשמר עם הלוק ומוצג ב-⛶ בגדול</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">150</td><td>בגד יושב על הדמות מיד כשמעלים, בלי למתוח – גם בסיבוב 360</td><td>✓ גרסה 148: התאמה אוטומטית לכל 5 התנוחות – גם ל-33 הבגדים שצוירו על האווטאר הקודם</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">151</td><td>שרשראות וצמידים שטוחים, לא יושבים על הגוף</td><td>✓ שרשרת עם תמונה לכל תנוחה (מאז גרסה 61); בשבת הפרומפט מבקש גם את החלק שמאחורי הצוואר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="open"><td class="n">152</td><td>תיק על הכתף/בצד, מעיל וג&#x27;קט שיישבו טוב</td><td>✱ ז׳קט/סוודר מעל חולצה עובד (148). תיק: הפרומפט מוכן, עוד אין תיק עם תמונות לאווטאר</td><td></td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="open"><td class="n">153</td><td>רק האווטארים והתמונות החדשים</td><td>✱ עודכן (16:19): בינתיים הישנים נשארים. נקודה 🟢 = אווטאר חדש, 🟠 = אווטאר ישן, 🔴 = עוד לא עלה</td><td></td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="done"><td class="n">154</td><td>GPT יודע להכין GIF של 360° (16 מסגרות, נבדק: עקבי) – להשתמש בזה</td><td>✓ גרסה 150: &quot;🎞 360&quot; בחלון כל התנוחות – פרומפט מוכן מהלוק, העלאת GIF/סרטון, נשמר עם הלוק ומוצג ב&quot;⛶ בגדול&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">155</td><td>מידות (תשובה 1): היקף ראש 52, מקו השיער לעורף 32, מאוזן לאוזן 30, כתפיים 45, מותן–רצפה 106, נעל 38</td><td>✓ נשמר; ייכנס לפרומפטים. לבדוק שוב כתפיים (45 נראה רחב)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="open"><td class="n">156</td><td>תשובה 2: בסיס עם שרוול קצר וגם ארוך, צווארון עגול סגור, חולצת בסיס שמתאימה לבגד</td><td>✱ הפרומפט מוכן בכרטיס &quot;האווטאר החדש&quot; (שמלת בסיס, שרוול קצר, צווארון עגול סגור). ממתין לקבצים ממך. גוף בשרוול קצר + צווארון עגול סגור; חולצת בסיס בשרוול ארוך כשכבה (2 קבצים) שהאתר צובע לכל צבע</td><td></td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="done"><td class="n">157</td><td>תשובה 3: כיפה דקה בצבע עור שמסתירה את כל השיער + פאה כשכבה</td><td>✓ אושר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">158</td><td>תשובה 4: הפאה שלה – גלים, חום כהה עם גוונים קלים; 20 תסרוקות מוכנות מראש בפרומפט (בעיקר חול: מדורג, גלים, פן מוברש, קצר; וגם אירוע)</td><td>✓ רשימת 20 בתוכנית; תצוגה ראשונה 2 תמונות של 10 (מקדימה), לאהובות 3+2</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">159</td><td>איפור: עדין, חום / אדום-חום, קצת עיניים וריסים, אודם, סומק, טיפה מייקאפ, זוהר; יפה אבל עדיין אני, בכמה צבעים</td><td>✓ רשימת 1 טבעי + 10 איפורים בתוכנית</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">160</td><td>עוד איפורים עם מייקאפ (15 בסך הכל): לטשטש נמשים, קמטים קלים ושחור מתחת לעיניים</td><td>✓ נוספו 11–15 עם מייקאפ וקונסילר; 2 תמונות</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">161</td><td>תשובה 6 נעליים: בדרך כלל עקב 6 ס&quot;מ מאחור ו-1 ס&quot;מ מקדימה (משופע, כמעט שטוח), לא עקבים גבוהים</td><td>✓ גוף שני על נעל כזו (6/1); האתר מחליף אוטומטית כשבוחרים נעל עם עקב</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">162</td><td>בחלון הפריט: להוריד את כל תמונות המוצר (למשל 4) בבת אחת כדי להעלות ל-GPT</td><td>✓ גרסה 102: &quot;כל התמונות&quot; – בחירה ✓ והורדה/שליחה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">163</td><td>תשובה 8: לא למדוד; תיקים בגודל סטנדרטי, שרשראות עם תליונים – הפרומפט יודע לבד; השרשרת יושבת טוב על הגוף בכל הכיוונים</td><td>✓ בפרומפט: מידות סטנדרטיות מהתמונה; שרשרת לבושה על התבנית בכל 5 התנוחות (בגב רק השרשרת בעורף, בצד נופלת לפי החזה)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="open"><td class="n">164</td><td>הכיסוי: מה סיכמנו ואיך הוא ישב טוב על הראש</td><td>✱ הוסבר: אווטאר חדש עם כיפה דקה, כיסויים מצוירים על תבנית הראש (היקף 52) ב-2 קבצים + 10 קשירות</td><td></td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="done"><td class="n">165</td><td>וסט מעל חולצה, ועוד אפשרויות לשים כמה בגדים אחד על השני</td><td>✓ 93: משבצת &quot;וסט&quot; נפרדת בין החולצה לג&#x27;קט, כך שאפשר חולצה + וסט + ג&#x27;קט</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">166</td><td>הג&#x27;קט: האם הוא באותו מקום</td><td>✓ 148: משבצת &quot;ז׳קט / סוודר מעל&quot; מעל החולצה או השמלה, נבדק בכל התנוחות</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">167</td><td>להגדיל קצת את העגילים ולתמרן</td><td>✓ 93: שורת ➖➕ של שרשרת/עגיל נראית במחשב ובטלפון (הייתה חתוכה)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">168</td><td>לחיצה על התמונה פותחת אותה בגדול; העכבר נתקע</td><td>✓ 92 נבדק עם עכבר: חלון נפתח, גלגלת/גרירה/סגירה עובדים והסטודיו ממשיך לעבוד. לוודא שרואים 92 בפינה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">169</td><td>GPT חותך לפעמים יד/שרוול/חצאית</td><td>✓ 93: בכל פרומפט &quot;כל הבגד בתוך החלק עם מרווח, שום דבר לא נוגע בקצה&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">170</td><td>אווטאר נראה צר: גדול ופרופורציונלי, מרווח מסביב, מסגרת בצבעים לבחירה</td><td>✓ 93: מסגרת ב-14 צבעים, רוחב צמוד/רחב/כל המסך, גם בחלון 🔍 (זה גם 122, 140)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">171</td><td>רקעים יפים במקום אפור, לבחור כל פעם; לכתוב איזה רקע ושייווצר</td><td>✓ 93 (זה גם 121, 123): גלריית רקעים מצוירים + &quot;✍ כתבי רקע&quot; שנוצר בתוך האתר + העלאת תמונה כרקע</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">172</td><td>כיסויים יושבים על בובו (מאחור / גבוה-קוקס), שיישב יפה מכל הזוויות</td><td>✓ נכנס לפרומפטי הכיסויים: בובו נמוך / גבוה / בלי לפי הקשירה, אותו בובו בכל התנוחות (93)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">173</td><td>איך לבן לא נמחק ויושב טוב</td><td>✓ החיתוך מוריד רק רקע מהקצה פנימה; בגד אפור = רקע ירוק – נוסף לפרומפטים ב-93</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">174</td><td>יש לי סרט מידה – מה בדיוק למדוד</td><td>✓ 93: המידות שלך נכנסו לאתר ולכל פרומפט</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">175</td><td>המידות מסרט מידה (15 מידות)</td><td>✓ נכנסו לפרומפטים ולאתר (93): 156 / חזה 94 / מתחת לחזה 83 / מותן 73 / ירכיים 96 / כתפיים 45 / צוואר–מותן 49 / מותן–ברך 58 / מותן–קרסול 90 / מותן–רצפה 99 / יד 50 / זרוע 28 / פרק 16 / צוואר 32 / גומה–חזה 25</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">176</td><td>מידות הראש היו של הפאה</td><td>✓ אלה מידות הראש שהפאנית מדדה (52 / 32 / 30, קטן מ-XS) – הן הנכונות. בובו: אין עכשיו למדוד, ממשיכים בלי מידה; בפרומפט נשאר בובו לפי הקשירה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">177</td><td>&quot;פרומפט לרקע מ-GPT&quot; לא פותח את GPT – שייפתח ישר עם הפרומפט כתוב</td><td>✓ 94: נפתח GPT עם הפרומפט (רקע). בחלון הפרומפטים לבגדים: כפתור &quot;💬 פתחי את GPT&quot; שמעתיק ופותח (בלי לשלוח, כי צריך לצרף תמונות)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">178</td><td>(נמצא בבדיקה) רקע שנוצר לא נשמר ב&quot;הרקעים שלי&quot;</td><td>✓ 94: באג גדול – ההגדרות לא נשמרו בכלל (רקע, מסגרת, מידות שנערכו באתר). תוקן; צריך ליצור שוב את הרקע</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">179</td><td>למה האווטאר רק עם כיסוי? רוצה גם עם פאה</td><td>✓ נוספו פרומפט 3+4 (אותו אווטאר עם הפאה שלה) – בסוף 4 קבצים</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">180</td><td>איפה פרומפטי הפאה והתסרוקות</td><td>✓ נכתבו: 20 תסרוקות (2 תמונות × 10) + תסרוקת אהובה ב-5 תנוחות; גם איפור 0–15 ו-10 קשירות</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">181</td><td>כפתור &quot;העתיקי&quot; לכל פרומפט (לא מצליחה להעתיק מהגיליון)</td><td>✓ עמוד &quot;פרומפטים לאווטאר&quot;: <a href="https://claude.ai/artifact/N7e2QR7GghzC89Cc2F153a">https://claude.ai/artifact/N7e2QR7GghzC89Cc2F153a</a></td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">182</td><td>בחלון פריט ה-X לא סוגר, &quot;משהו השתבש&quot;</td><td>✓ 95: באג שלי מגרסה 93 – פונקציה חדשה בשם dlg דרסה את חלון הפריט. שונו כל השמות, נבדק במחשב ובטלפון</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">183</td><td>האם 4 תמונות האווטאר (כובע) טובות?</td><td>✓ נבדק ומדד: אותו גובה, ראש ורגליים בכל 5 התנוחות, שום דבר לא חתוך, בלי טקסט/עגילים. המלצה: קובץ 1 עם החיוך + קובץ 2 (b). נשמרו ב-avatar_new/v95</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">184</td><td>(אחרי 183) להכניס את האווטאר עם הכובע לאתר</td><td>✓ גרסה 96: חיתוך רקע בלבד, יישור ל-5 תנוחות, שכבות ראש/צוואר, נקודות גוף חדשות, בחירה &quot;חדש / קודם&quot;, גיליון ל-GPT בשני קבצים. לוק עם בגד שצויר על האווטאר הקודם נשאר על הקודם</td><td>פאה: מחכה לקבצים</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="wait"><td class="n">185</td><td>קובץ 1 עם הפאה (2 תמונות זהות) – בדיקה</td><td>✓ הגוף זהה לאווטאר עם הכובע. הפנים בלי חיוך ושונים – נשלח משפט תיקון ל-GPT</td><td>מחכה: קובץ 1 מתוקן + קובץ 2 עם פאה</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">186</td><td>בכוונה כל שיער הפאה מאחורה?</td><td>✓ כן, כדי שצווארון/מחשוף/שרשרת ייראו. שיער מקדימה = תסרוקת נוספת (שכבה מעל הבגד)</td><td>אם תרצי – נוסיף לתסרוקות</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">187</td><td>לזכור: רוב התסרוקות עם שיער מקדימה; הרגילה שלי – צד אחד קדימה, צד שני מאחורי האוזן ויורד קדימה</td><td>✓ נכנס לפרומפט התסרוקות (תסרוקת 1 = הרגילה שלך) בעמוד הפרומפטים</td><td>שיער מקדימה = שכבה מעל הבגד בסטודיו (כשהתסרוקות יגיעו)</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">188</td><td>קובץ 1 (ניסיון 2) + קובץ 2 עם פאה – &quot;לא כל כך אוהבת&quot;</td><td>✓ נבדק: הגוף תואם לכובע (הבדל 1–3%), אבל הפנים שונים ומבוגרים יותר. נוסף לעמוד הפרומפטים &quot;פאה בעריכה&quot; – עריכה של תמונת הכובע עצמה כדי שהפנים יישארו זהים. נשמרו ב-avatar_new/v95</td><td>מחכה: ניסיון בעריכה, או אישור להשתמש באלה</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">189</td><td>&quot;איך עכשיו&quot; – פאה בעריכה (קובץ 1 + 2)</td><td>✓ קובץ 1: פנים וגוף זהים לכובע. קובץ 2: כמעט זהה, חצי צד זז הצידה (מיישרת לבד)</td><td>✓ גרסה 97: האווטאר עם הפאה באתר (חצי צד הופך כיוון, GPT סובב אותו לצד השני)</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">190</td><td>בחרתי באווטאר החדש, שמתי חצאית ישנה – הוא חוזר לאווטאר הקודם. איך משנים?</td><td>✓ גרסה 98: בגד ישן נשאר על האווטאר החדש ומותאם אוטומטית לגוף החדש (רוחב, מרכז, קווי כתפיים/מותן/ירכיים). חצי צד – הכי פחות מדויק</td><td>בגד שלא יושב: להזיז, או להעלות מחדש מ-GPT</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">191</td><td>תכווין אותי יד ביד מה לעשות ב-GPT</td><td>✓ בעמוד הפרומפטים: רשימה לפי הסדר + פרומפטים חדשים: בגד בשני קבצים, תסרוקת אהובה ואיפור אהוב (בעריכה)</td><td>✓ גרסה 99: &quot;📥 בגד מ-GPT · 2 קבצים&quot; בחלון הפריט</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">192</td><td>(המשך 191) העלאת בגד בשני קבצים באתר</td><td>✓ גרסה 99: בחלון הבגד כפתור &quot;📥 בגד מ-GPT · 2 קבצים&quot;. בוחרים את שני הקבצים יחד, האתר חותך 5 תנוחות, מראה תצוגה, &quot;שמרי&quot; – והבגד יושב על האווטאר החדש בכל התנוחות. רקע עם כתמים בהירים מנוקה, לבן בבגד נשאר. הכפתורים הישנים נשארו</td><td>מחכה: חצאית הקטיפה + שמלה אחת לניסיון</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">193</td><td>&quot;אבא תור עובד&quot; – אבל חצאית שמגדילים נחתכת בצדדים. לבטל את המסגרת, רק הריבוע הלבן מגביל, בכל הבגדים</td><td>✓ גרסה 100: בגד מוגדל יוצא עד הריבוע הלבן ונחתך רק שם (גם בחלון 🔍), בטלפון ובמחשב</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">194</td><td>אפשרות להחליף את צבע בגד הגוף (לבן, שחור, צבע גוף, כל צבע)</td><td>✓ גרסה 101: כפתור &quot;🎨 בגד גוף&quot; ליד &quot;פאה/כיסוי&quot; (וגם בבחירת האווטאר): 10 צבעים + &quot;צבע אחר&quot; לכל צבע. הקפלים נשמרים, עם פאה ועם כובע, ב-5 התנוחות</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">195</td><td>החגורה לא עוטפת אותי – רואים את הגוף מסביב. לסדר בפרומפט או שהחגורה תתאים לגוף</td><td>✓ גרסה 101: החגורה מתרחבת לבד לרוחב המותן ולבגדים שמתחת, בכל תנוחה (אם הזזת ביד – לא נוגעת) + פרומפט החגורה עודכן</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">196</td><td>בחזית: חגורה של חצי מותן (החצי הקדמי), בגב החצי השני – שלא ייחתך</td><td>✓ נכנס לפרומפט החגורה: בכל תנוחה רק החצי שפונה למצלמה, ברוחב המותן המלא</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">197</td><td>שרשרת: רק הצד הקדמי שיורד, בלי החלק האחורי</td><td>✓ פרומפט השרשרת: רק החלק שרואים מלפנים, בלי החלק שמאחורי הצוואר והסוגר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">198</td><td>בחלון התמונה: לדפדף בין כל התמונות של הבגד; להוריד את כולן בבת אחת; מסך תמונות קטנות עם ✓ לבחור אילו להוריד/לשלוח ל-GPT</td><td>✓ גרסה 102: ‹ › והחלקה בחלון התמונה (&quot;3 / 21&quot;); כפתור &quot;🖼 כל התמונות&quot; מתחת לתמונה בחלון הבגד ו&quot;🖼 הכל&quot; בחלון התמונה: תמונות קטנות עם ✓, בחרי הכל, ⬇ הורידי, 📤 שלחי (טלפון → ChatGPT), 🧩 תמונה אחת מכולן</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">199</td><td>פרומפט הבגד: לציין מה קניתי (רק חצאית / רק חולצה) גם כשבתמונה יש עוד בגדים; פרומפט אחד לשני הקבצים יחד, הכל בהודעה אחת</td><td>✓ גרסה 103: בחלון הבגד &quot;📋 פרומפט אחד ל-GPT&quot; – כותב לבד מה קנית לפי הקטגוריה (+ השם), 3 תמונות יחד → 2 תמונות. עמוד הפרומפטים (גרסה 5): בגד, פאה, תסרוקת אהובה, איפור אהוב – כל אחד הודעה אחת; תסרוקות 1–20 ואיפור 0–15 בבת אחת</td><td>לנסות על חצאית הקטיפה</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">200</td><td>איך מורידים מהר את האווטאר כדי להדביק ב-GPT</td><td>✓ גרסה 104: בחלון הבגד &quot;🚀 הכל ל-GPT&quot; – מעתיק את הפרומפט ושולח יחד 2 קבצי האווטאר + תמונת הבגד (בטלפון: שיתוף ← ChatGPT; במחשב: 3 קבצים יורדים ו-GPT נפתח)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">201</td><td>לשים בעמוד הפרומפטים קישור להורדת האווטאר</td><td>✓ עמוד הפרומפטים גרסה 6: &quot;🧍 קבצי האווטאר ל-GPT&quot; למעלה – שני קבצי הכובע (ובפנים הפאה), 📤 שלחי את שניהם / ⬇ הורידי את שניהם</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">202</td><td>האם אפשר זיפ לכל בגד / תמונה אחת לכל בגד ל-GPT, ואני אסדר את התוצאות</td><td>✓ עניתי: אפשרי; בחרת: הכפתור באתר, בגד-בגד (🚀 הכל ל-GPT ← 📥 2 קבצים)</td><td>לנסות על חצאית הקטיפה</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">203</td><td>החצאית מ-GPT לא באותו גודל בכל התנוחות – לבדוק לפני שממשיכים</td><td>✓ גרסה 105: GPT שינה את גודל התמונות, אז האתר לא סומך על המקום שלו: חצאית יושבת על קו המותן שלך, ברוחב המותן, באותו אורך בכל 5 התנוחות ולא יורדת מתחת לרצפה; החיתוך עובר ברווח בין התנוחות; לא משנה באיזה סדר בוחרים את הקבצים; בפרומפט נוסף &quot;אותו גודל בכל התנוחות, לא לשנות גודל תמונה&quot;</td><td>להעלות שוב את שני הקבצים</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">204</td><td>לעשות שוב את החצאית עם הפרומפט החדש?</td><td>✓ עניתי: לא חובה – מספיק להעלות שוב את אותם 2 קבצים; אם רוצה, 🚀 הכל ל-GPT נותן את הפרומפט החדש</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">205</td><td>במחשב &quot;🚀 הכל ל-GPT&quot; הוריד רק את קובץ האווטאר הראשון – איך מעבירים ל-GPT את האווטאר + החצאית + הפרומפט?</td><td>✓ גרסה 106: במחשב &quot;🚀 הכל ל-GPT&quot; פותח חלון של 3 שלבים – הפרומפט הועתק, 3 התמונות עם ⬇ לכל אחת ו-⬇ לשלושתן, ואז &quot;פתחי את GPT&quot; עם הסבר. בטלפון נשאר שיתוף ישר ל-ChatGPT</td><td>לנסות</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">206</td><td>מאיפה לוקחים את הפרומפט? תיקנת אותו?</td><td>✓ עניתי: מועתק אוטומטית, מדביקים ב-Ctrl+V; כן, מתוקן. ✓ גרסה 108: בחלון רואים את טקסט הפרומפט (👁)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">207</td><td>בחלון ל-GPT יש רק תמונה אחת של החצאית – רוצה לשלוח גם חזית, צד וכו׳ שכבר הורדתי</td><td>✓ גרסה 108: בחלון &quot;🚀 הכל ל-GPT&quot; בוחרים ✓ כמה תמונות של הבגד; הפרומפט סופר אותן (&quot;3 תמונות של מה שקניתי&quot;); גם בטלפון אותו חלון עם 📤 שליחה</td><td>לנסות</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">208</td><td>⬇ להוריד מוריד רק תמונה אחת – צריך את כולן בבת אחת (זיפ)</td><td>✓ גרסה 109: &quot;⬇ להוריד את N התמונות (זיפ אחד)&quot; – כל התמונות בקובץ אחד; ובנוסף כפתור ⬇ לכל תמונה לבד</td><td>לנסות</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">209</td><td>איך זה עכשיו? (2 קבצים חדשים של החצאית מ-GPT)</td><td>✓ בדקתי: הקבצים בגודל הנכון, החצאית יושבת על המותן ובאותו אורך בכל 5 התנוחות</td><td>להעלות ב-📥 2 קבצים</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">210</td><td>למה היד בתוך החצאית (בצד, וגם בחזית הידיים נעלמות)</td><td>✓ גרסה 110</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">211</td><td>בכל התנוחות יש בעיה עם הידיים (החצאית מכסה אותן)</td><td>✓ גרסה 110: שכבה של הידיים שלך (מתוך תמונת האווטאר שלך) מעל החצאית, בכל 5 התנוחות, בכובע ובפאה. מתחת לחולצות/שמלות</td><td>שמלות וחולצות – עוד לא</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">212</td><td>החצאית באתר ארוכה ולא יושבת – לא החליף את הישנה</td><td>✓ ההעלאה דרך &quot;החליפי&quot; נחתכה לא נכון; העליתי בעצמי את 2 הקבצים החדשים לחצאית (T156) – הגרסה &quot;אווטאר חדש&quot; פעילה, הישנות נשמרו כגרסאות</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">213</td><td>הכפתורים הישנים (החליפי / עוד גרסה) חותכים את 2 הקבצים לא נכון – לתקן בכולם</td><td>✓ גרסה 111: כל כפתורי ההעלאה (החליפי, עוד גרסה, הדביקי) עוברים לחלון 2 הקבצים – אותו חיתוך והתאמה לגוף, רואים את 5 החלקים לפני שמירה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">214</td><td>החצאית ממש לא מתאימה (קטנה ונמוכה בחזית)</td><td>✓ גרסה 112: הבעיה – בלוק נשמרו המידות והמקום של החצאית הישנה. עכשיו כשמעלים בגד מחדש, הלוק מתאפס לבד למקום ולגודל של ההעלאה החדשה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">215</td><td>עדיין לא טוב – בחלון &quot;הלוק בכל התנוחות&quot; החצאית קטנה ונמוכה</td><td>✓ גרסה 113: הלוק היה נעול על הגרסה הישנה של החצאית (מהאווטאר הישן). עכשיו לוק כזה עובר לבד לגרסה החדשה; ובגד מ-2 קבצים לא עובר יותר &quot;התאמה אוטומטית&quot; שמורידה אותו; 📐/איפוס מחזירים אותו למקום שלו בכל 5 התנוחות</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">216</td><td>עדיין לא נראה טוב בכל הכיוונים – אולי הבעיה בפרומפט של החצאית?</td><td>✓ גם וגם: GPT צייר חצאית קצרה ומתנפחת מהאמיתית. גרסה 114 מוסיפה לפרומפט מידות ואורך; בדקתי: התמונות שרואים אצלך הן החדשות; החצאית ש-GPT צייר קצרה ומתנפחת יותר מהאמיתית. שאלתי מה מספר הגרסה ומה האורך האמיתי</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">217</td><td>אולי הגדלת את הגוף שלי לעומת החצאית?</td><td>✓ הגוף לא השתנה. אצלי החצאית יושבת על המותן; אצלך נמוכה יותר. בגרסה 114 האתר שולח לי בשקט את המספרים של החצאית מהמסך שלך, כדי לראות מה שונה</td><td>✓ נמצא ב-115</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">218</td><td>לכתוב בפרומפט את המידות של הגוף מהאווטאר – שיצליח בפעם אחת</td><td>✓ גרסה 114: מדדתי את הגוף על תמונות האווטאר (כתפיים, מותן, ירכיים, ברך, קרסול + רוחב המותן) ונכנס לכל פרומפט, עם האורך האמיתי של הבגד (בוחרים בחלון &quot;🚀 הכל ל-GPT&quot;); בהעלאה האתר בודק את האורך ומזהיר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">219</td><td>להקפיץ לכאן את כל הפרומפטים, במקום קבוע</td><td>✓ דף הפרומפטים עודכן עם המידות, והצמדתי אותו לסרגל הצד שלך</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">220</td><td>יצרתי חצאיות חדשות ועדיין לא טוב על האווטאר</td><td>✓ גרסה 115: הסיבה האמיתית – הדף שמתפרסם מכווץ כל תמונה לרוחב המסגרת, אז חצאית רחבה יצאה קטנה ונמוכה. תוקן. גם העליתי את קובץ 2 החדש שלך (חצי צד, יד על המותן) – לפני זה רק קובץ 1 נשמר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">221</td><td>הפנים והגוף מופיעים כפולים</td><td>✓ גרסה 115: בחלון &quot;הלוק בכל התנוחות&quot; הגוף והראש/הידיים צוירו בהפרש 2–3 פיקסלים. עכשיו כל השכבות מתחילות מאותה נקודה, בכל גודל מסך</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">222</td><td>(צילום מסך בגרסה 115)</td><td>✓ החצאית על המותן, באותו אורך בכל 5 התנוחות, הידיים מעליה, בלי פנים כפולות. שאלתי אם החצאית האמיתית רחבה כמו פה ועד הקרסול</td><td>מחכה לתשובה שלך</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">223</td><td>חצאית חדשה נראית יותר בסדר, אבל בצד ובחצי צד הישבן בולט מחוץ לחצאית – לא יפה</td><td>✓ גרסה 116: חצאית מסתירה את הגוף שמתחתיה – מה שבולט מחוץ לחצאית מתחת למותן (הישבן בצד ובחצי צד) לא מצויר. הידיים נשארות, וגם הרגליים שרואים דרך תחרה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">224</td><td>(צילום: חצאית טול שחורה) הפנים והידיים שוב כפולות</td><td>✓ גרסה 117: באג שלי מגרסה 116 – הגוף ה&quot;חתוך&quot; שמתחת לחצאית איבד את כלל היישור, אז הראש והידיים זזו שוב. עכשיו כל השכבות מיושרות גם כשיש חצאית</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">225</td><td>נקודה ירוקה לבגדים שהעליתי לאווטאר החדש; כתום = רק לאווטאר הישן; אדום = אין בכלל</td><td>✓ גרסה 118: 🟢 = הועלה לאווטאר החדש בכל 5 התנוחות, 🟠 = יש רק לאווטאר הישן, 🔴 = אין בכלל. גם הספירה למעלה מראה חדש/ישן/אין</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">226</td><td>העליתי חולצה (שחורה עם פפיון) – לא יושבת טוב על האווטאר. הבעיה בפרומפט או באווטאר?</td><td>✓ גרסה 119: הבעיה לא באווטאר ולא בפרומפט – האתר שם חולצות לפי איפה ש-GPT צייר. עכשיו חולצות, סוודרים, ז&#x27;קטים ושמלות מונחים לפי הכתפיים שלך בכל 5 התנוחות. גם החולצה השמורה עודכנה. עור שבולט מהשרוולים לא מצויר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">227</td><td>לחצתי &quot;חולצה בפנים&quot; והשרוולים התקצרו, רואים את הידיים</td><td>✓ גרסה 119: החולצה נשארת מעל החצאית, ורק הגוף שלה מתחת לחגורה מוסתר. השרוולים באורך מלא</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">228</td><td>פס לבן מתחת לסוף החולצה; הצווארון נחתך / סגור בחצי צד ובחזית</td><td>✓ גרסה 120: הפס תוקן (הגוף נמחק בטעות עד השרוולים). הצווארון עומד סביב הצוואר כמו בתמונת המוצר, בלי קו ישר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">229</td><td>13 קשירות למטפחות – קטגוריה נפרדת עם שם, ולכל אחת פרומפט עם האווטאר</td><td>✓ גרסה 120: בחלון המטפחת &quot;🧕 13 קשירות&quot; – לכל קשירה שם, הסבר, &quot;🚀 ל-GPT&quot; (קבצי האווטאר + המטפחת + הפרומפט). גם בדף הפרומפטים (גרסה 8). קשירה שמעלים מקבלת את השם לבד</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">230</td><td>אותו דבר ל-20 התסרוקות של הפאה – שם ופרומפט לכל אחת, עם האווטאר</td><td>✓ גרסה 121: &quot;💇 20 תסרוקות לפאה&quot; (בחלון הפרומפטים ובתפריט הסטודיו): לכל תסרוקת &quot;ל-GPT&quot; = הפרומפט מועתק + 2 קבצי האווטאר עם הפאה. GPT עורך רק את השיער. גם בדף הפרומפטים (גרסה 9)</td><td>כשיש תמונות מ-GPT – לשלוח לי, ואני מעלה לאווטאר (עוד אין באתר העלאה לתסרוקות)</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">231</td><td>בצד זה יותר גרוע – נראה שאני מחוץ לבגד; גם חזית, חצי צד ויד על המותן צריך לתקן</td><td>✓ גרסה 122: בצד החולצה ממורכזת על הגוף שלך (GPT הזיז אותה אחורה) ומתרחבת אם צריך; מה שבולט מאחורי הגב לא מצויר; פסים בהירים ליד השרוולים נוקו</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">232</td><td>(חולצת קטיפה) אני נראית מחוץ לבגד</td><td>✓ גרסה 122 – אותו תיקון, נבדק על חולצת הקטיפה ועל החולצה עם הפפיון</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">233</td><td>לא הרחבת לחולצה את המסגרת כמו לחצאית – לכן היא חתוכה</td><td>✓ צדקת. גרסה 122: החולצה מצוירת על מסגרת רחבה, שום דבר לא נחתך בקצה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">234</td><td>מעקב משלוחים: לסדר לפי הזמנות (2 חשבונות טמו + שיין), לראות מה קיבלתי / לא קיבלתי / חסר</td><td>✓ גרסה 123: &quot;📦 ההזמנות שלי&quot; בעמוד הבית (מתחת ל&quot;הלוקים שלי&quot;): 71 הזמנות לפי טמו 1 / טמו 2 / שיין, לכל הזמנה מה הגיע / בדרך / חסר / לא סומן, תאריך אחרון להחזרה, חיפוש לפי מספר הזמנה או שם, סינון (חסר, לא סימנתי, יש להחזרה). בחלון כל מוצר: &quot;📦 כל ההזמנה&quot;. בכרטיס בארון: תווית &quot;❌ חסר&quot;</td><td>בהתחלה הכל &quot;לא סימנתי&quot; – בכל חבילה ללחוץ &quot;✅ הכל הגיע&quot; ולסמן רק מה שחסר</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">235</td><td>לצלם מוצר שקיבלתי → לזהות מאיזו הזמנה → להראות את כל המוצרים של ההזמנה, ולסמן: קיבלתי, אוהבת / לא אוהבת, להחזיר / להשאיר</td><td>✓ גרסה 123: &quot;📷 צילמתי מוצר שהגיע&quot; – Claude מזהה את המוצר מכל הרשימה ומשווה לתמונות, מציע עד 6 מוצרים; לוחצים על הנכון ← נפתחת כל ההזמנה שלו, המוצר מסומן &quot;הגיע&quot;. לכל מוצר: ✅ הגיע / ⏳ בדרך / ❌ חסר, 😍 אוהבת / 😕 לא אוהבת, 🏠 משאירה / ↩ מחזירה</td><td>בפעם הראשונה הטלפון ישאל אם לאשר לשלוח תמונה ל-Claude</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">236</td><td>נכנסתי מהזמנה לבגד – כשסוגרים הוא מחזיר למסך הראשי. רוצה לחזור למסך ההזמנה</td><td>✓ גרסה 124: סוגרים את הבגד (✕) – חוזרים לאותה הזמנה, על אותו בגד</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">237</td><td>מכל הזמנה: להיכנס בקלות לשיין/טמו (ההזמנה שם), ומשם לצלם את הבגדים</td><td>✓ גרסה 124: בכל הזמנה &quot;🛍 ההזמנה בשיין/טמו&quot; (מעתיק את מספר ההזמנה ופותח את רשימת ההזמנות שם) + &quot;📷 צלמי מוצר מההזמנה הזאת&quot; (משווה רק לבגדים של ההזמנה ומסמן שהגיע)</td><td>הקישור פותח את רשימת ההזמנות, לא את ההזמנה עצמה – לא בטוח שיש קישור ישיר</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">238</td><td>ליד משאירה / מחזירה – גם &quot;מתלבטת&quot; עם סימן שאלה (אולי מחכה לדגם אחר / מידה אחרת, ואז אחזיר)</td><td>✓ גרסה 124: &quot;❓ מתלבטת&quot; בין משאירה למחזירה + למה: מחכה לדגם אחר / למידה אחרת / משהו אחר; וגם &quot;🤔 לא בטוחה&quot; בין אוהבת ללא אוהבת. סינון &quot;❓ מתלבטת&quot; ברשימה. &quot;לא סימנתי&quot; עכשיו ⚪</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">239</td><td>אפשרות לכתוב הערה חופשית על כל בגד (במסך ההזמנה)</td><td>✓ גרסה 124: &quot;📝 הערה&quot; מתחת לכל בגד בהזמנה; נשמר כשיוצאים מהשדה, ומופיע גם בחלון הבגד (אותה הערה)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">240</td><td>משבצת &quot;דרוש תיקון&quot; (למשל אהבתי אבל החצאית ארוכה – לקצר), ולחשוב על עוד אפשרויות</td><td>✓ גרסה 125: &quot;🧵 דרוש תיקון&quot; + מה לתקן (לקצר, להאריך, להצר, להרחיב, שרוולים, מותן/גומי, כפתור/רוכסן, תפר/קרע, אחר). עוד: &quot;📏 לא במידה&quot;, &quot;⚠️ פגום / לא כמו בתמונה&quot;. בסינון &quot;🧵 לתיקון&quot;: כל הבגדים לתיקון + &quot;📋 העתיקי רשימה לתופרת&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">241</td><td>לכל בגד: אהבתי את הבד / לא, בד קיצי / חורפי, נעים / לא נעים, שווה לקנות שוב / לא / לא יודעת – ולסנן לפי זה אחר כך</td><td>✓ גרסה 125: &quot;🏷 בד ואיכות&quot; מקופל ליד כל בגד (נפתח בלחיצה): הבד, עונה, מגע, לקנות שוב. סינון לפי כל אחד בגיליון הסינון</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">242</td><td>במסך הראשון למעלה: מה להחזיר, והאם הוחזר; ללחוץ ולראות אותם, מקובצים לפי הזמנה (חבילה אחת); שורת הסינון לא נכנסת – שתיפתח כגיליון</td><td>✓ גרסה 125: למעלה &quot;↩ להחזיר&quot; ו&quot;📮 הוחזרו&quot; (כל המספרים למעלה לחיצים). לוחצים ← הבגדים מקובצים לפי הזמנה עם מספר ההזמנה, &quot;📮 שלחתי את כל החבילה&quot;, ולכל בגד &quot;📮 הוחזר&quot; ו&quot;💰 הכסף חזר&quot;. שורת הסינון הוחלפה בכפתור &quot;☰ סינון&quot; שפותח גיליון</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">243</td><td>העליתי תמונות מהטלפון (גולפים לילד, S0VSY_0) – &quot;שגיאה: Cannot read properties of undefined (reading &#x27;pics&#x27;)&quot;</td><td>✓ גרסה 126: השמירה בשרת נכשלה, ובמקום להגיד את זה האתר קרס עם השגיאה הזאת. בדקתי: שום תמונה לא עלתה היום ושום דבר ישן לא נמחק. עכשיו: ניסיון שני אוטומטי, תמונה גדולה מאוד מוקטנת לפני השמירה, ואם בכל זאת לא נשמר – כתוב בעברית למה</td><td>להעלות שוב את התמונות; אם יופיע הסבר אחר – לשלוח לי צילום</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">244</td><td>לכל בגד לשאול &quot;הגיע עם חגורה? כן / לא / לא יודעת&quot; (לפעמים החגורה רק לתמונה)</td><td>✓ גרסה 127: שורת &quot;חגורה&quot; בחלון הבגד (אחרי &quot;הגיע?&quot;) ובראש חלון &quot;🚀 שליחה ל-GPT&quot; כשעוד לא סימנת. ובשורות מסך ההזמנות (גרסה 128)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">245</td><td>בכל פרומפט לבגד (שמלה, חצאית, חולצה…) GPT מוריד את החגורה, ואני מתאימה חגורה משלי באווטאר</td><td>✓ גרסה 127 + דף הפרומפטים 10: &quot;בלי חגורה… במקום שלה ממשיכים את הבד&quot;. פס המותן התפור של הבגד נשאר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">246</td><td>האם הורדנו את העגילים מהאווטאר שלי?</td><td>✓ בדקתי (23/10): אין עגילים באווטאר עם כובע ובאווטאר עם פאה, בכל התנוחות. עגילים מוסיפים כשכבה מקטגוריית העגילים</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">244</td><td>שגיאה &quot;store_unavailable&quot; בשמירת תמונה (שמלה וינטג&#x27; פפיטה) – מה זה?</td><td>✓ זו תקלה זמנית בשרת התמונות של Claude (לא אצלך). גרסה 129: עוד 3 ניסיונות אוטומטיים, תמונה קלה יותר, והסבר בעברית</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">245</td><td>אם לא זמין – שינסה שוב לבד אחרי שמחכים, ושלא אצטרך להכניס את התמונה עוד פעם</td><td>✓ גרסה 129: תמונה שלא נשמרה נשארת בטלפון (&quot;⏳ תמונה מחכה לשמירה&quot;) ונשמרת לבד – כל דקה, כשחוזרים לאתר, וגם אחרי סגירה ופתיחה. לחיצה על הפס = לנסות עכשיו</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">246</td><td>אני מעלה תמונות, &quot;שומרת…&quot; המון זמן ולא נשמר כלום (חולצה עם גימור ניגודי)</td><td>✓ גרסה 130: השרת לפעמים לא עונה בכלל, והאתר חיכה לו בלי סוף. עכשיו כל ניסיון מוגבל ל-45 שניות, רואים &quot;מנסה שוב (2 מתוך 4)…&quot;, ומה שלא נשמר עובר לתור ונשמר לבד. תמונות מצלמה גדולות מוקטנות קודם (מהיר יותר). כל תקלה נרשמת אצלי (uplog) כדי שאראה מה קרה</td><td>התמונה שנתקעה לפני 130 – להעלות שוב</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">247</td><td>התבלבלתי בתמונות – אין כפתור מחיקה בחלון &quot;כל התמונות&quot;</td><td>✓ גרסה 131: 🗑 על כל תמונה (גם תמונת החנות – מוסתרת), עם &quot;ביטול&quot;. התמונה היחידה לא נמחקת</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">248</td><td>בנייד אין אפשרות לבחור לכל תמונה מה היא (גב, קדמי, צד…) ולמחוק</td><td>✓ גרסה 131: בחלון &quot;כל התמונות&quot; מתחת לכל תמונה – בחירה: ⭐ ראשית / קדימה / גב / צד / חצי צד / פרט / על הגוף / צילום שלי. (בנייד &quot;סידור ומחיקה&quot; היה חבוי בתוך &quot;עוד אפשרויות&quot;)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">249</td><td>להוסיף הזמנה חדשה משיין (GSH19R24700MU9J), ולעדכן אותה בכל מקום באתר</td><td>✓ גרסה 132: 9 הפריטים (2 חגורות, פס תחרה, עיפרון שפתיים, 4 שמלות, סט) בארון, בקטגוריות, בסיכום ההוצאות וב&quot;ההזמנות שלי&quot; כ&quot;בדרך&quot; (₪312.27, משלוח צפוי 3–9/11)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">250</td><td>תמונת החגורה מההזמנה החדשה לא נחתכה</td><td>✓ גרסה 134: חיתוך רקע לכל הבגדים מההזמנה החדשה (וגם מהזמנת 22/10) – 12 פריטים, להלבשה על הדמות</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">249</td><td>(צילום מטמו) האם את השמלה הזו כבר קניתי?</td><td>✓ ענינו: זו אותה תמונה כמו החצאית Glimmora (SMEX3_6), שיין הזמנה MEX3 מ-17/10, כחול S, ₪37 – בדרך. החולצה בתמונה לא נקנתה איתה, אבל באותה הזמנה יש חולצת קטיפה כחולה (SMEX3_2)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">250</td><td>(4 צילומים משיין) האם כבר קניתי: Glimmora אדום / בז&#x27; / ירוק, חצאית קטיפה שחורה עם תחרה</td><td>✓ ענינו: ירוק – כן (SMEX3_7, MEX3 17/10). שחורה עם תחרה – כן (T240 טמו 14/10; גם בחום T241+T157 ובאפור T156). אדום ובז&#x27; – לא (יש כחול SMEX3_6 וירוק)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">251</td><td>למה לא חותכים לי צילומי מסך (חגורה חומה אלסטית)?</td><td>✓ גרסה 135: החיתוך האוטומטי נכשל כשלמוצר יש רקע בהיר אחיד (בז׳). עכשיו הוא מזהה את הפסים השחורים/לבנים של הטלפון וחותך רק את תמונת המוצר. תוקנו גם 2 תמונות שכבר הועלו (החגורה החומה והחגורה עם האבזם הגלי)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">252</td><td>לרשום בכל הזמנה אם זה טמו 1 או טמו 2, כדי לדעת מאיזה חשבון לחפש</td><td>✓ היה כבר תג &quot;טמו 1/2&quot; בכל הזמנה. בגרסה 136 גם הכפתור אומר &quot;ההזמנה בטמו 1&quot; עם מספר החשבון, וגם הקישור &quot;כל ההזמנה&quot; בחלון הבגד</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">253</td><td>להקפיץ אותי ישר להזמנה בטמו/שיין</td><td>✓ גרסה 137: הכפתור פותח את עמוד ההזמנה עצמו (לא את רשימת ההזמנות), והמספר גם מועתק</td><td>לבדוק שזה נפתח נכון בטלפון; בטמו צריך להיות מחוברת לחשבון הנכון</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">254</td><td>לרשום בהזמנה את מספר ההזמנה בטמו + כפתור העתק</td><td>✓ גרסה 138: &quot;מספר הזמנה בטמו 1: PO-…&quot; עם כפתור &quot;העתק&quot; (כתוב ✓ הועתק אחרי לחיצה)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">255</td><td>לסמן בהזמנה &quot;סיימתי להעלות תמונות&quot;, ולבחור אילו מוצרים צריכים תמונות (לא בגדי ילדים)</td><td>✓ גרסה 139: כפתור &quot;📸 סיימתי להעלות תמונות&quot; בכל הזמנה (✅ ירוק ברשימה), בכל מוצר &quot;צריך להעלות / לא צריך&quot; + כמה תמונות כבר הועלו, ובמסננים &quot;עוד לא סיימתי / סיימתי&quot;. ילדים, גברים, איפור, לילה, גרביים ושונות – ברירת מחדל &quot;לא צריך&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">256</td><td>וי &quot;סיימתי להעלות תמונות&quot; ישר על כל הזמנה במסך הראשי, ואז כתוב &quot;הועלו כל התמונות&quot;</td><td>✓ גרסה 140: פס עם תיבת סימון בתחתית כל הזמנה; מסומן = ירוק &quot;✓ הועלו כל התמונות&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">257</td><td>סינון שמראה רק הזמנות בלי וי תמונות</td><td>✓ גרסה 141: כפתור למעלה &quot;📸 N הזמנות בלי וי תמונות&quot; – מסתיר את מה שסימנת</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">258</td><td>שבת: לעבוד לבד ולשפר (חלק ההזמנות והתמונות)</td><td>✓ גרסאות 142–144: תור תמונות עמיד + רשימת תמונות שלא נשמרו, תאריך החזרה משוער בשיין, טלפון קטן, חיפוש PO-</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">259</td><td>שבת (המשך): מהירות, מקרי קצה בהעלאה, החזרות</td><td>✓ גרסה 145: מסך ההזמנות מהיר פי 2–3. גרסה 146: אופליין עובר מיד לתור, HEIC עם הודעה. גרסה 147: רשימת אריזה קצרה להחזרות + סיכום</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">260</td><td>שבת: לבדוק שחולצות, חצאיות ושמלות יושבות טוב על האווטאר</td><td>✓ גרסה 148: 33 בגדים שצוירו על האווטאר הקודם מותאמים לבד בכל 5 התנוחות (כתפיים, שרוולים, ישיבה ביד על המותן); מה שתיקנת ביד לא נוגעים</td><td>עדיין: פס בהיר של הבגד-גוף מעל צווארון נמוך, ויד רחוקה קצת מבצבצת בחצי צד</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">261</td><td>שבת: כמה בגדים יחד באותו לוק</td><td>✓ גרסה 148: סוודר מעל חולצה (במשבצת &quot;ז׳קט / סוודר מעל&quot;) + חצאית + חגורה – נבדק בכל התנוחות</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">262</td><td>שבת: כיסויי ראש, תיקים ותכשיטים על האווטאר</td><td>✓ מטפחת ביד על המותן יושבת על הראש (148); שרשרת ועגילים נבדקו בכל התנוחות</td><td>תיק: אין עדיין תיק עם תמונות לאווטאר</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">263</td><td>שבת: לעבור על כל הפרומפטים ל-GPT</td><td>✓ גרסה 148 + דף הפרומפטים 11: מטרה בהתחלה, שם מלא + צבע, כתפיים ושרוולים על הזרוע, &quot;לפני ששולחים – לבדוק&quot;; שורות נכונות למטפחת/תכשיט/תיק/נעליים; כרטיס חדש לתיקון שרוולים</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">264</td><td>שבת: הלוק בגדול</td><td>✓ גרסה 149: &quot;⛶ בגדול&quot; בחלון כל התנוחות</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">265</td><td>שבת: סיבוב 360 אמיתי מ-GPT ללוק</td><td>✓ גרסה 150 (משימה 154)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">266</td><td>שבת: אותו אורך לשמלה ולחצאית בכל התנוחות, בלי פס לבן בשוליים</td><td>✓ גרסה 151</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="open"><td class="n">267</td><td>(24/10) פיתוח גדול 1: לכל פריט (בגדים, חגורות, כיסויים, הכל) – חדר, ארון, מקום; לבשתי / בכביסה / נקי / חזר לארון – לאותו מקום או אחר</td><td>✱ תוכנית נכתבה (&quot;ארון חכם – תוכנית&quot;), מחכה לאישור</td><td>צריך ממך: שמות החדרים והארונות (או תמונה של כל ארון)</td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="open"><td class="n">268</td><td>(24/10) פיתוח 2: להעלות בגדים ישנים ולמיין: אוהבת / לא, גדול / קטן, להשאיר / לא; גם לבגדים שקניתי (השמלה החומה הקטנה)</td><td>✱ תוכנית נכתבה, מחכה לאישור</td><td>תמונות של הבגדים הישנים (אחרי אישור)</td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="open"><td class="n">269</td><td>(24/10) פיתוח 3 (החלום): לצלם בגד בחנות/שיין/טמו/עלי אקספרס → חיתוך לאווטאר → סריקת הארון למה שמתאים → בובה עם הלוק → המלצה לקנות או לא → ארכיון: קניתי/לא, מחיר, תאריך, איפה, מה חשבתי</td><td>✱ תוכנית נכתבה, מחכה לאישור</td><td></td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="done"><td class="n">270</td><td>(24/10) פרומפט יפה ל-GPT: האם קיימת אפליקציה שעושה את כל זה</td><td>✓ בעמוד התוכנית, עם כפתור העתקה</td><td>לשלוח ל-GPT ולהביא לי את התשובה</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">271</td><td>(24/10) דעה כנה: האם אנשים ירצו אפליקציה כזו</td><td>✓ בעמוד התוכנית</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">272</td><td>(24/10) כמה יעלה לפתח אפליקציה כזו באמת? אולי אתה תפתח לי אפליקציה אמיתית?</td><td>✓ ענינו: הערכה גסה ₪80–200 אלף אצל פרילנסרים, ₪250–500 אלף בחברת פיתוח (גרסה ראשונה, בלי אווטאר מתקדם). אני יכול לבנות אפליקציית רשת לחברות (10–20 נשים) כשלב ניסיון</td><td>נגנז לבינתיים (24/10): קודם מסיימים את הארון של שרה, ואז נחשוב על אפליקציה</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">273</td><td>(24/10) השמלה החומה (Vintamour, שיין GSH1SR24M00MLL1) קטנה עליי, אני רוצה להחזיר: איפה מסמנים &quot;להחזיר&quot; בחלון הבגד?</td><td>✓ גרסה 152: בחלון הבגד, &quot;מצב&quot; → &quot;↩ להחזיר&quot; + סיבה. השמלה מסומנת &quot;קטן עליי&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">274</td><td>(24/10) לחיצה על &quot;ניהול הפריט&quot; / &quot;עוד אפשרויות&quot; מקפיצה את המסך למעלה. להישאר באותו מקום</td><td>✓ גרסה 152</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">275</td><td>(24/10) בראש הדף הראשי: &quot;מוצרים להחזרה&quot;, מקובצים לפי הזמנה, עם תאריך אחרון להחזרה</td><td>✓ גרסה 152: כפתור &quot;↩ מוצרים להחזרה&quot; מתחת ל&quot;ההזמנות שלי&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">276</td><td>(24/10) הזמנה חדשה בשיין GSH19924N00MU5B – להוסיף עם התמונות הקטנות</td><td>✓ גרסה 153: 18 מוצרים, ₪458.29, בדרך</td><td>להחליף בתמונות ששרה תעלה</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">277</td><td>(24/10) הזמנה נוספת בשיין GSH19924N002QB0</td><td>✓ גרסה 154: 15 מוצרים, ₪467.99, בדרך</td><td>להחליף בתמונות ששרה תעלה</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">278</td><td>(24/10) עוד הזמנה בשיין GSH19924N00NB85 (חגורת פנינים)</td><td>✓ גרסה 155, בלי תאריך החזרה (אי אפשר להחזיר)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">279</td><td>(24/10) עוד 3 הזמנות חגורות בשיין: 1VHG, 0HR, 2CRC</td><td>✓ גרסה 156, בלי תאריך החזרה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">267</td><td>העלאת תמונות בהזמנות החדשות נתקעת בטלפון</td><td>✓ 157: הסיבה – האתר נפתח בתוך האפליקציה של Claude, שם הגלריה חסומה. פותחים ב-Chrome. האתר כותב את זה לבד אחרי 5 שניות. צילום מוצר מההזמנה נשמר עכשיו גם כתמונה של המוצר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">268</td><td>צילום מסך לא נחתך / נחתך יותר מדי (חגורות, שרשרת)</td><td>✓ 158: החיתוך כבר לא מתבלבל מרקע לבן או אפרסק בתוך התמונה. לחגורות נוספה תמונה חתוכה נכונה. את השרשרת צריך להעלות שוב</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">269</td><td>כובע רעלה עם תחרה – לא נחתך</td><td>✓ 159: החיתוך מזהה עכשיו גם את הגלריה הכהה של שיין. הכובע נחתך מחדש. בדקתי את כל 33 המוצרים שהועלו הערב, והשאר בסדר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">281</td><td>סינון בהזמנות: להסתיר הזמנות שכבר העליתי להן תמונות / להציג רק אותן</td><td>✓ 160 (שרשור ההזמנות): שורת 📸 – הכל / עוד צריך תמונות / ✅ כבר העליתי</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">280</td><td>(25/10) סינון: להסתיר הזמנות שכבר העליתי להן תמונות / להראות רק אותן</td><td>✓ גרסה 160: שורת 📸 הכל / עוד צריך / כבר העליתי</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">282</td><td>רשימה כללית: מוצרים שלא רוצה בארון (כמו שמלות לאירועים) – לא באווטאר, לא בשום רשימה, רק ברשימה נפרדת</td><td>✓ 161: כפתור &quot;🗃 לרשימה הכללית&quot; בחלון המוצר (וגם לכמה ביחד ב&quot;☑ בחירה&quot;). נעלם מהארון, החיפוש, האווטאר, הסטודיו, הלוקים וההזמנות. הרשימה: בתפריט ⋯, בחיפוש &quot;רשימה כללית&quot;, ובתחתית הארון. &quot;↩ לארון&quot; מחזיר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">283</td><td>איפה הרשימה הכללית? לא מוצאת את 2 המוצרים שהעברתי</td><td>✓ 162: כפתור גלוי &quot;🗃 רשימה כללית&quot; מעל הארון, ליד &quot;בחירה&quot; ו&quot;כפולים&quot;</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">284</td><td>&quot;הארון&quot; בסרגל התחתון: לפתוח מסך עם כל הקטגוריות (שמלות, חצאיות, חולצות, חגורות...) ולבחור אחת</td><td>✓ 163: לחיצה על &quot;הארון&quot; למטה פותחת &quot;הארון שלי&quot; – כל הקטגוריות עם תמונה ומספר, ו&quot;הכל&quot;. בוחרים ורואים רק אותה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">281</td><td>(25/10) עלי אקספרס: חנות חדשה + 3 הזמנות (צעיף, חצאית, 4 צעיפי משי) עם התמונות הגדולות</td><td>✓ גרסאות 164–165</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">285</td><td>(25/10) עלי אקספרס: הזמנה 1122427698298575 – צעיף מבריק שחור דגם 6, תמונה מהקבלה</td><td>✓ גרסה 166</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">286</td><td>(25/10) עלי אקספרס: הזמנה 1122427698238575 – צעיף שחור עם פנינים, תמונה מהקבלה</td><td>✓ גרסה 167</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">287</td><td>(25/10) עלי אקספרס: הזמנה 1122490842978575 – צעיף משי-צמר לבן עם פרחים, תמונה גדולה</td><td>✓ גרסה 168</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">288</td><td>(25/10) עלי אקספרס: הזמנה 1122490842828575 – 10 מטפחות NEWSTYLE עם התמונות הגדולות, לחומה (חרוזי זהב) תמונה מהקבלה</td><td>✓ גרסה 169</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">289</td><td>(25/10) עלי אקספרס: הזמנה 1122490842998575 – צעיף מרובע משבצות שחור</td><td>✓ גרסה 169</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">290</td><td>(25/10) עלי אקספרס: הזמנה 1122490843068575 – צעיף משי ורוד עם שרשראות + צעיף סאטן פייזלי</td><td>✓ גרסה 170</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">291</td><td>(25/10) עלי אקספרס: הזמנה 1122490843098575 – 2 צעיפים מבריקים (דגם 10, דגם 21), תמונות מהקבלה</td><td>✓ גרסה 171</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">292</td><td>(25/10) פאנל ניהול</td><td>✓ 172: &quot;⚙️ פאנל ניהול&quot; בראש מסך הבית: מספרים, מה מחכה לטיפול, וכל הכלים לפי נושאים</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">293</td><td>(25/10) שגם כל הפרומטים וכל התוכנית למשימות לפיתוח ייכנסו לפאנל הניהול</td><td>✓ 173: בפאנל הניהול נוסף חלק &quot;פיתוח&quot;: כל המשימות (עם סינון וחיפוש), התוכנית לפיתוח, דף הפרומטים, פרומטים בתוך האתר ויומן גרסאות</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">294</td><td>(25/10) להקפיץ שוב את תמונת האווטאר ב-360 מעלות שעשה GPT</td><td>✓ צורפה שוב (avatar_360/avatar_360_gpt.gif, 16 תמונות)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">295</td><td>(25/10) לבנות כאן ולהמשיך אחר כך ב-Lovable מאותה נקודה (חנות לאנשים, חיבור לשרתים)</td><td>✓ הוסבר מה עובר ומה צריך להחליף, נכתב מסמך סיכום להעברה ל-Lovable</td><td>מחכה: שרה תחליט על הדרך (להמשיך כאן ואז להעביר)</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="wait"><td class="n">296</td><td>(25/10) האווטאר ב-8 זוויות מהשיחה השנייה: להמשיך כאן להלבשה</td><td>✓ הקבצים נשמרו ב-closet/avatar8</td><td>מחכה: שרה תעלה את התוצאה מ-GPT (חזית + פריט אחד)</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="wait"><td class="n">297</td><td>(25/10) להמשיך כאן את האווטאר מהשיחה השנייה (8 זוויות → הלבשה)</td><td>✓ נבנה דף &#x27;האווטאר שלי ב-8 זוויות&#x27; (<a href="https://claude.ai/artifact/F2YZkYe3XnrEbBm2HFRGo2">https://claude.ai/artifact/F2YZkYe3XnrEbBm2HFRGo2</a>): סיבוב באצבע, תמונת החזית, ופרומפט הלבשה עם המידות שלה, בלי חגורה</td><td>מחכה: שרה תשלח ל-GPT ותעלה את התמונה הלבושה</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">298</td><td>(25/10) חולצה T37 בוטלה (אזלה מהמלאי, מחזירים כסף): סימון חדש &quot;🚫 בוטל – אזל מהמלאי&quot; – יוצא מהארון, נשאר בהזמנה עם &quot;💰 הכסף חזר&quot; ו&quot;מה עכשיו&quot; (מידה אחרת / דומה / מוותרת)</td><td>✓ גרסה 174</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">299</td><td>(25/10) הזמנת טמו חדשה מ-PDF: PO-097-18076072617591091 (25/10, ₪373.72, 17 מוצרים, חשבון 1 – אומת לפי סיומת 1091 וכתובת החיוב), עם התמונות הקטנות מהקבלה</td><td>✓ גרסה 176</td><td>מחכה לתמונות הגדולות</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">300</td><td>(25/10) הזמנת שיין חדשה GSH199249001100 (25/10, ₪217.87, 6 מוצרים: שמלת קטיפה ירוקה, 3 חגורות, חולצה סגולה, חצאית ג׳ינס) עם התמונות מהאפליקציה</td><td>✓ גרסה 177</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">301</td><td>(25/10) ב&quot;לוקים וכלים&quot; ← החזרות: לכל מוצר תמונה קטנה, חנות, מספר הזמנה, תאריך, עד מתי להחזיר, נשלח/לא, &quot;📦 ההזמנה&quot;</td><td>✓ גרסה 178</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">302</td><td>(25/10) לרשום בצ&#x27;אט את פרומפט ההלבשה הראשונה לאווטאר 8 הזוויות</td><td>✓ נשלח בצ&#x27;אט (חזית + פריט אחד, המידות שלה, בלי חגורה)</td><td>מחכה: שרה תשלח ל-GPT ותעלה את התמונה</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="wait"><td class="n">303</td><td>(25/10) לא תמונה אחת – אווטאר 360: להלביש את כל הזוויות</td><td>✓ דף <a href="https://claude.ai/artifact/T45B8XHpo1gawrzxv4vfGy">https://claude.ai/artifact/T45B8XHpo1gawrzxv4vfGy</a>: גיליון 8 הזוויות + פרומפט שמלביש את כל 8 ביחד</td><td>מחכה: שרה תעלה את הגיליון הלבוש מ-GPT; אז אני חותכת, מיישרת ומסובבת</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="wait"><td class="n">304</td><td>(25/10) לקרוא את כל השיחה השנייה ולהסביר לאט ופשוט איך ממשיכים (שקפים לכל סוגי הפריטים) + האם לחבר לסופרבייס</td><td>✓ הוסבר: פריט = הודעה אחת ל-GPT עם גיליון 8 הזוויות → אני מוציאה שקף שקוף ב-8 זוויות → שכבות בסטודיו. סופרבייס: להשאיר כרגע</td><td>מחכה: פריט ראשון מ-GPT</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">305</td><td>(25/10) במחשב: כפתור נגיש &#x27;מה יש לי בארון&#x27; (חולצות, חצאיות...) במקום פרטים נוספים</td><td>✓ 179: אריח כהה ראשון בבית פותח את כל הקטגוריות; &#x27;פרטים נוספים&#x27; עבר לתחתית המסך הזה ולפאנל הניהול; תוקן גם שהמסך לא נגלל בטלפון</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">306</td><td>(25/10) במחשב הכפתורים למעלה עולים אחד על השני</td><td>✓ 179: הכפתורים עוברים לשורה שנייה, בלי עיגולים דחוסים</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">307</td><td>(25/10) הסקילים שהשיחה השנייה המליצה עליהם, כדי לעצב יפה יותר</td><td>✓ שני סקילים הוצעו (החנות של שרה, סטודיו); ספר עיצוב (Design System) J8xXwYNTqfBmR2wKadpPaA: צבעים, גופנים, כפתורים, אריחים, כרטיס פריט</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">308</td><td>(25/10) גיליון חצאית ג&#x27;ינס מקסי ב-8 זוויות מ-GPT – &#x27;מה קורה אז?&#x27;</td><td>✓ נחתך, יושר לבובה (התאמת ראש), החצאית הוצאה כשכבה שקופה ב-8 זוויות והונחה על הבובה; סיבוב &#x27;חצאית / בלי&#x27; בדף F2YZkYe3XnrEbBm2HFRGo2; קבצים ב-avatar8/dressed/denim_maxi</td><td>מחכה: הפריט הבא מ-GPT</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">309</td><td>(25/10) בצד ימין ושמאל של החצאית רואים את הבטן</td><td>✓ היד חילקה את החצאית לשני חלקים ונשמר רק אחד; עכשיו נשמרים שניהם. דף F2YZ גרסה 3</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">310</td><td>(25/10) איך זה יעבוד עם חולצה, ג&#x27;קט, נעליים, חגורה, תכשיטים, פאה, איפור – איך מלבישים הכל</td><td>✓ הוסבר: כל פריט = שקף, סדר שכבות קבוע; איפור ופאה = גרסה של הבובה עצמה</td><td>מחכה: חולצה ראשונה מ-GPT לבדיקה</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">311</td><td>(25/10) למה חייב סדר? רוצה להחליף כל פריט לבד: חצאית, ג&#x27;קט, נעליים, כיסוי/מטפחת/פאה, איפור</td><td>✓ הוסבר: הסדר פנימי בלבד, כל פריט מתחלף לבד בכל צירוף; ראש ואיפור נבחרים בנפרד</td><td>לבנות את ההחלפה בפועל אחרי עוד פריטים</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">312</td><td>(25/10) האווטאר החדש (360) כבר בארון? אראה חדש או ישן?</td><td>✓ הוסבר: כרגע רק בדף הבדיקה F2YZ; בארון רק הישן</td><td>להכניס כאפשרות נוספת (לא במקום הישן) אחרי עוד 2–3 פריטים והחלפה</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">313</td><td>(25/10) חולצת בסיס מתחת לחולצה שקופה / לשמלה עם פתח גדול – איך זה ישתלב בבובה?</td><td>✓ הוסבר: בסיס = פריט רגיל מתחת, צבע משתנה לבד; שקוף = שתי תמונות GPT (על שחור ועל לבן) לחישוב שקיפות</td><td>לבדוק על פריט שקוף אמיתי</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">314</td><td>(25/10) גיליון חולצה כחולה בפרחים ב-8 זוויות מ-GPT</td><td>✓ יושר לפי ראש + רגליים (align3.py), שקף ב-8 זוויות; בדיקה עם החצאית: חולצה בחוץ ובפנים עובדות; בדף F2YZ גרסה 4 כפתורים ללבוש/להוריד כל בגד לבד</td><td>✓ נעשה בשורה 321</td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">315</td><td>(25/10) השיער לא מפריע? כיסוי או שיער אסוף – תצליח לחתוך?</td><td>✓ הוסבר: מלבישים על בובה עם כובע צמוד בצבע עור; שיער/פאה/כיסוי = שקף מעל. פרומפט הכובע נוסף לדף T45B (גרסה 3)</td><td>מחכה לגיליון הכובע מ-GPT</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="wait"><td class="n">316</td><td>(25/10) פרומפט ל-GPT (אותה שיחה) – אותן 8 תמונות עם כיסוי ראש</td><td>✓ נשלח בצ&#x27;אט (עריכה, כובע בצבע עור, כל השאר זהה)</td><td>מחכה לגיליון</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">317</td><td>(25/10) גיליון הכובע מ-GPT (בובה בלי שיער)</td><td>✓ יושר לפי הגוף התחתון (avatar8/cap), השיער הפזור הוצא כשקף; דף F2YZ גרסה 5: בסיס עם כובע + כפתור &#x27;שיער פזור&#x27;; דף הפרומפט T45B גרסה 4 עם גיליון הכובע</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">318</td><td>(25/10) לעשות שוב את החולצה?</td><td>✓ כן – נשלח פרומפט לחולצה על גיליון הכובע</td><td>מחכה לגיליון החולצה החדש</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">319</td><td>(25/10) גיליון חגורה עם אבנים (על בובת הכובע)</td><td>✓ אותו יישור כמו גיליון הכובע (samecap.py), שקף ב-8 זוויות; כפתור &#x27;💎 חגורה&#x27; בדף F2YZ גרסה 6; עובדת עם החצאית ועם החולצה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">320</td><td>(25/10) גיליון מטפחת כחולה עם פפיון (על בובת הכובע)</td><td>✓ שקף ראש (layer.py --head), כפתור &#x27;🧕 מטפחת כחולה&#x27; בדף F2YZ גרסה 7, מתחלף עם השיער הפזור</td><td>החולצה הישנה מראה חור בגב עם מטפחת – מחכה לחולצה החדשה</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">321</td><td>(25/10) החולצה הכחולה מחדש (על גיליון המטפחת) – &#x27;האם חולצה אחרת?&#x27;</td><td>✓ אותה חולצה; הוצאה רק החולצה (השוואה מול גיליון המטפחת), שלמה בגב; החליפה את הישנה בדף F2YZ גרסה 8</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">322</td><td>(25/10) פרומפט לתכשיטים: שרשרת + עגילים בשתי תמונות נפרדות (8 זוויות כל אחת), או רק שרשרת</td><td>✓ דף הפרומפט T45B גרסה 5: בחירה בגד / שרשרת+עגילים / רק שרשרת / רק עגילים / כיסוי ראש</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">323</td><td>(25/10) במחשב המסך קטן – לראות את עצמי בגדול עם האפשרויות בצד</td><td>✓ F2YZ גרסה 9: במחשב האווטאר בגובה המסך והכפתורים בעמודה לידה; כפתור ⛶ בגדול (גם בטלפון), Esc סוגר</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">324</td><td>(25/10) החולצה גם על גיליון הכובע הנקי</td><td>✓ נכנסה במקום גרסת המטפחת (כמעט זהות), dressed/navy_blouse/on_cap</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">325</td><td>(25/10) סוג פריט מחליף את הפרומפט לבד; רשימה מלאה (כיסויים, מטפחות, פאות, תכשיטים לפרק, נעליים, מעילים, אפודות, ז&#x27;קטים, חולצות, חולצת בסיס, חצאיות, שמלות, חליפה 2 חלקים) + &#x27;כמה מוצרים ביחד&#x27; שמתפרק לתמונות נפרדות</td><td>✓ p360.js משותף: 21 סוגים ב-4 קבוצות, בדף ה-360 (F2YZ גרסה 10, במקום ההלבשה הישנה מחזית) ובדף הפרומפט (T45B גרסה 6)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="wait"><td class="n">326</td><td>(25/10) נעליים שחורות (סליפ-און) ב-8 זוויות; &#x27;אני רוצה גם תכשיטים, חכה&#x27;</td><td>✓ שקף נעליים, מתחת לחצאית; כפתור &#x27;👟 נעליים שחורות&#x27; ב-F2YZ גרסה 11</td><td>מחכה לתכשיטים</td><td><span class="pill wait">מחכה</span></td></tr>
+<tr class="done"><td class="n">327</td><td>(25/10) בעיה עם הנעליים בכל הכיוונים (מציצות נעליים בז&#x27; מתחת לחצאית)</td><td>✓ שקף החצאית הכיל את הרגליים והנעליים הישנות מתחת לשוליים; נוקה בכל 8 הזוויות (avatar8/cap/hemclean.py); F2YZ גרסה 12</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">328</td><td>(25/10) שרשרת + עגילים ב-8 זוויות</td><td>✓ שקפים lj/le, כפתורים נפרדים (דף 360 v13). השרשרת מאחור כמעט לא נראית</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">329</td><td>(25/10) כתום מסביב לחגורה ובתחתית החולצה</td><td>✓ nowarm (חגורה) + defringe (חולצה), v14</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">330</td><td>(25/10) קטגוריית איפור בפרומפטים, 20 סגנונות</td><td>✓ &quot;💄 איפור&quot; ב-p360 (sty.js), עורך את הגיליון ומוסיף רק איפור. דף 360 v15, דף פרומפטים v7</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">331</td><td>(25/10) בחירת תסרוקת / קשירה / איפור לפי תמונה, גלילה</td><td>✓ גלריה בפרומפט. תסרוקות 1–5 עם תמונות (מג&#x27;מיני, 25/10 14:28). 6–20, 13 קשירות ו-20 איפורים: כרגע מספרים, כפתור 📸 מכין פרומפט רק לחסרות</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">332</td><td>(25/10) תסרוקת = השיער שלי (אין עוד פאה), בלי &quot;מה קנית&quot;</td><td>✓ פרומפט עורך את גיליון השיער ומשנה רק תסרוקת; כפתורי שמירה לגיליון השיער / חזית עם שיער / חזית עם כובע</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="done"><td class="n">333</td><td>(25/10 14:30) כתום בשיער מקדימה ומאחור, בתחתית החולצה, מעל החגורה כשהחולצה בפנים; עגילים מציצים מאחורי השיער בגב</td><td>✓ rimclean.py (צבע השפה מהבגד עצמו) + crownfix.py (הכובע לא מציץ מעל השיער), העגילים מתחת לשיער בזוויות הגב. דף 360 v15. הנחושת בהדפס של החולצה היא חלק מהחולצה</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="open"><td class="n">334</td><td>(25/10 14:33) אווטאר עם יד על המותן</td><td>⏳ 14:47 שלחה 3 גיליונות: חגורה וחצאית עם שתי ידיים, חולצה עם יד אחת (avatar8/hip). 14:51 בחרה יד אחת. נתתי פרומפט להוריד את החולצה מגיליון החולצה = בובה ריקה בתנוחה. אחר כך: חגורה וחצאית מחדש מהבובה</td><td></td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="open"><td class="n">335</td><td>(25/10 15:04) הפנים מהתמונה של ג&#x27;מיני (חיוך עם שיניים, avatar8/hip/face_ref.png) בכל האווטארים, &quot;ממש לא אוהבת את הקודם&quot;</td><td>⏳ נתתי פרומפט אחד להחלפת פנים בעריכה: (1) בובת יד על המותן (2) גיליון הכובע של 360 (3) שני קבצי p6c של הארון. את p6w אני מעבירה לבד מ-p6c (קובץ 1 מיושר, קובץ 2 במראה + הזזה 78px). מחכה לתמונות</td><td></td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="done"><td class="n">336</td><td>(25/10 15:23–15:42) אווטאר חדש מההתחלה: חזית מהפנים + מידות, כיסוי ראש טבעי עם פס שיער, יד ימין על המותן, 8 זוויות</td><td>✓ new_front_final + new8_try1 (avatar8/hip). דף 360 v16–17: &quot;🆕 הבובה החדשה&quot; ברירת מחדל, הקודמת בכפתור; קבצים לשמירה. פרומפטים: כיסוי במקום כובע (T45B v8)</td><td></td><td><span class="pill done">נעשה</span></td></tr>
+<tr class="open"><td class="n">337</td><td>(25/10 15:38/15:45) אווטאר עם פאה: שביל צד, צד אחד קדימה על החזה, השני מאחורי האוזן ובא קדימה</td><td>⏳ נתתי פרומפט עריכה של הגיליון החדש + תמונת הפאה. מחכה</td><td></td><td><span class="pill open">פתוח</span></td></tr>
+<tr class="open"><td class="n">338</td><td>(25/10 15:47) בארון (הדף הראשי) רק האווטארים החדשים, להוריד את הישנים</td><td>⏳ הצעתי: GPT מחליף רק ראש (פנים + כיסוי) ב-p6c_sheet1/2, הגוף נשאר כדי שכל הבגדים ישבו. מחכה ל-2 קבצים, ואז החלפה בארון + הורדת הישנים מהבחירה (גרסה 180)</td><td></td><td><span class="pill open">פתוח</span></td></tr>
+    </tbody></table></div>
+</section>
+
+<section>
+  <h2>מה יש בארכיון</h2>
+  <details><summary>רשימת הקבצים (בשביל Claude)</summary>
+  <ul class="plain" dir="ltr" style="text-align:left;font-size:14px">
+    <li>HANDOFF.md – full handoff for Claude (read first)</li>
+    <li>docs/tasks.md – all 349 requests · docs/memory/ – 36 memory files</li>
+    <li>docs/avatar8/ – 360 avatar handoff, wig prompts, crop notes</li>
+    <li>docs/site_changelog_README.md – per-version notes · docs/audit_v68_* · docs/plan_smart_closet.html</li>
+    <li>GitHub saracohen12/sara-closet – all files: work/ (site source v179), closet/avatar8, closet/extras</li>
+  </ul></details>
+</section>
+</main>
+<script>
+(function(){
+  var cp=document.getElementById('cp'),st=document.getElementById('cpst'),m=document.getElementById('msg');
+  cp.addEventListener('click',function(){
+    var t=m.innerText;
+    function sel(){var r=document.createRange();r.selectNodeContents(m);var s=getSelection();s.removeAllRanges();s.addRange(r);st.textContent='ההודעה מסומנת, לחצי "העתק"';}
+    try{navigator.clipboard.writeText(t).then(function(){st.textContent='הועתק ✓';},sel);}catch(e){sel();}
+  });
+  var bs=document.querySelectorAll('.filt button'),rows=document.querySelectorAll('#tb tr');
+  bs.forEach(function(b){b.addEventListener('click',function(){
+    var f=b.dataset.f;bs.forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
+    rows.forEach(function(r){r.hidden=!(f==='all'||r.classList.contains(f));});
+  });});
+})();
+</script>
+
+</body></html>

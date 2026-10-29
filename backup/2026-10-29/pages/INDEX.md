@@ -1,0 +1,24 @@
+# Artifact backup 2026-10-29
+
+- U8geFwcr8sKMY7xJQ3HqDo.md — סיכום הסבב הגדול – הארון של שרה (28/10) — https://claude.ai/artifact/U8geFwcr8sKMY7xJQ3HqDo
+- NJo7miNDvHrpWNmhaofHBL.md — תוכנית: זיפ אחד לכל מוצר — https://claude.ai/artifact/NJo7miNDvHrpWNmhaofHBL
+- 11Hjp9NFdrnH5AGroRpYKH.md — ניתוח האתר – הארון של שרה — https://claude.ai/artifact/11Hjp9NFdrnH5AGroRpYKH
+- Tf6j8XspF1AmHr7kyqxQnL.html — מה אני רוצה לקנות — https://claude.ai/artifact/Tf6j8XspF1AmHr7kyqxQnL
+- 1s6q3y3b5ASWnrZgV5qtyZ.html — לא קונה כפול — https://claude.ai/artifact/1s6q3y3b5ASWnrZgV5qtyZ
+- GSxo7vCKSKphQ4LYH2iS9a.html — המעבר של הארון — https://claude.ai/artifact/GSxo7vCKSKphQ4LYH2iS9a
+- F2YZkYe3XnrEbBm2HFRGo2.html — האווטאר שלי ב-8 זוויות — https://claude.ai/artifact/F2YZkYe3XnrEbBm2HFRGo2
+- RRFTHZeXMFskbpg5bLYPaw.html — 20 הקשירות שלי — https://claude.ai/artifact/RRFTHZeXMFskbpg5bLYPaw
+- Bg3ySmhNsvLCBhcGy3nSk5.html — פרומטי הסיכום המתומצת — https://claude.ai/artifact/Bg3ySmhNsvLCBhcGy3nSk5
+- T45B8XHpo1gawrzxv4vfGy.html — אווטאר 360 ל-GPT — https://claude.ai/artifact/T45B8XHpo1gawrzxv4vfGy
+- 6QchawxHTNjJ14ZQxeok6F.html — תיבת התמונות של שרה — https://claude.ai/artifact/6QchawxHTNjJ14ZQxeok6F
+- HBXg1gssefG2GfAQ8Upo22.md — הארון של שרה – סיכום להמשך ב-Lovable — https://claude.ai/artifact/HBXg1gssefG2GfAQ8Upo22
+- 2BUbqQvEoVwerpqtwcjXk2.html — אווטאר 360 מעלות — https://claude.ai/artifact/2BUbqQvEoVwerpqtwcjXk2
+- BaWyW7D1pks6ks8rezvnaD.html — תוכנית הארון החכם — https://claude.ai/artifact/BaWyW7D1pks6ks8rezvnaD
+- N7e2QR7GghzC89Cc2F153a.html — פרומפטים לאווטאר של שרה — https://claude.ai/artifact/N7e2QR7GghzC89Cc2F153a
+- VKEMzizpkT8jy5QvkpEBzJ.md — כל השינויים מגרסה 50 – הארון של שרה — https://claude.ai/artifact/VKEMzizpkT8jy5QvkpEBzJ
+- Shk5b8FGHguDv1BgKYpM3a.md — תוכנית: אווטאר ובגדים בשני קבצים — https://claude.ai/artifact/Shk5b8FGHguDv1BgKYpM3a
+- DPYGWjWC7SDTAdEjzCU55V.md — תוכנית שדרוג – הארון של שרה — https://claude.ai/artifact/DPYGWjWC7SDTAdEjzCU55V
+- 6akg5GFJ3imJLPD4a2eEtJ.md — 50 שדרוגים – הארון של שרה — https://claude.ai/artifact/6akg5GFJ3imJLPD4a2eEtJ
+- AxMecU1Pb6ypXceahDAQPg.html — המוקסינים השחורים — https://claude.ai/artifact/AxMecU1Pb6ypXceahDAQPg
+- 5MF1PBMZZhwYNjRUq4C79R.html — שלוש תמונות ל-GPT — https://claude.ai/artifact/5MF1PBMZZhwYNjRUq4C79R
+- J8xXwYNTqfBmR2wKadpPaA.html — הארון של שרה (מערכת עיצוב) — https://claude.ai/artifact/J8xXwYNTqfBmR2wKadpPaA

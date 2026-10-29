@@ -1,0 +1,230 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>תוכנית הארון החכם</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700&family=Assistant:wght@400;600;700&display=swap">
+<style>
+/* Layout: one calm reading column, each of the three developments is a "fabric swatch" card with a stitched edge */
+:root{
+  --bg:#fbf6f3; --paper:#ffffff; --ink:#3a2a30; --soft:#7a646b;
+  --plum:#8a3b5c; --plum-soft:#f3e3ea; --sage:#4f7a62; --sage-soft:#e4efe8;
+  --amber:#a86a1c; --amber-soft:#f7ead6; --line:#e9dcd9;
+  --display:"Frank Ruhl Libre", "David", Georgia, serif;
+  --body:"Assistant", "Segoe UI", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1e1619; --paper:#2a2024; --ink:#f3e8eb; --soft:#c2aab2;
+  --plum:#e48bb0; --plum-soft:#3d2430; --sage:#8fc3a4; --sage-soft:#1f3328;
+  --amber:#e7b06a; --amber-soft:#3a2c18; --line:#43333a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1e1619; --paper:#2a2024; --ink:#f3e8eb; --soft:#c2aab2;
+  --plum:#e48bb0; --plum-soft:#3d2430; --sage:#8fc3a4; --sage-soft:#1f3328;
+  --amber:#e7b06a; --amber-soft:#3a2c18; --line:#43333a; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.65;direction:rtl}
+.wrap{max-width:720px;margin:0 auto;padding-block:28px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.25}
+h1{font-size:2.1rem;color:var(--plum)}
+h2{font-size:1.55rem}
+h3{font-size:1.1rem;font-family:var(--body);font-weight:700;color:var(--plum);margin-top:6px}
+p{margin:0}
+.lead{color:var(--soft);font-size:1.05rem}
+nav{display:flex;flex-wrap:wrap;gap:8px}
+nav a{background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:6px 14px;color:var(--ink);text-decoration:none;font-weight:600;font-size:.95rem}
+nav a:focus-visible,button:focus-visible{outline:3px solid var(--plum);outline-offset:2px}
+section{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--paper);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:12px;border:2px dashed var(--line);outline:6px solid var(--paper);outline-offset:-1px}
+.num{display:inline-block;font-family:var(--display);font-size:.95rem;color:var(--plum);background:var(--plum-soft);border-radius:999px;padding:2px 12px;align-self:flex-start}
+ul{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px}
+.up{background:var(--sage-soft);border-radius:14px;padding:14px 16px}
+.up h3{color:var(--sage);margin:0 0 6px}
+.need{background:var(--amber-soft);border-radius:14px;padding:12px 16px}
+.need b{color:var(--amber)}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.95rem}
+.flow span{background:var(--plum-soft);border-radius:10px;padding:4px 10px}
+.flow i{color:var(--soft);font-style:normal}
+.stage{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:start}
+.stage .tag{font-weight:700;color:var(--paper);background:var(--plum);border-radius:10px;padding:2px 10px;font-size:.9rem;white-space:nowrap}
+.stage div{min-width:0}
+.prompt{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;white-space:pre-wrap;font-size:.95rem;max-height:420px;overflow:auto}
+button{font:inherit;font-weight:700;background:var(--plum);color:var(--paper);border:0;border-radius:999px;padding:10px 22px;cursor:pointer;align-self:flex-start}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.93rem;background:var(--paper);border-radius:12px;overflow:hidden}
+th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:right;vertical-align:top}
+th{background:var(--plum-soft)}
+.ok{color:var(--sage);font-weight:700}.wait{color:var(--amber);font-weight:700}
+small{color:var(--soft)}
+a{color:var(--plum)}
+</style>
+
+<div class="wrap">
+<header style="display:flex;flex-direction:column;gap:10px">
+  <h1>הארון החכם: מה הבנתי, מה אני מציע, ואיך נבנה</h1>
+  <p class="lead">שלושה פיתוחים גדולים לארון שלך, פרומפט ל-GPT, והדעה הכנה שלי על אפליקציה למכירה. עדיין לא כתבתי קוד. קודם תאשרי.</p>
+  <nav>
+    <a href="#where">1. איפה הבגד</a><a href="#sort">2. מיון הישנים</a><a href="#buy">3. לקנות או לא</a><a href="#plan">סדר העבודה</a><a href="#prompt">פרומפט ל-GPT</a><a href="#market">דעתי</a><a href="#table">טבלה</a>
+  </nav>
+</header>
+
+<section id="where" class="card">
+  <span class="num">פיתוח 1</span>
+  <h2>איפה הבגד ומה המצב שלו</h2>
+  <h3>מה הבנתי</h3>
+  <ul>
+    <li>לכל פריט, ממש הכל: בגדים, חגורות, כיסויים, תכשיטים, נעליים, תיקים, נרשם איפה הוא גר: חדר, ארון, ומקום בתוך הארון.</li>
+    <li>לכל פריט רואים מה קורה איתו עכשיו: לבשתי, בכביסה, כבר כובס, חזר לארון.</li>
+    <li>כשחוזר מהכביסה: חזר לאותו מקום, או למקום אחר (ואז נרשם המקום החדש).</li>
+  </ul>
+  <div class="flow"><span>בארון</span><i>←</i><span>עליי</span><i>←</i><span>בסל כביסה</span><i>←</i><span>נקי, מחכה לקיפול</span><i>←</i><span>חזר לארון</span></div>
+  <div class="up">
+    <h3>השדרוגים שלי</h3>
+    <ul>
+      <li><b>מפת הבית פעם אחת:</b> את כותבת או מצלמת את החדרים והארונות (למשל "חדר שינה ← ארון לבן ← מדף 2"), ומאז בוחרים בלחיצה, בלי להקליד.</li>
+      <li><b>צילום מדף:</b> מצלמים מדף שלם, ואני מזהה אילו בגדים מהארון שלך יש עליו ורושם לכולם את המקום ביחד.</li>
+      <li><b>לוק שלם בלחיצה אחת:</b> "לבשתי את הלוק" מסמן את כל הפריטים כ"עליי", ובערב "לכביסה" או "חזרה לארון" לכולם.</li>
+      <li><b>מסך סל הכביסה:</b> כל מה שבכביסה, מסודר לפי צבע (כהה, בהיר, לבן) ולפי הוראות כביסה. כבר יש לי את הצבעים של כל בגד.</li>
+      <li><b>הוראות כביסה:</b> מצלמים את התווית פעם אחת (יד, מכונה 30, לא למייבש) וזה נשמר.</li>
+      <li><b>"איפה החצאית השחורה?"</b> בחיפוש, והתשובה: חדר, ארון, מדף. או "בכביסה מאז יום שלישי".</li>
+      <li><b>בניית לוק חכמה:</b> מה שבכביסה מופיע אפור, כדי שלא תתכנני לוק לשבת עם חולצה מלוכלכת.</li>
+      <li>גם מצבים נוספים: אצל התופרת, הושאל, במחסן עונתי, בדרך להחזרה (מחובר להזמנות שלי).</li>
+    </ul>
+  </div>
+  <div class="need"><b>מה אצטרך ממך:</b> שמות החדרים והארונות, או תמונה של כל ארון פתוח. את המקומות של הבגדים עצמם נמלא ביחד, מדף אחרי מדף.</div>
+</section>
+
+<section id="sort" class="card">
+  <span class="num">פיתוח 2</span>
+  <h2>מיון הבגדים הישנים</h2>
+  <h3>מה הבנתי</h3>
+  <ul>
+    <li>את מעלה בגדים ישנים שכבר יש לך (לא מטמו ושיין), ואני מכניס אותם לארון באתר.</li>
+    <li>לכל בגד מסמנים: אוהבת או לא, גדול, קטן או טוב, ומשאירה או לא.</li>
+    <li>בסוף בארון נשארים רק בגדים שאת אוהבת. אותו דבר גם לבגדים שקנית.</li>
+  </ul>
+  <div class="up">
+    <h3>השדרוגים שלי</h3>
+    <ul>
+      <li><b>העלאה מהירה:</b> פורשים כמה בגדים על המיטה, תמונה אחת, ואני חותך כל בגד לבד ומנחש קטגוריה וצבע.</li>
+      <li><b>משחק מיון:</b> בגד אחד על המסך, שלוש לחיצות: אוהבת? מידה? מה עושים? מהיר כמו להחליק בטלפון.</li>
+      <li><b>יותר מ"להשאיר או לא":</b> משאירה, למסירה, למכירה, לתופרת, או <b>"לחכות"</b>. בדיוק כמו השמלה החומה שקטנה עלייך: נכנסת לקופסת המתנה עם תאריך, ובעוד 3 חודשים אני שואל "נמדוד שוב?".</li>
+      <li><b>מבחן הלוק:</b> לכל בגד אני בודק עם כמה לוקים הוא הולך. בגד שאת אוהבת אבל אין לו אף לוק מקבל סימון "חסר לו חבר".</li>
+      <li><b>לא נלבש חצי שנה:</b> בגדים שסימנת "משאירה" ולא לבשת אף פעם עולים לסבב מיון נוסף.</li>
+      <li><b>שקית מסירה:</b> רשימה של כל מה שיוצא, עם "נמסר ✓", כדי שזה באמת יעזוב את הבית.</li>
+    </ul>
+  </div>
+  <div class="need"><b>מה אצטרך ממך:</b> תמונות של הבגדים הישנים, אחרי שתאשרי. לא צריך תמונות יפות, צילום טלפון מספיק.</div>
+</section>
+
+<section id="buy" class="card">
+  <span class="num">פיתוח 3, החלום</span>
+  <h2>לקנות או לא? יועצת קניות עם הארון שלך</h2>
+  <h3>מה הבנתי</h3>
+  <ul>
+    <li>את בחנות, או בשיין, טמו, עלי אקספרס. מצלמת בגד (או צילום מסך).</li>
+    <li>הבגד נחתך כדי לשים אותו על האווטאר שלך.</li>
+    <li>אני סורק את הארון ומראה: החצאית הזאת הולכת עם החולצה הזאת, החגורה הזאת והכיסוי הזה. והבובה לובשת את זה.</li>
+    <li>אם אין לך שום דבר שמתאים, אני אומר את זה, ואת יכולה לבדוק בגד אחר.</li>
+    <li>בסוף: המלצה. ואת מסמנת קניתי או לא, ואם כן כמה עלה, מתי, איפה, ומה את חושבת. הכל נשמר בארכיון.</li>
+  </ul>
+  <div class="flow"><span>צילום</span><i>←</i><span>חיתוך</span><i>←</i><span>סריקת הארון</span><i>←</i><span>3 לוקים על הבובה</span><i>←</i><span>המלצה</span><i>←</i><span>קניתי / ויתרתי</span></div>
+  <div class="up">
+    <h3>השדרוגים שלי</h3>
+    <ul>
+      <li><b>"כבר יש לך דומה":</b> לפני הכל אני בודק אם יש בארון בגד כמעט זהה. זה יחסוך הרבה החזרות של כפולים.</li>
+      <li><b>שלוש תשובות ברורות:</b> ✅ כדאי, יש 5 לוקים איתו. ⚠️ דומה מדי למשהו שיש. ❌ אין לך עם מה ללבוש אותו, ואז אני אומר מה חסר ("חצאית שחורה ארוכה").</li>
+      <li><b>מתאים לך:</b> אני בודק אורך, שרוולים, חול או שבת, עונה. ומשווה את טבלת המידות של החנות למידות האמיתיות שלך מסרט המידה.</li>
+      <li><b>מחיר ללבישה:</b> "₪80, ואם תלבשי פעמיים בחודש, ₪3 ללבישה בשנה הראשונה".</li>
+      <li><b>השוואה:</b> מתלבטת בין 2–3 חולצות? מצלמים את כולן, ואני מראה מי מהן עושה הכי הרבה לוקים.</li>
+      <li><b>רשימת חסרים חכמה:</b> מכל הבדיקות אני לומד מה הכי חסר בארון. למשל "חצאית אחת בצבע הזה תשלים 12 לוקים", כך שאת קונה פחות ויש לך יותר.</li>
+      <li><b>תקציב:</b> כמה הוצאת החודש, מחובר לסיכום ההוצאות שכבר יש.</li>
+      <li><b>מהארכיון לארון:</b> מה שסימנת "קניתי" מחכה בהזמנות שלי, וכשהוא מגיע נכנס לארון עם הלוקים שכבר מצאנו לו.</li>
+      <li><b>לשלוח לחברה:</b> תמונת הלוק בוואטסאפ, לשאול "מה דעתך?".</li>
+    </ul>
+  </div>
+  <div class="need"><b>חשוב לדעת:</b> קישור משיין או טמו אני לא יכול לפתוח מהאתר, ולכן צריך צילום מסך. הבובה בבדיקה המהירה היא הדמיה בקירוב. ל-5 תנוחות מדויקות שולחים ל-GPT כמו היום, רק לבגדים שבאמת שוקלים.</div>
+</section>
+
+<section id="plan" class="card">
+  <span class="num">סדר העבודה</span>
+  <h2>תוכנית הפיתוח</h2>
+  <p>אני ממליץ על הסדר הזה, כי כל שלב נותן ליועצת הקניות מידע: מה נקי, מה אהוב, ומה במידה.</p>
+  <div class="stage">
+    <span class="tag">שלב א</span><div><b>מפת הבית + מצב לכל פריט.</b> חדרים וארונות, "איפה זה", לבשתי, כביסה, חזר. סל הכביסה. בערך 2–3 גרסאות.</div>
+    <span class="tag">שלב ב</span><div><b>מיון.</b> העלאת בגדים ישנים, משחק המיון, קופסת המתנה, שקית מסירה. גם על הבגדים שקנית. 2 גרסאות.</div>
+    <span class="tag">שלב ג1</span><div><b>בדיקה מהירה + ארכיון.</b> מצלמים, חיתוך, "כבר יש לך דומה", זיהוי סוג וצבע, ושמירה בארכיון עם קניתי או ויתרתי, מחיר, תאריך, חנות, דעה.</div>
+    <span class="tag">שלב ג2</span><div><b>סריקת הארון והבובה.</b> 3 לוקים מהבגדים שלך (רק נקיים ואהובים), על האווטאר.</div>
+    <span class="tag">שלב ג3</span><div><b>ההמלצה החכמה.</b> כדאי או לא, מידה, מחיר ללבישה, השוואה בין כמה בגדים, רשימת חסרים, תקציב.</div>
+  </div>
+  <p><small>אחרי כל שלב: בדיקה בטלפון לפני פרסום, ועדכון הטבלה כמו תמיד.</small></p>
+</section>
+
+<section id="prompt" class="card">
+  <span class="num">ל-GPT</span>
+  <h2>הפרומפט: האם קיימת אפליקציה כזו?</h2>
+  <p>לוחצים על הכפתור, מדביקים ב-ChatGPT (עדיף עם חיפוש באינטרנט פעיל), ומביאים לי את התשובה.</p>
+  <button id="cp" type="button">העתיקי את הפרומפט</button>
+  <div class="prompt" id="pt">אני רוצה שתחפש באינטרנט, עכשיו, ותבדוק אם קיימת בעולם אפליקציה (או כמה אפליקציות) שעושה את מה שאני מתארת. חשוב: אל תמציא. לכל אפליקציה תן קישור, ואם אתה לא בטוח שיש לה יכולת מסוימת, כתוב "לא בטוח".
+
+מה יש לי היום (בניתי לעצמי):
+ארון בגדים דיגיטלי עם כ-660 פריטים שקניתי בטמו ובשיין: בגדים, חגורות, כיסויי ראש, תכשיטים, נעליים ותיקים. יש בו:
+1. קטלוג לפי קטגוריות, עם תמונות מקוריות, כפולים, ותאריך אחרון להחזרה.
+2. מעקב הזמנות: מה הגיע, מה חסר, מה בדרך, מה מחזירה, והאם הכסף חזר.
+3. אווטאר אישי שלי ב-5 תנוחות (קדימה, צד, גב, חצי צד, יד על המותן), שאני מלבישה עליו את הבגדים שלי ובונה לוקים, כולל כיסוי ראש או פאה וקשירות מטפחת.
+4. התאמת צבעים, הצעות ללוקים, הפרדה בין בגדי חול לבגדי שבת, וסיכום הוצאות.
+
+מה אני רוצה להוסיף:
+5. מיקום ומצב לכל פריט: באיזה חדר, ארון ומדף. לבשתי, בכביסה, כובס, חזר לאותו מקום או למקום אחר. סל כביסה לפי צבעים והוראות כביסה.
+6. מיון בגדים ישנים: אוהבת או לא, קטן, גדול או במידה, להשאיר, למסור, למכור, לתיקון, או לחכות (למשל עד שארד במשקל).
+7. יועצת קניות: אני מצלמת בגד בחנות או צילום מסך משיין, טמו או עלי אקספרס. האפליקציה חותכת את הבגד, שמה אותו על האווטאר שלי, סורקת את הארון שלי ומראה לוקים שלמים עם מה שכבר יש לי. היא אומרת אם כדאי לקנות, אם יש לי כבר משהו דומה, ומה חסר לי. אחרי זה אני רושמת אם קניתי, מחיר, תאריך, חנות ודעה, והכל נשמר בארכיון.
+8. מתאים לאישה דתייה: צניעות (אורך, שרוולים), כיסוי ראש, חול ושבת, ובעברית.
+
+מה אני מבקשת ממך:
+א. טבלה של האפליקציות הכי קרובות (למשל Whering, Indyx, Acloset, Stylebook, Alta, Cladwell, Smart Closet, וכל מה שתמצא, גם חדשות מ-2025–2026). לכל אחת: אילו מהיכולות 1 עד 8 יש לה (✓ / ✗ / לא בטוח), מחיר, אייפון או אנדרואיד, האם יש עברית, ומה המשתמשים מתלוננים עליו.
+ב. האם יש אפליקציה שעושה את סעיף 7 (לצלם בגד בחנות ולבדוק מול הארון שלי, על אווטאר שלי)? מי הכי קרובה?
+ג. האם יש אפליקציה שעושה את סעיף 5 (מיקום בארון וכביסה)?
+ד. האם יש אפליקציה לנשים דתיות או לאופנה צנועה (Modest fashion)?
+ה. מה עדיין לא קיים בשוק, ומה ייחודי במה שאני בונה.
+ו. דעה כנה: האם יש ביקוש לאפליקציה כזו? מי הקהל, כמה אנשים בערך, ואיך אפליקציות כאלה מרוויחות כסף (מנוי, עמלות מחנויות, וכו').
+
+תענה בעברית, בשפה פשוטה, עם קישורים למקורות.</div>
+</section>
+
+<section id="market" class="card">
+  <span class="num">דעתי הכנה</span>
+  <h2>האם מישהו ירצה אפליקציה כזו?</h2>
+  <p><b>כן, אבל לא כל אחד, ויש כבר הרבה מתחרים.</b> אפליקציות ארון דיגיטלי עם הצעות לוק יש לא מעט (Whering, Indyx, Acloset, Stylebook, Alta ועוד), וחלקן כבר מציעות בינה מלאכותית ובדיקה של "מה הולך עם מה" (<a href="https://getwardrobe.com/compare/" target="_blank" rel="noopener">השוואה של אפליקציות ארון, 2026</a>, <a href="https://www.altadaily.com/blog/closet-apps-2026" target="_blank" rel="noopener">סקירה של Alta</a>). יש גם אפליקציות קטנות למיקום בארון ולכביסה. אז הרעיון הכללי קיים.</p>
+  <p><b>מה ייחודי אצלך:</b></p>
+  <ul>
+    <li>התאמה לאישה דתייה: כיסוי, פאה, קשירות מטפחת, חול ושבת, אורך ושרוולים. לא ראיתי אפליקציה גדולה שבנויה לזה.</li>
+    <li>עברית מלאה.</li>
+    <li>חיבור ישיר להזמנות מטמו ושיין, כולל החזרות וכפולים. זה הכאב האמיתי של מי שקונה הרבה אונליין.</li>
+    <li>"לקנות או לא" מול הארון שלך, על אווטאר שלך.</li>
+  </ul>
+  <p><b>מה קשה:</b> הקושי הכי גדול באפליקציות ארון הוא שאנשים מתעייפים מלהכניס את הבגדים. אצלך זה עבד כי השקעת המון, ואני עשיתי את רוב העבודה. אפליקציה למכירה צריכה לעשות את זה לבד, למשל לייבא את כל ההזמנות מהמייל. וגם האווטאר מ-GPT דורש עבודה לכל בגד.</p>
+  <p><b>מה הייתי עושה:</b> קודם להשתמש בזה בעצמך חודשיים־שלושה ולראות מה באמת שימושי. אחר כך להראות ל-10–20 חברות (קבוצות וואטסאפ של נשים דתיות שקונות בשיין ובטמו), ולשאול אם הן היו משלמות, למשל ₪15–20 בחודש. אם רובן אומרות כן ומשתמשות בזה שבועיים, יש על מה לדבר עם מפתח אמיתי. חשוב לדעת: האתר שבנינו בנוי בשבילך ולא מוכן למכירה כמו שהוא. הוא כן דוגמה מצוינת להראות.</p>
+</section>
+
+<section id="table" class="card">
+  <span class="num">הטבלה</span>
+  <h2>מה ביקשת / מה עשיתי / מה עוד לא</h2>
+  <div class="tbl"><table>
+    <tr><th>מה ביקשת</th><th>מה עשיתי</th><th>מה עוד לא</th></tr>
+    <tr><td>מיקום ומצב כביסה לכל פריט</td><td class="ok">הבנה + שדרוגים + תוכנית (שלב א)</td><td class="wait">מחכה לאישור שלך ולשמות החדרים והארונות</td></tr>
+    <tr><td>מיון בגדים ישנים</td><td class="ok">הבנה + שדרוגים + תוכנית (שלב ב)</td><td class="wait">מחכה לאישור ולתמונות</td></tr>
+    <tr><td>יועצת קניות + ארכיון</td><td class="ok">הבנה + שדרוגים + תוכנית (שלבים ג1–ג3)</td><td class="wait">מחכה לאישור</td></tr>
+    <tr><td>פרומפט ל-GPT</td><td class="ok">✓ למעלה, עם כפתור העתקה</td><td>לשלוח ל-GPT ולהביא לי את התשובה</td></tr>
+    <tr><td>האם אנשים ירצו</td><td class="ok">✓ דעה כנה למעלה</td><td></td></tr>
+    <tr><td>השמלה החומה, להחזיר לשיין?</td><td>מטופל בשיחה של ההזמנות</td><td></td></tr>
+  </table></div>
+</section>
+</div>
+
+<script>
+document.getElementById('cp').addEventListener('click',function(){
+  var b=this,t=document.getElementById('pt').innerText;
+  function done(){b.textContent='✓ הועתק';setTimeout(function(){b.textContent='העתיקי את הפרומפט'},2500)}
+  function sel(){var r=document.createRange();r.selectNodeContents(document.getElementById('pt'));var s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='סומן, לחצי העתק'}
+  try{navigator.clipboard.writeText(t).then(done,sel)}catch(e){sel()}
+});
+</script>
+
+</body></html>

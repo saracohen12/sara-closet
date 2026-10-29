@@ -1,0 +1,21 @@
+---
+name: wardrobe-artifact-gotchas-2
+description: Later runtime pitfalls in Sara's wardrobe artifact (Shein SKUs, zoom dialog, confirm() blocked, studio layers, terser build, transform/scale, dialog scroll and page bounds v73)
+metadata:
+  type: project
+---
+
+Continues [[wardrobe-artifact-gotchas]].
+- Base avatar files: book3.py copies av/* from src/work/me/ on every build. The v38 bases were published straight from S/av2/out, so me/ still held the OLD avatar until v41 (synced 2026-10-21). Any publish with root=build/pub + av files must come after `me/` is current. json.dumps(meta) uses `"key": "value"` with a space — grep accordingly.
+- Shein: receipt names don't match Shein search; SKUs from 13 order e-mails → shein/sku_map.json (D[id].sku, v41). Sara: Shein app → ההזמנות שלי → product, or camera search.
+- Zoom dialog (#zoomd): never call setPointerCapture on a pointerdown that starts on a button — Chrome retargets the click to the capturing element and the ✕ stops working (bug lived v26–v42, fixed v43). imgup's `.zx2` ✕ overlaps the `.zb` ✕ at top-right (dialog is LTR). After closing a modal from pointerup, guard the click that follows (ZCLOSED) or it hits the element underneath and reopens.
+- Item dialog bottom (v44): ui.js tidyRest merges לבישות/מיקום/לוקים into one `.erow.use` and wraps `.sim` buttons in `.simb`; chips must WRAP (Sara: 'not all styles show' when v42 used nowrap+scroll). Sara edits db live: re-read + pin if_version before writing.
+- confirm()/alert()/prompt() are BLOCKED in the artifact iframe (v36–v48 deletes never ran). Use ui.js sure(btn,label) two-tap confirmation (v49).
+- v52: the card-badge rule `.sb{padding:3px 9px}` also matched the studio base `<img class="sb">` → base drawn ~8% narrower than head/garment layers. Fixed with `img.sb{padding:0!important}`. Any new base/overlay class must avoid the `.sb` badge name.
+- v52: rarely used studio toolbar buttons are display:none and triggered from the "⋯ עוד" drawer menu via el.click() (works for hidden buttons; #simport then clicks #gptfiles). Desktop drawer is position:fixed under the slot rail (placeDrawer in v52.js, MutationObserver on #sdrawer class).
+- v53: old bases' head overlays (avatar_head/avatar2_head/back_head) are 399×450-ish crops anchored top with width:100% — never give `#sstage img.sh` a height/object-fit rule. Mirrored spin views wrap the stage html in `<div class="mirw">`; any stageInner wrapper that appends layers must use `stageAdd(html,add)` (studio3.js) or the layer renders un-mirrored (ghost head).
+- v68: book3.py minifies the inline script with terser (S/tools/node_modules/.bin/terser; env NOMIN=1 skips); theme68.css is appended after ui.css inside </style>; thumbnails are WebP since v68 (th/*.json still JSON of data URIs). Capture-phase document listeners run in file order: v68.js is last in the HUB concat, so to pre-empt studio.js patch studio.js itself.
+- v70: p5.js front/back layers lacked scale() in their transform until v70 (sliders/📐 width had no effect on the 5-pose avatar) – layers must use tfStr(). Smart fit (rule70.js smartFit) searches size+height so the garment outline matches BODYW (p5c bases, not wig bases); tops scale uniformly via tf.w. Collar back is cut at display (neckCut, front/half). Fake `claude.use('assets')` in tests triggers any auto-upload code path – watch for blob: urls replacing /_blob ids.
+- v73: template has global `dialog{overflow:visible}` – any dialog/sheet taller than the screen needs its own `overflow-y:auto`+max-height (#more9 was stuck). tests/scrollaudit.js (desk|phone) checks 19 screens for clipped/off-screen buttons; fixes go in fix73.css (loaded last). theme68 `.x` is a 40px circle – text buttons with class x need width:auto.
+- v74: block-level `function paint(){}` in design71.js silently replaced the global card paint() → no avd dots/status since v72; never name block functions like globals. book3.py now adds ?v=VER to av/* urls (ties.js regex allows it).
+- v93→v95: block-level `function dlg(){}` in fix93.js hoisted (Annex B) over window.dlg, so the item dialog's inline onclick `dlg.close()` threw and ✕ stopped working. ALWAYS suffix block function names with the version (dlg93, bar91…); after a build check `typeof window.dlg` is the DIALOG (tests/v92/glob94.js, close94.js).

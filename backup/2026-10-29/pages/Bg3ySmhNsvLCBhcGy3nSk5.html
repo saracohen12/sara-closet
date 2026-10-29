@@ -1,0 +1,810 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>פרומטי הסיכום המתומצת</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&family=Rubik:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F6F5F1;
+  --surface: #FFFFFF;
+  --surface-2: #F2F0EB;
+  --fg: #1C1B19;
+  --muted: #67625A;
+  --border: #E3E0D8;
+  --on-accent: #FFFFFF;
+  --bonds: #1D4ED8;
+  --maof: #0F766E;
+  --general: #B45309;
+  --pension: #7C3AED;
+  --all: #44403C;
+  --ok: #15803D;
+  --ok-bg: #E6F4EA;
+  --wait: #9A5B00;
+  --wait-bg: #FBF0D9;
+  --work: #1D4ED8;
+  --work-bg: #E5EDFD;
+  --bad: #B42318;
+  --focus: #2563EB;
+  --shadow: 0 1px 2px rgba(28, 27, 25, .05), 0 6px 18px rgba(28, 27, 25, .05);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141412;
+    --surface: #1D1C1A;
+    --surface-2: #262522;
+    --fg: #EEECE6;
+    --muted: #A9A49A;
+    --border: #35332F;
+    --on-accent: #141412;
+    --bonds: #8EB2FF;
+    --maof: #5FD3C5;
+    --general: #F2A75C;
+    --pension: #C1A6FF;
+    --all: #D7D3CB;
+    --ok: #74D69D;
+    --ok-bg: #1B3325;
+    --wait: #F0C45C;
+    --wait-bg: #3A2F17;
+    --work: #8EB2FF;
+    --work-bg: #1E2A44;
+    --bad: #FF8A7A;
+    --focus: #8EB2FF;
+    --shadow: none;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141412;
+  --surface: #1D1C1A;
+  --surface-2: #262522;
+  --fg: #EEECE6;
+  --muted: #A9A49A;
+  --border: #35332F;
+  --on-accent: #141412;
+  --bonds: #8EB2FF;
+  --maof: #5FD3C5;
+  --general: #F2A75C;
+  --pension: #C1A6FF;
+  --all: #D7D3CB;
+  --ok: #74D69D;
+  --ok-bg: #1B3325;
+  --wait: #F0C45C;
+  --wait-bg: #3A2F17;
+  --work: #8EB2FF;
+  --work-bg: #1E2A44;
+  --bad: #FF8A7A;
+  --focus: #8EB2FF;
+  --shadow: none;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Assistant", "Segoe UI", "Arial Hebrew", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+}
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 56px;
+}
+h1, h2, h3 { font-family: "Rubik", "Assistant", Arial, sans-serif; margin: 0; }
+p { margin: 0; }
+button { font: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* Header */
+.top { margin-bottom: 26px; }
+.eyebrow { color: var(--muted); font-weight: 600; font-size: .9rem; letter-spacing: .01em; }
+h1 { font-size: clamp(1.65rem, 4.2vw, 2.3rem); font-weight: 700; margin-top: 4px; line-height: 1.2; }
+.lede { color: var(--muted); font-size: 1.06rem; margin-top: 8px; max-width: 62ch; }
+
+.how {
+  list-style: none; margin: 20px 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;
+  counter-reset: step;
+}
+.how li {
+  counter-increment: step;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; min-width: 0;
+  box-shadow: var(--shadow);
+}
+.how li::before {
+  content: counter(step);
+  flex: none; width: 28px; height: 28px; border-radius: 50%;
+  background: var(--fg); color: var(--bg);
+  display: grid; place-items: center; font-weight: 700; font-family: "Rubik", sans-serif; font-size: .9rem;
+}
+.how b { display: block; font-weight: 700; }
+.how span { color: var(--muted); font-size: .95rem; }
+
+/* Summary parts */
+.parts { margin: 30px 0 30px; }
+.sec-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 10px; }
+.sec-title small { color: var(--muted); font-family: "Assistant", sans-serif; font-weight: 500; font-size: .92rem; }
+.parts ol {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px;
+}
+.parts li {
+  border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; background: var(--surface);
+  min-width: 0; font-size: .93rem; color: var(--muted);
+}
+.parts li b { display: block; color: var(--fg); font-size: .98rem; }
+.parts li .tag { font-family: "Rubik", sans-serif; font-weight: 600; font-size: .78rem; color: var(--muted); }
+.parts li.core { border-color: var(--fg); background: var(--surface-2); }
+.parts li.core .tag { color: var(--fg); }
+
+/* The table */
+.ptable {
+  --cols: minmax(130px, .8fr) minmax(0, 1.35fr) 172px minmax(0, 1.6fr);
+  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+  overflow: hidden; box-shadow: var(--shadow);
+}
+.thead {
+  display: grid; grid-template-columns: var(--cols); gap: 20px;
+  padding: 11px 22px; background: var(--surface-2); border-bottom: 1px solid var(--border);
+  color: var(--muted); font-size: .85rem; font-weight: 600;
+}
+.row {
+  display: grid; grid-template-columns: var(--cols); gap: 20px;
+  padding: 22px 22px 22px; border-bottom: 1px solid var(--border); position: relative;
+  scroll-margin-top: 16px;
+}
+.row:last-child { border-bottom: 0; }
+.row::before {
+  content: ""; position: absolute; inset-block: 0; inset-inline-start: 0; width: 5px; background: var(--c);
+}
+.cell { min-width: 0; }
+.cell-label { display: none; }
+
+.subj { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; }
+.subj .course { font-size: .82rem; font-weight: 600; color: var(--muted); }
+.subj h2 { font-size: 1.55rem; font-weight: 700; color: var(--c); line-height: 1.2; }
+.subj .meta { font-size: .85rem; color: var(--muted); }
+.pending {
+  margin-top: 8px; font-size: .8rem; font-weight: 700; color: var(--wait); background: var(--wait-bg);
+  border-radius: 999px; padding: 2px 10px;
+}
+
+.special ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.special li { position: relative; padding-inline-start: 18px; font-size: .98rem; }
+.special li::before {
+  content: ""; position: absolute; inset-inline-start: 0; top: .62em; width: 8px; height: 8px;
+  border-radius: 50%; background: var(--c);
+}
+
+.actions { display: flex; flex-direction: column; gap: 8px; }
+
+.btn {
+  appearance: none; border: 1px solid var(--border); background: var(--surface); color: var(--fg);
+  border-radius: 10px; min-height: 44px; padding: 8px 14px; font-weight: 600; font-size: .98rem;
+  cursor: pointer; transition: background .15s, border-color .15s, transform .05s;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-align: center;
+}
+.btn:hover { background: var(--surface-2); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .6; cursor: default; }
+.btn.primary { background: var(--c); border-color: var(--c); color: var(--on-accent); }
+.btn.primary:hover { filter: brightness(1.08); background: var(--c); }
+.btn.primary.done { background: var(--ok); border-color: var(--ok); }
+.btn.ghost { background: transparent; }
+.btn.ghost:hover { background: var(--surface-2); }
+.btn.small { min-height: 36px; padding: 4px 12px; font-size: .9rem; }
+
+.req { display: flex; flex-direction: column; gap: 8px; }
+.req-label { font-weight: 600; font-size: .95rem; }
+.req textarea {
+  width: 100%; box-sizing: border-box; resize: vertical; min-height: 82px;
+  font: inherit; font-size: .98rem; line-height: 1.5; color: var(--fg);
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
+}
+.req textarea::placeholder { color: var(--muted); }
+.req textarea:focus { outline: 2px solid var(--c, var(--focus)); outline-offset: 0; border-color: transparent; }
+.req-bar { display: flex; gap: 8px; flex-wrap: wrap; }
+.req-bar .send { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.req-bar .send:hover { background: var(--fg); filter: brightness(1.15); }
+.note { font-size: .9rem; color: var(--muted); min-height: 0; }
+.note:empty { display: none; }
+.note.ok { color: var(--ok); font-weight: 600; }
+.note.err { color: var(--bad); font-weight: 600; }
+
+.history { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 8px; }
+.history:empty { display: none; }
+.history li {
+  border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; font-size: .93rem;
+  background: var(--surface);
+}
+.h-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--muted); font-size: .82rem; }
+.chip { font-weight: 700; border-radius: 999px; padding: 1px 9px; font-size: .78rem; }
+.chip.new { color: var(--wait); background: var(--wait-bg); }
+.chip.working { color: var(--work); background: var(--work-bg); }
+.chip.done { color: var(--ok); background: var(--ok-bg); }
+.h-text { margin-top: 4px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.h-reply {
+  margin-top: 6px; padding: 6px 10px; border-radius: 8px; background: var(--surface-2);
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.h-reply b { font-weight: 700; }
+.linkbtn {
+  margin-inline-start: auto; background: none; border: 0; color: var(--muted); cursor: pointer;
+  text-decoration: underline; font-size: .82rem; padding: 2px 4px; min-height: 28px;
+}
+.linkbtn.armed { color: var(--bad); font-weight: 700; }
+.hist-note { font-size: .85rem; color: var(--muted); }
+
+.full { grid-column: 1 / -1; }
+.full-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  margin-bottom: 8px; font-weight: 600; font-size: .92rem; color: var(--muted);
+}
+.ptext {
+  margin: 0; max-height: min(520px, 70vh); overflow: auto;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+  font-family: "Assistant", Arial, sans-serif; font-size: .95rem; line-height: 1.7;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px;
+}
+
+/* All subjects */
+.allrow {
+  margin-top: 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+  padding: 20px 22px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 20px;
+  position: relative; overflow: hidden; box-shadow: var(--shadow); --c: var(--all);
+}
+.allrow::before { content: ""; position: absolute; inset-block: 0; inset-inline-start: 0; width: 5px; background: var(--all); }
+.allrow h2 { font-size: 1.3rem; }
+.allrow p { color: var(--muted); margin-top: 4px; }
+
+/* Flow and files */
+.foot { margin-top: 34px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 18px; }
+.foot section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; }
+.foot h3 { font-size: 1rem; margin-bottom: 8px; }
+.foot ol { margin: 0; padding-inline-start: 20px; display: grid; gap: 5px; }
+.foot p { color: var(--muted); font-size: .95rem; }
+.foot code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: .85rem;
+  background: var(--surface-2); border-radius: 6px; padding: 1px 6px; overflow-wrap: anywhere;
+}
+.foot ul { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+
+.toast {
+  position: fixed; inset-inline: 0; bottom: 0; display: flex; justify-content: center; pointer-events: none;
+  padding: 0 max(16px, env(safe-area-inset-right, 0px)) calc(18px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  z-index: 20;
+}
+.toast div {
+  background: var(--fg); color: var(--bg); border-radius: 12px; padding: 11px 18px; font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .18); max-width: 520px; text-align: center;
+  opacity: 0; transform: translateY(8px); transition: opacity .2s, transform .2s;
+}
+.toast.show div { opacity: 1; transform: none; }
+
+@media (max-width: 1040px) {
+  .ptable { --cols: minmax(120px, .8fr) minmax(0, 1.4fr) 164px; }
+  .thead .th-req { display: none; }
+  .row .req { grid-column: 1 / -1; }
+  .parts ol { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+  .page { padding-block: 20px 44px; }
+  .how { grid-template-columns: minmax(0, 1fr); }
+  .parts ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .thead { display: none; }
+  .row { grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 18px 16px 18px 16px; padding-inline-start: 20px; }
+  .cell-label { display: block; font-size: .82rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+  .subj { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+  .subj .course { order: 0; width: 100%; }
+  .subj h2 { font-size: 1.45rem; }
+  .pending { margin-top: 0; }
+  .actions { flex-direction: row; }
+  .actions .btn { flex: 1 1 0; }
+  .allrow { grid-template-columns: minmax(0, 1fr); padding: 18px 16px; padding-inline-start: 20px; }
+  .foot { grid-template-columns: minmax(0, 1fr); }
+  .ptext { padding: 12px 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn, .toast div { transition: none; }
+}
+</style>
+
+<div class="page" dir="rtl" lang="he">
+  <header class="top">
+    <div class="eyebrow">מקצועית וגמר פנסיוני</div>
+    <h1>פרומטי הסיכום המתומצת</h1>
+    <p class="lede">פרומט נפרד לכל מקצוע. מכל שיעור יוצא סיכום של עד 20 עמודים, עם דרך פתרון שלב אחרי שלב לכל סוג שאלה, כמו שהמרצה מלמד.</p>
+    <ol class="how">
+      <li><div><b>מעתיקים</b><span>לוחצים "העתקת הפרומט" בשורה של המקצוע.</span></div></li>
+      <li><div><b>מדביקים בשיחה של השיעור</b><span>וממלאים למעלה את מספר השיעור והנושא.</span></div></li>
+      <li><div><b>מצרפים את החומרים ושולחים</b><span>תמלול, סיכום, מחברת וצילומי ספר. לא צריך את החוברת הגדולה.</span></div></li>
+    </ol>
+  </header>
+
+  <section class="parts" aria-labelledby="parts-title">
+    <h3 class="sec-title" id="parts-title">מה יוצא בכל סיכום <small>אותו מבנה בכל המקצועות, כדי שתדעי תמיד איפה לחפש</small></h3>
+    <ol>
+      <li><span class="tag">עמוד 1</span><b>השיעור בעמוד אחד</b>מה חייבים לדעת, וטבלה: סוג שאלה, איך מזהים, איפה בסיכום</li>
+      <li><span class="tag">חלק א</span><b>מושגים</b>כרטיס קצר לכל מושג, וההכתבות מילה במילה</li>
+      <li class="core"><span class="tag">חלק ב · כחצי מהסיכום</span><b>איך פותרים</b>עץ החלטה, ולכל סוג שאלה שלבים ממוספרים ודוגמה פתורה</li>
+      <li><span class="tag">חלק ג</span><b>דף נוסחאות</b>כל הנוסחאות של השיעור בעמוד אחד</li>
+      <li><span class="tag">חלק ד</span><b>מלכודות</b>הטעויות הנפוצות והתשובות שמפתות</li>
+      <li><span class="tag">חלק ה</span><b>תרגול</b>כל תרגילי הכיתה, ועוד 8 עד 12 שאלות אמריקאיות עם תשובות</li>
+    </ol>
+  </section>
+
+  <section class="ptable" aria-label="הפרומטים לפי מקצוע">
+    <div class="thead" aria-hidden="true">
+      <span>מקצוע</span>
+      <span>מה מיוחד בפרומט הזה</span>
+      <span>הפרומט</span>
+      <span class="th-req">בקשת שינוי</span>
+    </div>
+    
+    <article class="row" id="bonds" data-key="bonds" style="--c: var(--bonds)">
+      <div class="cell subj">
+        <span class="course">מקצועית</span>
+        <h2>אג&quot;ח</h2>
+        <span class="meta">עודכן 26.10</span>
+        <span class="pending" hidden></span>
+      </div>
+      <div class="cell special">
+        <span class="cell-label">מה מיוחד בפרומט הזה</span>
+        <ul><li>ציר זמן של התזרים בכל סוג חישוב</li><li>הקשות במחשבון בדיוק כמו המרצה (CMPD, CASH)</li><li>יחידות, המרה לתקופה ועיגול כמו במבחן</li></ul>
+      </div>
+      <div class="cell actions">
+        <button type="button" class="btn primary copy">העתקת הפרומט</button>
+        <button type="button" class="btn ghost toggle" aria-expanded="false" aria-controls="full-bonds">הצגת הפרומט</button>
+      </div>
+      <div class="cell req" data-req="bonds">
+        <label class="req-label" for="ta-bonds">בקשת שינוי לפרומט אג&quot;ח</label>
+        <textarea id="ta-bonds" rows="3" placeholder="מה לא יצא טוב, או מה להוסיף או להוריד"></textarea>
+        <div class="req-bar">
+          <button type="button" class="btn send">שליחת הבקשה</button>
+          <button type="button" class="btn ghost copyreq" hidden>העתקת הבקשה</button>
+        </div>
+        <p class="note" aria-live="polite"></p>
+        <ul class="history" aria-label="בקשות קודמות"></ul>
+      </div>
+      <div class="full" id="full-bonds" hidden>
+        <div class="full-bar">
+          <span>הפרומט המלא · אג&quot;ח</span>
+          <button type="button" class="btn small copy">העתקה</button>
+        </div>
+        <pre class="ptext" tabindex="0"></pre>
+      </div>
+    </article>
+    <article class="row" id="maof" data-key="maof" style="--c: var(--maof)">
+      <div class="cell subj">
+        <span class="course">מקצועית</span>
+        <h2>מעוף</h2>
+        <span class="meta">עודכן 26.10</span>
+        <span class="pending" hidden></span>
+      </div>
+      <div class="cell special">
+        <span class="cell-label">מה מיוחד בפרומט הזה</span>
+        <ul><li>טבלה קבועה לכל מכשיר ואסטרטגיה: פוזיציה, רווח והפסד, נקודת איזון</li><li>גרפים רק כמו שהמרצה צייר</li><li>Call כחול, Put כתום, נכס בסיס ירוק</li></ul>
+      </div>
+      <div class="cell actions">
+        <button type="button" class="btn primary copy">העתקת הפרומט</button>
+        <button type="button" class="btn ghost toggle" aria-expanded="false" aria-controls="full-maof">הצגת הפרומט</button>
+      </div>
+      <div class="cell req" data-req="maof">
+        <label class="req-label" for="ta-maof">בקשת שינוי לפרומט מעוף</label>
+        <textarea id="ta-maof" rows="3" placeholder="מה לא יצא טוב, או מה להוסיף או להוריד"></textarea>
+        <div class="req-bar">
+          <button type="button" class="btn send">שליחת הבקשה</button>
+          <button type="button" class="btn ghost copyreq" hidden>העתקת הבקשה</button>
+        </div>
+        <p class="note" aria-live="polite"></p>
+        <ul class="history" aria-label="בקשות קודמות"></ul>
+      </div>
+      <div class="full" id="full-maof" hidden>
+        <div class="full-bar">
+          <span>הפרומט המלא · מעוף</span>
+          <button type="button" class="btn small copy">העתקה</button>
+        </div>
+        <pre class="ptext" tabindex="0"></pre>
+      </div>
+    </article>
+    <article class="row" id="general" data-key="general" style="--c: var(--general)">
+      <div class="cell subj">
+        <span class="course">מקצועית</span>
+        <h2>נושאים כלליים</h2>
+        <span class="meta">עודכן 26.10</span>
+        <span class="pending" hidden></span>
+      </div>
+      <div class="cell special">
+        <span class="cell-label">מה מיוחד בפרומט הזה</span>
+        <ul><li>רשימות, מספרים, מועדים וחריגים בטבלאות</li><li>כללי פסילה לשאלות של טענות</li><li>המילים &quot;תמיד&quot;, &quot;רק&quot;, &quot;בתנאי ש&quot; נשמרות בדיוק</li></ul>
+      </div>
+      <div class="cell actions">
+        <button type="button" class="btn primary copy">העתקת הפרומט</button>
+        <button type="button" class="btn ghost toggle" aria-expanded="false" aria-controls="full-general">הצגת הפרומט</button>
+      </div>
+      <div class="cell req" data-req="general">
+        <label class="req-label" for="ta-general">בקשת שינוי לפרומט נושאים כלליים</label>
+        <textarea id="ta-general" rows="3" placeholder="מה לא יצא טוב, או מה להוסיף או להוריד"></textarea>
+        <div class="req-bar">
+          <button type="button" class="btn send">שליחת הבקשה</button>
+          <button type="button" class="btn ghost copyreq" hidden>העתקת הבקשה</button>
+        </div>
+        <p class="note" aria-live="polite"></p>
+        <ul class="history" aria-label="בקשות קודמות"></ul>
+      </div>
+      <div class="full" id="full-general" hidden>
+        <div class="full-bar">
+          <span>הפרומט המלא · נושאים כלליים</span>
+          <button type="button" class="btn small copy">העתקה</button>
+        </div>
+        <pre class="ptext" tabindex="0"></pre>
+      </div>
+    </article>
+    <article class="row" id="pension" data-key="pension" style="--c: var(--pension)">
+      <div class="cell subj">
+        <span class="course">קורס נפרד</span>
+        <h2>גמר פנסיוני</h2>
+        <span class="meta">עודכן 26.10</span>
+        <span class="pending" hidden></span>
+      </div>
+      <div class="cell special">
+        <span class="cell-label">מה מיוחד בפרומט הזה</span>
+        <ul><li>נוסח הספר, ההדגשות שלך במרקר והערות כתב היד</li><li>כל שאלת ספר שנפתרה בשיעור נכנסת לתרגול, כי היא חוזרת במבחן</li><li>דוגמאות מהשטח בשורה אחת, ומבחן מול פרקטיקה מסומן</li></ul>
+      </div>
+      <div class="cell actions">
+        <button type="button" class="btn primary copy">העתקת הפרומט</button>
+        <button type="button" class="btn ghost toggle" aria-expanded="false" aria-controls="full-pension">הצגת הפרומט</button>
+      </div>
+      <div class="cell req" data-req="pension">
+        <label class="req-label" for="ta-pension">בקשת שינוי לפרומט גמר פנסיוני</label>
+        <textarea id="ta-pension" rows="3" placeholder="מה לא יצא טוב, או מה להוסיף או להוריד"></textarea>
+        <div class="req-bar">
+          <button type="button" class="btn send">שליחת הבקשה</button>
+          <button type="button" class="btn ghost copyreq" hidden>העתקת הבקשה</button>
+        </div>
+        <p class="note" aria-live="polite"></p>
+        <ul class="history" aria-label="בקשות קודמות"></ul>
+      </div>
+      <div class="full" id="full-pension" hidden>
+        <div class="full-bar">
+          <span>הפרומט המלא · גמר פנסיוני</span>
+          <button type="button" class="btn small copy">העתקה</button>
+        </div>
+        <pre class="ptext" tabindex="0"></pre>
+      </div>
+    </article>
+  </section>
+
+  <section class="allrow" id="all" data-key="all">
+    <div>
+      <h2>כל המקצועות</h2>
+      <p>שינוי שנכון לכל ארבעת הפרומטים יחד, למשל אורך, עיצוב, גודל אות או סדר החלקים.</p>
+    </div>
+      <div class="cell req" data-req="all">
+        <label class="req-label" for="ta-all">בקשת שינוי לכל הפרומטים</label>
+        <textarea id="ta-all" rows="3" placeholder="מה לא יצא טוב, או מה להוסיף או להוריד"></textarea>
+        <div class="req-bar">
+          <button type="button" class="btn send">שליחת הבקשה</button>
+          <button type="button" class="btn ghost copyreq" hidden>העתקת הבקשה</button>
+        </div>
+        <p class="note" aria-live="polite"></p>
+        <ul class="history" aria-label="בקשות קודמות"></ul>
+      </div>
+  </section>
+
+  <div class="foot">
+    <section>
+      <h3>מה קורה עם בקשת שינוי</h3>
+      <ol>
+        <li>כותבים בתיבה מה לא יצא טוב ושולחים.</li>
+        <li>כותבים לי בשיחה "שלחתי בקשה", כדי שאדע לטפל בה.</li>
+        <li>הפרומט מתעדכן כאן ובקובץ בפרויקט, והבקשה מסומנת "בוצעה" עם הסבר על השינוי.</li>
+      </ol>
+    </section>
+    <section>
+      <h3>הקבצים בפרויקט</h3>
+      <p>אותם ארבעה פרומטים שמורים גם כקבצים בתיקייה prompts בפרויקט, וכל עדכון נכנס לשני המקומות.</p>
+    </section>
+  </div>
+</div>
+
+<div class="toast" role="status" aria-live="polite"><div></div></div>
+
+<script type="application/json" id="prompt-data">{"bonds": {"name": "אג\"ח", "text": "פרומט סיכום מתומצת לשיעור · מקצועית · אג\"ח\nעודכן 26.10. מכל שיעור סיכום של עד 20 עמודים, שממנו אני לומדת למבחן ופותרת תרגילים.\n\n⚙️ מודל: Opus 5.5 · רמת מאמץ high (הבחירה שלי מ-26.10). אם השיחה רצה על מודל אחר, כתוב לי זאת בשורה אחת לפני שמתחילים.\n\nאיך אני משתמשת בפרומט: אני מעתיקה אותו לשיחה של השיעור, ממלאת את פרטי השיעור ומצרפת את החומרים.\n\n==================================================\nפרטי השיעור\n==================================================\n\nמקצוע: מקצועית · אג\"ח\nשיעור מספר: [___]\nנושא השיעור: [___]\nתאריך השיעור: [___]\nמקורות מצורפים: [תמלול (כל החלקים) · המחברת שלי · צילומי עמודים מהספר · סיכום של תלמיד · דף נוסחאות · חומר נוסף]\n\n- אם מספר השיעור חסר, שאל אותי בשורה אחת לפני שמתחילים. מספור השיעורים של אג\"ח נפרד מהמקצועות האחרים.\n- אם נושא השיעור חסר, נסח נושא קצר מתוך התמלול וכתוב לידו \"(נוסח על ידי העורך)\".\n- אם התאריך חסר או שהמקורות סותרים לגביו, כתוב \"תאריך לא ודאי\" ואל תמציא.\n- חכה לכל החומר שלי. אל תתחיל עד שאכתוב שסיימתי לשלוח. אם כתבתי זאת כבר בהודעה הזאת, התחל מיד.\n\nלפני שמתחילים:\n- בדוק שהקבצים שייכים לשיעור הזה ולמקצוע הזה: מספר השיעור, התאריך והנושא במחברת, בתמלול ובסיכום. אם הם נראים כמו שיעור אחר או שיעור שכבר סוכם, אל תבנה. כתוב לי מה מצאת ושאל.\n- אם כבר קיימת לשיעור חוברת לימוד מלאה בתיקיית הפרויקט (booklets/bonds/), היא מקור נוסף שכבר נבדק: השתמש בה כדי לעבוד מהר ולדייק. היא לא חובה. בלעדיה הסיכום נבנה ישר מהמקורות.\n\n==================================================\n1. המטרה\n==================================================\n\nאני לומדת למבחן ואין לי זמן לחוברות ארוכות. אני צריכה מכל שיעור סיכום אחד, קצר, מדויק וברור, שממנו אני:\n1. לומדת את כל מה שחייבים לדעת למבחן מהשיעור הזה.\n2. פותרת תרגיל: אני פותחת את הסיכום, מוצאת את סוג השאלה, ויודעת שלב אחרי שלב מה לעשות, כמו שהמרצה פותר.\n\nהסיכום מודפס בצבע ואני לומדת מהדף.\n\nמה אני כן רוצה:\n- כל החומר שיכול להופיע במבחן, בלי חורים. תמצות פירושו פחות מילים, לא פחות חומר.\n- לכל סוג שאלה שנלמד: איך מזהים אותה, ושלבי הפתרון הממוספרים של המרצה, עם הדוגמה שלו פתורה.\n- הסברים קצרים וחדים: כלל, תנאי, למה (שורה אחת), איך זה נראה בשאלה.\n- טבלאות השוואה, עצי החלטה וצירי זמן במקום פסקאות.\n- דיוק מוחלט בכל מספר, נוסחה, תנאי ומונח. אני משננת את מה שכתוב כאן.\n\nמה אני לא רוצה:\n- חוברת ארוכה, חזרות, הרחבות, סיפורים ומילים שלא מלמדות.\n- \"המרצה אמר ש...\" בכל משפט. כותבים את הכלל עצמו. מייחסים למרצה רק נוסח שהוא הכתיב, או מקום שיש בו ספק.\n- תוספות שלא נלמדו בשיעור (ראה סעיף 6).\n- סיכום כללי שלא מראה איך פותרים.\n\n==================================================\n2. אורך\n==================================================\n\n- מקסימום 20 עמודי A4, כולל הכול. אין להוסיף חומר כדי להגיע ל-20. שיעור קל יכול לצאת 8 או 12 עמודים, וזה טוב.\n- אם החומר לא נכנס ב-20 עמודים, מקצרים קודם את הניסוח, אחר כך הופכים פסקאות לטבלאות, ואחר כך מוותרים על דוגמה שנייה מאותו סוג. אף פעם לא מוותרים על סוג שאלה, על כלל, על תנאי או על מלכודת. אם עדיין לא נכנס, כתוב לי לפני המסירה מה היה צריך להוריד ושאל.\n- אסור להקטין את הגופן מתחת לגודל שבסעיף 9 כדי להיכנס.\n\n==================================================\n3. המבנה הקבוע\n==================================================\n\nכל סיכום, בכל מקצוע ובכל שיעור, בנוי באותו סדר, כדי שאדע תמיד איפה לחפש. כל חלק וכל סעיף ממוספרים (א1, ב3...), וההפניות בסיכום הן למספרי הסעיפים, כי אני לומדת מדף מודפס.\n\nעמוד 1 · השיעור בעמוד אחד\n- כותרת: המקצוע · שיעור N · נושא · תאריך · שורה: \"סיכום מתומצת למבחן, נערך מחומרי השיעור\".\n- \"מה חייבים לדעת\": 5 עד 10 שורות, הדברים החשובים ביותר בשיעור.\n- טבלת \"סוג שאלה ← איך מזהים ← סעיף\": כל סוגי השאלות של השיעור, החישוביות והתיאורטיות, ולאן ללכת בסיכום. זו הכניסה שלי כשאני פותרת תרגיל.\n- פס סימנים קצר: כל סימן ומה הוא אומר.\n\nחלק א · המושגים והכללים\nלכל נושא בשיעור כרטיס אחד, לפי הסדר ההגיוני ולא בהכרח לפי סדר השיעור:\n- במשפט אחד: מה זה.\n- הכלל או ההגדרה. כשהמרצה הכתיב הגדרה, כלל או רשימה, הם נכנסים מילה במילה בתיבת 🟨 (סעיף 5).\n- תנאים, חריגים וסייגים: חובה, כולם, כי הם מה שנבדק במבחן.\n- למה: שורה אחת, רק כשזה עוזר לזכור או להבין.\n- ⭐ מה שואלים במבחן ואיך זה מנוסח, אם המרצה אמר.\n- ⚠️ המלכודת, אם יש.\n- מושגים שמתבלבלים ביניהם מוצגים בטבלת השוואה אחת, זה לצד זה.\n- כל כרטיס עד חצי עמוד בערך.\n\nחלק ב · איך פותרים (הלב של הסיכום, בערך חצי מהעמודים)\nבתחילת החלק: עץ החלטה או תרשים \"קיבלתי שאלה ← מה בודקים קודם ← לאיזה סעיף הולכים\", כמו שהמרצה ניגש לשאלות.\nלכל סוג שאלה שנלמד, חישובית או תיאורטית, אותו מבנה:\n1. איך מזהים: המילים והנתונים שמופיעים בשאלה.\n2. מה צריך: הנתונים, הנוסחה (במבנה של המרצה) וכל סימן בה.\n3. שלבי הפתרון הממוספרים, בדיוק כמו שהמרצה פתר, כולל הקשות במחשבון, המרות יחידות וסדר הבדיקה. אם המרצה לא ניסח שלבים, נסח אותם מתוך הפתרונות שלו, וסמן בשורה אחת \"השלבים נוסחו מתוך פתרון המרצה\".\n4. דוגמה פתורה: הדוגמה של המרצה או של הספר שנפתרה בשיעור, בטבלת שלבים: נתונים ← נוסחה ← הצבה ← תוצאה ← מסקנה. בשאלה שיש בה תשלומים בזמנים שונים: ציר זמן קטן.\n5. בדיקת סבירות: איך יודעים שהתוצאה הגיונית, אם המרצה נתן.\n6. התשובות השגויות הנפוצות: איזו טעות נותנת איזו תשובה שגויה (למשל \"מי שעוצר אחרי שלב 1 מקבל את תשובה ב\").\nלשאלות תיאורטיות (טענות \"איזה מהבאים נכון\"): כללי פסילה. אילו ניסוחים פוסלים טענה, אילו טענות חוזרות במבחן, ומה התשובה לכל אחת. הכללים לקוחים מהשאלות שנפתרו בשיעור ומהדגשי המרצה.\n\nחלק ג · דף נוסחאות וסימנים (עמוד אחד)\nכל הנוסחאות של השיעור במבנה של המרצה, ומתחת לכל אחת מה כל סימן אומר ומתי משתמשים בה. בשיעור בלי נוסחאות: דף מונחים וקיצורים. בשיעור בלי שניהם: שורה אחת שאומרת זאת, בלי עמוד.\n\nחלק ד · מלכודות ומה לא לבלבל (עד עמוד אחד)\nטבלה: המלכודת · מה נכון · איך מזהים בשאלה · סעיף. רק מלכודות שעלו בשיעור, בספר או בשאלות שנפתרו.\n\nחלק ה · בדקי את עצמך (עד 2 עמודים)\n- כל השאלות והתרגילים שנפתרו בשיעור, בשורה או שתיים כל אחד: השאלה בקצרה, התשובה, והמפתח לפתרון בשורה אחת (\"מצב סחירות לפי תשואה מול קופון ← פרמיה\").\n- ואחריהן 8 עד 12 שאלות אמריקאיות חדשות בסגנון המבחן, עם 5 אפשרויות. במקצוע עם חישובים לפחות חצי חישוביות. התשובות בתחתית העמוד האחרון: התשובה, למה היא נכונה בשורה אחת, ולמה המסיחה העיקרית שגויה.\n- השאלות בודקות רק מה שנמצא בסיכום.\n\nעמוד אחרון, שורה אחת בסוף: מה נבדק (סעיף 10), וספקות פתוחים אם יש (סעיף 7).\n\n==================================================\n4. מה נכנס ומה יוצא\n==================================================\n\nנכנס תמיד:\n- כל הגדרה, כלל, תנאי, חריג, רשימה, מספר, אחוז, תקופה ונוסחה שנלמדו.\n- כל סוג שאלה שנלמד, ולפחות דוגמה פתורה אחת לכל סוג.\n- כל דגש לבחינה וכל מלכודת שהמרצה ציין.\n- כל הכתבה של המרצה וכל הדגשה שביקש (סעיף 5).\n- שאלת תלמיד שמבהירה בלבול נפוץ: בשורה אחת, שאלה ← תשובה, בתוך הכרטיס הרלוונטי.\n- טעויות בסיכום התלמיד או במקורות: שורה עם ⚠️ (סעיף 7).\n\nיוצא:\n- סיפורים, אנקדוטות, היסטוריה, שיחות חולין, לוגיסטיקה.\n- חזרות של המרצה על אותו הסבר: נכנס פעם אחת, בניסוח הברור ביותר, עם כל פרט שנוסף בחזרות.\n- הסברים ארוכים של \"למה\": נשארת שורה אחת.\n- דוגמה נוספת מאותו סוג שלא מוסיפה דבר חדש: נכנסת רק כשורה בחלק ה.\n- כל חומר שלא נלמד בשיעור.\n\nכלל הזהב בתמצות: מקצרים מילים, לא משנים משמעות. מילים כמו \"תמיד\", \"רק\", \"בתנאי ש\", \"לפחות\", \"עד\", \"לא כולל\", ומונחים מקצועיים, נשמרים בדיוק כמו במקור. במבחן ההבדל בין תשובה נכונה לשגויה הוא לרוב מילה אחת כזו.\n\n==================================================\n5. הכתבות והדגשות של המרצה\n==================================================\n\n- מה שהמרצה הכתיב (\"תרשמו\", \"תעתיקו\", \"בואו נרשום\") או ביקש להדגיש, למרקר או לזכור נכנס מילה במילה בתיבת 🟨, לפי המחברת והתמלול. בגמר פנסיוני: מה שמודגש במרקר בצילומי הספר נחשב הדגשה של המרצה.\n- הכתבה ארוכה (יותר מכ-5 שורות): נכנסות מילה במילה השורות שהן ההגדרה או הכלל, ושאר ההכתבה מתומצתת סביבן בלי לשנות מונחים. אם קיצרת, כתוב בסוף התיבה \"(מקוצר)\".\n- נוסח מהספר שאני צריכה לזכור מילה במילה (למשל הגדרה שחוזרת בשאלות) מקבל את אותו יחס.\n- נוסחאות: תמיד במבנה ובסימונים של המרצה, גם אם הספר כותב אחרת. אם יש הבדל, ציין אותו בשורה אחת.\n\n==================================================\n6. תוספות של העורך\n==================================================\n\n- הסיכום מבוסס רק על מה שנלמד בשיעור ועל המקורות שצירפתי.\n- מותר להוסיף רק מה שעוזר לפתור או לזכור: שלבי פתרון שנוסחו מתוך פתרון המרצה, טבלת השוואה, עץ החלטה, ציר זמן, דרך לזכור קצרה. כל תוספת כזו שאינה מהשיעור מסומנת 🔍 בקטן, בלי תיבה גדולה.\n- השאלות האמריקאיות החדשות הן תוספת מותרת, ואינן צריכות סימון.\n- אסור להוסיף חומר תוכן שלא נלמד, גם אם הוא נכון.\n\n==================================================\n7. דיוק, ספקות וסתירות\n==================================================\n\nאני סומכת על הסיכום במבחן, ולכן:\n- כל מספר בסיכום (בכללים, בדוגמאות, בשאלות ובתשובות) מחושב מחדש בקוד, לפי הנוסחה של המרצה. הבדיקות נרשמות בקובץ עבודה אחד (סעיף 11). הפרש של עיגול בלבד נחשב תואם.\n- טעות של המרצה, של הספר או של הסיכום לא מתוקנת בשקט: כותבים את הערך הנכון, ובשורה עם ⚠️ מה נאמר ומה נכון.\n- מקום שהתמלול משובש ואי אפשר להבין ממנו בוודאות: [לא ברור בתמלול]. לא מנחשים, לא משלימים מספר מהדמיון.\n- מקורות שסותרים זה את זה: ⚠️ עם שתי הגרסאות, ואיזו נראית נכונה ולמה.\n- כל ספק שלא נפתר נכנס גם לרשימת \"ספקות פתוחים\" בעמוד האחרון, כדי שאדע לשאול את המרצה.\n\n==================================================\n8. כללים מיוחדים לאג\"ח\n==================================================\n\n- לכל סוג חישוב: ציר זמן של התזרים (מתי כל קופון, מתי הקרן, כמה), היחידות (שנתי או לתקופה, אחוז או כסף), ההמרה משנתי לתקופתי כשלב נפרד, וההקשות במחשבון בדיוק כמו שהמרצה הראה (CMPD, CASH וכו').\n- עיגול כמו המרצה. בשלבי ביניים לפחות 4 ספרות אחרי הנקודה.\n- כללי הקיצור של המרצה לשאלות אמריקאיות (למשל לפסול תשובות לפי מצב סחירות, או \"להתחיל מהקל\") נכנסים לעץ ההחלטה שבתחילת חלק ב.\n- צבעים קבועים: מחיר, תשואה, קופון וערך נקוב, כל אחד בצבע משלו, אותם צבעים בכל שיעורי האג\"ח.\n\n==================================================\n9. עיצוב והדפסה\n==================================================\n\n- HTML ו-PDF, בעברית ומימין לשמאל, A4 להדפסה בצבע. רקעים בהירים בלבד כדי לחסוך בדיו.\n- גופן גוף בגודל 10.5 נקודות לפחות, טבלאות 9.5 לפחות, כותרות בולטות. פסקה לא עוברת 3 שורות.\n- בראש כל עמוד: המקצוע · שיעור N · נושא, ובתחתית מספר עמוד. כך כל דף מזוהה גם כשהוא תלוש.\n- כרטיס, דוגמה, טבלה וחישוב לא נשברים באמצע עמוד. חלק ב וחלק ג מתחילים בעמוד חדש.\n- מעט סוגי תיבות, כל סוג בצבע קבוע בכל הסיכומים:\n  🟨 נוסח המרצה (מילה במילה) · 📌 כלל · ⭐ במבחן · ⚠️ מלכודת או אי-התאמה · 🧮 איך פותרים · 💡 דוגמה פתורה · 🔍 תוספת עורך (בקטן)\n- מילות מפתח בהדגשה. כל סימן מופיע תמיד באותו צבע.\n- נוסחה עם שבר או חזקה נכתבת כנוסחה מעוצבת, עם קו שבר אמיתי וחזקה מוגבהת.\n- ביטוי חשבוני בתוך משפט בעברית עטוף כיחידה משמאל לימין, כדי שהסדר לא יתהפך. את הכיוון בודקים בעמוד המוצג, לא בקוד.\n- בלי כפתור הדפסה ובלי תוכן עניינים ארוך: הטבלה בעמוד 1 היא תוכן העניינים.\n\n==================================================\n10. בדיקות לפני המסירה\n==================================================\n\n1. רשימת חובה (פנימית): לפני הכתיבה, עבור על כל המקורות מההתחלה עד הסוף ורשום כל פריט שיכול להופיע במבחן: הגדרה, כלל, תנאי, מספר, נוסחה, הכתבה, סוג שאלה, דוגמה, דגש ומלכודת. אחרי הכתיבה, ודא שכל פריט נמצא בסיכום, ורשום לידו באיזה סעיף.\n2. כל המספרים בקוד (סעיף 7).\n3. בדיקה עצמאית אחת, בסוכן נפרד על Opus: הוא מקבל את המקורות ואת הסיכום ומחפש טעויות, פריטים חסרים וניסוח ששינה משמעות.\n4. מבחן הפתרון: סוכן נפרד מקבל רק את הסיכום ואת השאלות והתרגילים שנפתרו בשיעור, בלי הפתרונות, ופותר אותם בעזרת הסיכום בלבד. כל מקום שבו לא הצליח או טעה מראה שחסר שלב או כלל, ומתקנים. באותה הזדמנות הוא פותר גם את השאלות האמריקאיות החדשות בלי המפתח.\n5. הפקה: בדוק שהסיכום עד 20 עמודים, ועבור בעין על כל עמוד מוצג: כיוון טקסט, טבלאות ונוסחאות שלא נחתכו, עמודים ריקים.\nבשורת \"מה נבדק\" בעמוד האחרון כתוב רק מה שבאמת נעשה. אם בדיקה לא נעשתה, כתוב איזו.\n\n==================================================\n11. קבצים\n==================================================\n\n- שמות: מקצועית_אגח_שיעור_N_סיכום_מתומצת.html ו-.pdf\n- תיקייה: /mnt/project-files/summaries/bonds/. קובצי עבודה (רשימת החובה, בדיקת החישובים, דוח הבדיקה) בתת-תיקייה lessonN_work/.\n- עיצוב וסגנון אחידים בכל הסיכומים. התבנית המשותפת לכל המקצועות נמצאת ב-summaries/kit/. אם היא עוד לא קיימת, בונים אותה בסיכום הראשון ושומרים שם.\n\n==================================================\n12. מה לשלוח לי בסיום\n==================================================\n\n- את ה-PDF ואת ה-HTML.\n- הודעה קצרה: כמה עמודים, אילו סוגי שאלות יש, ומה נבדק.\n- רשימה קצרה של מה שכדאי שאדע: טעויות שנמצאו בסיכום התלמיד או במקורות, מקומות שהמרצה תיקן את עצמו, ספקות פתוחים, וחומרים שחסרו (למשל דף תרגילים או דף נוסחאות שהמרצה הזכיר).\n\n==================================================\nכלל עליון\n==================================================\n\nהסיכום צריך להספיק לי כדי לעבור את המבחן באג\"ח על החומר של השיעור הזה: מה שלא כתוב בו, לא אדע, ומה שכתוב בו, אשנן. לכן: כל החומר בפחות מילים, כל מספר בדוק, כל ספק מסומן, וכל סוג שאלה עם דרך פתרון ברורה.\n"}, "maof": {"name": "מעוף", "text": "פרומט סיכום מתומצת לשיעור · מקצועית · מעוף\nעודכן 26.10. מכל שיעור סיכום של עד 20 עמודים, שממנו אני לומדת למבחן ופותרת תרגילים.\n\n⚙️ מודל: Opus 5.5 · רמת מאמץ high (הבחירה שלי מ-26.10). אם השיחה רצה על מודל אחר, כתוב לי זאת בשורה אחת לפני שמתחילים.\n\nאיך אני משתמשת בפרומט: אני מעתיקה אותו לשיחה של השיעור, ממלאת את פרטי השיעור ומצרפת את החומרים.\n\n==================================================\nפרטי השיעור\n==================================================\n\nמקצוע: מקצועית · מעוף\nשיעור מספר: [___]\nנושא השיעור: [___]\nתאריך השיעור: [___]\nמקורות מצורפים: [תמלול (כל החלקים) · המחברת שלי · צילומי עמודים מהספר · סיכום של תלמיד · דף נוסחאות · חומר נוסף]\n\n- אם מספר השיעור חסר, שאל אותי בשורה אחת לפני שמתחילים. מספור השיעורים של מעוף נפרד מהמקצועות האחרים.\n- אם נושא השיעור חסר, נסח נושא קצר מתוך התמלול וכתוב לידו \"(נוסח על ידי העורך)\".\n- אם התאריך חסר או שהמקורות סותרים לגביו, כתוב \"תאריך לא ודאי\" ואל תמציא.\n- חכה לכל החומר שלי. אל תתחיל עד שאכתוב שסיימתי לשלוח. אם כתבתי זאת כבר בהודעה הזאת, התחל מיד.\n\nלפני שמתחילים:\n- בדוק שהקבצים שייכים לשיעור הזה ולמקצוע הזה: מספר השיעור, התאריך והנושא במחברת, בתמלול ובסיכום. אם הם נראים כמו שיעור אחר או שיעור שכבר סוכם, אל תבנה. כתוב לי מה מצאת ושאל.\n- אם כבר קיימת לשיעור חוברת לימוד מלאה בתיקיית הפרויקט (booklets/), היא מקור נוסף שכבר נבדק: השתמש בה כדי לעבוד מהר ולדייק. היא לא חובה. בלעדיה הסיכום נבנה ישר מהמקורות.\n\n==================================================\n1. המטרה\n==================================================\n\nאני לומדת למבחן ואין לי זמן לחוברות ארוכות. אני צריכה מכל שיעור סיכום אחד, קצר, מדויק וברור, שממנו אני:\n1. לומדת את כל מה שחייבים לדעת למבחן מהשיעור הזה.\n2. פותרת תרגיל: אני פותחת את הסיכום, מוצאת את סוג השאלה, ויודעת שלב אחרי שלב מה לעשות, כמו שהמרצה פותר.\n\nהסיכום מודפס בצבע ואני לומדת מהדף.\n\nמה אני כן רוצה:\n- כל החומר שיכול להופיע במבחן, בלי חורים. תמצות פירושו פחות מילים, לא פחות חומר.\n- לכל סוג שאלה שנלמד: איך מזהים אותה, ושלבי הפתרון הממוספרים של המרצה, עם הדוגמה שלו פתורה.\n- הסברים קצרים וחדים: כלל, תנאי, למה (שורה אחת), איך זה נראה בשאלה.\n- טבלאות השוואה, עצי החלטה וצירי זמן במקום פסקאות.\n- דיוק מוחלט בכל מספר, נוסחה, תנאי ומונח. אני משננת את מה שכתוב כאן.\n\nמה אני לא רוצה:\n- חוברת ארוכה, חזרות, הרחבות, סיפורים ומילים שלא מלמדות.\n- \"המרצה אמר ש...\" בכל משפט. כותבים את הכלל עצמו. מייחסים למרצה רק נוסח שהוא הכתיב, או מקום שיש בו ספק.\n- תוספות שלא נלמדו בשיעור (ראה סעיף 6).\n- סיכום כללי שלא מראה איך פותרים.\n\n==================================================\n2. אורך\n==================================================\n\n- מקסימום 20 עמודי A4, כולל הכול. אין להוסיף חומר כדי להגיע ל-20. שיעור קל יכול לצאת 8 או 12 עמודים, וזה טוב.\n- אם החומר לא נכנס ב-20 עמודים, מקצרים קודם את הניסוח, אחר כך הופכים פסקאות לטבלאות, ואחר כך מוותרים על דוגמה שנייה מאותו סוג. אף פעם לא מוותרים על סוג שאלה, על כלל, על תנאי או על מלכודת. אם עדיין לא נכנס, כתוב לי לפני המסירה מה היה צריך להוריד ושאל.\n- אסור להקטין את הגופן מתחת לגודל שבסעיף 9 כדי להיכנס.\n\n==================================================\n3. המבנה הקבוע\n==================================================\n\nכל סיכום, בכל מקצוע ובכל שיעור, בנוי באותו סדר, כדי שאדע תמיד איפה לחפש. כל חלק וכל סעיף ממוספרים (א1, ב3...), וההפניות בסיכום הן למספרי הסעיפים, כי אני לומדת מדף מודפס.\n\nעמוד 1 · השיעור בעמוד אחד\n- כותרת: המקצוע · שיעור N · נושא · תאריך · שורה: \"סיכום מתומצת למבחן, נערך מחומרי השיעור\".\n- \"מה חייבים לדעת\": 5 עד 10 שורות, הדברים החשובים ביותר בשיעור.\n- טבלת \"סוג שאלה ← איך מזהים ← סעיף\": כל סוגי השאלות של השיעור, החישוביות והתיאורטיות, ולאן ללכת בסיכום. זו הכניסה שלי כשאני פותרת תרגיל.\n- פס סימנים קצר: כל סימן ומה הוא אומר.\n\nחלק א · המושגים והכללים\nלכל נושא בשיעור כרטיס אחד, לפי הסדר ההגיוני ולא בהכרח לפי סדר השיעור:\n- במשפט אחד: מה זה.\n- הכלל או ההגדרה. כשהמרצה הכתיב הגדרה, כלל או רשימה, הם נכנסים מילה במילה בתיבת 🟨 (סעיף 5).\n- תנאים, חריגים וסייגים: חובה, כולם, כי הם מה שנבדק במבחן.\n- למה: שורה אחת, רק כשזה עוזר לזכור או להבין.\n- ⭐ מה שואלים במבחן ואיך זה מנוסח, אם המרצה אמר.\n- ⚠️ המלכודת, אם יש.\n- מושגים שמתבלבלים ביניהם מוצגים בטבלת השוואה אחת, זה לצד זה.\n- כל כרטיס עד חצי עמוד בערך.\n\nחלק ב · איך פותרים (הלב של הסיכום, בערך חצי מהעמודים)\nבתחילת החלק: עץ החלטה או תרשים \"קיבלתי שאלה ← מה בודקים קודם ← לאיזה סעיף הולכים\", כמו שהמרצה ניגש לשאלות.\nלכל סוג שאלה שנלמד, חישובית או תיאורטית, אותו מבנה:\n1. איך מזהים: המילים והנתונים שמופיעים בשאלה.\n2. מה צריך: הנתונים, הנוסחה (במבנה של המרצה) וכל סימן בה.\n3. שלבי הפתרון הממוספרים, בדיוק כמו שהמרצה פתר, כולל הקשות במחשבון, המרות יחידות וסדר הבדיקה. אם המרצה לא ניסח שלבים, נסח אותם מתוך הפתרונות שלו, וסמן בשורה אחת \"השלבים נוסחו מתוך פתרון המרצה\".\n4. דוגמה פתורה: הדוגמה של המרצה או של הספר שנפתרה בשיעור, בטבלת שלבים: נתונים ← נוסחה ← הצבה ← תוצאה ← מסקנה. בשאלה שיש בה תשלומים בזמנים שונים: ציר זמן קטן.\n5. בדיקת סבירות: איך יודעים שהתוצאה הגיונית, אם המרצה נתן.\n6. התשובות השגויות הנפוצות: איזו טעות נותנת איזו תשובה שגויה (למשל \"מי שעוצר אחרי שלב 1 מקבל את תשובה ב\").\nלשאלות תיאורטיות (טענות \"איזה מהבאים נכון\"): כללי פסילה. אילו ניסוחים פוסלים טענה, אילו טענות חוזרות במבחן, ומה התשובה לכל אחת. הכללים לקוחים מהשאלות שנפתרו בשיעור ומהדגשי המרצה.\n\nחלק ג · דף נוסחאות וסימנים (עמוד אחד)\nכל הנוסחאות של השיעור במבנה של המרצה, ומתחת לכל אחת מה כל סימן אומר ומתי משתמשים בה. בשיעור בלי נוסחאות: דף מונחים וקיצורים. בשיעור בלי שניהם: שורה אחת שאומרת זאת, בלי עמוד.\n\nחלק ד · מלכודות ומה לא לבלבל (עד עמוד אחד)\nטבלה: המלכודת · מה נכון · איך מזהים בשאלה · סעיף. רק מלכודות שעלו בשיעור, בספר או בשאלות שנפתרו.\n\nחלק ה · בדקי את עצמך (עד 2 עמודים)\n- כל השאלות והתרגילים שנפתרו בשיעור, בשורה או שתיים כל אחד: השאלה בקצרה, התשובה, והמפתח לפתרון בשורה אחת (\"מצב סחירות לפי תשואה מול קופון ← פרמיה\").\n- ואחריהן 8 עד 12 שאלות אמריקאיות חדשות בסגנון המבחן, עם 5 אפשרויות. במקצוע עם חישובים לפחות חצי חישוביות. התשובות בתחתית העמוד האחרון: התשובה, למה היא נכונה בשורה אחת, ולמה המסיחה העיקרית שגויה.\n- השאלות בודקות רק מה שנמצא בסיכום.\n\nעמוד אחרון, שורה אחת בסוף: מה נבדק (סעיף 10), וספקות פתוחים אם יש (סעיף 7).\n\n==================================================\n4. מה נכנס ומה יוצא\n==================================================\n\nנכנס תמיד:\n- כל הגדרה, כלל, תנאי, חריג, רשימה, מספר, אחוז, תקופה ונוסחה שנלמדו.\n- כל סוג שאלה שנלמד, ולפחות דוגמה פתורה אחת לכל סוג.\n- כל דגש לבחינה וכל מלכודת שהמרצה ציין.\n- כל הכתבה של המרצה וכל הדגשה שביקש (סעיף 5).\n- שאלת תלמיד שמבהירה בלבול נפוץ: בשורה אחת, שאלה ← תשובה, בתוך הכרטיס הרלוונטי.\n- טעויות בסיכום התלמיד או במקורות: שורה עם ⚠️ (סעיף 7).\n\nיוצא:\n- סיפורים, אנקדוטות, היסטוריה, שיחות חולין, לוגיסטיקה.\n- חזרות של המרצה על אותו הסבר: נכנס פעם אחת, בניסוח הברור ביותר, עם כל פרט שנוסף בחזרות.\n- הסברים ארוכים של \"למה\": נשארת שורה אחת.\n- דוגמה נוספת מאותו סוג שלא מוסיפה דבר חדש: נכנסת רק כשורה בחלק ה.\n- כל חומר שלא נלמד בשיעור.\n\nכלל הזהב בתמצות: מקצרים מילים, לא משנים משמעות. מילים כמו \"תמיד\", \"רק\", \"בתנאי ש\", \"לפחות\", \"עד\", \"לא כולל\", ומונחים מקצועיים, נשמרים בדיוק כמו במקור. במבחן ההבדל בין תשובה נכונה לשגויה הוא לרוב מילה אחת כזו.\n\n==================================================\n5. הכתבות והדגשות של המרצה\n==================================================\n\n- מה שהמרצה הכתיב (\"תרשמו\", \"תעתיקו\", \"בואו נרשום\") או ביקש להדגיש, למרקר או לזכור נכנס מילה במילה בתיבת 🟨, לפי המחברת והתמלול. בגמר פנסיוני: מה שמודגש במרקר בצילומי הספר נחשב הדגשה של המרצה.\n- הכתבה ארוכה (יותר מכ-5 שורות): נכנסות מילה במילה השורות שהן ההגדרה או הכלל, ושאר ההכתבה מתומצתת סביבן בלי לשנות מונחים. אם קיצרת, כתוב בסוף התיבה \"(מקוצר)\".\n- נוסח מהספר שאני צריכה לזכור מילה במילה (למשל הגדרה שחוזרת בשאלות) מקבל את אותו יחס.\n- נוסחאות: תמיד במבנה ובסימונים של המרצה, גם אם הספר כותב אחרת. אם יש הבדל, ציין אותו בשורה אחת.\n\n==================================================\n6. תוספות של העורך\n==================================================\n\n- הסיכום מבוסס רק על מה שנלמד בשיעור ועל המקורות שצירפתי.\n- מותר להוסיף רק מה שעוזר לפתור או לזכור: שלבי פתרון שנוסחו מתוך פתרון המרצה, טבלת השוואה, עץ החלטה, ציר זמן, דרך לזכור קצרה. כל תוספת כזו שאינה מהשיעור מסומנת 🔍 בקטן, בלי תיבה גדולה.\n- השאלות האמריקאיות החדשות הן תוספת מותרת, ואינן צריכות סימון.\n- אסור להוסיף חומר תוכן שלא נלמד, גם אם הוא נכון.\n\n==================================================\n7. דיוק, ספקות וסתירות\n==================================================\n\nאני סומכת על הסיכום במבחן, ולכן:\n- כל מספר בסיכום (בכללים, בדוגמאות, בשאלות ובתשובות) מחושב מחדש בקוד, לפי הנוסחה של המרצה. הבדיקות נרשמות בקובץ עבודה אחד (סעיף 11). הפרש של עיגול בלבד נחשב תואם.\n- טעות של המרצה, של הספר או של הסיכום לא מתוקנת בשקט: כותבים את הערך הנכון, ובשורה עם ⚠️ מה נאמר ומה נכון.\n- מקום שהתמלול משובש ואי אפשר להבין ממנו בוודאות: [לא ברור בתמלול]. לא מנחשים, לא משלימים מספר מהדמיון.\n- מקורות שסותרים זה את זה: ⚠️ עם שתי הגרסאות, ואיזו נראית נכונה ולמה.\n- כל ספק שלא נפתר נכנס גם לרשימת \"ספקות פתוחים\" בעמוד האחרון, כדי שאדע לשאול את המרצה.\n\n==================================================\n8. כללים מיוחדים למעוף\n==================================================\n\n- לכל מכשיר ולכל אסטרטגיה: טבלה קבועה (פוזיציה · מה משלמים או מקבלים היום · רווח והפסד בפקיעה · נקודת איזון · רווח מקסימלי · הפסד מקסימלי · מתי משתמשים).\n- גרפי רווח והפסד רק כמו שהמרצה צייר או כמו בחוברת הגדולה, אם יש. לא ממציאים גרפים חדשים.\n- צבעים קבועים: Call כחול, Put כתום, נכס הבסיס ירוק.\n\n==================================================\n9. עיצוב והדפסה\n==================================================\n\n- HTML ו-PDF, בעברית ומימין לשמאל, A4 להדפסה בצבע. רקעים בהירים בלבד כדי לחסוך בדיו.\n- גופן גוף בגודל 10.5 נקודות לפחות, טבלאות 9.5 לפחות, כותרות בולטות. פסקה לא עוברת 3 שורות.\n- בראש כל עמוד: המקצוע · שיעור N · נושא, ובתחתית מספר עמוד. כך כל דף מזוהה גם כשהוא תלוש.\n- כרטיס, דוגמה, טבלה וחישוב לא נשברים באמצע עמוד. חלק ב וחלק ג מתחילים בעמוד חדש.\n- מעט סוגי תיבות, כל סוג בצבע קבוע בכל הסיכומים:\n  🟨 נוסח המרצה (מילה במילה) · 📌 כלל · ⭐ במבחן · ⚠️ מלכודת או אי-התאמה · 🧮 איך פותרים · 💡 דוגמה פתורה · 🔍 תוספת עורך (בקטן)\n- מילות מפתח בהדגשה. כל סימן מופיע תמיד באותו צבע.\n- נוסחה עם שבר או חזקה נכתבת כנוסחה מעוצבת, עם קו שבר אמיתי וחזקה מוגבהת.\n- ביטוי חשבוני בתוך משפט בעברית עטוף כיחידה משמאל לימין, כדי שהסדר לא יתהפך. את הכיוון בודקים בעמוד המוצג, לא בקוד.\n- בלי כפתור הדפסה ובלי תוכן עניינים ארוך: הטבלה בעמוד 1 היא תוכן העניינים.\n\n==================================================\n10. בדיקות לפני המסירה\n==================================================\n\n1. רשימת חובה (פנימית): לפני הכתיבה, עבור על כל המקורות מההתחלה עד הסוף ורשום כל פריט שיכול להופיע במבחן: הגדרה, כלל, תנאי, מספר, נוסחה, הכתבה, סוג שאלה, דוגמה, דגש ומלכודת. אחרי הכתיבה, ודא שכל פריט נמצא בסיכום, ורשום לידו באיזה סעיף.\n2. כל המספרים בקוד (סעיף 7).\n3. בדיקה עצמאית אחת, בסוכן נפרד על Opus: הוא מקבל את המקורות ואת הסיכום ומחפש טעויות, פריטים חסרים וניסוח ששינה משמעות.\n4. מבחן הפתרון: סוכן נפרד מקבל רק את הסיכום ואת השאלות והתרגילים שנפתרו בשיעור, בלי הפתרונות, ופותר אותם בעזרת הסיכום בלבד. כל מקום שבו לא הצליח או טעה מראה שחסר שלב או כלל, ומתקנים. באותה הזדמנות הוא פותר גם את השאלות האמריקאיות החדשות בלי המפתח.\n5. הפקה: בדוק שהסיכום עד 20 עמודים, ועבור בעין על כל עמוד מוצג: כיוון טקסט, טבלאות ונוסחאות שלא נחתכו, עמודים ריקים.\nבשורת \"מה נבדק\" בעמוד האחרון כתוב רק מה שבאמת נעשה. אם בדיקה לא נעשתה, כתוב איזו.\n\n==================================================\n11. קבצים\n==================================================\n\n- שמות: מקצועית_מעוף_שיעור_N_סיכום_מתומצת.html ו-.pdf\n- תיקייה: /mnt/project-files/summaries/maof/. קובצי עבודה (רשימת החובה, בדיקת החישובים, דוח הבדיקה) בתת-תיקייה lessonN_work/.\n- עיצוב וסגנון אחידים בכל הסיכומים. התבנית המשותפת לכל המקצועות נמצאת ב-summaries/kit/. אם היא עוד לא קיימת, בונים אותה בסיכום הראשון ושומרים שם.\n\n==================================================\n12. מה לשלוח לי בסיום\n==================================================\n\n- את ה-PDF ואת ה-HTML.\n- הודעה קצרה: כמה עמודים, אילו סוגי שאלות יש, ומה נבדק.\n- רשימה קצרה של מה שכדאי שאדע: טעויות שנמצאו בסיכום התלמיד או במקורות, מקומות שהמרצה תיקן את עצמו, ספקות פתוחים, וחומרים שחסרו (למשל דף תרגילים או דף נוסחאות שהמרצה הזכיר).\n\n==================================================\nכלל עליון\n==================================================\n\nהסיכום צריך להספיק לי כדי לעבור את המבחן במעוף על החומר של השיעור הזה: מה שלא כתוב בו, לא אדע, ומה שכתוב בו, אשנן. לכן: כל החומר בפחות מילים, כל מספר בדוק, כל ספק מסומן, וכל סוג שאלה עם דרך פתרון ברורה.\n"}, "general": {"name": "נושאים כלליים", "text": "פרומט סיכום מתומצת לשיעור · מקצועית · נושאים כלליים\nעודכן 26.10. מכל שיעור סיכום של עד 20 עמודים, שממנו אני לומדת למבחן ופותרת תרגילים.\n\n⚙️ מודל: Opus 5.5 · רמת מאמץ high (הבחירה שלי מ-26.10). אם השיחה רצה על מודל אחר, כתוב לי זאת בשורה אחת לפני שמתחילים.\n\nאיך אני משתמשת בפרומט: אני מעתיקה אותו לשיחה של השיעור, ממלאת את פרטי השיעור ומצרפת את החומרים.\n\n==================================================\nפרטי השיעור\n==================================================\n\nמקצוע: מקצועית · נושאים כלליים\nשיעור מספר: [___]\nנושא השיעור: [___]\nתאריך השיעור: [___]\nמקורות מצורפים: [תמלול (כל החלקים) · המחברת שלי · צילומי עמודים מהספר · סיכום של תלמיד · דף נוסחאות · חומר נוסף]\n\n- אם מספר השיעור חסר, שאל אותי בשורה אחת לפני שמתחילים. מספור השיעורים של נושאים כלליים נפרד מהמקצועות האחרים.\n- אם נושא השיעור חסר, נסח נושא קצר מתוך התמלול וכתוב לידו \"(נוסח על ידי העורך)\".\n- אם התאריך חסר או שהמקורות סותרים לגביו, כתוב \"תאריך לא ודאי\" ואל תמציא.\n- חכה לכל החומר שלי. אל תתחיל עד שאכתוב שסיימתי לשלוח. אם כתבתי זאת כבר בהודעה הזאת, התחל מיד.\n\nלפני שמתחילים:\n- בדוק שהקבצים שייכים לשיעור הזה ולמקצוע הזה: מספר השיעור, התאריך והנושא במחברת, בתמלול ובסיכום. אם הם נראים כמו שיעור אחר או שיעור שכבר סוכם, אל תבנה. כתוב לי מה מצאת ושאל.\n- אם כבר קיימת לשיעור חוברת לימוד מלאה בתיקיית הפרויקט (booklets/general/), היא מקור נוסף שכבר נבדק: השתמש בה כדי לעבוד מהר ולדייק. היא לא חובה. בלעדיה הסיכום נבנה ישר מהמקורות.\n\n==================================================\n1. המטרה\n==================================================\n\nאני לומדת למבחן ואין לי זמן לחוברות ארוכות. אני צריכה מכל שיעור סיכום אחד, קצר, מדויק וברור, שממנו אני:\n1. לומדת את כל מה שחייבים לדעת למבחן מהשיעור הזה.\n2. פותרת תרגיל: אני פותחת את הסיכום, מוצאת את סוג השאלה, ויודעת שלב אחרי שלב מה לעשות, כמו שהמרצה פותר.\n\nהסיכום מודפס בצבע ואני לומדת מהדף.\n\nמה אני כן רוצה:\n- כל החומר שיכול להופיע במבחן, בלי חורים. תמצות פירושו פחות מילים, לא פחות חומר.\n- לכל סוג שאלה שנלמד: איך מזהים אותה, ושלבי הפתרון הממוספרים של המרצה, עם הדוגמה שלו פתורה.\n- הסברים קצרים וחדים: כלל, תנאי, למה (שורה אחת), איך זה נראה בשאלה.\n- טבלאות השוואה, עצי החלטה וצירי זמן במקום פסקאות.\n- דיוק מוחלט בכל מספר, נוסחה, תנאי ומונח. אני משננת את מה שכתוב כאן.\n\nמה אני לא רוצה:\n- חוברת ארוכה, חזרות, הרחבות, סיפורים ומילים שלא מלמדות.\n- \"המרצה אמר ש...\" בכל משפט. כותבים את הכלל עצמו. מייחסים למרצה רק נוסח שהוא הכתיב, או מקום שיש בו ספק.\n- תוספות שלא נלמדו בשיעור (ראה סעיף 6).\n- סיכום כללי שלא מראה איך פותרים.\n\n==================================================\n2. אורך\n==================================================\n\n- מקסימום 20 עמודי A4, כולל הכול. אין להוסיף חומר כדי להגיע ל-20. שיעור קל יכול לצאת 8 או 12 עמודים, וזה טוב.\n- אם החומר לא נכנס ב-20 עמודים, מקצרים קודם את הניסוח, אחר כך הופכים פסקאות לטבלאות, ואחר כך מוותרים על דוגמה שנייה מאותו סוג. אף פעם לא מוותרים על סוג שאלה, על כלל, על תנאי או על מלכודת. אם עדיין לא נכנס, כתוב לי לפני המסירה מה היה צריך להוריד ושאל.\n- אסור להקטין את הגופן מתחת לגודל שבסעיף 9 כדי להיכנס.\n\n==================================================\n3. המבנה הקבוע\n==================================================\n\nכל סיכום, בכל מקצוע ובכל שיעור, בנוי באותו סדר, כדי שאדע תמיד איפה לחפש. כל חלק וכל סעיף ממוספרים (א1, ב3...), וההפניות בסיכום הן למספרי הסעיפים, כי אני לומדת מדף מודפס.\n\nעמוד 1 · השיעור בעמוד אחד\n- כותרת: המקצוע · שיעור N · נושא · תאריך · שורה: \"סיכום מתומצת למבחן, נערך מחומרי השיעור\".\n- \"מה חייבים לדעת\": 5 עד 10 שורות, הדברים החשובים ביותר בשיעור.\n- טבלת \"סוג שאלה ← איך מזהים ← סעיף\": כל סוגי השאלות של השיעור, החישוביות והתיאורטיות, ולאן ללכת בסיכום. זו הכניסה שלי כשאני פותרת תרגיל.\n- פס סימנים קצר: כל סימן ומה הוא אומר.\n\nחלק א · המושגים והכללים\nלכל נושא בשיעור כרטיס אחד, לפי הסדר ההגיוני ולא בהכרח לפי סדר השיעור:\n- במשפט אחד: מה זה.\n- הכלל או ההגדרה. כשהמרצה הכתיב הגדרה, כלל או רשימה, הם נכנסים מילה במילה בתיבת 🟨 (סעיף 5).\n- תנאים, חריגים וסייגים: חובה, כולם, כי הם מה שנבדק במבחן.\n- למה: שורה אחת, רק כשזה עוזר לזכור או להבין.\n- ⭐ מה שואלים במבחן ואיך זה מנוסח, אם המרצה אמר.\n- ⚠️ המלכודת, אם יש.\n- מושגים שמתבלבלים ביניהם מוצגים בטבלת השוואה אחת, זה לצד זה.\n- כל כרטיס עד חצי עמוד בערך.\n\nחלק ב · איך פותרים (הלב של הסיכום, בערך חצי מהעמודים)\nבתחילת החלק: עץ החלטה או תרשים \"קיבלתי שאלה ← מה בודקים קודם ← לאיזה סעיף הולכים\", כמו שהמרצה ניגש לשאלות.\nלכל סוג שאלה שנלמד, חישובית או תיאורטית, אותו מבנה:\n1. איך מזהים: המילים והנתונים שמופיעים בשאלה.\n2. מה צריך: הנתונים, הנוסחה (במבנה של המרצה) וכל סימן בה.\n3. שלבי הפתרון הממוספרים, בדיוק כמו שהמרצה פתר, כולל הקשות במחשבון, המרות יחידות וסדר הבדיקה. אם המרצה לא ניסח שלבים, נסח אותם מתוך הפתרונות שלו, וסמן בשורה אחת \"השלבים נוסחו מתוך פתרון המרצה\".\n4. דוגמה פתורה: הדוגמה של המרצה או של הספר שנפתרה בשיעור, בטבלת שלבים: נתונים ← נוסחה ← הצבה ← תוצאה ← מסקנה. בשאלה שיש בה תשלומים בזמנים שונים: ציר זמן קטן.\n5. בדיקת סבירות: איך יודעים שהתוצאה הגיונית, אם המרצה נתן.\n6. התשובות השגויות הנפוצות: איזו טעות נותנת איזו תשובה שגויה (למשל \"מי שעוצר אחרי שלב 1 מקבל את תשובה ב\").\nלשאלות תיאורטיות (טענות \"איזה מהבאים נכון\"): כללי פסילה. אילו ניסוחים פוסלים טענה, אילו טענות חוזרות במבחן, ומה התשובה לכל אחת. הכללים לקוחים מהשאלות שנפתרו בשיעור ומהדגשי המרצה.\n\nחלק ג · דף נוסחאות וסימנים (עמוד אחד)\nכל הנוסחאות של השיעור במבנה של המרצה, ומתחת לכל אחת מה כל סימן אומר ומתי משתמשים בה. בשיעור בלי נוסחאות: דף מונחים וקיצורים. בשיעור בלי שניהם: שורה אחת שאומרת זאת, בלי עמוד.\n\nחלק ד · מלכודות ומה לא לבלבל (עד עמוד אחד)\nטבלה: המלכודת · מה נכון · איך מזהים בשאלה · סעיף. רק מלכודות שעלו בשיעור, בספר או בשאלות שנפתרו.\n\nחלק ה · בדקי את עצמך (עד 2 עמודים)\n- כל השאלות והתרגילים שנפתרו בשיעור, בשורה או שתיים כל אחד: השאלה בקצרה, התשובה, והמפתח לפתרון בשורה אחת (\"מצב סחירות לפי תשואה מול קופון ← פרמיה\").\n- ואחריהן 8 עד 12 שאלות אמריקאיות חדשות בסגנון המבחן, עם 5 אפשרויות. במקצוע עם חישובים לפחות חצי חישוביות. התשובות בתחתית העמוד האחרון: התשובה, למה היא נכונה בשורה אחת, ולמה המסיחה העיקרית שגויה.\n- השאלות בודקות רק מה שנמצא בסיכום.\n\nעמוד אחרון, שורה אחת בסוף: מה נבדק (סעיף 10), וספקות פתוחים אם יש (סעיף 7).\n\n==================================================\n4. מה נכנס ומה יוצא\n==================================================\n\nנכנס תמיד:\n- כל הגדרה, כלל, תנאי, חריג, רשימה, מספר, אחוז, תקופה ונוסחה שנלמדו.\n- כל סוג שאלה שנלמד, ולפחות דוגמה פתורה אחת לכל סוג.\n- כל דגש לבחינה וכל מלכודת שהמרצה ציין.\n- כל הכתבה של המרצה וכל הדגשה שביקש (סעיף 5).\n- שאלת תלמיד שמבהירה בלבול נפוץ: בשורה אחת, שאלה ← תשובה, בתוך הכרטיס הרלוונטי.\n- טעויות בסיכום התלמיד או במקורות: שורה עם ⚠️ (סעיף 7).\n\nיוצא:\n- סיפורים, אנקדוטות, היסטוריה, שיחות חולין, לוגיסטיקה.\n- חזרות של המרצה על אותו הסבר: נכנס פעם אחת, בניסוח הברור ביותר, עם כל פרט שנוסף בחזרות.\n- הסברים ארוכים של \"למה\": נשארת שורה אחת.\n- דוגמה נוספת מאותו סוג שלא מוסיפה דבר חדש: נכנסת רק כשורה בחלק ה.\n- כל חומר שלא נלמד בשיעור.\n\nכלל הזהב בתמצות: מקצרים מילים, לא משנים משמעות. מילים כמו \"תמיד\", \"רק\", \"בתנאי ש\", \"לפחות\", \"עד\", \"לא כולל\", ומונחים מקצועיים, נשמרים בדיוק כמו במקור. במבחן ההבדל בין תשובה נכונה לשגויה הוא לרוב מילה אחת כזו.\n\n==================================================\n5. הכתבות והדגשות של המרצה\n==================================================\n\n- מה שהמרצה הכתיב (\"תרשמו\", \"תעתיקו\", \"בואו נרשום\") או ביקש להדגיש, למרקר או לזכור נכנס מילה במילה בתיבת 🟨, לפי המחברת והתמלול. בגמר פנסיוני: מה שמודגש במרקר בצילומי הספר נחשב הדגשה של המרצה.\n- הכתבה ארוכה (יותר מכ-5 שורות): נכנסות מילה במילה השורות שהן ההגדרה או הכלל, ושאר ההכתבה מתומצתת סביבן בלי לשנות מונחים. אם קיצרת, כתוב בסוף התיבה \"(מקוצר)\".\n- נוסח מהספר שאני צריכה לזכור מילה במילה (למשל הגדרה שחוזרת בשאלות) מקבל את אותו יחס.\n- נוסחאות: תמיד במבנה ובסימונים של המרצה, גם אם הספר כותב אחרת. אם יש הבדל, ציין אותו בשורה אחת.\n\n==================================================\n6. תוספות של העורך\n==================================================\n\n- הסיכום מבוסס רק על מה שנלמד בשיעור ועל המקורות שצירפתי.\n- מותר להוסיף רק מה שעוזר לפתור או לזכור: שלבי פתרון שנוסחו מתוך פתרון המרצה, טבלת השוואה, עץ החלטה, ציר זמן, דרך לזכור קצרה. כל תוספת כזו שאינה מהשיעור מסומנת 🔍 בקטן, בלי תיבה גדולה.\n- השאלות האמריקאיות החדשות הן תוספת מותרת, ואינן צריכות סימון.\n- אסור להוסיף חומר תוכן שלא נלמד, גם אם הוא נכון.\n\n==================================================\n7. דיוק, ספקות וסתירות\n==================================================\n\nאני סומכת על הסיכום במבחן, ולכן:\n- כל מספר בסיכום (בכללים, בדוגמאות, בשאלות ובתשובות) מחושב מחדש בקוד, לפי הנוסחה של המרצה. הבדיקות נרשמות בקובץ עבודה אחד (סעיף 11). הפרש של עיגול בלבד נחשב תואם.\n- טעות של המרצה, של הספר או של הסיכום לא מתוקנת בשקט: כותבים את הערך הנכון, ובשורה עם ⚠️ מה נאמר ומה נכון.\n- מקום שהתמלול משובש ואי אפשר להבין ממנו בוודאות: [לא ברור בתמלול]. לא מנחשים, לא משלימים מספר מהדמיון.\n- מקורות שסותרים זה את זה: ⚠️ עם שתי הגרסאות, ואיזו נראית נכונה ולמה.\n- כל ספק שלא נפתר נכנס גם לרשימת \"ספקות פתוחים\" בעמוד האחרון, כדי שאדע לשאול את המרצה.\n\n==================================================\n8. כללים מיוחדים לנושאים כלליים\n==================================================\n\n- דגש על רשימות, הבחנות, מספרים (סכומים, אחוזים, מועדים, גילאים) וחריגים, בטבלאות.\n- חלק ב בנוי בעיקר מכללי פסילה ומטענות שחוזרות במבחן. אם נלמדו חישובים: נתונים, נוסחה, שלבים ממוספרים ודוגמה פתורה, וכל מספר נבדק בקוד.\n\n==================================================\n9. עיצוב והדפסה\n==================================================\n\n- HTML ו-PDF, בעברית ומימין לשמאל, A4 להדפסה בצבע. רקעים בהירים בלבד כדי לחסוך בדיו.\n- גופן גוף בגודל 10.5 נקודות לפחות, טבלאות 9.5 לפחות, כותרות בולטות. פסקה לא עוברת 3 שורות.\n- בראש כל עמוד: המקצוע · שיעור N · נושא, ובתחתית מספר עמוד. כך כל דף מזוהה גם כשהוא תלוש.\n- כרטיס, דוגמה, טבלה וחישוב לא נשברים באמצע עמוד. חלק ב וחלק ג מתחילים בעמוד חדש.\n- מעט סוגי תיבות, כל סוג בצבע קבוע בכל הסיכומים:\n  🟨 נוסח המרצה (מילה במילה) · 📌 כלל · ⭐ במבחן · ⚠️ מלכודת או אי-התאמה · 🧮 איך פותרים · 💡 דוגמה פתורה · 🔍 תוספת עורך (בקטן)\n- מילות מפתח בהדגשה. כל סימן מופיע תמיד באותו צבע.\n- נוסחה עם שבר או חזקה נכתבת כנוסחה מעוצבת, עם קו שבר אמיתי וחזקה מוגבהת.\n- ביטוי חשבוני בתוך משפט בעברית עטוף כיחידה משמאל לימין, כדי שהסדר לא יתהפך. את הכיוון בודקים בעמוד המוצג, לא בקוד.\n- בלי כפתור הדפסה ובלי תוכן עניינים ארוך: הטבלה בעמוד 1 היא תוכן העניינים.\n\n==================================================\n10. בדיקות לפני המסירה\n==================================================\n\n1. רשימת חובה (פנימית): לפני הכתיבה, עבור על כל המקורות מההתחלה עד הסוף ורשום כל פריט שיכול להופיע במבחן: הגדרה, כלל, תנאי, מספר, נוסחה, הכתבה, סוג שאלה, דוגמה, דגש ומלכודת. אחרי הכתיבה, ודא שכל פריט נמצא בסיכום, ורשום לידו באיזה סעיף.\n2. כל המספרים בקוד (סעיף 7).\n3. בדיקה עצמאית אחת, בסוכן נפרד על Opus: הוא מקבל את המקורות ואת הסיכום ומחפש טעויות, פריטים חסרים וניסוח ששינה משמעות.\n4. מבחן הפתרון: סוכן נפרד מקבל רק את הסיכום ואת השאלות והתרגילים שנפתרו בשיעור, בלי הפתרונות, ופותר אותם בעזרת הסיכום בלבד. כל מקום שבו לא הצליח או טעה מראה שחסר שלב או כלל, ומתקנים. באותה הזדמנות הוא פותר גם את השאלות האמריקאיות החדשות בלי המפתח.\n5. הפקה: בדוק שהסיכום עד 20 עמודים, ועבור בעין על כל עמוד מוצג: כיוון טקסט, טבלאות ונוסחאות שלא נחתכו, עמודים ריקים.\nבשורת \"מה נבדק\" בעמוד האחרון כתוב רק מה שבאמת נעשה. אם בדיקה לא נעשתה, כתוב איזו.\n\n==================================================\n11. קבצים\n==================================================\n\n- שמות: מקצועית_כלליים_שיעור_N_סיכום_מתומצת.html ו-.pdf\n- תיקייה: /mnt/project-files/summaries/general/. קובצי עבודה (רשימת החובה, בדיקת החישובים, דוח הבדיקה) בתת-תיקייה lessonN_work/.\n- עיצוב וסגנון אחידים בכל הסיכומים. התבנית המשותפת לכל המקצועות נמצאת ב-summaries/kit/. אם היא עוד לא קיימת, בונים אותה בסיכום הראשון ושומרים שם.\n\n==================================================\n12. מה לשלוח לי בסיום\n==================================================\n\n- את ה-PDF ואת ה-HTML.\n- הודעה קצרה: כמה עמודים, אילו סוגי שאלות יש, ומה נבדק.\n- רשימה קצרה של מה שכדאי שאדע: טעויות שנמצאו בסיכום התלמיד או במקורות, מקומות שהמרצה תיקן את עצמו, ספקות פתוחים, וחומרים שחסרו (למשל דף תרגילים או דף נוסחאות שהמרצה הזכיר).\n\n==================================================\nכלל עליון\n==================================================\n\nהסיכום צריך להספיק לי כדי לעבור את המבחן בנושאים כלליים על החומר של השיעור הזה: מה שלא כתוב בו, לא אדע, ומה שכתוב בו, אשנן. לכן: כל החומר בפחות מילים, כל מספר בדוק, כל ספק מסומן, וכל סוג שאלה עם דרך פתרון ברורה.\n"}, "pension": {"name": "גמר פנסיוני", "text": "פרומט סיכום מתומצת לשיעור · גמר פנסיוני\nעודכן 26.10. מכל שיעור סיכום של עד 20 עמודים, שממנו אני לומדת למבחן ופותרת תרגילים.\n\n⚙️ מודל: Opus 5.5 · רמת מאמץ high (הבחירה שלי מ-26.10). אם השיחה רצה על מודל אחר, כתוב לי זאת בשורה אחת לפני שמתחילים.\n\nאיך אני משתמשת בפרומט: אני מעתיקה אותו לשיחה של השיעור, ממלאת את פרטי השיעור ומצרפת את החומרים.\n\n==================================================\nפרטי השיעור\n==================================================\n\nמקצוע: גמר פנסיוני\nשיעור מספר: [___]\nנושא השיעור: [___]\nתאריך השיעור: [___]\nמקורות מצורפים: [תמלול (כל החלקים) · המחברת שלי · צילומי עמודים מהספר · סיכום של תלמיד · דף נוסחאות · חומר נוסף]\n\n- אם מספר השיעור חסר, שאל אותי בשורה אחת לפני שמתחילים. מספור השיעורים של גמר פנסיוני נפרד מהמקצועות האחרים.\n- אם נושא השיעור חסר, נסח נושא קצר מתוך התמלול וכתוב לידו \"(נוסח על ידי העורך)\".\n- אם התאריך חסר או שהמקורות סותרים לגביו, כתוב \"תאריך לא ודאי\" ואל תמציא.\n- חכה לכל החומר שלי. אל תתחיל עד שאכתוב שסיימתי לשלוח. אם כתבתי זאת כבר בהודעה הזאת, התחל מיד.\n\nלפני שמתחילים:\n- בדוק שהקבצים שייכים לשיעור הזה ולמקצוע הזה: מספר השיעור, התאריך והנושא במחברת, בתמלול ובסיכום. אם הם נראים כמו שיעור אחר או שיעור שכבר סוכם, אל תבנה. כתוב לי מה מצאת ושאל.\n- אם כבר קיימת לשיעור חוברת לימוד מלאה בתיקיית הפרויקט (pension/lessonN/), היא מקור נוסף שכבר נבדק: השתמש בה כדי לעבוד מהר ולדייק. היא לא חובה. בלעדיה הסיכום נבנה ישר מהמקורות.\n\n==================================================\n1. המטרה\n==================================================\n\nאני לומדת למבחן ואין לי זמן לחוברות ארוכות. אני צריכה מכל שיעור סיכום אחד, קצר, מדויק וברור, שממנו אני:\n1. לומדת את כל מה שחייבים לדעת למבחן מהשיעור הזה.\n2. פותרת תרגיל: אני פותחת את הסיכום, מוצאת את סוג השאלה, ויודעת שלב אחרי שלב מה לעשות, כמו שהמרצה פותר.\n\nהסיכום מודפס בצבע ואני לומדת מהדף.\n\nמה אני כן רוצה:\n- כל החומר שיכול להופיע במבחן, בלי חורים. תמצות פירושו פחות מילים, לא פחות חומר.\n- לכל סוג שאלה שנלמד: איך מזהים אותה, ושלבי הפתרון הממוספרים של המרצה, עם הדוגמה שלו פתורה.\n- הסברים קצרים וחדים: כלל, תנאי, למה (שורה אחת), איך זה נראה בשאלה.\n- טבלאות השוואה, עצי החלטה וצירי זמן במקום פסקאות.\n- דיוק מוחלט בכל מספר, נוסחה, תנאי ומונח. אני משננת את מה שכתוב כאן.\n\nמה אני לא רוצה:\n- חוברת ארוכה, חזרות, הרחבות, סיפורים ומילים שלא מלמדות.\n- \"המרצה אמר ש...\" בכל משפט. כותבים את הכלל עצמו. מייחסים למרצה רק נוסח שהוא הכתיב, או מקום שיש בו ספק.\n- תוספות שלא נלמדו בשיעור (ראה סעיף 6).\n- סיכום כללי שלא מראה איך פותרים.\n\n==================================================\n2. אורך\n==================================================\n\n- מקסימום 20 עמודי A4, כולל הכול. אין להוסיף חומר כדי להגיע ל-20. שיעור קל יכול לצאת 8 או 12 עמודים, וזה טוב.\n- אם החומר לא נכנס ב-20 עמודים, מקצרים קודם את הניסוח, אחר כך הופכים פסקאות לטבלאות, ואחר כך מוותרים על דוגמה שנייה מאותו סוג. אף פעם לא מוותרים על סוג שאלה, על כלל, על תנאי או על מלכודת. אם עדיין לא נכנס, כתוב לי לפני המסירה מה היה צריך להוריד ושאל.\n- אסור להקטין את הגופן מתחת לגודל שבסעיף 9 כדי להיכנס.\n\n==================================================\n3. המבנה הקבוע\n==================================================\n\nכל סיכום, בכל מקצוע ובכל שיעור, בנוי באותו סדר, כדי שאדע תמיד איפה לחפש. כל חלק וכל סעיף ממוספרים (א1, ב3...), וההפניות בסיכום הן למספרי הסעיפים, כי אני לומדת מדף מודפס.\n\nעמוד 1 · השיעור בעמוד אחד\n- כותרת: המקצוע · שיעור N · נושא · תאריך · שורה: \"סיכום מתומצת למבחן, נערך מחומרי השיעור\".\n- \"מה חייבים לדעת\": 5 עד 10 שורות, הדברים החשובים ביותר בשיעור.\n- טבלת \"סוג שאלה ← איך מזהים ← סעיף\": כל סוגי השאלות של השיעור, החישוביות והתיאורטיות, ולאן ללכת בסיכום. זו הכניסה שלי כשאני פותרת תרגיל.\n- פס סימנים קצר: כל סימן ומה הוא אומר.\n\nחלק א · המושגים והכללים\nלכל נושא בשיעור כרטיס אחד, לפי הסדר ההגיוני ולא בהכרח לפי סדר השיעור:\n- במשפט אחד: מה זה.\n- הכלל או ההגדרה. כשהמרצה הכתיב הגדרה, כלל או רשימה, הם נכנסים מילה במילה בתיבת 🟨 (סעיף 5).\n- תנאים, חריגים וסייגים: חובה, כולם, כי הם מה שנבדק במבחן.\n- למה: שורה אחת, רק כשזה עוזר לזכור או להבין.\n- ⭐ מה שואלים במבחן ואיך זה מנוסח, אם המרצה אמר.\n- ⚠️ המלכודת, אם יש.\n- מושגים שמתבלבלים ביניהם מוצגים בטבלת השוואה אחת, זה לצד זה.\n- כל כרטיס עד חצי עמוד בערך.\n\nחלק ב · איך פותרים (הלב של הסיכום, בערך חצי מהעמודים)\nבתחילת החלק: עץ החלטה או תרשים \"קיבלתי שאלה ← מה בודקים קודם ← לאיזה סעיף הולכים\", כמו שהמרצה ניגש לשאלות.\nלכל סוג שאלה שנלמד, חישובית או תיאורטית, אותו מבנה:\n1. איך מזהים: המילים והנתונים שמופיעים בשאלה.\n2. מה צריך: הנתונים, הנוסחה (במבנה של המרצה) וכל סימן בה.\n3. שלבי הפתרון הממוספרים, בדיוק כמו שהמרצה פתר, כולל הקשות במחשבון, המרות יחידות וסדר הבדיקה. אם המרצה לא ניסח שלבים, נסח אותם מתוך הפתרונות שלו, וסמן בשורה אחת \"השלבים נוסחו מתוך פתרון המרצה\".\n4. דוגמה פתורה: הדוגמה של המרצה או של הספר שנפתרה בשיעור, בטבלת שלבים: נתונים ← נוסחה ← הצבה ← תוצאה ← מסקנה. בשאלה שיש בה תשלומים בזמנים שונים: ציר זמן קטן.\n5. בדיקת סבירות: איך יודעים שהתוצאה הגיונית, אם המרצה נתן.\n6. התשובות השגויות הנפוצות: איזו טעות נותנת איזו תשובה שגויה (למשל \"מי שעוצר אחרי שלב 1 מקבל את תשובה ב\").\nלשאלות תיאורטיות (טענות \"איזה מהבאים נכון\"): כללי פסילה. אילו ניסוחים פוסלים טענה, אילו טענות חוזרות במבחן, ומה התשובה לכל אחת. הכללים לקוחים מהשאלות שנפתרו בשיעור ומהדגשי המרצה.\n\nחלק ג · דף נוסחאות וסימנים (עמוד אחד)\nכל הנוסחאות של השיעור במבנה של המרצה, ומתחת לכל אחת מה כל סימן אומר ומתי משתמשים בה. בשיעור בלי נוסחאות: דף מונחים וקיצורים. בשיעור בלי שניהם: שורה אחת שאומרת זאת, בלי עמוד.\n\nחלק ד · מלכודות ומה לא לבלבל (עד עמוד אחד)\nטבלה: המלכודת · מה נכון · איך מזהים בשאלה · סעיף. רק מלכודות שעלו בשיעור, בספר או בשאלות שנפתרו.\n\nחלק ה · בדקי את עצמך (עד 2 עמודים)\n- כל השאלות והתרגילים שנפתרו בשיעור, בשורה או שתיים כל אחד: השאלה בקצרה, התשובה, והמפתח לפתרון בשורה אחת (\"מצב סחירות לפי תשואה מול קופון ← פרמיה\").\n- ואחריהן 8 עד 12 שאלות אמריקאיות חדשות בסגנון המבחן, עם 5 אפשרויות. במקצוע עם חישובים לפחות חצי חישוביות. התשובות בתחתית העמוד האחרון: התשובה, למה היא נכונה בשורה אחת, ולמה המסיחה העיקרית שגויה.\n- השאלות בודקות רק מה שנמצא בסיכום.\n\nעמוד אחרון, שורה אחת בסוף: מה נבדק (סעיף 10), וספקות פתוחים אם יש (סעיף 7).\n\n==================================================\n4. מה נכנס ומה יוצא\n==================================================\n\nנכנס תמיד:\n- כל הגדרה, כלל, תנאי, חריג, רשימה, מספר, אחוז, תקופה ונוסחה שנלמדו.\n- כל סוג שאלה שנלמד, ולפחות דוגמה פתורה אחת לכל סוג.\n- כל דגש לבחינה וכל מלכודת שהמרצה ציין.\n- כל הכתבה של המרצה וכל הדגשה שביקש (סעיף 5).\n- שאלת תלמיד שמבהירה בלבול נפוץ: בשורה אחת, שאלה ← תשובה, בתוך הכרטיס הרלוונטי.\n- טעויות בסיכום התלמיד או במקורות: שורה עם ⚠️ (סעיף 7).\n\nיוצא:\n- סיפורים, אנקדוטות, היסטוריה, שיחות חולין, לוגיסטיקה.\n- חזרות של המרצה על אותו הסבר: נכנס פעם אחת, בניסוח הברור ביותר, עם כל פרט שנוסף בחזרות.\n- הסברים ארוכים של \"למה\": נשארת שורה אחת.\n- דוגמה נוספת מאותו סוג שלא מוסיפה דבר חדש: נכנסת רק כשורה בחלק ה.\n- כל חומר שלא נלמד בשיעור.\n\nכלל הזהב בתמצות: מקצרים מילים, לא משנים משמעות. מילים כמו \"תמיד\", \"רק\", \"בתנאי ש\", \"לפחות\", \"עד\", \"לא כולל\", ומונחים מקצועיים, נשמרים בדיוק כמו במקור. במבחן ההבדל בין תשובה נכונה לשגויה הוא לרוב מילה אחת כזו.\n\n==================================================\n5. הכתבות והדגשות של המרצה\n==================================================\n\n- מה שהמרצה הכתיב (\"תרשמו\", \"תעתיקו\", \"בואו נרשום\") או ביקש להדגיש, למרקר או לזכור נכנס מילה במילה בתיבת 🟨, לפי המחברת והתמלול. בגמר פנסיוני: מה שמודגש במרקר בצילומי הספר נחשב הדגשה של המרצה.\n- הכתבה ארוכה (יותר מכ-5 שורות): נכנסות מילה במילה השורות שהן ההגדרה או הכלל, ושאר ההכתבה מתומצתת סביבן בלי לשנות מונחים. אם קיצרת, כתוב בסוף התיבה \"(מקוצר)\".\n- נוסח מהספר שאני צריכה לזכור מילה במילה (למשל הגדרה שחוזרת בשאלות) מקבל את אותו יחס.\n- נוסחאות: תמיד במבנה ובסימונים של המרצה, גם אם הספר כותב אחרת. אם יש הבדל, ציין אותו בשורה אחת.\n\n==================================================\n6. תוספות של העורך\n==================================================\n\n- הסיכום מבוסס רק על מה שנלמד בשיעור ועל המקורות שצירפתי.\n- מותר להוסיף רק מה שעוזר לפתור או לזכור: שלבי פתרון שנוסחו מתוך פתרון המרצה, טבלת השוואה, עץ החלטה, ציר זמן, דרך לזכור קצרה. כל תוספת כזו שאינה מהשיעור מסומנת 🔍 בקטן, בלי תיבה גדולה.\n- השאלות האמריקאיות החדשות הן תוספת מותרת, ואינן צריכות סימון.\n- אסור להוסיף חומר תוכן שלא נלמד, גם אם הוא נכון.\n\n==================================================\n7. דיוק, ספקות וסתירות\n==================================================\n\nאני סומכת על הסיכום במבחן, ולכן:\n- כל מספר בסיכום (בכללים, בדוגמאות, בשאלות ובתשובות) מחושב מחדש בקוד, לפי הנוסחה של המרצה. הבדיקות נרשמות בקובץ עבודה אחד (סעיף 11). הפרש של עיגול בלבד נחשב תואם.\n- טעות של המרצה, של הספר או של הסיכום לא מתוקנת בשקט: כותבים את הערך הנכון, ובשורה עם ⚠️ מה נאמר ומה נכון.\n- מקום שהתמלול משובש ואי אפשר להבין ממנו בוודאות: [לא ברור בתמלול]. לא מנחשים, לא משלימים מספר מהדמיון.\n- מקורות שסותרים זה את זה: ⚠️ עם שתי הגרסאות, ואיזו נראית נכונה ולמה.\n- כל ספק שלא נפתר נכנס גם לרשימת \"ספקות פתוחים\" בעמוד האחרון, כדי שאדע לשאול את המרצה.\n\n==================================================\n8. כללים מיוחדים לגמר פנסיוני\n==================================================\n\n- המקור הראשי לנוסח: הספר, ההדגשות שלי במרקר וההערות שלי בכתב יד. המרצה אמר שבמבחן כ-20 שאלות חוזרות מילה במילה מהספר, ולכן כל שאלת ספר שנפתרה בשיעור נכנסת לחלק ה עם התשובה ועם המפתח לפתרון.\n- דוגמאות וסיפורים מהשטח: רק כשהם מסבירים כלל שנשאל במבחן, בשורה אחת עם 🏢.\n- כשהתשובה במבחן שונה ממה שקורה בפועל: שורה אחת עם ⚖️, ותשובת המבחן מודגשת.\n- מספרים שמשתנים כל שנה (תקרות, סכומים) נכתבים עם השנה שלהם, כמו בספר.\n\n==================================================\n9. עיצוב והדפסה\n==================================================\n\n- HTML ו-PDF, בעברית ומימין לשמאל, A4 להדפסה בצבע. רקעים בהירים בלבד כדי לחסוך בדיו.\n- גופן גוף בגודל 10.5 נקודות לפחות, טבלאות 9.5 לפחות, כותרות בולטות. פסקה לא עוברת 3 שורות.\n- בראש כל עמוד: המקצוע · שיעור N · נושא, ובתחתית מספר עמוד. כך כל דף מזוהה גם כשהוא תלוש.\n- כרטיס, דוגמה, טבלה וחישוב לא נשברים באמצע עמוד. חלק ב וחלק ג מתחילים בעמוד חדש.\n- מעט סוגי תיבות, כל סוג בצבע קבוע בכל הסיכומים:\n  🟨 נוסח המרצה (מילה במילה) · 📌 כלל · ⭐ במבחן · ⚠️ מלכודת או אי-התאמה · 🧮 איך פותרים · 💡 דוגמה פתורה · 🔍 תוספת עורך (בקטן)\n  🏢 מהשטח (שורה אחת) · ⚖️ מבחן מול פרקטיקה (שורה אחת)\n- מילות מפתח בהדגשה. כל סימן מופיע תמיד באותו צבע.\n- נוסחה עם שבר או חזקה נכתבת כנוסחה מעוצבת, עם קו שבר אמיתי וחזקה מוגבהת.\n- ביטוי חשבוני בתוך משפט בעברית עטוף כיחידה משמאל לימין, כדי שהסדר לא יתהפך. את הכיוון בודקים בעמוד המוצג, לא בקוד.\n- בלי כפתור הדפסה ובלי תוכן עניינים ארוך: הטבלה בעמוד 1 היא תוכן העניינים.\n\n==================================================\n10. בדיקות לפני המסירה\n==================================================\n\n1. רשימת חובה (פנימית): לפני הכתיבה, עבור על כל המקורות מההתחלה עד הסוף ורשום כל פריט שיכול להופיע במבחן: הגדרה, כלל, תנאי, מספר, נוסחה, הכתבה, סוג שאלה, דוגמה, דגש ומלכודת. אחרי הכתיבה, ודא שכל פריט נמצא בסיכום, ורשום לידו באיזה סעיף.\n2. כל המספרים בקוד (סעיף 7).\n3. בדיקה עצמאית אחת, בסוכן נפרד על Opus: הוא מקבל את המקורות ואת הסיכום ומחפש טעויות, פריטים חסרים וניסוח ששינה משמעות.\n4. מבחן הפתרון: סוכן נפרד מקבל רק את הסיכום ואת השאלות והתרגילים שנפתרו בשיעור, בלי הפתרונות, ופותר אותם בעזרת הסיכום בלבד. כל מקום שבו לא הצליח או טעה מראה שחסר שלב או כלל, ומתקנים. באותה הזדמנות הוא פותר גם את השאלות האמריקאיות החדשות בלי המפתח.\n5. הפקה: בדוק שהסיכום עד 20 עמודים, ועבור בעין על כל עמוד מוצג: כיוון טקסט, טבלאות ונוסחאות שלא נחתכו, עמודים ריקים.\nבשורת \"מה נבדק\" בעמוד האחרון כתוב רק מה שבאמת נעשה. אם בדיקה לא נעשתה, כתוב איזו.\n\n==================================================\n11. קבצים\n==================================================\n\n- שמות: גמר_פנסיוני_שיעור_N_סיכום_מתומצת.html ו-.pdf\n- תיקייה: /mnt/project-files/summaries/pension/. קובצי עבודה (רשימת החובה, בדיקת החישובים, דוח הבדיקה) בתת-תיקייה lessonN_work/.\n- עיצוב וסגנון אחידים בכל הסיכומים. התבנית המשותפת לכל המקצועות נמצאת ב-summaries/kit/. אם היא עוד לא קיימת, בונים אותה בסיכום הראשון ושומרים שם.\n\n==================================================\n12. מה לשלוח לי בסיום\n==================================================\n\n- את ה-PDF ואת ה-HTML.\n- הודעה קצרה: כמה עמודים, אילו סוגי שאלות יש, ומה נבדק.\n- רשימה קצרה של מה שכדאי שאדע: טעויות שנמצאו בסיכום התלמיד או במקורות, מקומות שהמרצה תיקן את עצמו, ספקות פתוחים, וחומרים שחסרו (למשל דף תרגילים או דף נוסחאות שהמרצה הזכיר).\n\n==================================================\nכלל עליון\n==================================================\n\nהסיכום צריך להספיק לי כדי לעבור את המבחן בגמר פנסיוני על החומר של השיעור הזה: מה שלא כתוב בו, לא אדע, ומה שכתוב בו, אשנן. לכן: כל החומר בפחות מילים, כל מספר בדוק, כל ספק מסומן, וכל סוג שאלה עם דרך פתרון ברורה.\n"}}</script>
+<script>
+(function () {
+  "use strict";
+  var PROMPTS = JSON.parse(document.getElementById("prompt-data").textContent);
+  var NAMES = { all: "כל המקצועות" };
+  Object.keys(PROMPTS).forEach(function (k) { NAMES[k] = PROMPTS[k].name; });
+  var KEYS = ["bonds", "maof", "general", "pension", "all"];
+  var STATUS = { "new": "ממתינה", working: "בטיפול", done: "בוצעה" };
+
+  /* ---------- toast ---------- */
+  var toastEl = document.querySelector(".toast");
+  var toastTimer = null;
+  function toast(msg) {
+    toastEl.firstElementChild.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 3200);
+  }
+
+  /* ---------- clipboard ---------- */
+  function legacyCopy(text) {
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "-1000px";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, text.length);
+      var ok = document.execCommand("copy");
+      ta.remove();
+      return ok;
+    } catch (e) { return false; }
+  }
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).then(function () { return true; }, function () { return legacyCopy(text); });
+    }
+    return Promise.resolve(legacyCopy(text));
+  }
+  function selectAll(el) {
+    try {
+      var r = document.createRange();
+      r.selectNodeContents(el);
+      var s = window.getSelection();
+      s.removeAllRanges();
+      s.addRange(r);
+    } catch (e) {}
+  }
+
+  /* ---------- prompt rows ---------- */
+  function fillPrompt(row) {
+    var pre = row.querySelector(".ptext");
+    if (pre && !pre.textContent) pre.textContent = PROMPTS[row.dataset.key].text;
+    return pre;
+  }
+  function openFull(row, open) {
+    var full = row.querySelector(".full");
+    var tog = row.querySelector(".toggle");
+    fillPrompt(row);
+    full.hidden = !open;
+    tog.setAttribute("aria-expanded", String(open));
+    tog.textContent = open ? "הסתרת הפרומט" : "הצגת הפרומט";
+  }
+
+  document.querySelectorAll(".row").forEach(function (row) {
+    var key = row.dataset.key;
+    row.querySelectorAll(".copy").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var original = btn.textContent;
+        copyText(PROMPTS[key].text).then(function (ok) {
+          if (ok) {
+            btn.textContent = "הועתק ✓";
+            btn.classList.add("done");
+            toast("הפרומט של " + NAMES[key] + " הועתק. עכשיו מדביקים אותו בשיחה של השיעור.");
+            setTimeout(function () { btn.textContent = original; btn.classList.remove("done"); }, 2400);
+          } else {
+            openFull(row, true);
+            selectAll(row.querySelector(".ptext"));
+            toast("ההעתקה האוטומטית לא עבדה כאן. הטקסט מסומן, אפשר להעתיק אותו ידנית.");
+          }
+        });
+      });
+    });
+    row.querySelector(".toggle").addEventListener("click", function () {
+      openFull(row, row.querySelector(".full").hidden);
+    });
+  });
+
+  if (/^#(bonds|maof|general|pension|all)$/.test(location.hash)) {
+    var target = document.getElementById(location.hash.slice(1));
+    if (target) setTimeout(function () { target.scrollIntoView({ block: "start" }); }, 50);
+  }
+
+  /* ---------- requests ---------- */
+  var dbPromise = (async function () {
+    if (!window.claude || typeof window.claude.use !== "function") return { db: null, uid: null };
+    var db = null, uid = null;
+    try { db = await window.claude.use("db"); } catch (e) { db = null; }
+    try {
+      var user = await window.claude.use("user");
+      uid = user ? await user.id() : null;
+    } catch (e) { uid = null; }
+    return { db: db, uid: uid };
+  })();
+
+  function draftKey(k) { return "prompt-req-draft-" + k; }
+  function loadDraft(k) { try { return localStorage.getItem(draftKey(k)) || ""; } catch (e) { return ""; } }
+  function saveDraft(k, v) { try { if (v) localStorage.setItem(draftKey(k), v); else localStorage.removeItem(draftKey(k)); } catch (e) {} }
+
+  function requestText(key, text) {
+    return "בקשת שינוי לפרומט הסיכום המתומצת (" + NAMES[key] + "):\n" + text;
+  }
+
+  var reqCells = {};
+  document.querySelectorAll("[data-req]").forEach(function (cell) {
+    var key = cell.dataset.req;
+    var ta = cell.querySelector("textarea");
+    var send = cell.querySelector(".send");
+    var copyReq = cell.querySelector(".copyreq");
+    var note = cell.querySelector(".note");
+    reqCells[key] = cell;
+
+    ta.value = loadDraft(key);
+    ta.addEventListener("input", function () { saveDraft(key, ta.value.trim() ? ta.value : ""); });
+
+    function setNote(msg, cls) {
+      note.textContent = msg;
+      note.className = "note" + (cls ? " " + cls : "");
+    }
+
+    copyReq.addEventListener("click", function () {
+      var text = ta.value.trim();
+      if (!text) { setNote("כתבי קודם מה לשנות.", "err"); ta.focus(); return; }
+      copyText(requestText(key, text)).then(function (ok) {
+        if (ok) setNote("הבקשה הועתקה. הדביקי אותה לי בשיחה.", "ok");
+        else { ta.select(); setNote("ההעתקה לא עבדה כאן. הטקסט בתיבה מסומן, אפשר להעתיק אותו ידנית.", "err"); }
+      });
+    });
+
+    send.addEventListener("click", async function () {
+      var text = ta.value.trim();
+      if (!text) { setNote("כתבי קודם מה לשנות.", "err"); ta.focus(); return; }
+      send.disabled = true;
+      send.textContent = "בשליחה…";
+      var ctx = await dbPromise;
+      if (!ctx.db) {
+        send.disabled = false;
+        send.textContent = "שליחת הבקשה";
+        copyReq.hidden = false;
+        setNote("שמירת בקשות לא זמינה בתצוגה הזו. לחצי \"העתקת הבקשה\" והדביקי אותה לי בשיחה.", "err");
+        return;
+      }
+      try {
+        await ctx.db.collection("requests").add({
+          subject: key,
+          subjectName: NAMES[key],
+          text: text.slice(0, 4000),
+          status: "new",
+          createdAt: new Date().toISOString(),
+          by: ctx.uid || null
+        });
+        ta.value = "";
+        saveDraft(key, "");
+        setNote("הבקשה נשמרה ✓ כתבי לי בשיחה \"שלחתי בקשה\" ואטפל בה.", "ok");
+      } catch (e) {
+        copyReq.hidden = false;
+        var code = e && e.code ? e.code : "";
+        var msg = code === "quota_exceeded" ? "אין מקום לבקשות נוספות." : "הבקשה לא נשמרה.";
+        setNote(msg + " לחצי \"העתקת הבקשה\" והדביקי אותה לי בשיחה.", "err");
+      } finally {
+        send.disabled = false;
+        send.textContent = "שליחת הבקשה";
+      }
+    });
+  });
+
+  function fmtDate(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return "";
+    try {
+      return d.toLocaleDateString("he-IL", { day: "numeric", month: "numeric" }) + " · " +
+        d.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
+    } catch (e) { return d.toISOString().slice(0, 16).replace("T", " "); }
+  }
+
+  function renderHistory(items, db) {
+    var groups = {};
+    KEYS.forEach(function (k) { groups[k] = []; });
+    items.forEach(function (it) { if (groups[it.subject]) groups[it.subject].push(it); });
+
+    KEYS.forEach(function (k) {
+      var cell = reqCells[k];
+      if (!cell) return;
+      var list = cell.querySelector(".history");
+      list.textContent = "";
+      groups[k].forEach(function (it) {
+        var li = document.createElement("li");
+        var top = document.createElement("div");
+        top.className = "h-top";
+        var chip = document.createElement("span");
+        var st = STATUS[it.status] ? it.status : "new";
+        chip.className = "chip " + st;
+        chip.textContent = STATUS[st];
+        var when = document.createElement("span");
+        when.textContent = fmtDate(it.createdAt);
+        top.appendChild(chip);
+        top.appendChild(when);
+        if (st === "new") {
+          var del = document.createElement("button");
+          del.type = "button";
+          del.className = "linkbtn";
+          del.textContent = "ביטול";
+          var armTimer = null;
+          del.addEventListener("click", function () {
+            if (!del.classList.contains("armed")) {
+              del.classList.add("armed");
+              del.textContent = "לבטל? לחצי שוב";
+              armTimer = setTimeout(function () { del.classList.remove("armed"); del.textContent = "ביטול"; }, 4000);
+              return;
+            }
+            clearTimeout(armTimer);
+            del.disabled = true;
+            db.collection("requests").doc(it.id).delete().catch(function () {
+              del.disabled = false;
+              del.classList.remove("armed");
+              del.textContent = "ביטול";
+              toast("הביטול לא הצליח. אפשר לכתוב לי בשיחה.");
+            });
+          });
+          top.appendChild(del);
+        }
+        li.appendChild(top);
+        var p = document.createElement("p");
+        p.className = "h-text";
+        p.textContent = typeof it.text === "string" ? it.text : "";
+        li.appendChild(p);
+        if (typeof it.reply === "string" && it.reply) {
+          var r = document.createElement("div");
+          r.className = "h-reply";
+          var b = document.createElement("b");
+          b.textContent = "מה שיניתי: ";
+          r.appendChild(b);
+          r.appendChild(document.createTextNode(it.reply));
+          li.appendChild(r);
+        }
+        list.appendChild(li);
+      });
+
+      var row = cell.closest("[data-key]");
+      var badge = row && row.querySelector(".pending");
+      if (badge) {
+        var open = groups[k].filter(function (it) { return it.status !== "done"; }).length;
+        badge.hidden = open === 0;
+        badge.textContent = open === 1 ? "בקשה אחת פתוחה" : open + " בקשות פתוחות";
+      }
+    });
+  }
+
+  dbPromise.then(function (ctx) {
+    if (!ctx.db) {
+      Object.keys(reqCells).forEach(function (k) {
+        var cell = reqCells[k];
+        cell.querySelector(".copyreq").hidden = false;
+        cell.querySelector(".send").hidden = true;
+      });
+      return;
+    }
+    ctx.db.collection("requests").orderBy("createdAt", "desc").limit(300).onSnapshot(function (snap) {
+      var items = [];
+      snap.docs.forEach(function (d) {
+        var v = d.data();
+        if (v) items.push(Object.assign({ id: d.id }, v));
+      });
+      renderHistory(items, ctx.db);
+    }, function () {
+      Object.keys(reqCells).forEach(function (k) {
+        var list = reqCells[k].querySelector(".history");
+        if (!list.querySelector(".hist-note")) {
+          var li = document.createElement("li");
+          li.className = "hist-note";
+          li.textContent = "הבקשות הקודמות לא נטענו כרגע.";
+          list.appendChild(li);
+        }
+      });
+    });
+  });
+})();
+</script>
+
+</body></html>
