@@ -111,7 +111,7 @@ function retRow177(id){const x=D[id],it=IT[id]||{},sh=x.src=='sh'||x.src=='ae';
  <div class="in"><a href="#" data-open="${id}"><b>${esc(x.short)}</b></a>
  <small>${esc(x.srcl||'')}${esc(rc)}${x.size?' · מידה '+esc(x.size):''}${x.color?' · '+esc(x.color):''}</small>
  <small>מספר הזמנה: <bdi dir="ltr">${esc(ord)}</bdi>${x.date?' · הוזמן '+esc(x.date):''}</small>
- <small>${it.rsent?'📮 נשלח להחזרה':'↩ עוד לא נשלח'}${dl&&!it.rsent?` · להחזיר עד <b>${dl}</b>${left!=null?(left>=0?` (עוד ${left} ימים)`:' (עבר)'):''}`:''}${it.rwhy?' · '+esc(it.rwhy):''}</small>
+ <small>${it.rnr?'🎁 החזר בלי החזרה – לא שולחים':it.rsent?'📮 נשלח להחזרה':'↩ עוד לא נשלח'}${dl&&!it.rsent?` · להחזיר עד <b>${dl}</b>${left!=null?(left>=0?` (עוד ${left} ימים)`:' (עבר)'):''}`:''}${it.rwhy?' · '+esc(it.rwhy):''}</small>
  <div class="bt"><b>${m(x.paid)}</b><button data-refund="${id}" aria-pressed="${!!it.refunded}">${it.refunded?'💰 ✓ הכסף חזר':'💰 הכסף עוד לא חזר'}</button><button data-o3go="${id}">📦 ההזמנה</button></div></div></div>`}
 function moneyTab(){const ret=Object.keys(D).filter(id=>(IT[id]||{}).s=='ret');const exp=ret.reduce((s,id)=>s+D[id].paid,0);const got=ret.filter(id=>(IT[id]||{}).refunded).reduce((s,id)=>s+D[id].paid,0);
  const cr=Object.entries(CREDITS);

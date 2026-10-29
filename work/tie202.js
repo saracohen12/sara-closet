@@ -51,9 +51,9 @@ function closet(){const d=document.getElementById('cl163');if(!d||!d.open)return
  g.dataset.sig=sig;g.innerHTML=h;paintThumbs(g)}
 // the covers section: one line to the ties
 function covers(){const sec=document.getElementById('scarves');if(!sec)return;const h2=sec.querySelector('h2');if(!h2)return;let l=sec.querySelector('.tie202s');const n=list('tie').length;
- const t='🧕 קשירות אמיתיות: בדף של כל כיסוי, "קשירות לכיסוי הזה". בוחרים קשירה, מעתיקים פרומפט ומעלים';   // v228
+ const t='🧕 קשירות אמיתיות: בדף של כל כיסוי, "קשירות לכיסוי הזה". בוחרים קשירה, מעתיקים פרומפט ומעלים. או כמה כיסויים יחד';   // v228, v333
  if(l&&l.dataset.t==t)return;if(!l){l=document.createElement('div');l.className='tie202s';h2.after(l)}
- l.dataset.t=t;l.innerHTML=`<span>${es(t)}</span><button type="button" data-sty202="tie">${n?'הקשירות':'להוסיף'}</button>`}
+ l.dataset.t=t;l.innerHTML=`<span>${es(t)}</span><button type="button" data-sty202="tie">${n?'הקשירות':'להוסיף'}</button><button type="button" data-m333go>🧕 כמה כיסויים יחד</button>`}
 
 // ---------- 2. a tie for this cover ----------
 // v228 (Sara 26/10 21:14 "מזעזע לצבוע את המטפחת בצבע של המטפחת ... לשים על אותה מטפחת את הקשירות", 21:30 "בדף של הכיסוי ... כמה קשירות על אותו כיסוי,
@@ -275,7 +275,7 @@ async function open(id){PID=id;pk();const L=txs(id),O=window.STYORD,rk=u=>O?O.ra
     <li><b>📤 להעלות הכול</b> – בוחרים את כל התמונות שחזרו בבת אחת. אני מזהה איזו קשירה זו ומסדרת אותן בכיסוי.</li></ol>
    <div class="mkb t246bar"><button type="button" class="mkp" data-t246zip>⬇ להוריד הכול (ZIP)</button><button type="button" data-t246cp>📋 הפרומפט</button><button type="button" class="mkp" data-t246up>📤 להעלות הכול</button></div>
    <div class="t245g">${W.map(c=>wcard(id,c)).join('')}</div>`:''}
-  <div class="t246add">${room>0?`<button type="button" class="mkp" data-t246pick>➕ לבחור קשירות ${W.length?`(עוד ${room})`:'(עד 10)'}</button>`:'<small>האוסף מלא: 10 קשירות. מעלים את מה ש-GPT החזיר, או מוציאים אחת ✕.</small>'}</div>
+  <div class="t246add"><button type="button" class="m333go" data-m333go>🧕 כמה כיסויים יחד (עד 8 × 4 קשירות)</button>${room>0?`<button type="button" class="mkp" data-t246pick>➕ לבחור קשירות ${W.length?`(עוד ${room})`:'(עד 10)'}</button>`:'<small>האוסף מלא: 10 קשירות. מעלים את מה ש-GPT החזיר, או מוציאים אחת ✕.</small>'}</div>
   <details class="t246one"><summary>לשמור את תמונת הכיסוי או את הבובה לבד</summary><span class="mkb"><button type="button" data-tie202dl="photo">⬇ תמונת הכיסוי</button><button type="button" data-tie202dl="sheet">⬇ הבובה ב-8 זוויות</button><button type="button" data-tie202dl="face">⬇ הפנים שלי מקרוב ב-8 זוויות</button></span></details></div>`;
  if(!PK.open)PK.showModal();PKS=L.map(x=>x.n+(isOn(id,x)?'*':'')).join(',');
  // the whole avatar wearing it (head to hips), loaded when the card comes into view; the small head picture until then
@@ -407,4 +407,105 @@ async function recutTx(){if(window.SP262&&SP262.isFull()){setTimeout(recutTx,5*6
   await putItem(id,pa);try{R().sync()}catch(_){}}
  catch(e){ERR('recutx',e);try{window.SP262&&SP262.full(e)}catch(_){}}finally{RXB=false;setTimeout(recutTx,2000)}}
 setTimeout(recutTx,15000);
+// ---------- v333: several covers at once (Sara 29/10 11:26 "אפשרות לבחור עד 8 כיסויים שונים, ולכל כיסוי ... 4 קשירות ... גם תקריב וגם מרחוק ... תכין לי פרומט ... נעשה ניסוי") ----------
+// she picks up to 8 covers and 4 ties; every cover gets the 4 ties as waiting (txw, with b = this batch and k = the cover's place in the ZIP);
+// one ZIP: face-8, doll-8, cover-N-*.jpg, tie-N.jpg, prompt.txt. GPT returns per cover per tie: the close-up, then the whole doll.
+// "📤 להעלות הכול": the returned sheets go to the waiting covers in ZIP order, 4 sheets (+ their close-ups) per cover, through upAll (which matches each sheet to its tie)
+const MC_N=8,MC_T=4,MC_K='mc333';let MC=null,MCV=null;
+const mcLS=v=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(MC_K)||'null');localStorage.setItem(MC_K,JSON.stringify(v))}catch(_){return null}};
+const mcLive=id=>{const t=IT[id]||{};return !(t.s=='ret'||t.s=='give'||t.gen||t.out||t.oos||t.miss=='y')};
+const mcCovers=()=>Object.keys(D).filter(id=>mcLive(id)&&isCover(id));
+const mcAll=()=>{const {pre,pics}=choices();return [...pics,...pre]};
+// the covers still waiting from the last batch, in the ZIP's order
+function mcWait(){let b='';for(const id of mcCovers())for(const w of txw(id))if(w.b&&w.b>b)b=w.b;if(!b)return {b:'',ids:[]};
+ const ids=mcCovers().filter(id=>txw(id).some(w=>w.b==b)).sort((x,y)=>((txw(x).find(w=>w.b==b)||{}).k||0)-((txw(y).find(w=>w.b==b)||{}).k||0));return {b,ids}}
+function mcState(){if(!MC){const s=mcLS()||{};MC={c:(s.c||[]).filter(id=>D[id]),t:(s.t||[]).slice(0,MC_T)}}if(!MC.t.length){try{const O=window.STYORD,f=mcAll().filter(c=>O&&O.isFav&&O.isFav('tie',c.p));MC.t=f.slice(0,MC_T).map(c=>c.p)}catch(_){}}return MC}
+const mcSave=()=>mcLS({c:MC.c,t:MC.t});
+function mcPrompt(ids,T,np){const L=T.map((c,i)=>({c,n:c.n,file:c.doc&&c.doc.src?`tie-${i+1}.jpg`:'',det:c.kind=='w'&&P()&&P().TIES[c.i]?P().TIES[c.i][1]:''})),N=ids.length,n=L.length;
+ const fl=k=>np[k]>1?`cover-${k+1}-1.jpg עד cover-${k+1}-${np[k]}.jpg`:`cover-${k+1}-1.jpg`;
+ return `מצורף קובץ ZIP. בתוכו:
+• face-8.jpg – תקריב של הפנים שלי ב-8 זוויות מסביב (ראש וכתפיים), שתי שורות של 4 משבצות.
+• doll-8.jpg – הדמות שלי, כל הגוף, ב-8 זוויות מסביב, באותו סדר.
+• ${N} מטפחות שקניתי (כל הקבצים של אותו מספר הם אותה מטפחת):
+${ids.map((id,k)=>`  מטפחת ${k+1} – ${fl(k)}: ${itemTxt(id)}`).join('\n')}
+${L.some(x=>x.file)?'• tie-1.jpg ועד הסוף – כל קובץ הוא הבובה ב-8 זוויות עם קשירה אחת.\n':''}
+${n} הקשירות, לפי הסדר:
+${L.map((x,i)=>`  קשירה ${i+1} – ${x.n}${x.file?` (הקובץ ${x.file})`:''}${!x.file&&x.det?`: ${x.det}`:''}`).join('\n')}
+
+המשימה: כל מטפחת בכל אחת מ-${n} הקשירות – ${N*n} קשירות. לכל קשירה החזירי בדיוק שתי תמונות, בסדר הזה:
+1. התקריב – ערכי את face-8.jpg, אל תציירי אותו מחדש. השיער נעלם לגמרי מתחת למטפחת, ובמקומו המטפחת קשורה בקשירה הזו. אותן 8 משבצות באותו סדר ובאותן זוויות, אותו חיתוך של ראש וכתפיים, אותה חולצה, אותו רקע.
+2. הגוף המלא – ערכי את doll-8.jpg, אל תציירי אותו מחדש. במקום כיסוי הראש הבז׳ אותה מטפחת באותה קשירה בדיוק. כיסוי הבז׳ נעלם לגמרי.
+
+הסדר: מטפחת 1 – קשירה 1 (תקריב, גוף מלא), מטפחת 1 – קשירה 2 … עד קשירה ${n}, ואז מטפחת 2 באותו סדר, וכך עד מטפחת ${N}. סך הכול ${N*n*2} תמונות.
+אם אי אפשר את כולן בתשובה אחת: בכל תשובה מטפחת אחת שלמה (${n*2} תמונות), ומתחת כתבי "סיימתי מטפחת X מתוך ${N}". אני אכתוב "המשיכי".
+
+בשתי התמונות: אותו נפח ואותו גובה, אותו קשר, אותם קפלים ואותם שובלים כמו בקובץ של הקשירה, ואותה קשירה בדיוק בכל 8 הזוויות. בצד ובגב צרי את הקשר, הקפלים והשובלים כמו שהם נראים באמת מהכיוון הזה. ${n} הקשירות שונות זו מזו, בדיוק כמו שכתוב לכל אחת.
+כל מטפחת בדיוק כמו בתמונות שלה: אותו בד, אותו הדפס, אותם צבעים, אותו ברק. ההדפס ממשיך גם בקפלים, בקשר ובשובל. אל תערבבי בין המטפחות. אם בתמונה יש עוד דברים (בגדים, תכשיטים, דוגמנית), הם לא שלי.
+הבד של הכיסוי אטום ומלא לכל האורך – גם השובלים, הקצוות והפרנזים: בלי שקיפות ובלי שרואים דרכו את השמלה או את הגוף.
+הפנים לא משתנים בכלל: אותם פנים, אותה הבעה, אותו חיוך, אותו עור. הראש באותו גודל ובאותו מקום בדיוק בכל משבצת.`}
+// the batch is saved on the covers themselves (txw) before the ZIP, so the upload knows the order on any device
+async function mcMark(){const s=mcState(),all=mcAll(),T=s.t.map(p=>all.find(c=>c.p==p)).filter(Boolean),b=String(Date.now());
+ for(let k=0;k<s.c.length;k++){const id=s.c[k],old=txw(id).filter(w=>!T.some(c=>c.p==w.p)).map(w=>{const o=Object.assign({},w);delete o.b;delete o.k;return o});
+  if(!await setW(id,[...T.map(c=>({p:c.p,n:c.n,b,k})),...old].slice(0,MAXW)))return null}
+ return {ids:s.c.slice(),T}}
+async function mcZip(btn){const s=mcState();if(!s.c.length||!s.t.length)return toast_('קודם לבחור כיסויים וקשירות');const o=btn.textContent;btn.disabled=true;btn.textContent='מכינה את הקובץ…';
+ try{const m=await mcMark();if(!m)return;const files=[],np=[];try{await thLoad('scarves')}catch(_){}
+  try{files.push({name:'face-8.jpg',blob:await (await fetch(FACE8)).blob()})}catch(e){ERR('mczf',e)}
+  files.push({name:'doll-8.jpg',blob:await (await fetch('a8/sheet.jpg?v='+(window.VER||''))).blob()});
+  for(let k=0;k<m.ids.length;k++){let n=0;try{await thLoad(D[m.ids[k]].cat)}catch(_){}
+   for(const u of scarfPics(m.ids[k]).slice(0,2)){try{btn.textContent=`מכינה מטפחת ${k+1}…`;files.push({name:`cover-${k+1}-${n+1}.jpg`,blob:await jpegOf(u)});n++}catch(e){ERR('mczp',e)}}np.push(n)}
+  for(let i=0;i<m.T.length;i++){const c=m.T[i];if(c.doc&&c.doc.src){try{files.push({name:`tie-${i+1}.jpg`,blob:await jpegOf('/_blob/'+c.doc.src)})}catch(e){ERR('mczt',e)}}}
+  const txt=(window.zipAsk||String)(mcPrompt(m.ids,m.T,np));files.push({name:'prompt.txt',blob:new Blob(['﻿'+txt],{type:'text/plain;charset=utf-8'})});
+  await R().saveFile(`covers-${m.ids.length}x${m.T.length}.zip`,await zipOf(files));MC.last=txt;
+  toast_(`✓ ירד ZIP: ${m.ids.length} כיסויים × ${m.T.length} קשירות. הפרומפט בפנים, וגם ב-📋`);mcPaint()}
+ catch(e){ERR('mczip',e);toast_('לא הצלחתי להכין את הקובץ. לנסות שוב')}finally{if(btn.isConnected){btn.disabled=false;btn.textContent=o}}}
+async function mcCopy(btn){const w=mcWait();let txt=MC&&MC.last;
+ if(!txt){const all=mcAll(),ids=w.ids.length?w.ids:mcState().c,b=w.b,T=(b?txw(ids[0]).filter(x=>x.b==b):mcState().t.map(p=>({p}))).map(x=>all.find(c=>c.p==x.p)).filter(Boolean);
+  if(!ids.length||!T.length)return toast_('קודם לבחור כיסויים וקשירות');txt=mcPrompt(ids,T,ids.map(id=>Math.min(2,scarfPics(id).length)))}
+ return copyTxt(btn,txt)}
+let FM333=null;function mcPick(){if(!FM333){FM333=document.createElement('input');FM333.type='file';FM333.accept='image/*,.zip,application/zip,application/x-zip-compressed';FM333.multiple=true;FM333.hidden=true;document.body.appendChild(FM333);
+  FM333.addEventListener('change',()=>{const fs=[...FM333.files];FM333.value='';if(fs.length)mcUp(fs).catch(e=>{ERR('mcup',e);toast_('משהו נעצר. מה שכבר עלה נשמר')})})}FM333.click()}
+async function mcUp(fs){const w=mcWait();if(!w.ids.length)return toast_('אין כיסויים שמחכים ל-GPT');
+ // a ZIP from GPT: open it into pictures (zip259 helper, when there)
+ if(fs.some(f=>/zip/i.test(f.type)||/\.zip$/i.test(f.name||''))&&window.unzip259){const o=[];for(const f of fs){if(/zip/i.test(f.type)||/\.zip$/i.test(f.name||'')){try{o.push(...await unzip259(f))}catch(e){ERR('mcunz',e)}}else o.push(f)}fs=o}
+ toast_('בודקת את התמונות…');fs=fs.filter(f=>/^image\//.test(f.type||'')||/\.(jpe?g|png|webp)$/i.test(f.name||'')).sort((a,b)=>(a.lastModified-b.lastModified)||String(a.name).localeCompare(String(b.name),undefined,{numeric:true}));
+ const sc=await Promise.all(fs.map(sheetScore)),sh=[];fs.forEach((f,i)=>{if(sc[i]>=3)sh.push(i)});if(!sh.length)return toast_('לא מצאתי גיליון של 8 זוויות בתמונות');
+ let at=0,done=0;for(const id of w.ids){const per=txw(id).filter(x=>x.b==w.b).length;if(!per)continue;if(at>=sh.length)break;
+  // the prompt asks close-up first, then the sheet: a cover = from the close-up before its first sheet to its last sheet (sheet first: to the next cover's first sheet)
+  const g=sh.slice(at,at+per),cf=sc[0]<3,lo=cf?(g[0]>0&&sc[g[0]-1]<3?g[0]-1:g[0]):(at?sh[at-1]+1:0),hi=cf?(at+per>=sh.length?fs.length-1:g[g.length-1]):(at+per<sh.length?sh[at+per]-1:fs.length-1);at+=per;
+  const sub=fs.filter((f,i)=>i>=lo&&i<=hi&&(g.includes(i)||sc[i]<3));toast_(`מטפחת ${++done}: ${nm(id).split(' ').slice(0,4).join(' ')}`);
+  try{await upAll(id,sub)}catch(e){ERR('mcup1',e)}}
+ toast_(`✓ ${done} כיסויים עודכנו${at<sh.length?` · ${sh.length-at} תמונות נשארו בלי כיסוי`:''}`);mcPaint()}
+function mcCard(id,s){const on=s.c.includes(id),n=txs(id).length,k=s.c.indexOf(id);let u='';try{u=img(id)}catch(_){}
+ return `<div class="t245c t246c${on?' sel':''}"><button type="button" class="t245p${u?'':' none'}" data-m333c="${es(id)}" aria-pressed="${on}" aria-label="לבחור: ${es(nm(id))}">${u?`<img alt="" src="${es(u)}" loading="lazy">`:'<i aria-hidden="true">🧕</i>'}<i class="t246v" aria-hidden="true">${on?k+1:'✓'}</i></button>
+  <b class="t245n">${es(nm(id).split(' ').slice(0,6).join(' '))}</b>${n?`<small class="t245h">יש כבר ${n} קשירות</small>`:''}</div>`}
+function mcTie(c,s){const on=s.t.includes(c.p),k=c.doc?key(c.doc):'',i=s.t.indexOf(c.p);
+ return `<div class="t245c t246c${on?' sel':''}"><button type="button" class="t245p${k?'':' none'}" data-m333t="${es(c.p)}" aria-pressed="${on}" aria-label="לבחור: ${es(c.n)}">${k?`<img alt="" data-t245k="${es(k)}" src="">`:'<i aria-hidden="true">🧕</i><small>עוד אין תמונה</small>'}<i class="t246v" aria-hidden="true">${on?i+1:'✓'}</i></button><b class="t245n">${c.kind=='w'?c.no+'. ':''}${es(c.n)}</b></div>`}
+async function mcPaint(){if(!PK||!PK.open||!MCV)return;const s=mcState(),w=mcWait(),O=window.STYORD,fv=c=>!!(O&&O.isFav&&O.isFav('tie',c.p));try{await thLoad('scarves')}catch(_){}
+ const cov=mcCovers().sort((a,b)=>(s.c.includes(b)-s.c.includes(a))||(txs(a).length-txs(b).length)),all=mcAll(),ties=MCV.more?all:all.filter(c=>fv(c)||s.t.includes(c.p));
+ const head=`<div class="mkh"><h3 id="tie202t">🧕 כמה כיסויים יחד</h3><button type="button" class="mkx" aria-label="סגירה">✕</button></div>`;
+ PK.innerHTML=`<div class="mk m333">${head}
+  ${w.ids.length?`<div class="m333w"><h4 class="t228h">⏳ מחכים ל-GPT <small>${w.ids.length} כיסויים</small></h4><p class="tie202p">${w.ids.map((id,k)=>`${k+1}. ${es(nm(id).split(' ').slice(0,4).join(' '))} (${txw(id).filter(x=>x.b==w.b).length})`).join(' · ')}</p>
+   <div class="mkb t246bar"><button type="button" data-m333cp>📋 הפרומפט</button><button type="button" class="mkp" data-m333up>📤 להעלות הכול</button></div>
+   <p class="tie202p">מעלים את כל מה ש-GPT החזיר, גם בכמה פעמים: כל פעם זה ממשיך מהכיסוי הבא שעוד מחכה.</p></div>`:''}
+  <ol class="t228s"><li><b>בוחרים עד ${MC_N} כיסויים</b> ו-<b>${MC_T} קשירות</b>. כל כיסוי יקבל את ${MC_T} הקשירות.</li><li><b>⬇ ZIP</b> – הפנים שלי מקרוב, הבובה, הכיסויים, הקשירות והפרומפט בפנים.</li>
+   <li>ב-GPT, שיחה חדשה: מצרפים את ה-ZIP ומדביקים את הפרומפט. לכל קשירה חוזרות 2 תמונות: תקריב 8 זוויות וגוף מלא.</li><li><b>📤 להעלות הכול</b> – אני מסדרת כל תמונה בכיסוי ובקשירה שלה.</li></ol>
+  <div class="t246top" role="group" aria-label="מה נבחר"><span>כיסויים <b>${s.c.length}/${MC_N}</b> · קשירות <b>${s.t.length}/${MC_T}</b> · <b>${s.c.length*s.t.length}</b> קשירות ב-GPT</span>
+   <button type="button" class="mkp" data-m333zip${s.c.length&&s.t.length?'':' disabled'}>⬇ להוריד ZIP</button></div>
+  <h4 class="t228h">1. הכיסויים <small>${s.c.length} מתוך ${MC_N}</small></h4><div class="t245g m333g">${cov.map(id=>mcCard(id,s)).join('')}</div>
+  <h4 class="t228h">2. ${MC_T} הקשירות <small>${s.t.length} מתוך ${MC_T}</small></h4><p class="tie202p">${MCV.more?'כל הקשירות.':'הקשירות שסימנת ⭐.'}</p>
+  <div class="t245g m333g t">${ties.map(c=>mcTie(c,s)).join('')}</div>
+  <button type="button" class="t261m" data-m333more>${MCV.more?'⭐ רק מה שסימנתי':'☆ כל הקשירות'}</button></div>`;
+ PK.querySelectorAll('img[data-t245k]').forEach(i=>{try{R().styThumb(i.dataset.t245k).then(u=>{if(u)i.src=u})}catch(_){}})}
+function mcOpen(){pk();MCV={more:false};PID=null;mcState();if(!PK.open)PK.showModal();PK.scrollTop=0;mcPaint();
+ if(!PK._m333){PK._m333=1;PK.addEventListener('click',async e=>{if(!MCV)return;const b=e.target.closest('button');if(!b)return;const d=b.dataset,s=mcState();if(b.classList.contains('mkx'))return;
+  if(d.m333c!=null){const id=d.m333c,i=s.c.indexOf(id);if(i>=0)s.c.splice(i,1);else if(s.c.length>=MC_N)return toast_(`אפשר עד ${MC_N} כיסויים`);else s.c.push(id);mcSave();MC.last='';const y=PK.scrollTop;await mcPaint();PK.scrollTop=y;return}
+  if(d.m333t!=null){const p=d.m333t,i=s.t.indexOf(p);if(i>=0)s.t.splice(i,1);else if(s.t.length>=MC_T)return toast_(`בוחרים ${MC_T} קשירות. קודם להוריד אחת`);else s.t.push(p);mcSave();MC.last='';const y=PK.scrollTop;await mcPaint();PK.scrollTop=y;return}
+  if(d.m333more!=null){MCV.more=!MCV.more;const y=PK.scrollTop;await mcPaint();PK.scrollTop=y;return}
+  if(d.m333zip!=null)return mcZip(b);if(d.m333cp!=null)return mcCopy(b);if(d.m333up!=null)return mcPick()},true);
+  PK.addEventListener('close',()=>{MCV=null})}}
+// a cover's own window is drawn by open(): leaving it clears the multi view
+const _open333=open;open=async function(id){MCV=null;return _open333.apply(this,arguments)};
+window.MC333={open:mcOpen,wait:mcWait,prompt:mcPrompt};
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-m333go]');if(!b)return;e.preventDefault();e.stopPropagation();mcOpen()},true);
 })();

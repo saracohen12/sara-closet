@@ -94,7 +94,7 @@ function retRow(id){const x=D[id],it=IT[id]||{};
  const meta=[x.size&&('מידה '+x.size),x.color,money(+x.paid||0)+(x.qty>1?` · ${x.qty} יח׳`:'')].filter(Boolean).map(x=>'<bdi>'+H(x)+'</bdi>').join(' · ');
  return `<div class="o3it o3rr${it.rsent?' sent':''}" data-o3row="${H(id)}"><button class="o3ph" data-o3item="${H(id)}" aria-label="פתיחת המוצר">${th(id)}</button>
  <div class="o3in"><b>${H(it.tname||x.short)}</b><small>${meta}</small>${it.rwhy?`<small class="o3rn">↩ ${H(it.rwhy)}</small>`:''}${it.note?`<small class="o3rn">📝 ${H(it.note)}</small>`:''}
- <div class="o3seg rr">${b('rsent','1','📮 נשלח',it.rsent)}${b('refunded','1','💰 הכסף חזר',it.refunded)}${it.rsent?'':b('s','ret','✕ לא מחזירה',false)}</div></div></div>`}
+ <div class="o3seg rr">${(it.rnr?'<span class="o3rnr">🎁 בלי החזרה</span>':b('rsent','1','📮 נשלח',it.rsent))}${b('refunded','1','💰 הכסף חזר',it.refunded)}${it.rsent?'':b('s','ret','✕ לא מחזירה',false)}</div></div></div>`}
 const nItems=n=>n==1?'בגד אחד':n+' בגדים';
 function retList(L,sent){const G=L.map(o=>({o,ids:o.ids.filter(sent?retS:retP)})).filter(g=>g.ids.length);
  if(!G.length)return `<p class="o3empty">${sent?'עוד לא סימנת שהחזרת משהו. כששולחים חבילה – לוחצים "📮 הוחזר" ליד הבגד.':'אין בגדים שמחכים להחזרה. בתוך הזמנה לוחצים "↩ מחזירה" ליד הבגד.'}</p>`;
@@ -175,7 +175,7 @@ function itemRow(id){const x=D[id],it=IT[id]||{},s=st(id);
  <div class="o3seg got">${b('got','y','✅ הגיע',s=='y')}${b('got','n','⏳ בדרך',s=='n')}${b('got','m','❌ חסר',s=='m')}</div>
  <div class="o3seg two"><span>${b('lk','y','😍 אוהבת',it.lk=='y')}${b('lk','m','🤔 לא בטוחה',it.lk=='m')}${b('lk','n','😕 לא אוהבת',it.lk=='n')}</span><span>${b('s','kept','🏠 משאירה',it.s=='kept')}${b('mb','1','❓ מתלבטת',!!it.mb&&!it.s)}${b('s','ret','↩ מחזירה',it.s=='ret')}</span></div>
  ${it.mb&&!it.s?`<div class="o3seg why"><small>למה?</small>${b('mbr','model','מחכה לדגם אחר',it.mbr=='model')}${b('mbr','size','מחכה למידה אחרת',it.mbr=='size')}${b('mbr','other','משהו אחר',it.mbr=='other')}</div>`:''}
- ${it.s=='ret'?`<div class="o3seg why rsent"><small>החזרה</small>${b('rsent','1','📮 הוחזר (נשלח)',it.rsent)}${b('refunded','1','💰 הכסף חזר',it.refunded)}</div>`:''}
+ ${it.s=='ret'?`<div class="o3seg why rsent"><small>החזרה</small>${(it.rnr?'<span class="o3rnr">🎁 החזר בלי החזרה – לא שולחים</span>':b('rsent','1','📮 הוחזר (נשלח)',it.rsent))}${b('refunded','1','💰 הכסף חזר',it.refunded)}</div>`:''}
  <div class="o3seg why pn${needPic(id)?' on':''}"><small>📸 תמונות</small>${b('pn','y','צריך להעלות',needPic(id))}${b('pn','n','לא צריך',!needPic(id))}<em>${nUp(id)?'📷 '+nUp(id)+' הועלו':'עוד אין'}</em></div>
  ${avRow(id)}
  <div class="o3seg marks">${b('fix','1','🧵 דרוש תיקון',it.fix)}${b('nofit','1','📏 לא במידה',it.nofit)}${b('bad','1','⚠️ פגום / לא כמו בתמונה',it.bad)}${b('oos','1','🚫 בוטל – אזל מהמלאי',false)}</div>

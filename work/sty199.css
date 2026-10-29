@@ -544,3 +544,14 @@ dialog#g256::backdrop{background:rgba(30,20,15,.45)}
 .sy316f{position:sticky;bottom:0;z-index:6;display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:12px -4px 0;padding:10px 12px;border-radius:18px;background:var(--z-ink,#17161a);color:#fff;box-shadow:0 -6px 20px rgba(23,22,26,.2)}
 .sy316f b{flex:1 1 100%;font-size:.86rem}
 .sy316f button{flex:1 1 0;min-height:42px;border-radius:999px;border:0;background:#fff;color:var(--z-ink,#17161a);font:600 .82rem var(--z-body,inherit);cursor:pointer}
+/* v333 several covers at once */
+#tie202 .m333go{display:block;width:100%;margin:0 0 10px;padding:12px;border-radius:14px;border:1px dashed var(--z-acc,#b4532a);background:none;color:var(--z-acc,#b4532a);font:inherit;font-weight:600;cursor:pointer}
+#tie202:has(.m333){width:min(980px,100vw)}
+#tie202 .m333w{background:#fdf2e3;border-radius:16px;padding:4px 12px 10px;margin:6px 0 12px}
+#tie202 .m333 .t246c.sel .t246v{font-style:normal;font-weight:700}
+#tie202 .m333g{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))!important;gap:10px}
+#tie202 .m333g .t245p{aspect-ratio:1;height:auto;min-height:0}
+#tie202 .m333g .t245p img{width:100%;height:100%;object-fit:cover}
+#tie202 .m333g.t .t245p{aspect-ratio:3/4}
+#tie202 .m333g .t245n{font-size:.8rem;line-height:1.25}
+@media (max-width:620px){#tie202 .m333g{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px}}
