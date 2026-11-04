@@ -66,3 +66,19 @@ function fold(){try{if(H.dataset.d180!='z50')return;document.querySelectorAll('.
  bs[2].after(t);t.addEventListener('click',()=>{const o=!g.classList.contains('open');g.classList.toggle('open',o);t.setAttribute('aria-expanded',String(o));t.innerHTML=lab(o)})})}catch(_){}}
 setInterval(fold,900);fold();
 })();
+
+// ---------- orders window (v349): status numbers in one swipe row; the 3 photo/receipt cards behind "📷 לצלם / הזמנה חדשה"; the photo/avatar filters behind "סינון נוסף" ----------
+(function(){
+const H=document.documentElement;let camOpen=false,pfOpen=false;
+function apply(){try{const d=document.getElementById('ord123');if(!d||!d.open||H.dataset.d180!='z50')return;const b=d.querySelector('.o3b');if(!b)return;
+ const cams=[...b.querySelectorAll(':scope>.o3cam')];
+ if(cams.length&&!b.querySelector(':scope>.c349')){const t=document.createElement('button');t.type='button';t.className='c349';cams[0].before(t);
+  t.addEventListener('click',()=>{camOpen=!camOpen;apply()})}
+ const t=b.querySelector(':scope>.c349');if(t){t.setAttribute('aria-expanded',String(camOpen));t.innerHTML=`<i aria-hidden="true">📷</i><span><b>לצלם מוצר · חבילה · הזמנה חדשה</b><small>${camOpen?'לסגור':'3 דרכים להוסיף'}</small></span><em aria-hidden="true">${camOpen?'▴':'▾'}</em>`;cams.forEach(c=>c.classList.toggle('h349',!camOpen))}
+ const pfs=[...b.querySelectorAll(':scope>.o3pf')];
+ if(pfs.length&&!b.querySelector(':scope>.p349')){const f=document.createElement('button');f.type='button';f.className='p349';pfs[0].before(f);f.addEventListener('click',()=>{pfOpen=!pfOpen;apply()})}
+ const f=b.querySelector(':scope>.p349');if(f){const act=pfs.some(x=>[...x.querySelectorAll('button[aria-pressed=true]')].some(y=>!/^\s*הכל/.test(y.textContent)));const o=pfOpen||act;
+  f.setAttribute('aria-expanded',String(o));f.innerHTML=`<span>סינון נוסף: תמונות ואווטאר${act?' · פעיל':''}</span><em aria-hidden="true">${o?'▴':'▾'}</em>`;pfs.forEach(x=>x.classList.toggle('h349',!o))}
+ const s=b.querySelector(':scope>.o3sum');if(s)s.classList.add('s349')}catch(_){}}
+setInterval(apply,500);
+})();

@@ -56,3 +56,16 @@ html[data-d180=z50] #dlg .pd85h.f349:not(.open)>button.mini{display:none!importa
 html[data-d180=z50] #dlg .pd85h.f349.open>button.mini{min-height:38px!important;padding:0 12px!important;font-size:.84rem!important;border-radius:999px!important}
 html[data-d180=z50] #dlg .pd85h .m349{width:40px;height:40px;border-radius:50%;border:1px solid var(--z-line,#e6e3df);background:var(--z-solid,#fff);font-size:1.2rem;line-height:1;cursor:pointer;flex:none;order:-1}
 html[data-d180=z50] #dlg .pd85h.f349.open>.m349{background:var(--z-ink,#17161a);color:#fff}
+
+/* orders window folded (ux349.js) */
+html[data-d180=z50] #ord123 .o3cam.h349,html[data-d180=z50] #ord123 .o3pf.h349{display:none!important}
+html[data-d180=z50] #ord123 .o3sum.s349{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;gap:6px;padding-bottom:4px;scroll-snap-type:x proximity}
+html[data-d180=z50] #ord123 .o3sum.s349::-webkit-scrollbar{display:none}
+html[data-d180=z50] #ord123 .o3sum.s349>*{flex:none!important;scroll-snap-align:start;white-space:nowrap}
+html[data-d180=z50] #ord123 .c349{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;margin:10px 0;padding:10px 16px;border-radius:18px;border:0;cursor:pointer;text-align:start;font:inherit;color:#fff;
+ background:linear-gradient(135deg,#2a2438,#15131c);box-shadow:0 10px 24px -10px rgba(40,25,80,.5)}
+html[data-d180=z50] #ord123 .c349 i{font-style:normal;font-size:1.5rem}
+html[data-d180=z50] #ord123 .c349 span{flex:1;display:flex;flex-direction:column;gap:2px}
+html[data-d180=z50] #ord123 .c349 small{opacity:.75;font-size:.78rem}
+html[data-d180=z50] #ord123 .c349 em,html[data-d180=z50] #ord123 .p349 em{font-style:normal;font-size:1rem}
+html[data-d180=z50] #ord123 .p349{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;margin:6px 0;padding:0 14px;border-radius:14px;border:1px solid var(--z-line,#e6e3df);background:var(--z-solid,#fff);font:inherit;font-size:.88rem;font-weight:600;color:var(--z-ink,#17161a);cursor:pointer}

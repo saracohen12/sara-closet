@@ -11,3 +11,7 @@
  html[data-d180=z50] #h180 .z-stage .r3s{width:100%!important;height:auto!important}}
 /* v349 bug fix: in the studio grid the label "עוד לא ב-360 · לבשתי 2" ran under the ★ button – now it stops before the star and wraps */
 #r360 .r3b{max-width:calc(100% - 52px);white-space:normal;line-height:1.25;box-sizing:border-box}
+/* v349 bug fix: lines like "או: ש-Claude תרכיב לוקים" were in the browser's default serif font (summary/details inside the windows) */
+html[data-d180=z50] dialog summary,html[data-d180=z50] dialog details,html[data-d180=z50] dialog select,html[data-d180=z50] dialog input,html[data-d180=z50] dialog textarea{font-family:var(--z-body)!important}
+/* v349 bug fix: the first and last tab of "לוקים וכלים" sat under the edge fade (looked cut) – room for them inside the fade */
+#hub #htabs{padding-inline:24px!important;scroll-padding-inline:24px}
