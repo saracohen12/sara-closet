@@ -45,3 +45,6 @@ html:not([data-d180=z50]) #t282b:not(.in){bottom:calc(76px + env(safe-area-inset
 #t282b.hd i{display:none}
 #t282b.hd b{top:-3px;inset-inline-end:-3px}
 @media (max-width:420px){.h9act{gap:6px}}
+/* v344: press feedback on every button */
+.tap344{box-shadow:0 0 0 3px #2e8b57,0 0 0 6px rgba(46,139,87,.25)!important;transition:box-shadow .15s}
+@media (prefers-reduced-motion:reduce){.tap344{transition:none}}

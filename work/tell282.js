@@ -91,3 +91,5 @@ new MutationObserver(()=>place()).observe(document.body,{subtree:true,attributes
 window.openTell282=open;window.openBug77=open;
 setTimeout(load,2500);
 })();
+// v344 (Sara 04/11 "כל פעולה שאני מבצעת, אני רוצה שזה ידלק באיזשהו צבע… כי פה לא קוראים זה כלום"): every button press flashes a green ring, so she always sees that the press was taken
+(function(){document.addEventListener('pointerdown',e=>{const b=e.target.closest&&e.target.closest('button,[role=button],a.btn,label.btn');if(!b||b.disabled)return;b.classList.remove('tap344');void b.offsetWidth;b.classList.add('tap344');clearTimeout(b._t344);b._t344=setTimeout(()=>b.classList.remove('tap344'),650)},true)})();

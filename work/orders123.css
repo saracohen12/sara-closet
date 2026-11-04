@@ -303,3 +303,5 @@ button.r340[aria-pressed="true"]{background:#2e8b57!important;color:#fff!importa
 .r343 select{flex:1 1 260px;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--card,#fff);color:var(--fg);font:inherit;max-width:100%}
 .r343 small{color:var(--muted)}
 .r343n{opacity:.92}
+/* v344: pressed return steps – green with a check so it is clear they are done */
+.o3seg.rr button[aria-pressed="true"]::before,button.r340[aria-pressed="true"]::before{content:'✓ '}

@@ -83,20 +83,21 @@ const FLT=[['מה הגיע',[['','הכל'],['u','⚪ לא סימנתי'],['m','�
  ['תמונות',[['pnd','📸 עוד לא העליתי תמונות'],['pdd','✅ סיימתי להעלות תמונות']]],
  ['אווטאר',[['anl','🧍 עוד לא סיימתי אווטאר'],['and','✅ סיימתי אווטאר']]]];
 const fltName=()=>{if(V.flt=='fabq')return fabLbl(...V.tag.split(':'))||'בד ואיכות';for(const[,o]of FLT){const x=o.find(f=>f[0]==V.flt);if(x)return x[1]}return 'הכל'};
-const retP=id=>{const it=IT[id]||{};return it.s=='ret'&&!it.rsent};
-const retS=id=>{const it=IT[id]||{};return it.s=='ret'&&!!it.rsent};
+const retP=id=>{const it=IT[id]||{};return it.s=='ret'&&!it.rsent&&!it.rnr};
+const retS=id=>{const it=IT[id]||{};return (it.s=='ret'&&!!it.rsent)||!!it.rnr};   // v345: refund without return counts as done
 function fabList(L){const [k,v]=(V.tag||':').split(':');const ids=L.flatMap(o=>o.ids).filter(id=>(IT[id]||{})[k]==v);
  if(ids.length)loadThumbs(ids);
  return ids.length?`<p class="o3hint">${ids.length} בגדים</p><div class="o3items">${ids.map(itemRow).join('')}</div>`:'<p class="o3empty">עוד אין בגדים עם הסימון הזה. מסמנים בתוך כל הזמנה, ב"🏷 בד ואיכות" של הבגד.</p>'}
 // v147: in the returns lists every garment is a short packing row (photo, name, size, price) with only the return buttons
 function retRow(id){const x=D[id],it=IT[id]||{};
- const b=(k,v,t,on)=>`<button data-o3set="${k}" data-v="${v}" data-id="${H(id)}" aria-pressed="${!!on}">${t}</button>`;
+ const b=(k,v,t,on)=>`<button data-o3set="${k}" data-v="${v}" data-id="${H(id)}" aria-pressed="${!!on}"${on&&/^(rreq|rpack|rsent|refunded|rnr)$/.test(k)?G344:''}>${t}</button>`;
  const meta=[x.size&&('מידה '+x.size),x.color,money(+x.paid||0)+(x.qty>1?` · ${x.qty} יח׳`:'')].filter(Boolean).map(x=>'<bdi>'+H(x)+'</bdi>').join(' · ');
  return `<div class="o3it o3rr${it.rsent?' sent':''}" data-o3row="${H(id)}"><button class="o3ph" data-o3item="${H(id)}" aria-label="פתיחת המוצר">${th(id)}</button>
  <div class="o3in"><b>${H(it.tname||x.short)}</b><small>${meta}</small>${it.rwhy?`<small class="o3rn">↩ ${H(it.rwhy)}</small>`:''}${it.note?`<small class="o3rn">📝 ${H(it.note)}</small>`:''}
- <div class="o3seg rr">${it.rnr?'<span class="o3rnr">🎁 בלי החזרה</span>':retSteps(b,it)}${b('refunded','1','💰 הכסף חזר',it.refunded)}${it.rsent?'':b('s','ret','✕ לא מחזירה',false)}</div></div></div>`}
+ <div class="o3seg rr">${it.rnr?b('rnr','1','🎁 כסף חזר בלי להחזיר – נשאר אצלי',true):retSteps(b,it)+b('rnr','1','🎁 החזר כסף בלי להחזיר',false)+b('refunded','1','💰 הכסף חזר',it.refunded)+(it.rsent?'':b('s','ret','✕ לא מחזירה',false))}</div></div></div>`}
 // v340 (Sara 04/11 "לסמן האם שלחתי בקשה להחזר… האם כבר עשיתי את החבילה… האם כבר שלחתי את זה בדואר", "כפתור ירוק שאני מדליקה"):
 // every return has 3 steps before the money: 📝 asked the store (rreq) → 📦 packed (rpack) → 📮 mailed (rsent, as before). Each is a green switch.
+const G344=' style="background:#2e8b57!important;color:#fff!important;border-color:#2e8b57!important"';
 const retSteps=(b,it)=>b('rreq','1','📝 ביקשתי החזרה',it.rreq||it.rpack||it.rsent)+b('rpack','1','📦 ארזתי',it.rpack||it.rsent)+b('rsent','1','📮 שלחתי בדואר',it.rsent);
 const stepOf=id=>{const it=IT[id]||{};return it.rsent?3:it.rpack?2:it.rreq?1:0};  // legacy rows with only rsent count as all steps done
 const nItems=n=>n==1?'בגד אחד':n+' בגדים';
@@ -120,7 +121,7 @@ function retList(L,sent){const G0=L.map(o=>({o,ids:o.ids.filter(sent?retS:retP)}
  return F.head+`<div class="o3rtot">${sent?`📮 החזרת <b>${nItems(all.length)}</b> בשווי <b>${sum}</b> · 💰 הכסף חזר על <b>${rf}</b> מהם`:`↩ להחזיר: <b>${nItems(all.length)}</b> בשווי <b>${sum}</b> · <b>${G.length}</b> ${G.length==1?'חבילה':'חבילות'}`}</div><p class="o3hint">${sent?'מה שכבר החזרת, לפי הזמנה:':'כל חבילה = הזמנה אחת. אורזים יחד את מה שמופיע תחת אותה הזמנה:'}</p>`+G.map(({o,ids})=>{const c=osum(o);
   return `<div class="o3rg"><div class="o3rgh"><span class="sb2 ${o.src}">${ACC[o.src]}</span><b>${H(oname(o))}</b><small><bdi>${nItems(ids.length)}</bdi> · <bdi>${money(ids.reduce((t,id)=>t+(+D[id].paid||0),0))}</bdi>${sent?` · 💰 <bdi>${ids.filter(id=>(IT[id]||{}).refunded).length}/${ids.length}</bdi> החזר כספי`:''}</small>
    <span class="o3num"><small>מספר הזמנה ב${ACC[o.src]}:</small> <bdi>${H(onum(o))}</bdi> <button class="o3cp" data-o3copy="${H(onum(o))}">📋 העתק</button></span>${sent?'':retTxt(c.rdl,c.est)}
-   <div class="o3all">${sent?'':[['rreq','📝 ביקשתי לכל ההזמנה',1],['rpack','📦 ארזתי הכל',2],['rsent','📮 שלחתי את כל החבילה',3]].map(([k,t,n])=>`<button class="o3st" data-o3stepall="${k}" data-o="${H(o.k)}" aria-pressed="${ids.every(id=>stepOf(id)>=n)}">${t}</button>`).join('')}<button data-o3open="${H(o.k)}" class="ghost">לכל ההזמנה ›</button></div></div>
+   <div class="o3all">${sent?'':[['rreq','📝 ביקשתי לכל ההזמנה',1],['rpack','📦 ארזתי הכל',2],['rsent','📮 שלחתי את כל החבילה',3]].map(([k,t,n])=>`<button class="o3st" data-o3stepall="${k}" data-o="${H(o.k)}" aria-pressed="${ids.every(id=>stepOf(id)>=n)}"${ids.every(id=>stepOf(id)>=n)?G344:''}>${t}</button>`).join('')}<button data-o3open="${H(o.k)}" class="ghost">לכל ההזמנה ›</button></div></div>
    <div class="o3items">${ids.map(retRow).join('')}</div></div>`}).join('')}
 function sheetHTML(){return `<div class="o3sbd" data-o3sheet="x"></div><div class="o3sheet" role="dialog" aria-label="סינון"><div class="o3sh"><b>סינון</b><button data-o3sheet="x" aria-label="סגירה">✕</button></div>
  ${FLT.map(([n,o])=>`<h4>${n}</h4><div class="o3sg">${o.map(([k,t])=>`<button data-o3f="${k}" aria-pressed="${V.flt==k}">${t}</button>`).join('')}</div>`).join('')}
@@ -181,7 +182,7 @@ function dupBox(id){const L=dupsOf(id);
   const k=t.s=='kept'?' · 🏠 משאירה':t.s=='ret'?' · ↩ מחזירה':'';
   return `<button class="o3dupi" data-o3item="${H(o)}">${th(o,'o3dt')}<span><b>${H(t.tname||y.short)}</b><small><span class="sb2 ${H(y.src)}">${H(ACC[y.src]||y.src)}</span> ${w}</small><small>${DST[s]||''}${k}${y.order==D[id].order?' · באותה הזמנה':''}</small></span></button>`}).join('')}</div>`}
 function itemRow(id){const x=D[id],it=IT[id]||{},s=st(id);
- const b=(k,v,t,on)=>`<button data-o3set="${k}" data-v="${v}" data-id="${H(id)}" aria-pressed="${!!on}">${t}</button>`;
+ const b=(k,v,t,on)=>`<button data-o3set="${k}" data-v="${v}" data-id="${H(id)}" aria-pressed="${!!on}"${on&&/^(rreq|rpack|rsent|refunded|rnr)$/.test(k)?G344:''}>${t}</button>`;
  const meta=[catName(id),x.size&&('מידה '+x.size),x.color,money(+x.paid||0)+(x.qty>1?` · ${x.qty} יח׳`:'')].filter(Boolean).map(x=>'<bdi>'+H(x)+'</bdi>').join(' · ');
  if(it.oos)return oosRow(id,b,meta);
  return `<div class="o3it s${s||'u'}${V.hl==id?' hl':''}" data-o3row="${H(id)}">
@@ -191,7 +192,7 @@ function itemRow(id){const x=D[id],it=IT[id]||{},s=st(id);
  <div class="o3seg got">${b('got','y','✅ הגיע',s=='y')}${b('got','n','⏳ בדרך',s=='n')}${b('got','m','❌ חסר',s=='m')}</div>
  <div class="o3seg two"><span>${b('lk','y','😍 אוהבת',it.lk=='y')}${b('lk','m','🤔 לא בטוחה',it.lk=='m')}${b('lk','n','😕 לא אוהבת',it.lk=='n')}</span><span>${b('s','kept','🏠 משאירה',it.s=='kept')}${b('mb','1','❓ מתלבטת',!!it.mb&&!it.s)}${b('s','ret','↩ מחזירה',it.s=='ret')}</span></div>
  ${it.mb&&!it.s?`<div class="o3seg why"><small>למה?</small>${b('mbr','model','מחכה לדגם אחר',it.mbr=='model')}${b('mbr','size','מחכה למידה אחרת',it.mbr=='size')}${b('mbr','other','משהו אחר',it.mbr=='other')}</div>`:''}
- ${it.s=='ret'?`<div class="o3seg why rsent"><small>החזרה</small>${it.rnr?'<span class="o3rnr">🎁 החזר בלי החזרה – לא שולחים</span>':retSteps(b,it)}${b('refunded','1','💰 הכסף חזר',it.refunded)}</div>`:''}
+ ${it.s=='ret'||it.rnr?`<div class="o3seg why rsent"><small>החזרה</small>${it.rnr?b('rnr','1','🎁 כסף חזר בלי להחזיר – נשאר אצלי',true):retSteps(b,it)+b('rnr','1','🎁 החזר כסף בלי להחזיר',false)+b('refunded','1','💰 הכסף חזר',it.refunded)}</div>`:''}
  <div class="o3seg why pn${needPic(id)?' on':''}"><small>📸 תמונות</small>${b('pn','y','צריך להעלות',needPic(id))}${b('pn','n','לא צריך',!needPic(id))}<em>${nUp(id)?'📷 '+nUp(id)+' הועלו':'עוד אין'}</em></div>
  ${avRow(id)}
  <div class="o3seg marks">${b('fix','1','🧵 דרוש תיקון',it.fix)}${b('nofit','1','📏 לא במידה',it.nofit)}${b('bad','1','⚠️ פגום / לא כמו בתמונה',it.bad)}${b('oos','1','🚫 בוטל – אזל מהמלאי',false)}</div>
@@ -249,6 +250,7 @@ async function setMark(id,k,v){const it=IT[id]||{};let p;
  else if(k=='fix')p=it.fix?{fix:'',fixk:''}:{fix:true};
  else if(k=='nofit'||k=='bad'||k=='refunded')p={[k]:!it[k]};
  else if(k=='rsent')p=it.rsent?{rsent:''}:{rsent:1,rreq:1,rpack:1};
+ else if(k=='rnr')p=it.rnr?{rnr:'',refunded:'',s:'ret'}:{rnr:1,refunded:1,s:'kept',rreq:'',rpack:'',rsent:'',mb:'',mbr:''};   // v345 (Sara: "החזר כסף בלי החזר המוצר… המוצר נשאר אצלי וגם קיבלתי את הכסף")
  else if(k=='rreq')p=(it.rreq||it.rpack||it.rsent)?{rreq:'',rpack:'',rsent:''}:{rreq:1};
  else if(k=='rpack')p=(it.rpack||it.rsent)?{rpack:'',rsent:''}:{rpack:1,rreq:1};
  else if(k=='oos')p=it.oos?{oos:'',reord:''}:{oos:Date.now(),got:'',miss:''};
@@ -279,7 +281,7 @@ async function onClick(e){const t=e.target.closest('button,[data-o3cam],.o3sbd')
  if(t.dataset.o3pf!=null){V.pf=t.dataset.o3pf;try{localStorage.setItem('o3pf',V.pf)}catch(_){}render();return}
  if(t.dataset.o3f!=null){const f=t.dataset.o3f;V.flt=V.flt==f&&!V.sheet?'':f;V.sheet=false;V.tag='';render();return}
  if(t.dataset.o3stepall){const k=t.dataset.o3stepall,o=orders().find(o=>o.k==t.dataset.o);if(o){const n={rreq:1,rpack:2,rsent:3}[k],L=o.ids.filter(retP).filter(id=>!(IT[id]||{}).rnr),off=L.length&&L.every(id=>stepOf(id)>=n);
-  for(const id of L)await putItem(id,off?{[k]:'',...(n<=1?{rpack:''}:{}),...(n<=2?{rsent:''}:{})}:{[k]:1,...(n>=2?{rreq:1}:{}),...(n>=3?{rpack:1}:{})});
+  for(const id of L)putItem(id,off?{[k]:'',...(n<=1?{rpack:''}:{}),...(n<=2?{rsent:''}:{})}:{[k]:1,...(n>=2?{rreq:1}:{}),...(n>=3?{rpack:1}:{})});
   toast(off?'ביטלתי את הסימון':k=='rreq'?'סימנתי שביקשת החזרה 📝':k=='rpack'?'סימנתי שארזת 📦':'סימנתי שהחבילה נשלחה 📮')}refresh();return}
  if(t.dataset.o3sentall){const o=orders().find(o=>o.k==t.dataset.o3sentall);if(o){for(const id of o.ids.filter(retP))await putItem(id,{rsent:1});toast('סימנתי שהחבילה נשלחה 📮')}refresh();return}
  if(t.dataset.o3open){V.scroll=body().scrollTop;V.ord=t.dataset.o3open;V.hl='';render();return}
@@ -291,7 +293,7 @@ async function onClick(e){const t=e.target.closest('button,[data-o3cam],.o3sbd')
  if(t.dataset.o3fixcopy!=null){const txt=fixText(fixIds(orders()));try{await navigator.clipboard.writeText(txt);toast('הרשימה הועתקה – אפשר להדביק בווטסאפ')}catch(_){toast('לא הצלחתי להעתיק')}return}
  if(t.dataset.o3copy){const v=t.dataset.o3copy;let ok=false;try{await navigator.clipboard.writeText(v);ok=true}catch(_){try{const ta=document.createElement('textarea');ta.value=v;ta.style.cssText='position:fixed;opacity:0';(t.closest('dialog')||document.body).appendChild(ta);ta.select();ok=document.execCommand('copy');ta.remove()}catch(_){}}toast(ok?'✓ הועתק: '+v:'לא הצלחתי להעתיק – לחצי לחיצה ארוכה על המספר: '+v);if(ok){const o0=t.textContent;t.textContent='✓ הועתק';setTimeout(()=>t.textContent=o0,1600)}return}
  if(t.dataset.o3item){const id=t.dataset.o3item;const bk={ord:V.ord,hl:id};dlg().close();try{openItem(id);armBack(bk)}catch(err){LOG('open',err)}return}
- if(t.dataset.o3set){t.setAttribute('aria-pressed','true');await setMark(t.dataset.id,t.dataset.o3set,t.dataset.v);V.hl=t.dataset.id;rowRefresh(t.dataset.id);if(t.dataset.o3set=='oos'){try{apply()}catch(_){}toast((IT[t.dataset.id]||{}).oos?'🚫 בוטל – יצא מהארון, נשאר כאן למעקב אחרי הכסף':'↩ החזרתי לארון')}return}
+ if(t.dataset.o3set){t.setAttribute('aria-pressed',t.getAttribute('aria-pressed')=='true'?'false':'true');const pr344=setMark(t.dataset.id,t.dataset.o3set,t.dataset.v);V.hl=t.dataset.id;rowRefresh(t.dataset.id);if(/^r(req|pack|sent|nr)$|^refunded$/.test(t.dataset.o3set))toast(t.dataset.o3set=='rnr'&&!(IT[t.dataset.id]||{}).rnr?'✓ חזר להחזרות':t.dataset.o3set=='rnr'?'✓ הכסף חזר והמוצר נשאר בארון 🎁':'✓ נשמר');await pr344;if(t.dataset.o3set=='oos'){try{apply()}catch(_){}toast((IT[t.dataset.id]||{}).oos?'🚫 בוטל – יצא מהארון, נשאר כאן למעקב אחרי הכסף':'↩ החזרתי לארון')}return}
  if(t.dataset.o3ad){const k=t.dataset.o3ad,d=!(ORD[k]||{}).ad;t.disabled=true;try{await putOrd(k,{ad:d?1:0})}catch(e){LOG('ad',e)}refresh();toast(d?'✅ סומן: סיימת אווטאר להזמנה הזאת':'בוטל הסימון');return}
  if(t.dataset.o3pd){const k=t.dataset.o3pd,d=!(ORD[k]||{}).pd;t.disabled=true;try{await putOrd(k,{pd:d?1:0})}catch(e){LOG('pd',e)}refresh();toast(d?'✅ סומן: סיימת להעלות תמונות להזמנה הזאת':'בוטל הסימון');return}
  if(t.dataset.o3all){const o=orders().find(o=>o.k==V.ord);if(!o)return;
