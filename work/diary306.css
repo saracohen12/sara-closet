@@ -99,3 +99,5 @@ html[data-d180=z50] #h180 .z-lka.dy306 button{padding:0 6px;white-space:nowrap;o
 #dy306 .dyso309 button[data-dy306srt=wait],#dy306 .dyso309 button[data-dy306srt=skip]{font-weight:500;font-size:.84rem}
 #dy306 .dyso309 button:disabled{opacity:.5}
 .dyok309{font-size:1.1rem;font-weight:600;text-align:center;margin:30px 0}
+/* v347 bug fix: on a phone the two small buttons under the look ("↻ הצעה אחרת", "📅 מה לבשתי היום") were cut to "הצע…" / "מה ל…" – now the words wrap to 2 short lines */
+html[data-d180=z50] #h180 .z-lka .z-lkn{white-space:normal!important;text-overflow:clip!important;overflow:visible!important;line-height:1.15!important;font-size:.8rem!important;padding:4px 6px!important}

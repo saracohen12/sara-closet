@@ -3,13 +3,16 @@
 (function(){
 const H=document.documentElement;
 const DESIGNS=[
+ {k:'z21',n:'2100 ✦ (הכי חדש)',d:'זכוכית חלבית, אורורה רכה, אווטאר חי עם הילה – על בסיס הנקי',sw:['#f4f1fb','#ffffff','#c58cff','#14121a']},
  {k:'z50',n:'נקי (החדש)',d:'לבן ונקי, 4 לשוניות למטה ודף בית במסך אחד',sw:['#f6f5f3','#ffffff','#b4532a','#17161a']},
  {k:'pearl',n:'פנינה',d:'בהיר ואוורירי, כרטיסי זכוכית רכים וגוון אפרסק',sw:['#fbf7f3','#ffd9c4','#b4532c','#2a1d17']},
  {k:'night',n:'לילה',d:'במה כהה עם זרקור על האוותר ונגיעות זהב',sw:['#140f0c','#2a201b','#e9b886','#f7ede3']},
  {k:'terra',n:'טרה',d:'כמו מגזין: כותרות ענק, טרקוטה ורשימה ממוספרת',sw:['#f2e7da','#a8431f','#3a2216','#fffaf4']},
  {k:'',n:'העיצוב הקודם',d:'בלי שינוי, כמו עד היום',sw:['#faf6f1','#b08a5a','#151414','#ffffff']}];
-function get(){try{const v=localStorage.getItem('d180');return v===null?'pearl':v}catch(_){return 'pearl'}}
-function set(k){if(k)H.dataset.d180=k;else delete H.dataset.d180;try{localStorage.setItem('d180',k)}catch(_){}
+// v347: once, move her from the clean look to 2100 (the clean look stays in 🎨)
+function get(){try{let v=localStorage.getItem('d180');if(!localStorage.getItem('z21seen')){localStorage.setItem('z21seen','1');if(v===null||v=='z50'||v=='pearl'){v='z21';localStorage.setItem('d180',v)}}return v===null?'z21':v}catch(_){return 'z21'}}
+// v347 (Sara 4/11 "מראה של שנות 2100"): 'z21' = the clean layout (z50, so every z50 rule keeps working) + the 2100 skin html[data-z21]
+function set(k){if(k=='z21'){H.dataset.d180='z50';H.dataset.z21='1'}else{delete H.dataset.z21;if(k)H.dataset.d180=k;else delete H.dataset.d180}try{localStorage.setItem('d180',k)}catch(_){}
  const m=document.querySelector('meta[name=theme-color]')||Object.assign(document.createElement('meta'),{name:'theme-color'});m.content=k=='night'?'#140f0c':k=='terra'?'#f2e7da':k=='z50'?'#f6f5f3':'#fbf7f3';document.head.appendChild(m)}
 set(get());
 
@@ -28,7 +31,7 @@ function chooser(first){
   pick.querySelector('.zpx').onclick=done;pick.querySelector('.zpok').onclick=()=>{done();(window.toast||(()=>{}))('✓ העיצוב נשמר')};
   pick.addEventListener('click',e=>{if(e.target===pick)done()});document.body.appendChild(pick)}
  mark();if(!pick.open)pick.showModal()}
-function mark(){if(!pick)return;const k=H.dataset.d180||'';pick.querySelectorAll('.zpl button').forEach(b=>b.setAttribute('aria-checked',b.dataset.k==k))}
+function mark(){if(!pick)return;const k=H.dataset.z21?'z21':(H.dataset.d180||'');pick.querySelectorAll('.zpl button').forEach(b=>b.setAttribute('aria-checked',b.dataset.k==k))}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#d71t,[data-zpick]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();chooser()},true);
 
 // ---------- new home ----------
@@ -50,7 +53,7 @@ function home(){
  gather();new MutationObserver(gather).observe(top,{childList:true,subtree:true});
  const tiles=top.querySelector('.h9tiles');if(tiles)s.after(tiles);
  // v181: the avatar here wears the look of the day, or the look she pinned in the studio (Sara 25/10 20:59, 21:17); it turns slowly, ⏸/▶ stops it on her face
- if(window.R360){const T=R360.today;const st=R360.Stage(s.querySelector('.z-stage'),{speed:1700,state:T.state,today:1,fade:1});
+ if(window.R360){const T=R360.today;const st=R360.Stage(s.querySelector('.z-stage'),{speed:1700,state:T.state,today:1,fade:1,alive:1});
   const av=s.querySelector('.z-av');const ctl=document.createElement('div');ctl.className='z-avc';
   ctl.innerHTML=`<button type="button" class="z-pp" aria-label="עצירת הסיבוב">⏸</button><div class="z-hds" role="radiogroup" aria-label="על הראש בדף הראשי"></div>
    <label class="z-spd"><span aria-hidden="true">🐢</span><input type="range" min="1" max="7" step="1" aria-label="מהירות הסיבוב"><span aria-hidden="true">🐇</span></label>`;av.appendChild(ctl);
@@ -61,8 +64,9 @@ function home(){
   rg.value=sp;rg.setAttribute('aria-valuetext',spTxt(sp));st.speed(SPD[sp-1]);
   rg.addEventListener('input',()=>{const v=+rg.value;rg.setAttribute('aria-valuetext',spTxt(v));st.speed(SPD[v-1]);try{localStorage.setItem('h185spd',v)}catch(_){}if(!st.playing())spin(true)});
   rg.addEventListener('change',()=>(window.toast||(()=>{}))('🔄 מהירות: '+spTxt(+rg.value)));
-  st.onplay=on=>{pp.textContent=on?'⏸':'▶';pp.setAttribute('aria-label',on?'עצירת הסיבוב':'להפעיל סיבוב');pp.setAttribute('aria-pressed',!on)};
-  const spin=on=>{try{localStorage.setItem('h181spin',on?'1':'0')}catch(_){}if(on)st.play();else{st.stop();st.show(0)}};
+  st.onplay=on=>{pp.textContent=on?'⏸':'▶';pp.setAttribute('aria-label',on?'לעצור את הסיבוב':'סיבוב מלא');pp.setAttribute('aria-pressed',on)};
+  // v347: stopping the spin = she stands calm and alive (breathing, a glance now and then), not frozen
+  const spin=on=>{try{localStorage.setItem('h347spin',on?'1':'0')}catch(_){}if(on){st.alive(false);st.play()}else{st.stop();st.alive(true)}};
   pp.onclick=()=>spin(!st.playing());
   hds.innerHTML=T.heads().map(h=>`<button type="button" role="radio" data-zh="${h.k}" aria-label="${h.n}"><img alt="" src="${h.src}"><span>${h.n}</span></button>`).join('');
   hds.onclick=e=>{const b=e.target.closest('[data-zh]');if(b)T.setHead(b.dataset.zh)};
@@ -78,10 +82,10 @@ function home(){
   paintLk();setTimeout(paintLk,2500);T.onchange(paintLk);
   setInterval(()=>{if(document.hidden)return;try{const [r,all]=R360.readyCount(),h=`<b>${r}</b> מתוך ${all} בגדים כבר על האווטאר · <u>להוסיף עוד</u>`,z=s.querySelector('.z-rdy');if(z&&z.innerHTML!=h)z.innerHTML=h}catch(_){}},4000); // v243: live count
   st.el.addEventListener('click',()=>T.wear());
-  let on=true;try{on=localStorage.getItem('h181spin')!='0'}catch(_){}
+  let on=false;try{on=localStorage.getItem('h347spin')=='1'}catch(_){}   // v347: calm and alive by default; the full turn only when she presses ▶
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)on=false;
   try{if(JSON.parse(localStorage.getItem('a11y')||'{}').still)on=false}catch(_){}   // נגישות: בלי תנועה
-  if(on)setTimeout(()=>st.play(),1200);else st.onplay(false);
+  if(on)setTimeout(()=>st.play(),1200);else{st.onplay(false);if(!matchMedia('(prefers-reduced-motion: reduce)').matches){try{if(!JSON.parse(localStorage.getItem('a11y')||'{}').still)st.alive(true)}catch(_){st.alive(true)}}}
   s.addEventListener('click',e=>{if(e.target.closest('[data-r3today]'))T.wear();if(e.target.closest('[data-r3next]')){if(T.pinned())T.unpin();else T.next()}})}
  s.addEventListener('click',e=>{if(e.target.closest('[data-r3]'))R360&&R360.open()});
  return true}

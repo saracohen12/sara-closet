@@ -1,0 +1,7 @@
+/* v347 bug round */
+/* tap targets under 40px that the crawl found on the phone */
+@media (max-width:700px){
+ .it77p.b188{min-height:40px}
+ button[data-k300],button[data-r313]{min-height:40px!important}}
+/* desktop: the "הלוק של היום" card no longer stretches to the avatar's height with a big empty gap */
+@media (min-width:900px){html[data-d180=z50] #h180 .z-lkbox{align-self:start}html[data-d180=z50] #h180 .z-lka{margin-top:12px}}

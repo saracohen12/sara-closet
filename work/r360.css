@@ -244,3 +244,20 @@ dialog#r3cmp::backdrop,dialog#r3sh::backdrop{background:rgba(20,12,8,.55)}
 #r360 .r3ph img.r3pw{opacity:.35;filter:grayscale(.6)}
 #r360 .r3pc{position:absolute;z-index:2;top:46px;right:6px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#5a463a;font-size:1rem;line-height:1;box-shadow:0 2px 8px rgba(0,0,0,.15);cursor:pointer}
 #r360 .r3pc:focus-visible{outline:3px solid var(--z-acc,#b4532a);outline-offset:2px}
+/* v347 alive avatar: inner layer breathes; each turn slides a little in its direction while it cross-fades (no hard picture swap) */
+.r3s.alive{--r3t:700ms;--d:1}
+.r3s.alive .r3in{position:absolute;inset:0;transform-origin:50% 97%}
+.r3s.alive canvas{opacity:0;z-index:0;transform:translateX(calc(var(--d)*2.6%)) scaleX(.965);filter:blur(1.2px);transition:opacity var(--r3t) cubic-bezier(.45,.05,.25,1),transform var(--r3t) cubic-bezier(.45,.05,.25,1),filter var(--r3t) ease-out;will-change:opacity,transform}
+.r3s.alive canvas.on{opacity:1;z-index:2;transform:none;filter:none}
+/* the picture that leaves stays solid underneath while the new one fades in on top – no see-through double body */
+.r3s.alive canvas.was{opacity:1;z-index:1;transform:translateX(calc(var(--d)*-2.6%)) scaleX(.965);filter:blur(.8px);transition:transform var(--r3t) cubic-bezier(.45,.05,.25,1),filter var(--r3t) ease-out}
+@keyframes r3br{0%,100%{transform:scale(1,1) rotate(0)}30%{transform:scale(1.004,1.011) rotate(.12deg)}65%{transform:scale(1.002,1.005) rotate(-.1deg)}}
+@media (prefers-reduced-motion:no-preference){.r3s.alive.breathe .r3in{animation:r3br 5.6s ease-in-out infinite}}
+html[data-still] .r3s.alive .r3in{animation:none!important}
+/* v347 bug fix: on a phone the studio's top buttons were 30px (✕, ♡ שמירה, איפוס, הארון/הלוקים) and the search box was squeezed to "חיפו" */
+@media (max-width:560px){
+ #r360 .r3h .r3x{width:40px!important;height:40px!important;min-width:40px}
+ #r360 .r3h .r3save,#r360 .r3h .z8r,#r360 .r3h .r3pin{min-height:40px!important;min-width:40px}
+ #r360 .r3h .r3tabs button{min-height:40px!important}
+ #r360 .r3h .r3q{flex:1 1 110px!important;min-width:110px!important}
+ #r360 .r3h .z8c button{min-height:36px!important}}

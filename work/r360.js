@@ -452,19 +452,38 @@ function wearing(s){const a=wornIds(s).map(nm);if(s.head=='w')a.unshift('הפא�
 function Stage(host,opt={}){
  const state=opt.state||(()=>ST);
  const el=document.createElement('div');el.className='r3s'+(opt.fade?' slow':'');el.tabIndex=0;el.setAttribute('role','img');
- const cvs=[...Array(8)].map((_,i)=>{const c=document.createElement('canvas');c.width=360;c.height=541+PT+PB;c.className=i?'':'on';el.appendChild(c);return c});
- host.appendChild(el);let cur=0,tm=null,sx=null,si=0,moved=false;
+ // v347 (Sara 4/11 "האווטאר זז כל רגע ורואים שזה תמונות שעוברות… שיהיה הרבה יותר טבעי"): opt.alive – the pictures live in an inner layer that breathes,
+ // every turn slides + cross-fades in the direction of the turn, a drag keeps turning a little after the finger lets go, and when nothing happens she stands
+ // facing you and now and then glances to one side and back (instead of a slideshow that never stops).
+ const inn=opt.alive?el.appendChild(Object.assign(document.createElement('div'),{className:'r3in'})):el;if(opt.alive)el.classList.add('alive');
+ const cvs=[...Array(8)].map((_,i)=>{const c=document.createElement('canvas');c.width=360;c.height=541+PT+PB;c.className=i?'':'on';inn.appendChild(c);return c});
+ host.appendChild(el);let cur=0,tm=null,sx=null,si=0,moved=false,lt=0,lx=0,vel=0,glT=null,glOn=false,inT=null;
  const api={el,get view(){return cur},onview:null};
  function label(){el.setAttribute('aria-label',`האווטאר שלך מזווית ${NAMES[cur]}. ${wearing(state())?'לובשת: '+wearing(state())+'.':''} גוררים או חצים כדי לסובב.`)}
- api.show=i=>{cur=(i+8)%8;cvs.forEach((c,k)=>c.classList.toggle('on',k==cur));label();api.onview&&api.onview(cur)};
- api.draw=async()=>{const s=state();await Promise.all(cvs.map((c,v)=>paint(c,v,s,1)));label()};
+ api.show=(i,dur)=>{const n=(i+8)%8;if(n==cur&&cvs[n].classList.contains('on'))return;
+  if(opt.alive){const d=(((i-cur)%8)+8)%8<=4?1:-1;el.style.setProperty('--d',d);if(dur)el.style.setProperty('--r3t',dur+'ms');const was=cvs[cur];
+   cvs.forEach(c=>c.classList.remove('was'));was.classList.add('was');setTimeout(()=>was.classList.remove('was'),Math.max(200,dur||parseInt(getComputedStyle(el).getPropertyValue('--r3t'))||700)+60)}
+  cur=n;cvs.forEach((c,k)=>c.classList.toggle('on',k==cur));label();api.onview&&api.onview(cur)};
+ // v347: calm "alive" mode – front view, a glance to one side every 6–10 s, then back to her face
+ const glance=()=>{clearTimeout(glT);if(!glOn)return;glT=setTimeout(()=>{if(!glOn||tm||sx!=null||document.hidden||document.documentElement.dataset.still){glance();return}
+   if(cur&&cvs[0]._done){api.show(0,1500);glance();return}   // after she turned it by hand: come back to her face first
+   const s=Math.random()<.5?1:7;if(!cvs[s]._done){glance();return}api.show(s,1300);glT=setTimeout(()=>{if(glOn&&!tm&&sx==null)api.show(0,1300);glance()},2400+Math.random()*1400)},6000+Math.random()*4000)};
+ api.alive=on=>{glOn=!!on&&opt.alive&&!matchMedia('(prefers-reduced-motion: reduce)').matches;el.classList.toggle('breathe',glOn);if(glOn){api.stop();if(cur)api.show(0,900);glance()}else clearTimeout(glT)};
+ api.isAlive=()=>glOn;
+ // v347: the angle on screen is painted first, then the other 7 (an empty arch showed while all 8 were drawn at once)
+ api.draw=async()=>{const s=state(),f=cur;await paint(cvs[f],f,s,1).then(r=>{cvs[f]._done=1;if(r!==false)el.classList.add('ready')}).catch(()=>{});await Promise.all(cvs.map((c,v)=>v==f?0:paint(c,v,s,1).then(()=>{c._done=1})));label()};
  api.stop=()=>{if(tm){clearInterval(tm);tm=null;api.onplay&&api.onplay(false)}};
- api.play=(once)=>{api.stop();let n=0;tm=setInterval(()=>{api.show(cur+1);n++;if(once&&n>=8)api.stop()},opt.speed||170);api.onplay&&api.onplay(true)};
+ api.play=(once)=>{api.stop();let n=0;const sp=opt.speed||170;tm=setInterval(()=>{api.show(cur+1,opt.alive?Math.round(sp*.92):0);n++;if(once&&n>=8){api.stop();opt.alive&&glOn&&glance()}},sp);api.onplay&&api.onplay(true)};
  api.playing=()=>!!tm;
  api.speed=ms=>{opt.speed=ms;el.style.setProperty('--r3f',Math.min(450,Math.round(ms*.6))+'ms');if(tm)api.play()};   // v185: the home spin speed she chooses
- el.addEventListener('pointerdown',e=>{api.stop();sx=e.clientX;si=cur;moved=false;try{el.setPointerCapture(e.pointerId)}catch(_){}});
- el.addEventListener('pointermove',e=>{if(sx==null)return;const step=Math.max(22,el.clientWidth/9);const d=Math.round((sx-e.clientX)/step);if(d)moved=true;api.show(si+d)});
- const end=()=>{sx=null};el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
+ el.addEventListener('pointerdown',e=>{api.stop();clearInterval(inT);sx=e.clientX;si=cur;moved=false;lt=performance.now();lx=e.clientX;vel=0;try{el.setPointerCapture(e.pointerId)}catch(_){}});
+ el.addEventListener('pointermove',e=>{if(sx==null)return;const now=performance.now();if(now>lt){vel=.7*vel+.3*((lx-e.clientX)/(now-lt));lt=now;lx=e.clientX}
+  const step=Math.max(22,el.clientWidth/9);const d=Math.round((sx-e.clientX)/step);if(d)moved=true;api.show(si+d,180)});
+ const end=()=>{const was=sx!=null;sx=null;
+  // v347: a quick flick keeps her turning and slows down, like a real turntable
+  if(was&&opt.alive&&moved&&Math.abs(vel)>.35){let n=Math.min(6,Math.round(Math.abs(vel)*4)),dir=vel>0?1:-1,gap=120;
+   const go=()=>{if(n--<=0||sx!=null)return;api.show(cur+dir,gap+80);gap=Math.round(gap*1.35);inT=setTimeout(go,gap)};inT=setTimeout(go,60)}
+  if(was&&glOn)glance()};el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
  el.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault()}},true);
  el.addEventListener('keydown',e=>{if(e.key=='ArrowLeft'){api.stop();api.show(cur+1);e.preventDefault()}if(e.key=='ArrowRight'){api.stop();api.show(cur-1);e.preventDefault()}});
  api.draw();label();return api}
@@ -926,7 +945,8 @@ const HOMEL=new Set();
 // it puts the look on the home avatar and jumps there, so she sees it happen
 function pinGo(s,name){HOME.pin=clone(s);HOME.head=s.head||'c';saveHome();close();
  document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(_){}});
- if(window.zHome&&document.documentElement.dataset.d180=='z50')zHome();const hb=document.querySelector('.bnav [data-bn="home"]');if(hb)hb.click();else window.scrollTo({top:0,behavior:'smooth'});
+ // v347 bug fix: the old bar's "home" button now opens the closet picker (fix163) – so in the clean look go home directly, never through that button
+ if(window.zHome&&document.documentElement.dataset.d180=='z50'){zHome();window.scrollTo({top:0,behavior:'smooth'})}else{const hb=document.querySelector('.bnav [data-bn="home"]');if(hb&&!document.getElementById('cl163'))hb.click();else window.scrollTo({top:0,behavior:'smooth'})}
  const av=document.querySelector('#h180 .z-av');if(av){av.classList.remove('z-pin185');void av.offsetWidth;av.classList.add('z-pin185');setTimeout(()=>av.classList.remove('z-pin185'),2600)}
  toast_(name?`📌 "${name}" בדף הראשי`:'📌 הלוק הזה בדף הראשי')}
 const pinB=(k,n)=>`<button type="button" class="r3lp" data-l3pin="${esc(k)}" aria-label="לשים את ${esc(n||'הלוק')} בדף הראשי">📌 לדף הבית</button>`;

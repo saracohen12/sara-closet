@@ -555,3 +555,5 @@ dialog#g256::backdrop{background:rgba(30,20,15,.45)}
 #tie202 .m333g.t .t245p{aspect-ratio:3/4}
 #tie202 .m333g .t245n{font-size:.8rem;line-height:1.25}
 @media (max-width:620px){#tie202 .m333g{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px}}
+/* v347 bug fix: the main "פתיחה" button of the GPT box in the item window had no style at all (grey browser square) */
+.g250box .g250bb .mkp{min-height:40px;padding:0 16px;border-radius:999px;background:var(--z-pri,#2a1d17);color:var(--z-pri-ink,#fff);border:0;font-family:inherit;font-weight:600;font-size:.9rem;cursor:pointer;box-shadow:var(--z-glow,none)}

@@ -50,7 +50,19 @@ html:not([data-d180=z50]) #t282b:not(.in){bottom:calc(76px + env(safe-area-inset
 @media (prefers-reduced-motion:reduce){.tap344{transition:none}}
 /* v346 (Sara 04/11 "כל דבר, כפתור, דלוק, צבעוני… שהוא יישאר לי דלוק"): every switch that is ON stays green everywhere in the site.
    :not(#a):not(#b):not(#c) lifts the rule above the themes' id rules; buttons that hold a picture keep their picture look */
-button[aria-pressed="true"]:not(:has(img,canvas,video)):not(#t282b):not(#z0a):not(#z0b):not(#z0c),
-[role="tab"][aria-selected="true"]:not(:has(img)):not(#z0a):not(#z0b):not(#z0c){background:#2e8b57!important;background-image:none!important;color:#fff!important;border-color:#2e8b57!important}
-button[aria-pressed="true"]:not(:has(img,canvas,video)):not(#z0a):not(#z0b):not(#z0c) *{color:inherit!important}
-button[aria-pressed="true"]:has(img):not(#z0a):not(#z0b):not(#z0c){outline:3px solid #2e8b57!important;outline-offset:1px}
+button[aria-pressed="true"]:not(:empty):not([style*="background"]):not(:has(img,canvas,video,svg)):not(#t282b):not(#z0a):not(#z0b):not(#z0c),
+[role="tab"][aria-selected="true"]:not(:has(img,svg)):not(#z0a):not(#z0b):not(#z0c){background:#2e8b57!important;background-image:none!important;color:#fff!important;border-color:#2e8b57!important}
+button[aria-pressed="true"]:not(:has(img,canvas,video,svg)):not(#z0a):not(#z0b):not(#z0c) *{color:inherit!important}
+button[aria-pressed="true"]:has(img,svg):not(#z0a):not(#z0b):not(#z0c){outline:3px solid #2e8b57!important;outline-offset:1px}
+
+/* v347: a dot with no text (the angle dots under the studio avatar) stays a dot – just green */
+#r360 .r3dots button[aria-pressed="true"]{background:none!important}#r360 .r3dots button[aria-pressed="true"]::before{background:#2e8b57!important}
+/* v347: the big "כל הפריטים" tile in the closet stays a picture tile – a green frame and green name, not a green block around a dark square */
+button.z6all[aria-pressed="true"]:not(#q1):not(#q2):not(#q3):not(#q4):not(#q5){background:transparent!important;color:inherit!important;border-color:transparent!important}
+button.z6all[aria-pressed="true"]:not(#q1):not(#q2):not(#q3):not(#q4):not(#q5) .z6ci{outline:3px solid #2e8b57;outline-offset:2px}
+button.z6all[aria-pressed="true"]:not(#q1):not(#q2):not(#q3):not(#q4):not(#q5) b{color:#2e8b57!important}
+/* v347: colour swatches (studio backgrounds etc.) keep their own colour – a green frame shows the chosen one */
+button[aria-pressed="true"][style*="background"]{outline:3px solid #2e8b57!important;outline-offset:2px}
+/* v347 bug fix: inside windows the 💬 tab covered fields and tiles at the left edge (34% height) – now a slim, see-through handle low on the edge, full when touched */
+#t282b.in{bottom:calc(132px + env(safe-area-inset-bottom))!important;width:18px!important;height:40px!important;font-size:.62rem!important;opacity:.5!important;transition:opacity .2s,width .2s}
+#t282b.in:hover,#t282b.in:focus-visible{opacity:1!important;width:30px!important}

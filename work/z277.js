@@ -8,7 +8,7 @@ const on=()=>H.dataset.d180=='z50';
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 // once: the new look becomes hers; 🎨 still has פנינה / לילה / טרה / הקודם
-try{if(!localStorage.getItem('z277mig')){localStorage.setItem('z277mig','1');localStorage.setItem('d180seen','1');if(window.D180)D180.set('z50')}}catch(_){}
+try{if(!localStorage.getItem('z277mig')){localStorage.setItem('z277mig','1');localStorage.setItem('d180seen','1');if(window.D180)D180.set('z21')}}catch(_){}   // v347: first open on a new phone = 2100
 
 // ---------- one set of line icons (24×24, stroke) ----------
 const P={
@@ -36,7 +36,7 @@ const svg=(k,a='')=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 {const u=k=>`url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${P[k]}</svg>`)}")`;
  const st=document.createElement('style');st.id='z277ic';
  st.textContent=[['#ord123b','orders'],['#sc185b','smart'],['#sh187b','shop']].map(([q,k])=>`html[data-d180=z50] #h180 ${q}::before{-webkit-mask-image:${u(k)};mask-image:${u(k)}}`).join('\n')+
-  `\nhtml[data-d180=z50] #h180 .z-pp::before{-webkit-mask-image:${u('pause')};mask-image:${u('pause')}}\nhtml[data-d180=z50] #h180 .z-pp[aria-pressed=true]::before{-webkit-mask-image:${u('play')};mask-image:${u('play')}}`;
+  `\nhtml[data-d180=z50] #h180 .z-pp::before{-webkit-mask-image:${u('play')};mask-image:${u('play')}}\nhtml[data-d180=z50] #h180 .z-pp[aria-pressed=true]::before{-webkit-mask-image:${u('pause')};mask-image:${u('pause')}}`;
  document.head.appendChild(st)}
 
 // ---------- the 4 tabs ----------

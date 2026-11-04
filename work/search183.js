@@ -17,10 +17,18 @@ function status(id){const i=it(id),x=D[id]||{};
 let HAY=null,HN=0;
 function hay(){const ids=Object.keys(D);if(HAY&&HN==ids.length)return HAY;HN=ids.length;HAY={};
  ids.forEach(id=>{const x=D[id]||{},i=it(id),c=cat(id);
-  HAY[id]=' '+norm([x.short,x.full,x.color,x.col&&x.col.fc,catName(c),(x.tags||[]).join(' '),(x.season||[]).join(' '),x.size,x.srcl,x.order,id,i.note,i.notes].filter(Boolean).join(' '))+' '});
+  // v347: Shabbat / weekday are words too ("שמלה לשבת" found nothing)
+  let occ='';try{const cd=document.querySelector('.card[data-id="'+CSS.escape(id)+'"]');if(cd){if(isShab(cd))occ+=' שבת';if(isDay(cd))occ+=' חול יום חול'}}catch(_){}
+  HAY[id]=' '+norm([x.short,x.full,x.color,x.col&&x.col.fc,catName(c),(x.tags||[]).join(' '),(x.season||[]).join(' '),x.size,x.srcl,x.order,id,i.note,i.notes,occ].filter(Boolean).join(' '))+' '});
  return HAY}
 const words=q=>norm(q).split(' ').filter(Boolean);
-const hit=(h,ws)=>ws.every(w=>h.includes(w));
+// v347: Hebrew forms – "שמלה" also finds שמלת / שמלות, "לשבת" finds שבת, "חצאיות" finds חצאית (prefix letters ו ה ב ל מ ש כ, endings ה ת ות ים יות)
+const FORMS={};
+function forms(w){if(FORMS[w])return FORMS[w];const f=new Set([w]);
+ const strip=s=>{let r=s;for(const e of ['יות','ות','ים','ה','ת','י'])if(r.length-e.length>=3&&r.endsWith(e)){r=r.slice(0,-e.length);break}return r};
+ if(/[֐-׿]/.test(w)&&w.length>=3){f.add(strip(w));if(/^[והבלמשכ]/.test(w)&&w.length>=4){const s=w.slice(1);f.add(s);f.add(strip(s))}}
+ return FORMS[w]=[...f].filter(x=>x.length>=2)}
+const hit=(h,ws)=>ws.every(w=>forms(w).some(v=>h.includes(v)));
 function score(id,ws,q){const n=' '+norm(nm(id))+' ';let s=0;if(n.includes(' '+ws[0]))s+=4;if(n.includes(q))s+=3;if(hay()[id].includes(' '+norm(catName(cat(id)))+' ')&&norm(catName(cat(id))).includes(ws[0]))s+=2;if(!status(id)[0])s+=1;return s}
 // screens and tools: the admin panel's lists + a few of the new ones
 function tools(){const L=[];

@@ -1,0 +1,88 @@
+/* v347 "2100" (Sara 4/11: "אני רוצה שזה יהיה מראה של שנות 2100… הרבה יותר יפה, יותר ויזואלי, יותר קליל")
+   A skin over the clean layout: html[data-d180=z50][data-z21]. Only looks change – every button, screen and rule of z50 stays as it was.
+   Pressed / on buttons keep Sara's green (v346) – that rule wins over this file. */
+
+/* ---------- tokens ---------- */
+html[data-z21]{--z-r:24px;
+ --z-bg:#f5f3f8;--z-surface:rgba(255,255,255,.66);--z-solid:#fff;--z-bar:rgba(255,255,255,.62);--z-tile:rgba(255,255,255,.55);
+ --z-ink:#15131c;--z-muted:#625e6e;--z-line:rgba(120,110,150,.16);--z-line-strong:rgba(120,110,150,.3);
+ --z-acc:#b4532a;--z-acc-soft:rgba(255,226,212,.7);--z-pri:#15131c;--z-pri-ink:#fff;
+ --z-holo:linear-gradient(115deg,#ff9f8f 0%,#f7a8d8 28%,#b79bff 55%,#7fd3ff 82%,#9ff0d4 100%);
+ --z-glass-b:1px solid rgba(255,255,255,.78);
+ --z-shadow:0 1px 1px rgba(40,30,70,.04),0 8px 24px -6px rgba(60,40,110,.12);
+ --z-shadow-lg:0 30px 60px -18px rgba(60,40,110,.28),0 10px 24px -10px rgba(60,40,110,.14);
+ --z-glow:0 10px 26px -8px rgba(120,80,200,.45);
+ --z-f1:1.75rem}
+
+/* ---------- the room: a soft aurora that drifts very slowly behind everything ---------- */
+html[data-z21] body{background:var(--z-bg)!important}
+html[data-z21] body::before{content:"";position:fixed;inset:-20vmax;z-index:-1;pointer-events:none;
+ background:radial-gradient(38vmax 30vmax at 12% 8%,rgba(255,180,160,.7),transparent 70%),
+  radial-gradient(34vmax 30vmax at 92% 18%,rgba(185,160,255,.66),transparent 70%),
+  radial-gradient(40vmax 34vmax at 80% 92%,rgba(140,215,255,.6),transparent 70%),
+  radial-gradient(36vmax 30vmax at 8% 86%,rgba(160,235,205,.55),transparent 70%)}
+@media (prefers-reduced-motion:no-preference){html[data-z21]:not([data-still]) body::before{animation:z21aur 46s ease-in-out infinite alternate}}
+@keyframes z21aur{0%{transform:translate3d(0,0,0) rotate(0)}50%{transform:translate3d(3vmax,-2vmax,0) rotate(8deg)}100%{transform:translate3d(-2vmax,2vmax,0) rotate(-6deg)}}
+
+/* ---------- glass: header, bottom bar, home cards, dialogs ---------- */
+html[data-z21] .h9bar,html[data-z21] .z5nav,html[data-z21] #h180 .z-lkbox,html[data-z21] .h9tiles>*,html[data-z21] #h180 .z-chips>*,
+html[data-z21] #h180 .z5w,html[data-z21] .ctrl>.wrap{
+ background:var(--z-surface)!important;-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);
+ border:var(--z-glass-b)!important;box-shadow:var(--z-shadow)!important}
+html[data-z21] .z5nav{border-radius:28px;box-shadow:var(--z-shadow-lg)!important}
+html[data-z21] .z5nav button[aria-current=page]{background:#fff!important;box-shadow:0 6px 16px -6px rgba(90,60,160,.35)}
+html[data-z21] .z5nav button[aria-current=page]::after{content:"";position:absolute;bottom:5px;width:18px;height:3px;border-radius:2px;background:var(--z-holo)}
+html[data-z21] .z5nav button[aria-current=page] svg{color:var(--z-ink)}
+
+/* ---------- type ---------- */
+html[data-z21] #h180 .z-t,html[data-z21] #h180 h1,html[data-z21] .wrap>section[id]>h2{letter-spacing:-.02em}
+html[data-z21] #h180 .z-hi b,html[data-z21] #h180 .z-hi em{background:var(--z-holo);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ---------- the avatar: a halo of light behind her, a soft floor glow under her feet ---------- */
+html[data-z21] #h180 .z-stage{position:relative;isolation:isolate}
+html[data-z21] #h180 .z-stage::before{content:"";position:absolute;z-index:-1;inset:-6% -14% 0;border-radius:999px 999px 40% 40%;background:var(--z-holo);filter:blur(22px);opacity:.8}
+html[data-z21] #h180 .z-stage::after{content:"";position:absolute;z-index:-1;left:6%;right:6%;bottom:-10px;height:26px;border-radius:50%;background:radial-gradient(closest-side,rgba(60,40,110,.32),transparent);filter:blur(3px)}
+@media (prefers-reduced-motion:no-preference){html[data-z21]:not([data-still]) #h180 .z-stage::before{animation:z21halo 9s ease-in-out infinite alternate}}
+@keyframes z21halo{0%{opacity:.6;transform:scale(.98)}100%{opacity:.9;transform:scale(1.03)}}
+html[data-z21] .r3s{box-shadow:inset 0 0 0 1px rgba(255,255,255,.7),var(--z-shadow-lg)!important}
+/* a slow sheen that passes over the arch, like light on glass */
+html[data-z21] #h180 .r3s::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;
+ background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.28) 48%,transparent 60%) no-repeat;background-size:250% 100%;background-position:150% 0}
+@media (prefers-reduced-motion:no-preference){html[data-z21]:not([data-still]) #h180 .r3s::after{animation:z21sheen 11s ease-in-out infinite}}
+@keyframes z21sheen{0%,70%{background-position:150% 0}100%{background-position:-60% 0}}
+html[data-z21] #h180 .z-pp,html[data-z21] #h180 .z5sp{background:rgba(255,255,255,.72)!important;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:var(--z-glass-b)}
+
+/* ---------- buttons ---------- */
+html[data-z21] #h180 .z-lkw,html[data-z21] .z-go,html[data-z21] button.pri:not([aria-pressed=true]){background:linear-gradient(160deg,#2a2438,#15131c)!important;color:#fff!important;border:0!important;box-shadow:var(--z-glow)!important}
+html[data-z21] button,html[data-z21] .card,html[data-z21] .z-chip{transition:transform .18s cubic-bezier(.3,.7,.4,1),box-shadow .2s ease,background-color .2s ease}
+html[data-z21] button:active:not(:disabled){transform:scale(.965)}
+
+/* ---------- closet cards ---------- */
+html[data-z21] .card{border-radius:22px!important;border:var(--z-glass-b)!important;background:rgba(255,255,255,.8)!important;box-shadow:var(--z-shadow)!important;overflow:hidden}
+@media (hover:hover){html[data-z21] .card:hover{transform:translateY(-3px);box-shadow:var(--z-shadow-lg)!important}}
+html[data-z21] .card img{border-radius:18px 18px 0 0}
+
+/* ---------- windows ---------- */
+html[data-z21] dialog[open]{border-radius:28px!important;border:var(--z-glass-b)!important;box-shadow:0 40px 90px -20px rgba(40,25,80,.45)!important}
+html[data-z21] dialog::backdrop{background:rgba(30,20,60,.28)!important;-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2)}
+@media (prefers-reduced-motion:no-preference){html[data-z21]:not([data-still]) dialog[open]{animation:z21in .32s cubic-bezier(.2,.8,.2,1)}}
+@keyframes z21in{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+
+/* ---------- home cards come in one after another ---------- */
+@media (prefers-reduced-motion:no-preference){
+ html[data-z21]:not([data-still]) body[data-z50=home] #h180>*,html[data-z21]:not([data-still]) body[data-z50=home] .h9tiles>*{animation:z21up .55s cubic-bezier(.2,.8,.2,1) both}
+ html[data-z21]:not([data-still]) body[data-z50=home] #h180>:nth-child(2){animation-delay:.05s}
+ html[data-z21]:not([data-still]) body[data-z50=home] #h180>:nth-child(3){animation-delay:.1s}
+ html[data-z21]:not([data-still]) body[data-z50=home] #h180>:nth-child(4){animation-delay:.15s}
+ html[data-z21]:not([data-still]) body[data-z50=home] #h180>:nth-child(n+5){animation-delay:.2s}
+ html[data-z21]:not([data-still]) body[data-z50=home] .h9tiles>*{animation-delay:.25s}}
+@keyframes z21up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* while the avatar is being drawn: a soft light moves over the arch instead of an empty box */
+html[data-z21] .r3s.alive:not(.ready)::before{content:"";position:absolute;inset:0;z-index:4;border-radius:inherit;background:linear-gradient(110deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.55) 50%,rgba(255,255,255,0) 70%),radial-gradient(40% 18% at 50% 18%,rgba(150,130,200,.18),transparent 70%),radial-gradient(34% 48% at 50% 62%,rgba(150,130,200,.14),transparent 70%);background-size:220% 100%,100% 100%,100% 100%;animation:z21load 1.4s linear infinite}
+@keyframes z21load{from{background-position:120% 0,0 0,0 0}to{background-position:-120% 0,0 0,0 0}}
+
+/* scrollbars and focus */
+html[data-z21] :focus-visible{outline:2px solid #8a6cff!important;outline-offset:2px}
+html[data-z21]{scrollbar-color:rgba(120,100,180,.35) transparent}
+html[data-z21] #h180{overflow:visible;overflow-x:clip}

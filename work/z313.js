@@ -40,7 +40,8 @@ box.innerHTML='<button type="button" role="radio" data-z316=""><b>הכל</b><sma
 wrap.append(box);
 const bar=wrap.querySelector('.z313b');if(bar&&!bar.querySelector('.c180e')){const e=document.createElement('button');e.type='button';e.className='c180e';e.setAttribute('aria-pressed','false');e.textContent='🖼 לבחור תמונות';bar.append(e)}
 const cards=()=>[...document.querySelectorAll('.wrap>section[id] .card')];
-function paint(){try{const L=cards().filter(c=>MG.has(sg(c))&&base(c));
+// v347 bug fix: on a category page the הכל/חול/שבת numbers count that category only (they showed the whole closet: 430/348/195 on every page)
+function paint(){try{const pg=B.dataset.z328=='page';const L=cards().filter(c=>MG.has(sg(c))&&base(c)&&(!pg||((c.closest('section')||{}).offsetParent!=null)));
   box.querySelectorAll('[data-z316]').forEach(b=>{const m=b.dataset.z316;b.setAttribute('aria-checked',m==M);b.querySelector('small').textContent=(m=='day'?L.filter(isDay):m=='shab'?L.filter(isShab):L).length});
   document.querySelectorAll('.wrap>section[id]').forEach(s=>{const v=M&&MG.has(s.dataset.g)?M:'';if((s.dataset.m316||'')!=v)s.dataset.m316=v});
   // the count under each category picture = what she will see in it now
