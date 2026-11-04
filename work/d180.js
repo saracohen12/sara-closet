@@ -54,7 +54,7 @@ function home(){
  gather();new MutationObserver(gather).observe(top,{childList:true,subtree:true});
  const tiles=top.querySelector('.h9tiles');if(tiles)s.after(tiles);
  // v181: the avatar here wears the look of the day, or the look she pinned in the studio (Sara 25/10 20:59, 21:17); it turns slowly, ⏸/▶ stops it on her face
- if(window.R360){const T=R360.today;const st=R360.Stage(s.querySelector('.z-stage'),{speed:1700,state:T.state,today:1,fade:1});
+ if(window.R360){const T=R360.today;const st=R360.Stage(s.querySelector('.z-stage'),{speed:1700,state:T.state,today:1,fade:1});window.H180ST=st;   // v351: vid351.js (video / smooth body sway) works on this stage
   const av=s.querySelector('.z-av');const ctl=document.createElement('div');ctl.className='z-avc';
   ctl.innerHTML=`<button type="button" class="z-pp" aria-label="עצירת הסיבוב">⏸</button><div class="z-hds" role="radiogroup" aria-label="על הראש בדף הראשי"></div>
    <label class="z-spd"><span aria-hidden="true">🐢</span><input type="range" min="1" max="7" step="1" aria-label="מהירות הסיבוב"><span aria-hidden="true">🐇</span></label>`;av.appendChild(ctl);
@@ -67,7 +67,7 @@ function home(){
   rg.addEventListener('change',()=>(window.toast||(()=>{}))('🔄 מהירות: '+spTxt(+rg.value)));
   st.onplay=on=>{pp.textContent=on?'⏸':'▶';pp.setAttribute('aria-label',on?'עצירת הסיבוב':'להפעיל סיבוב');pp.setAttribute('aria-pressed',!on)};
   // v349 (Sara: "באתר השני הבובה הייתה מסתובבת בצורה טבעית"): back to the v338 spin exactly – the v347 "calm" mode is gone
-  const spin=on=>{try{localStorage.setItem('h181spin',on?'1':'0')}catch(_){}if(on)st.play();else{st.stop();st.show(0)}};
+  const spin=on=>{try{localStorage.setItem('h351spin',on?'1':'0')}catch(_){}if(on)st.play();else{st.stop();st.show(0)}};
   pp.onclick=()=>spin(!st.playing());
   hds.innerHTML=T.heads().map(h=>`<button type="button" role="radio" data-zh="${h.k}" aria-label="${h.n}"><img alt="" src="${h.src}"><span>${h.n}</span></button>`).join('');
   hds.onclick=e=>{const b=e.target.closest('[data-zh]');if(b)T.setHead(b.dataset.zh)};
@@ -83,7 +83,8 @@ function home(){
   paintLk();setTimeout(paintLk,2500);T.onchange(paintLk);
   setInterval(()=>{if(document.hidden)return;try{const [r,all]=R360.readyCount(),h=`<b>${r}</b> מתוך ${all} בגדים כבר על האווטאר · <u>להוסיף עוד</u>`,z=s.querySelector('.z-rdy');if(z&&z.innerHTML!=h)z.innerHTML=h}catch(_){}},4000); // v243: live count
   st.el.addEventListener('click',()=>T.wear());
-  let on=true;try{on=localStorage.getItem('h181spin')!='0'}catch(_){}
+  // v351 (Sara: "רואים תמונה תמונה… רק הגוף שלי יזוז בצורה יפה"): no automatic turning through the 8 pictures – she stands and moves smoothly (vid351.js); ▶ turns her
+  let on=false;try{on=localStorage.getItem('h351spin')=='1'}catch(_){}
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)on=false;
   try{if(JSON.parse(localStorage.getItem('a11y')||'{}').still)on=false}catch(_){}   // נגישות: בלי תנועה
   if(on)setTimeout(()=>st.play(),1200);else st.onplay(false);
