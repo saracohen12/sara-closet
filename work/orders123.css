@@ -295,3 +295,7 @@
 .r340h .bt,.rt177r .bt{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 button.r340{padding:7px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card,#fff);color:var(--fg);font:inherit;font-size:.86rem;min-height:40px;cursor:pointer}
 button.r340[aria-pressed="true"]{background:#2e8b57!important;color:#fff!important;border-color:#2e8b57!important}
+/* v342: pick any order and mark what to return */
+.r342{margin:8px 0 4px}
+.r342 label{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-weight:700}
+.r342 select{flex:1 1 260px;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--card,#fff);color:var(--fg);font:inherit;font-weight:400;max-width:100%}
