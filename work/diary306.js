@@ -123,7 +123,7 @@ async function sortSet(id,v){const prev={srt:it(id).srt||'',fav:!!it(id).fav,s:i
  await putItem(id,pt);if(v=='daughter')try{window.sync161&&sync161(true)}catch(_){}
  UNDO.push([id,prev]);if(UNDO.length>20)UNDO.shift()}
 const liveId=id=>{const i=it(id);return D[id]&&!i.gen&&!i.oos&&i.s!='ret'&&!(D[id]||{}).part};
-const OCATS=[['','הכל'],['dresses','שמלות'],['skirts','חצאיות'],['tops','חולצות'],['sweaters','סוודרים'],['outer','ז׳קטים'],['scarves','כיסויים'],['shoes','נעליים'],['jewelry','תכשיטים'],['belts','חגורות'],['bags','תיקים'],['girls','לבת'],['boys','לבן']];
+const OCATS=[['','הכל'],['dresses','שמלות'],['skirts','חצאיות'],['sets','סטים'],['pants','מכנסיים'],['tops','חולצות'],['base','חולצות בסיס'],['sweaters','סוודרים'],['outer','ז׳קטים ומעילים'],['scarves','כיסויים'],['belts','חגורות'],['jewelry','תכשיטים'],['shoes','נעליים'],['bags','תיקים'],['hosiery','גרביונים'],['night','הלבשה תחתונה'],['hair','אביזרי שיער'],['makeup','איפור'],['wedding','אירועים'],['girls','לבת'],['boys','לבן']];
 function outPickHtml(){const q=S.q.trim().toLowerCase();let L=Object.keys(D).filter(liveId);const has=new Set(L.map(cat));if(S.c)L=L.filter(id=>cat(id)==S.c);
  if(q)L=L.filter(id=>{const x=D[id]||{};return [nm(id),x.full,x.color,catName(cat(id))].join(' ').toLowerCase().includes(q)});
  L.sort((a,b)=>wearN(b)-wearN(a));

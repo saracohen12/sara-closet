@@ -20,8 +20,9 @@ const nm=id=>{const x=D[id]||{};return String(it(id).tname||x.short||x.full||'')
 const ph=id=>{try{return img(id)||TH[id]||TPH}catch(_){return ''}};
 const live=id=>{const i=it(id);return D[id]&&!i.gen&&!i.oos&&i.s!='ret'&&i.s!='give'};
 // what she can wear (and what Claude may match): her own clothes and accessories
-const WEAR=['dresses','skirts','sets','tops','base','sweaters','outer','scarves','belts','jewelry','shoes','bags','hosiery','hair'];
-const CATS=[['','הכל'],['dresses','שמלות'],['skirts','חצאיות'],['tops','חולצות'],['sweaters','סוודרים'],['outer','ז׳קטים'],['scarves','כיסויים'],['shoes','נעליים'],['jewelry','תכשיטים'],['belts','חגורות'],['bags','תיקים'],['base','בסיס'],['sets','סטים']];
+// v347 (Sara 4/11: "קטגוריות כמו חולצות בסיס, ג'קטים, חגורות, תכשיטים, אין לי אותם פה. תשימו שיהיה לי את כל הקטגוריות"): every category of her own closet is a chip, chips wrap (no hidden scroll)
+const WEAR=['dresses','skirts','sets','pants','tops','base','sweaters','outer','scarves','belts','jewelry','shoes','bags','hosiery','night','hair','makeup','wedding'];
+const CATS=[['','הכל'],['dresses','שמלות'],['skirts','חצאיות'],['sets','סטים'],['pants','מכנסיים'],['tops','חולצות'],['base','חולצות בסיס'],['sweaters','סוודרים'],['outer','ז׳קטים ומעילים'],['scarves','כיסויים'],['belts','חגורות'],['jewelry','תכשיטים'],['shoes','נעליים'],['bags','תיקים'],['hosiery','גרביונים'],['night','הלבשה תחתונה'],['hair','אביזרי שיער'],['makeup','איפור'],['wedding','אירועים']];
 let CN=null;const catName=c=>{if(!CN){CN={};$a('section[id] > h2').forEach(h=>{const t=h.firstChild&&h.firstChild.textContent.trim();if(t)CN[h.parentElement.id]=t})}return CN[c]||c};
 const pool=()=>Object.keys(D).filter(id=>live(id)&&WEAR.includes(cat(id)));
 const thl=ids=>new Set(ids.map(cat)).forEach(c=>{try{thLoad(c).then(()=>thApply(TH)).catch(()=>{})}catch(_){}});
@@ -93,7 +94,7 @@ function pickList(){const q=V.q.trim().toLowerCase();let L=pool();if(V.c)L=L.fil
  return L.sort((a,b)=>(V.sel.has(b)-V.sel.has(a))||((it(b).wear||0)-(it(a).wear||0))||((it(b).fav?1:0)-(it(a).fav?1:0)))}
 function pickView(){const L=pickList();
  return `<div class="ps234"><input type="search" id="q234" placeholder="🔍 לחפש: חצאית ג׳ינס, חולצה לבנה…" value="${es(V.q)}" autocomplete="off"></div>
- <div class="cs234" role="group" aria-label="סוג">${(()=>{const has=new Set(pool().map(cat));return CATS.filter(([c])=>!c||has.has(c)||V.c==c)})().map(([c,t])=>`<button type="button" data-wr234c="${c}" aria-pressed="${V.c==c}">${t}</button>`).join('')}</div>
+ <div class="cs234" role="group" aria-label="סוג">${(()=>{const has=new Set(pool().map(cat));return CATS.filter(([c])=>!c||has.has(c)||V.c==c||['base','outer','belts','jewelry'].includes(c))})().map(([c,t])=>`<button type="button" data-wr234c="${c}" aria-pressed="${V.c==c}">${t}</button>`).join('')}</div>
  <div class="g234 pk234">${L.slice(0,V.n).map(id=>tile(id,{on:V.sel.has(id),attr:`data-wr234tg="${es(id)}"`})).join('')||'<p class="i234">לא מצאתי. נסי מילה אחרת.</p>'}</div>
  ${L.length>V.n?`<button type="button" class="more234" data-wr234more>עוד (${L.length-V.n})</button>`:''}
  <div class="ft234"><button type="button" class="pri" data-wr234save>${saveLbl()}</button></div>`}
