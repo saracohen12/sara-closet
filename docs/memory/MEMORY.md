@@ -94,3 +94,4 @@
 - [wardrobe-v332-wear-today-covers](wardrobe-v332-wear-today-covers.md) — v332–v333 (29/10) "☀ מה ללבוש היום" weather page (wx332), "🧕 כמה כיסויים יחד" 8 covers × 4 ties batch (tie202 MC333), Temu refund-without-return field
 - [wardrobe-verify-uploads-rule](wardrobe-verify-uploads-rule.md) — Sara's rule (27/10 23:32): every GPT file she uploads must be checked against the product photo before it goes on the avatar
 - 4/11: קריאה מלאה של שני פרויקטי הארון (2,004 הודעות) – מה בתוקף ומה הוחלף, ומה פתוח: wardrobe-history-decisions-0411.md
+- 4/11 ערב: claude_code_cloud-000/001 נבדקו – אין החלטות חדשות; 7 קבצי זיכרון אוחדו משני הפרויקטים. v338 בתיקיות החזרות; חבילת מעבר עברית ב-backup/2026-11-04b (commit 30fadab). 888/98 בממשק הניהול = כמו באתר הישן (הקטלוג בקוד 890/100).

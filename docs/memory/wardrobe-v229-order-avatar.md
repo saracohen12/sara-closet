@@ -22,3 +22,7 @@ Sara 27/10 00:13 asked for an avatar mark per order, like the photos mark, plus 
 **Publishing:** the artifact service's version number ran 1 ahead of the badge (badge 229 = service version 230).
 
 Related: [[wardrobe-v174-cancelled]], [[wardrobe-v190-cut8]], [[wardrobe-who-publishes]].
+
+**v338 (04/11):** the returns lists (rp/rs) are folders. First `.o3rf` account chips (V.racc, only accounts that have returns, t1/t2/t3/sh/ae), then order chips (V.rord), then only that order's items. The main account tabs and the photo/avatar rows are hidden there.
+- The tasks.md mount was stale again: 453 rows against 638 in the repo. Always compare before building.
+- A publish was refused even though the build matched live: all 850 D differences were `retd` (days left, from the build date). Read the saved file, then republish.

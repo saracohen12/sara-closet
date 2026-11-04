@@ -1,6 +1,6 @@
 ---
 name: wardrobe-artifact
-description: Sara's wardrobe (הארון של שרה) is an existing Artifact catalog app, not in any GitHub repo
+description: Sara's wardrobe (הארון של שרה) is an existing Artifact catalog app; source and files are in GitHub saracohen12/sara-closet since 25/10
 metadata:
   type: reference
   modified: 2026-10-20T21:29:58.151Z
@@ -16,3 +16,5 @@ Rounds 2-3 (same day, Versions 25-26): studio hints + auto-close drawer on phone
 2026-10-21 Versions 29-32: v29 quick actions (long-press card) + recent searches; v30 badge layout (dup badge top, חול/שבת never overlapped, verified s/m/l on 360px); v31 item dialog fit on phone, per-item "הגיע? ✓/⏳" (IT[id].got) and exact Temu search name (IT[id].tname, pasted from the Temu app since receipts truncate ~45 chars; card keeps short name); v32 colour engine looks2.js: per-item measured colours (colors.py→colors.json→D[id].col), stars + explanation per look, 👍/👎 feedback with reasons/free text → SET.learn rules shown in "🧠 מה למדתי", studio "השלימי לי" and drawer "הכי מתאים" use the same scoring. Avatar realism still depends on GPT per-garment 5-pose renders uploaded per item ("📋 העתיקי פרומפט" / "📥 העלי מ-GPT"); automatic overlay is an approximation and Sara was told so.
 2026-10-21 v33 version badge in header (version.txt); v34 studio drawer no longer depends on lazily loaded thumbnails (Sara's "can't pick a second item" bug); v35 studio round from Sara's feedback: ＋－↺ zoom pill (minus was hidden under the drawer), garment size up to 400%, dress+top allowed together (top under dress), per-layer picture strip "📷 תמונה על הדמות" (item pics גב/צד/פרט/GPT), 360° turntable through the 5 poses (▶ auto + drag; side/half approximate when no GPT render; she was told true 3D needs a body scan), bottom buttons wrap without scrolling, 🧹 הסירי הכל, Temu+Shein search buttons in the item dialog. New source file studio3.js.
 2026-10-21 v43–v48 (same day, Sara's rapid feedback): v43 garment-only 5-pose renders (p5g.js) + info table behind 'ℹ️ פרטים נוספים' + zoom ✕ fix; v44 bottom of item dialog tidied (cards, one 'use' row, wrapping chips) + skirt length stretch; v45 5-pose box wraps; v46 chip rows one line with auto font shrink (fitRows); v47 one-line texts; v48 avatar-readiness dot on cards (🟢/🟠/🔴, IT[id].av manual, filter + counts). Details in src_changes/README.md and [[wardrobe-ties]].
+
+## Also in the "החדש" project copy (merged 4/11 from claude_code_cloud export)

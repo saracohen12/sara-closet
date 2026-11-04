@@ -26,4 +26,4 @@ description: Sara's closet moved to her new Claude account on 4/11/2026 – new 
 - Avatar is made only with GPT images (Sora closed).
 - 27/10: separate "3D doll studio" artifact (YNQS2bmZMhawyGBp9iePaZ, three.js) – she then moved that one toward a town-walk game; it is not part of the closet.
 - 4/11 11:26 asked if Temu makes problems with returns (general question).
-- The main closet threads were Claude Code sessions – their transcripts are in claude_code_cloud-000/001.zip of the export, NOT yet uploaded.
+- The main closet threads were Claude Code sessions – claude_code_cloud-000/001.zip uploaded 4/11 evening (same bytes as the Drive copies). Checked: messages.json = the 2,004 messages already read; 144 session transcripts hold no extra words from Sara about the closet (only file-transfer talk 4/11 16:31–16:47); memory files of both closet projects merged into docs/memory (7 files had differences).

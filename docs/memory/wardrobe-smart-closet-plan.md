@@ -1,6 +1,6 @@
 ---
 name: wardrobe-smart-closet-plan
-description: 24/10 plan (not yet built) for 3 big closet features: storage/laundry location, sorting old clothes, shopping advisor + archive; plan page link
+description: 24/10 plan for 3 big closet features (A built v186, C built v187, B waiting): storage/laundry location, sorting old clothes, shopping advisor + archive; plan page link
 metadata:
   type: project
   modified: 2026-10-24T17:28:45.031Z
@@ -13,3 +13,6 @@ Plan page: https://claude.ai/artifact/BaWyW7D1pks6ks8rezvnaD (source /mnt/projec
 Recommended order: A (1) → B (2) → C1 archive → C2 scan+doll → C3 verdict. Awaiting her approval. Builds on existing IT.wear/IT.wl, SET.shop83, orders123, looks2 scoring, sample capability.
 Related: [[wardrobe-v123-orders]], [[sara-task-table-rule]].
 24/10 17:39: Sara shelved the "real app for sale" idea (estimate given: ₪80–200K freelancers, ₪250–500K studio; PWA for 10–20 friends offered). Finish her own closet first; revisit only if she asks.
+
+## Also in the "החדש" project copy (merged 4/11 from claude_code_cloud export)
+25/10: stage A built in v186 ([[wardrobe-v185-wig-pin]]), stage C (shopping advisor) built in v187 ([[wardrobe-v187-shop-advisor]]); stage B waits for Sara's choice of how to photograph old clothes.
