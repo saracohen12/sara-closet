@@ -48,3 +48,9 @@ html:not([data-d180=z50]) #t282b:not(.in){bottom:calc(76px + env(safe-area-inset
 /* v344: press feedback on every button */
 .tap344{box-shadow:0 0 0 3px #2e8b57,0 0 0 6px rgba(46,139,87,.25)!important;transition:box-shadow .15s}
 @media (prefers-reduced-motion:reduce){.tap344{transition:none}}
+/* v346 (Sara 04/11 "כל דבר, כפתור, דלוק, צבעוני… שהוא יישאר לי דלוק"): every switch that is ON stays green everywhere in the site.
+   :not(#a):not(#b):not(#c) lifts the rule above the themes' id rules; buttons that hold a picture keep their picture look */
+button[aria-pressed="true"]:not(:has(img,canvas,video)):not(#t282b):not(#z0a):not(#z0b):not(#z0c),
+[role="tab"][aria-selected="true"]:not(:has(img)):not(#z0a):not(#z0b):not(#z0c){background:#2e8b57!important;background-image:none!important;color:#fff!important;border-color:#2e8b57!important}
+button[aria-pressed="true"]:not(:has(img,canvas,video)):not(#z0a):not(#z0b):not(#z0c) *{color:inherit!important}
+button[aria-pressed="true"]:has(img):not(#z0a):not(#z0b):not(#z0c){outline:3px solid #2e8b57!important;outline-offset:1px}
