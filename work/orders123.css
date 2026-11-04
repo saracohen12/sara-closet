@@ -299,3 +299,7 @@ button.r340[aria-pressed="true"]{background:#2e8b57!important;color:#fff!importa
 .r342{margin:8px 0 4px}
 .r342 label{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-weight:700}
 .r342 select{flex:1 1 260px;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--card,#fff);color:var(--fg);font:inherit;font-weight:400;max-width:100%}
+/* v343: order picker = all orders */
+.r343 select{flex:1 1 260px;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--card,#fff);color:var(--fg);font:inherit;max-width:100%}
+.r343 small{color:var(--muted)}
+.r343n{opacity:.92}

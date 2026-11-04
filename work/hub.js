@@ -116,28 +116,30 @@ function retRow177(id){const x=D[id],it=IT[id]||{},sh=x.src=='sh'||x.src=='ae';
 // v340 (Sara 04/11 – the returns in "לוקים וכלים → החזרות וקרדיטים" too): folders by account → order (with date), and the green steps 📝 ביקשתי · 📦 ארזתי · 📮 שלחתי בדואר · 💰 הכסף חזר
 const R340={acc:'',ord:'',pick:''},ACC340=[['t1','טמו 1'],['t2','טמו 2'],['t3','טמו 3'],['sh','שיין'],['ae','עלי אקספרס']];
 const step340=id=>{const it=IT[id]||{};return it.rsent?3:it.rpack?2:it.rreq?1:0};
-// v342 (Sara 04/11 "אני לא רואה את ההזמנה שבוצעה היום"): the list holds only what is marked ↩; here she picks ANY order (newest first) and marks inside it what to return
+// v343 (Sara 04/11 "אתה מראה לי רק 3 הזמנות בשין, עשיתי אולי איזה 20"): the order picker lists ALL orders of the account (newest first) with how many are marked to return;
+// "כל ההזמנות" = only what is marked to return, grouped by order; one order = all its items: marked ones with the green steps, the rest with "↩ להחזיר"
 const dkey=d=>{const [dd,mm]=String(d||'0/0').split('/');return ((+mm||0)<6?(+mm||0)+12:(+mm||0))*40+(+dd||0)};
-function pick342(){const O={};Object.keys(D).forEach(id=>{const x=D[id];if(R340.acc&&x.src!=R340.acc)return;const k=x.order||'?';(O[k]=O[k]||[]).push(id)});
- const ks=Object.keys(O).sort((a,b)=>dkey(D[O[b][0]].date)-dkey(D[O[a][0]].date));
- const nm=k=>{const x=D[O[k][0]];return (ACC340.find(a=>a[0]==x.src)||['',''])[1]+' · '+(x.date||'')+(x.file&&!(x.src=='sh'||x.src=='ae')?' · '+x.file.replace('קובץ','קבלה'):'')+' · '+O[k].length+' מוצרים'};
- let h=`<div class="r342"><label>➕ לבחור מהזמנה מה להחזיר <select id="r342s"><option value="">בחרי הזמנה (החדשות למעלה)…</option>${ks.map(k=>`<option value="${esc(k)}"${R340.pick==k?' selected':''}>${esc(nm(k))}</option>`).join('')}</select></label>`;
- if(R340.pick&&O[R340.pick]){const ids=O[R340.pick];h+=`<div class="r340g"><div class="r340h"><b>${esc(nm(R340.pick))}</b><small>לוחצים "↩ להחזיר" על מה שרוצים להחזיר – הוא נכנס לרשימת ההחזרות למטה</small><button class="r340" data-r342x="1">✕ לסגור את ההזמנה</button></div><div class="rt177">${ids.map(id=>{const x=D[id],it=IT[id]||{},on=it.s=='ret';return `<div class="rt177r"><button class="ph" data-open="${id}" aria-label="פתיחת המוצר">${img(id)||x.hi?`<img data-th="${id}" src="${img(id)||TPH}" alt="">`:'<span>📦</span>'}</button><div class="in"><b>${esc(it.tname||x.short)}</b><small>${x.size?'מידה '+esc(x.size)+' · ':''}${x.color?esc(x.color)+' · ':''}${m(x.paid)}</small><div class="bt"><button class="r340" data-r342ret="${id}" aria-pressed="${on}">${on?'↩ מחזירה ✓':'↩ להחזיר'}</button></div></div></div>`}).join('')}</div></div>`}
- return h+'</div>'}
-function ret340(ret){const n=k=>ret.filter(id=>!k||D[id].src==k).length;if(R340.acc&&!n(R340.acc))R340.acc='';
- const L1=ret.filter(id=>!R340.acc||D[id].src==R340.acc),O={};L1.forEach(id=>{const k=D[id].order||'?';(O[k]=O[k]||[]).push(id)});
- const ks=Object.keys(O).sort((a,b)=>{const d=x=>{const [dd,mm]=String(D[O[x][0]].date||'0/0').split('/');return (+mm||0)*40+(+dd||0)};return d(b)-d(a)});if(R340.ord&&!O[R340.ord])R340.ord='';
+const isRet=id=>(IT[id]||{}).s=='ret';
+function ret340(ret){const all=Object.keys(D);
+ const OA={};all.forEach(id=>{const x=D[id],k=x.order||'?';(OA[x.src]=OA[x.src]||new Set()).add(k)});
+ const nR=k=>ret.filter(id=>!k||D[id].src==k).length,nO=k=>k?(OA[k]||new Set()).size:Object.values(OA).reduce((t,s)=>t+s.size,0);
+ const acc=`<div class="r340f"><span>📁 חשבון</span>${[['','הכל'],...ACC340].filter(([k])=>!k||nO(k)).map(([k,t])=>`<button data-r340acc="${k}" aria-pressed="${R340.acc==k}">${t} <small>${nO(k)} הזמנות · ${nR(k)} להחזיר</small></button>`).join('')}</div>`;
+ const O={};all.forEach(id=>{const x=D[id];if(R340.acc&&x.src!=R340.acc)return;const k=x.order||'?';(O[k]=O[k]||[]).push(id)});
+ const ks=Object.keys(O).sort((a,b)=>dkey(D[O[b][0]].date)-dkey(D[O[a][0]].date));if(R340.ord&&!O[R340.ord])R340.ord='';
+ const nm=k=>{const x=D[O[k][0]],r=O[k].filter(isRet).length;return (R340.acc?'':(ACC340.find(a=>a[0]==x.src)||['',''])[1]+' · ')+(x.date||'')+(x.file&&!(x.src=='sh'||x.src=='ae')&&!/\d+\/\d+/.test(x.file)?' · '+x.file.replace('קובץ','קבלה'):'')+' · '+O[k].length+' מוצרים'+(r?' · ↩ '+r+' להחזיר':'')};
+ const ord=`<div class="r340f r343"><span>📦 הזמנה</span><select id="r343s"><option value="">כל ההזמנות – רק מה שסימנתי להחזיר (${nR(R340.acc)})</option>${ks.map(k=>`<option value="${esc(k)}"${R340.ord==k?' selected':''}>${esc(nm(k))}</option>`).join('')}</select><small>${ks.length} הזמנות${R340.acc?' ב'+esc((ACC340.find(a=>a[0]==R340.acc)||['',''])[1]):''}</small></div>`;
  const st=ids=>{const mn=Math.min(...ids.map(step340));return mn>=3?'📮':mn>=2?'📦':mn>=1?'📝':'⚪'};
- const acc=`<div class="r340f"><span>📁 חשבון</span>${[['','הכל'],...ACC340].filter(([k])=>!k||n(k)).map(([k,t])=>`<button data-r340acc="${k}" aria-pressed="${R340.acc==k}">${t} <small>${n(k)}</small></button>`).join('')}</div>`;
- const ord=`<div class="r340f"><span>📦 הזמנה</span><button data-r340ord="" aria-pressed="${!R340.ord}">כל ההזמנות <small>${ks.length}</small></button>${ks.map(k=>{const x=D[O[k][0]];return `<button data-r340ord="${esc(k)}" aria-pressed="${R340.ord==k}">${R340.acc?'':esc((ACC340.find(a=>a[0]==x.src)||['',''])[1])+' · '}${esc(x.date||'')}${x.file&&!(x.src=='sh'||x.src=='ae')?' · '+esc(x.file.replace('קובץ','קבלה')):''}<small>· ${O[k].length==1?'בגד אחד':O[k].length+' בגדים'} ${st(O[k])}</small></button>`}).join('')}</div>`;
- const show=ks.filter(k=>!R340.ord||k==R340.ord);
- return acc+ord+show.map(k=>{const ids=O[k],x=D[ids[0]],sh=x.src=='sh'||x.src=='ae',num=sh?k:String(k).replace(/^P0-/,'PO-'),L=ids.filter(id=>!(IT[id]||{}).rnr);
-  const all=[['rreq','📝 ביקשתי לכל ההזמנה',1],['rpack','📦 ארזתי הכל',2],['rsent','📮 שלחתי את כל החבילה',3]].map(([s2,t,v])=>`<button class="r340" data-rall="${s2}" data-o="${esc(k)}" aria-pressed="${L.length>0&&L.every(id=>step340(id)>=v)}">${t}</button>`).join('');
-  return `<div class="r340g"><div class="r340h"><b>${esc((ACC340.find(a=>a[0]==x.src)||['',''])[1])} · ${esc(x.date||'')}${x.file&&!(x.src=='sh'||x.src=='ae')?' · '+esc(x.file.replace('קובץ','קבלה')):''}</b><small>מספר הזמנה: <bdi dir="ltr">${esc(num)}</bdi> · ${ids.length} פריטים</small>${L.length?`<div class="bt">${all}</div>`:''}</div><div class="rt177">${ids.map(retRow177).join('')}</div></div>`}).join('')}
+ const group=(k,ids,whole)=>{const x=D[O[k][0]],sh=x.src=='sh'||x.src=='ae',num=sh?k:String(k).replace(/^P0-/,'PO-'),L=ids.filter(id=>isRet(id)&&!(IT[id]||{}).rnr);
+  const allb=[['rreq','📝 ביקשתי לכל ההזמנה',1],['rpack','📦 ארזתי הכל',2],['rsent','📮 שלחתי את כל החבילה',3]].map(([s2,t,v])=>`<button class="r340" data-rall="${s2}" data-o="${esc(k)}" aria-pressed="${L.length>0&&L.every(id=>step340(id)>=v)}">${t}</button>`).join('');
+  const rows=ids.map(id=>isRet(id)?retRow177(id):(()=>{const it=IT[id]||{};return `<div class="rt177r r343n"><button class="ph" data-open="${id}" aria-label="פתיחת המוצר">${img(id)||x.hi||D[id].hi?`<img data-th="${id}" src="${img(id)||TPH}" alt="">`:'<span>📦</span>'}</button><div class="in"><b>${esc(it.tname||D[id].short)}</b><small>${D[id].size?'מידה '+esc(D[id].size)+' · ':''}${D[id].color?esc(D[id].color)+' · ':''}${m(D[id].paid)}</small><div class="bt"><button class="r340" data-r342ret="${id}" aria-pressed="false">↩ להחזיר</button></div></div></div>`})()).join('');
+  return `<div class="r340g"><div class="r340h"><b>${esc((ACC340.find(a=>a[0]==x.src)||['',''])[1])} · ${esc(x.date||'')}</b><small>מספר הזמנה: <bdi dir="ltr">${esc(num)}</bdi> · ${O[k].length} מוצרים${whole?'':' · '+L.length+' להחזיר '+st(L.length?L:ids)}</small>${L.length?`<div class="bt">${allb}</div>`:''}</div><div class="rt177">${rows}</div></div>`};
+ if(R340.ord)return acc+ord+group(R340.ord,O[R340.ord].slice().sort((a,b)=>isRet(b)-isRet(a)),true);
+ const RK=ks.filter(k=>O[k].some(isRet));
+ return acc+ord+(RK.length?RK.map(k=>group(k,O[k].filter(isRet),false)).join(''):'<p class="m" style="padding:0">אין כאן מוצרים שסימנת להחזרה. בוחרים הזמנה ברשימה למעלה ולוחצים "↩ להחזיר".</p>')}
 function moneyTab(){const ret=Object.keys(D).filter(id=>(IT[id]||{}).s=='ret');const exp=ret.reduce((s,id)=>s+D[id].paid,0);const got=ret.filter(id=>(IT[id]||{}).refunded).reduce((s,id)=>s+D[id].paid,0);
  const cr=Object.entries(CREDITS);
  return `<h3>החזרות</h3><p>סימנת ${ret.length} פריטים להחזרה. צפוי לחזור: <b>${money2(exp)}</b> · כבר חזר: <b>${money2(got)}</b></p>
- ${pick342()}${ret.length?ret340(ret):'<p class="m" style="padding:0">בחלון של פריט לוחצים "החזרתי" והוא יופיע כאן.</p>'}
+ ${ret340(ret)}
  <h3>קרדיטים ויתרות</h3><div class="hrow"><select id="crs"><option>שיין</option><option>טמו 1</option><option>טמו 2</option><option>טמו 3</option></select><input id="cra" type="number" class="num" placeholder="סכום ₪"><label>תוקף</label><input id="crd" type="date" class="num" style="width:150px"><button id="cradd">הוסיפי</button></div>
  ${cr.length?`<table class="storet"><tr><th>חנות</th><th>סכום</th><th>תוקף</th><th></th></tr>${cr.map(([k,v])=>{const n=v.exp?daysLeft(v.exp):null;return `<tr><td>${esc(v.store)}</td><td>${money2(+v.amt)}</td><td style="color:${n!=null&&n<=14?'#c62828':''}">${v.exp?fmtD(v.exp)+(n!=null?` (עוד ${n} ימים)`:''):'—'}</td><td><button data-crdel="${k}">✕</button></td></tr>`}).join('')}</table>`:''}`}
 function homeTab(){const LOC=['ארון','מגירה','מחסן','כביסה','אצל התופרת'];const cnt={};Object.keys(D).forEach(id=>{const l=(IT[id]||{}).loc;if(l)cnt[l]=(cnt[l]||0)+1});
@@ -172,8 +174,7 @@ document.addEventListener('click',async e=>{const t=e.target;
   if(!DB){try{localStorage.setItem('hub_looks',JSON.stringify(LOOKS))}catch(_){}}await savePlan();renderHub();toast('השבוע מוכן: חול בימים א׳–ה׳, שבת בשישי ושבת');return}
  if(t.closest('#budsave')){SET.budget=+$('#budget').value||0;if(DB)await saveDoc('settings','main',SET);else{try{localStorage.setItem('hub_settings',JSON.stringify(SET))}catch(_){}}renderHub();return}
  const rp=t.closest('[data-r342ret]');if(rp){const id=rp.dataset.r342ret,it=IT[id]||{};await putItem(id,it.s=='ret'?{s:'',rsent:'',rreq:'',rpack:''}:{s:'ret',mb:'',mbr:''});renderHub();return}
- if(t.closest('[data-r342x]')){R340.pick='';renderHub();return}
- const ra=t.closest('[data-r340acc]');if(ra){R340.acc=ra.dataset.r340acc;R340.ord='';renderHub();return}
+  const ra=t.closest('[data-r340acc]');if(ra){R340.acc=ra.dataset.r340acc;R340.ord='';renderHub();return}
  const ro=t.closest('[data-r340ord]');if(ro){R340.ord=ro.dataset.r340ord;renderHub();return}
  const rs=t.closest('[data-rstep]');if(rs){const id=rs.dataset.id,k=rs.dataset.rstep,it=IT[id]||{};
   const p=k=='rreq'?((it.rreq||it.rpack||it.rsent)?{rreq:'',rpack:'',rsent:''}:{rreq:1}):k=='rpack'?((it.rpack||it.rsent)?{rpack:'',rsent:''}:{rpack:1,rreq:1}):(it.rsent?{rsent:''}:{rsent:1,rreq:1,rpack:1});
@@ -191,7 +192,7 @@ document.addEventListener('click',async e=>{const t=e.target;
  if(t.closest('[data-upimg]')&&!t.classList.contains('ovf')){const ub=t.closest('[data-upimg]');$('#upfile').dataset.id=ub.dataset.upimg;$('#upfile').dataset.upm=ub.dataset.upm||'main';setSt(ub.dataset.upimg,'busy','פותחת את בחירת התמונות…');$('#upfile').click();return}
 },true);
 document.addEventListener('change',async e=>{const t=e.target;
- if(t.id=='r342s'){R340.pick=t.value;renderHub();return}
+ if(t.id=='r343s'){R340.ord=t.value;renderHub();return}
  if(t.matches('[data-lday2]')&&t.value!==''){const i=+t.dataset.lday2;const id=await saveLook(GEN[i],GENO.occ,`${DAYS[+t.value]} · ${OCC[GENO.occ]}`);PLAN.days=PLAN.days||{};PLAN.days[t.value]=id;await savePlan();toast(`נוסף ליום ${DAYS[+t.value]}`);t.value=''}
  if(t.matches('[data-lday]')&&t.value!==''){PLAN.days=PLAN.days||{};PLAN.days[t.value]=t.dataset.lday;await savePlan();toast(`נוסף ליום ${DAYS[+t.value]}`);t.value=''}
  if(t.matches('.locsel')){putItem(t.closest('.ed').dataset.id,{loc:t.value})}
