@@ -23,3 +23,7 @@
 ## בנייה ופרסום
 - ראו skills/sara-closet/SKILL.md. לפני כל פרסום: לקרוא את האתר החי, להעלות את המספר ב-version.txt, ולבדוק בטלפון (390px) ובמחשב.
 - כל החלטה ובקשה מתועדת גם בראש כל קובץ קוד ב-work/ (שורת ההערה הראשונה). רשימה: CODE_LOG.md.
+
+## מעבר לחשבון החדש (4/11)
+- האתר עכשיו: https://claude.ai/artifact/HRNDqDjgDUStZnjQVCCjpq (פרטי). מפרסמים רק לשם. האתר הישן לא נוגעים בו.
+- כל קובץ ותמונה ששרה שולחת – מתיקיית הדרייב המשותפת עם המחשב: https://drive.google.com/drive/folders/1Z4JonbSlMPLeVgclHYOZEKN0ZWQ9gsoS

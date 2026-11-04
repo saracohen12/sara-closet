@@ -22,3 +22,9 @@ Old site, not touched: https://claude.ai/artifact/HY6no4fCJwNunBtm6GVA8V
 ## Data available now (repo, not loaded yet)
 - `backup/2026-11-04/db`: items 670 + orders 51 from 4/11; other collections from 29/10. No JSON errors, every item id is in the catalog, and no broken look references.
 - These rows reference 1,514 asset ids. Those pictures exist only in the old asset store or the ZIPs.
+
+## Update 4/11 evening – data and images restored
+- 6 backup ZIPs from Drive: CRC OK, 1,587 images, no missing/, assets.json = files. All uploaded to the new site; 977 db docs loaded with old→new image ids replaced.
+- Old-site db export (artifact_data-000.zip, 18:28) identical to data.json on all 977 docs.
+- Local browser check with the restored data: admin 888 items / 98 orders (= old site), returns 50/5, looks + avatar images load, no errors.
+- Still missing: claude_code_cloud-000/001.zip (main closet thread transcripts); a check by Sara on her phone in the new site.
