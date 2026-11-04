@@ -282,6 +282,8 @@ import glob,shutil
 PUB='<SCRATCH>/build/pub'
 os.makedirs(PUB+'/cut',exist_ok=True);os.makedirs(PUB+'/av',exist_ok=True)
 for f in ['avatar.webp','avatar_head.webp','mask_top.png','mask_skirt.png','back.webp','back_head.webp','avatar2.webp','avatar2_head.webp']+[f+'.webp' for f in ['p5_front', 'p5_side', 'p5_back', 'p5_half', 'p5_hip', 'p5_front_head', 'p5_front_headonly', 'p5_back_head', 'p5_back_headonly','p5c_front','p5c_side','p5c_back','p5c_half','p5c_hip','p5c_front_headonly','p5c_back_headonly','p5_side_head','p5_half_head','p5_hip_head','p5c_side_head','p5c_half_head','p5c_hip_head']+['p6c_'+v for v in ['front','side','back','half','hip','front_headonly','back_headonly','side_head','half_head','hip_head','front_neck']]+['p6w_'+v for v in ['front','side','back','half','hip','front_head','back_head','front_headonly','back_headonly','side_head','half_head','hip_head','front_neck']]]+['p5_sheet.jpg','p6c_sheet1.jpg','p6c_sheet2.jpg','p6w_sheet1.jpg','p6w_sheet2.jpg']+[f'{a}_suit_{v}.png' for a in ['p6c','p6w'] for v in ['front','side','back','half','hip']]+[f'{a}_arms_{v}.webp' for a in ['p6c','p6w'] for v in ['front','side','back','half','hip']]: shutil.copy('me/'+f,PUB+'/av/'+f)
+# restore 4/11: the open-neck layers (v67, v52.js) were served on the live site but were missing from this copy list
+for f in ['p5_front_neck.webp','p5c_front_neck.webp']: shutil.copy('me/'+f,PUB+'/av/'+f)
 cm=json.load(open('cut/meta_part.json')) if os.path.exists('cut/meta_part.json') else {}
 if os.path.exists('cut/meta.json'): cm.update(json.load(open('cut/meta.json')))
 catof={x['id']:x['cat'] for x in items}
