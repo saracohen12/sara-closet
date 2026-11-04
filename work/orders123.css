@@ -270,3 +270,13 @@
 #ord123 .o3dupi .sb2{display:inline-block;margin-inline-end:4px;font-size:.72rem}
 .sb2.t3{background:#2b8a3e}
 .o3rnr{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;background:#e6f4ea;color:#1e6b34;font-size:.82rem;font-weight:600}
+/* v338: returns as folders – account, then order */
+.o3rf{display:flex;align-items:center;gap:6px;margin:8px 0 4px;flex-wrap:wrap}
+.o3rf>span{font-size:.82rem;font-weight:700;color:var(--muted);flex:none}
+.o3rf button{padding:7px 12px;border:1px solid var(--line);border-radius:99px;background:var(--card);color:var(--fg);font:inherit;font-size:.86rem;cursor:pointer;min-height:38px}
+.o3rf button small{opacity:.7;margin-inline-start:4px}
+.o3rf button[aria-pressed=true],.o3rf button[aria-pressed=true] small,.o3rf button[aria-pressed=true] i{background:#2d211b!important;color:#fff!important;border-color:#2d211b!important}
+.o3rfo{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}.o3rfo>span{grid-column:1/-1}
+.o3rfo button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;border-radius:14px;text-align:start;min-width:0}
+.o3rfo button small{margin:0;font-size:.74rem}
+.o3rfo i.sb2{font-style:normal;font-size:.66rem;padding:1px 6px}

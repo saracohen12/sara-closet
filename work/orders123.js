@@ -96,12 +96,23 @@ function retRow(id){const x=D[id],it=IT[id]||{};
  <div class="o3in"><b>${H(it.tname||x.short)}</b><small>${meta}</small>${it.rwhy?`<small class="o3rn">↩ ${H(it.rwhy)}</small>`:''}${it.note?`<small class="o3rn">📝 ${H(it.note)}</small>`:''}
  <div class="o3seg rr">${(it.rnr?'<span class="o3rnr">🎁 בלי החזרה</span>':b('rsent','1','📮 נשלח',it.rsent))}${b('refunded','1','💰 הכסף חזר',it.refunded)}${it.rsent?'':b('s','ret','✕ לא מחזירה',false)}</div></div></div>`}
 const nItems=n=>n==1?'בגד אחד':n+' בגדים';
-function retList(L,sent){const G=L.map(o=>({o,ids:o.ids.filter(sent?retS:retP)})).filter(g=>g.ids.length);
+// v338 (Sara 04/11 12:53 "תיקייה בהחזרות, בחירה לפי חברה ... חשבון, טמו 1, 2, 3, שיין, עלי אקספרס, ואחר כך ... לפי ההזמנה, מתוך הזמנה מסוימת, מה מוצרים שאני צריכה להחזיר"):
+// the returns lists (↩ להחזיר / 📮 הוחזרו) open like folders: first the account (only accounts that have returns, with counts), then the order, then its items.
+const RV=f=>f=='rp'||f=='rs';
+function qOnly(all,qq){if(!qq)return all;return all.filter(o=>o.k.toLowerCase().replace(/[-\s]/g,'').includes(qq)||o.ids.some(id=>(id+' '+D[id].short+' '+((IT[id]||{}).tname||'')).toLowerCase().replace(/[-\s]/g,'').includes(qq)))}
+function retFold(G0,sent){const A=[['t1','טמו 1'],['t2','טמו 2'],['t3','טמו 3'],['sh','שיין'],['ae','עלי אקספרס']];
+ const n=k=>G0.filter(g=>!k||g.o.src==k).reduce((t,g)=>t+g.ids.length,0);
+ if(V.racc&&!n(V.racc))V.racc='';const G1=G0.filter(g=>!V.racc||g.o.src==V.racc);if(V.rord&&!G1.some(g=>g.o.k==V.rord))V.rord='';
+ const acc=`<div class="o3rf"><span>📁 חשבון</span>${[['','הכל'],...A].filter(([k])=>!k||n(k)).map(([k,t])=>`<button data-o3racc="${k}" aria-pressed="${V.racc==k}">${t} <small>${n(k)}</small></button>`).join('')}</div>`;
+ const ord=G1.length>1||V.rord?`<div class="o3rf o3rfo"><span>📦 הזמנה</span><button data-o3rord="" aria-pressed="${!V.rord}">כל ההזמנות <small>${G1.length}</small></button>${G1.map(({o,ids})=>`<button data-o3rord="${H(o.k)}" aria-pressed="${V.rord==o.k}">${V.racc?'':`<i class="sb2 ${o.src}">${ACC[o.src]}</i> `}${H(oname(o))}<small>${H(o.date||'')} · ${ids.length}</small></button>`).join('')}</div>`:'';
+ return {G:G1.filter(g=>!V.rord||g.o.k==V.rord),head:acc+ord}}
+function retList(L,sent){const G0=L.map(o=>({o,ids:o.ids.filter(sent?retS:retP)})).filter(g=>g.ids.length);
+ const F=G0.length?retFold(G0,sent):{G:[],head:''},G=F.G;
  if(!G.length)return `<p class="o3empty">${sent?'עוד לא סימנת שהחזרת משהו. כששולחים חבילה – לוחצים "📮 הוחזר" ליד הבגד.':'אין בגדים שמחכים להחזרה. בתוך הזמנה לוחצים "↩ מחזירה" ליד הבגד.'}</p>`;
  G.sort((a,b)=>String(osum(a.o).rdl||'9').localeCompare(String(osum(b.o).rdl||'9')));
  loadThumbs(G.flatMap(g=>g.ids));
  const all=G.flatMap(g=>g.ids),sum=money(all.reduce((t,id)=>t+(+D[id].paid||0),0)),rf=all.filter(id=>(IT[id]||{}).refunded).length;
- return `<div class="o3rtot">${sent?`📮 החזרת <b>${nItems(all.length)}</b> בשווי <b>${sum}</b> · 💰 הכסף חזר על <b>${rf}</b> מהם`:`↩ להחזיר: <b>${nItems(all.length)}</b> בשווי <b>${sum}</b> · <b>${G.length}</b> ${G.length==1?'חבילה':'חבילות'}`}</div><p class="o3hint">${sent?'מה שכבר החזרת, לפי הזמנה:':'כל חבילה = הזמנה אחת. אורזים יחד את מה שמופיע תחת אותה הזמנה:'}</p>`+G.map(({o,ids})=>{const c=osum(o);
+ return F.head+`<div class="o3rtot">${sent?`📮 החזרת <b>${nItems(all.length)}</b> בשווי <b>${sum}</b> · 💰 הכסף חזר על <b>${rf}</b> מהם`:`↩ להחזיר: <b>${nItems(all.length)}</b> בשווי <b>${sum}</b> · <b>${G.length}</b> ${G.length==1?'חבילה':'חבילות'}`}</div><p class="o3hint">${sent?'מה שכבר החזרת, לפי הזמנה:':'כל חבילה = הזמנה אחת. אורזים יחד את מה שמופיע תחת אותה הזמנה:'}</p>`+G.map(({o,ids})=>{const c=osum(o);
   return `<div class="o3rg"><div class="o3rgh"><span class="sb2 ${o.src}">${ACC[o.src]}</span><b>${H(oname(o))}</b><small><bdi>${nItems(ids.length)}</bdi> · <bdi>${money(ids.reduce((t,id)=>t+(+D[id].paid||0),0))}</bdi>${sent?` · 💰 <bdi>${ids.filter(id=>(IT[id]||{}).refunded).length}/${ids.length}</bdi> החזר כספי`:''}</small>
    <span class="o3num"><small>מספר הזמנה ב${ACC[o.src]}:</small> <bdi>${H(onum(o))}</bdi> <button class="o3cp" data-o3copy="${H(onum(o))}">📋 העתק</button></span>${sent?'':retTxt(c.rdl,c.est)}
    <div class="o3all">${sent?'':`<button data-o3sentall="${H(o.k)}">📮 שלחתי את כל החבילה</button>`}<button data-o3open="${H(o.k)}" class="ghost">לכל ההזמנה ›</button></div></div>
@@ -132,8 +143,8 @@ function renderList(){const b=body(),all=orders();
  b.innerHTML=`<div class="o3sum">${chip('y','y',`✅ <b>${tot.y}</b> הגיעו`)}${chip('m','m',`❌ <b>${tot.m}</b> חסרים`)}${chip('n','n',`⏳ <b>${tot.n}</b> בדרך`)}${chip('u','u',`⚪ <b>${tot.u}</b> לא סימנתי`)}${chip('rp','r',`↩ <b>${rp}</b> להחזיר`)}${chip('rs','rs',`📮 <b>${rs}</b> הוחזרו`)}${oosN?chip('oos','oos',`🚫 <b>${oosN}</b> בוטלו${oosR?` · 💰 ${oosR} מחכים להחזר`:''}`):''}${chip('pnd','pnd',`📸 <b>${orders().filter(o=>!(ORD[o.k]||{}).pd).length}</b> הזמנות בלי וי תמונות`)}${chip('anl','anl',`🧍 <b>${orders().filter(o=>!avDone(o)).length}</b> הזמנות בלי אווטאר`)}</div>
  <label class="o3cam"><input type="file" accept="image/*" data-o3cam><span class="ic">📷</span><span><b>צילמתי מוצר שהגיע</b><small>אמצא מאיזו הזמנה הוא, ואראה לך את כל ההזמנה</small></span></label>
  <div class="o3q"><input type="search" placeholder="🔍 מספר הזמנה, שם מוצר או T123" value="${H(V.q)}" data-o3q enterkeyhint="search"></div>
- <div class="o3bar2"><button class="o3fbtn${V.flt?' on':''}" data-o3sheet="open">☰ ${H(fltName())}${V.flt?'':' ▾'}</button>${V.flt?'<button class="o3fclr" data-o3f="" aria-label="ניקוי סינון">✕</button>':''}<div class="o3tabs">${tabs}</div></div>${pfRow}${afRow}
- ${V.flt=='fabq'?fabList(L):V.flt=='fix'?fixList(L):V.flt=='rp'?retList(L,false):V.flt=='rs'?retList(L,true):`<div class="o3list">${L.length?L.map(ocard).join(''):'<p class="o3empty">אין הזמנות כאלה</p>'}</div>`}
+ <div class="o3bar2"><button class="o3fbtn${V.flt?' on':''}" data-o3sheet="open">☰ ${H(fltName())}${V.flt?'':' ▾'}</button>${V.flt?'<button class="o3fclr" data-o3f="" aria-label="ניקוי סינון">✕</button>':''}${RV(V.flt)?'':`<div class="o3tabs">${tabs}</div>`}</div>${RV(V.flt)?'':pfRow+afRow}
+ ${V.flt=='fabq'?fabList(L):V.flt=='fix'?fixList(L):V.flt=='rp'?retList(qOnly(all,qq),false):V.flt=='rs'?retList(qOnly(all,qq),true):`<div class="o3list">${L.length?L.map(ocard).join(''):'<p class="o3empty">אין הזמנות כאלה</p>'}</div>`}
  ${V.flt?'':'<p class="o3tip">טיפ: כשחבילה מגיעה – פתחי את ההזמנה ולחצי "✅ הכל הגיע", ואז סמני רק מה שחסר.</p>'}
  ${V.sheet?sheetHTML():''}`;
  loadThumbs(L.flatMap(o=>o.ids.slice(0,5)));
@@ -255,6 +266,8 @@ async function onClick(e){const t=e.target.closest('button,[data-o3cam],.o3sbd')
  if(t.dataset.o3=='back'){if(V.res){V.ord=V.res.ord||'';V.res=null}else V.ord='';V.hl='';render();return}
  if(t.dataset.o3acc!=null){V.acc=t.dataset.o3acc;render();return}
  if(t.dataset.o3sheet){V.sheet=t.dataset.o3sheet=='open';const y=body().scrollTop;render();body().scrollTop=y;return}
+ if(t.dataset.o3racc!=null){V.racc=t.dataset.o3racc;V.rord='';refresh();return}
+ if(t.dataset.o3rord!=null){V.rord=t.dataset.o3rord;refresh();return}
  if(t.dataset.o3af!=null){V.af=t.dataset.o3af;try{localStorage.setItem('o3af',V.af)}catch(_){}render();return}
  if(t.dataset.o3pf!=null){V.pf=t.dataset.o3pf;try{localStorage.setItem('o3pf',V.pf)}catch(_){}render();return}
  if(t.dataset.o3f!=null){const f=t.dataset.o3f;V.flt=V.flt==f&&!V.sheet?'':f;V.sheet=false;V.tag='';render();return}
