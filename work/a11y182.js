@@ -11,7 +11,7 @@ function apply(){H.style.fontSize=A.fs?SIZES[A.fs][1]+'%':'';H.dataset.a11yfs=A.
  if(A.still)H.dataset.still='1';else delete H.dataset.still;
  if(document.body)document.body.dataset.fs=Math.min(2,A.fs);
  try{localStorage.setItem('a11y',JSON.stringify(A));localStorage.setItem('fs',String(Math.min(2,A.fs)))}catch(_){}
- if(A.still){try{localStorage.setItem('h181spin','0');localStorage.setItem('h347spin','0')}catch(_){}document.querySelectorAll('.z-pp[aria-pressed=true]').forEach(b=>b.click())}
+ if(A.still){try{localStorage.setItem('h181spin','0');localStorage.setItem('h347spin','0')}catch(_){}document.querySelectorAll('.z-pp[aria-pressed=false]').forEach(b=>b.click())}
  paint()}
 let dlg=null;
 function open(){if(!dlg){dlg=document.createElement('dialog');dlg.id='a11y';dlg.dir='rtl';dlg.setAttribute('aria-labelledby','a11yh');

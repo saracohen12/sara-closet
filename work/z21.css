@@ -63,7 +63,7 @@ html[data-z21] .card{border-radius:22px!important;border:var(--z-glass-b)!import
 html[data-z21] .card img{border-radius:18px 18px 0 0}
 
 /* ---------- windows ---------- */
-html[data-z21] dialog[open]{border-radius:28px!important;border:var(--z-glass-b)!important;box-shadow:0 40px 90px -20px rgba(40,25,80,.45)!important}
+html[data-z21] dialog[open]:not(#r360){border-radius:28px!important;border:var(--z-glass-b)!important;box-shadow:0 40px 90px -20px rgba(40,25,80,.45)!important}
 html[data-z21] dialog::backdrop{background:rgba(30,20,60,.28)!important;-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2)}
 @media (prefers-reduced-motion:no-preference){html[data-z21]:not([data-still]) dialog[open]{animation:z21in .32s cubic-bezier(.2,.8,.2,1)}}
 @keyframes z21in{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
@@ -79,7 +79,7 @@ html[data-z21] dialog::backdrop{background:rgba(30,20,60,.28)!important;-webkit-
 @keyframes z21up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
 /* while the avatar is being drawn: a soft light moves over the arch instead of an empty box */
-html[data-z21] .r3s.alive:not(.ready)::before{content:"";position:absolute;inset:0;z-index:4;border-radius:inherit;background:linear-gradient(110deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.55) 50%,rgba(255,255,255,0) 70%),radial-gradient(40% 18% at 50% 18%,rgba(150,130,200,.18),transparent 70%),radial-gradient(34% 48% at 50% 62%,rgba(150,130,200,.14),transparent 70%);background-size:220% 100%,100% 100%,100% 100%;animation:z21load 1.4s linear infinite}
+html[data-z21] .r3s:not(.ready)::before{content:"";position:absolute;inset:0;z-index:4;border-radius:inherit;background:linear-gradient(110deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.55) 50%,rgba(255,255,255,0) 70%),radial-gradient(40% 18% at 50% 18%,rgba(150,130,200,.18),transparent 70%),radial-gradient(34% 48% at 50% 62%,rgba(150,130,200,.14),transparent 70%);background-size:220% 100%,100% 100%,100% 100%;animation:z21load 1.4s linear infinite}
 @keyframes z21load{from{background-position:120% 0,0 0,0 0}to{background-position:-120% 0,0 0,0 0}}
 
 /* scrollbars and focus */
@@ -95,10 +95,22 @@ html[data-z21] .z5nav{view-transition-name:z5nav}
 /* pictures fade in softly the moment they arrive (only pictures that load after the page is open – nothing is ever hidden) */
 @media (prefers-reduced-motion:no-preference){html[data-z21]:not([data-still]) img.z21ld{animation:z21img .45s ease-out}}
 @keyframes z21img{from{opacity:.15;filter:blur(6px)}to{opacity:1;filter:none}}
-@media (hover:hover) and (prefers-reduced-motion:no-preference){html[data-z21]:not([data-still]) #h180 .r3s.alive{transform:perspective(1100px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s cubic-bezier(.2,.8,.2,1)}}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){html[data-z21]:not([data-still]) #h180 .r3s{transform:perspective(1100px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s cubic-bezier(.2,.8,.2,1)}}
 
 /* ---------- orders window in 2100 ---------- */
 html[data-z21] #ord123{background:linear-gradient(180deg,#f7f4fb,#f3f1f6)!important}
 html[data-z21] #ord123 .o3h{background:rgba(255,255,255,.7)!important;-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);border-bottom:1px solid var(--z-line)!important}
 html[data-z21] #ord123 .o3h .o3x{background:#15131c!important;border-color:#15131c!important}
 html[data-z21] #ord123 .o3h h3{letter-spacing:-.01em}
+/* the "כל הפריטים" tile: a holo tile with the ✦ instead of a flat black square */
+html[data-z21] body[data-z50=closet] .ctrl .z6c .z6all .z6ci{background:linear-gradient(135deg,#2a2438,#15131c)!important;position:relative;overflow:hidden}
+html[data-z21] body[data-z50=closet] .ctrl .z6c .z6all .z6ci::before{content:"";position:absolute;inset:0;background:var(--z-holo);opacity:.55;mix-blend-mode:screen}
+html[data-z21] body[data-z50=closet] .ctrl .z6c .z6all .z6ci::after{position:relative;color:#fff!important}
+
+/* ---------- studio in 2100 ---------- */
+html[data-z21] #r360{background:radial-gradient(60% 40% at 20% 0%,rgba(255,190,170,.35),transparent 70%),radial-gradient(60% 40% at 90% 30%,rgba(190,170,255,.3),transparent 70%),#f5f3f8!important}
+html[data-z21] #r360 .r3h{background:rgba(255,255,255,.62)!important;-webkit-backdrop-filter:blur(22px) saturate(1.7);backdrop-filter:blur(22px) saturate(1.7);border-bottom:1px solid rgba(255,255,255,.8)!important}
+html[data-z21] #r360 .r3fig{position:relative;isolation:isolate}
+html[data-z21] #r360 .r3fig::before{content:"";position:absolute;z-index:-1;inset:-5% -8% 2%;border-radius:999px 999px 40% 40%;background:var(--z-holo);filter:blur(28px);opacity:.5}
+html[data-z21] #r360 .r3c{border-radius:20px!important;background:rgba(255,255,255,.8)!important;border:1px solid rgba(255,255,255,.85)!important;box-shadow:var(--z-shadow)!important}
+html[data-z21] #r360 .r3ctl>button{background:rgba(255,255,255,.75);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}

@@ -9,3 +9,5 @@
 @media (min-width:900px){html[data-d180=z50] #h180 .z-av{align-self:start!important}
  html[data-d180=z50] #h180 .z-stage{width:min(100%,calc((100svh - 230px) * 360 / 637))!important;height:auto!important;min-height:0!important;max-height:none!important;aspect-ratio:360/637;margin-inline:auto}
  html[data-d180=z50] #h180 .z-stage .r3s{width:100%!important;height:auto!important}}
+/* v349 bug fix: in the studio grid the label "עוד לא ב-360 · לבשתי 2" ran under the ★ button – now it stops before the star and wraps */
+#r360 .r3b{max-width:calc(100% - 52px);white-space:normal;line-height:1.25;box-sizing:border-box}

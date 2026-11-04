@@ -1,0 +1,58 @@
+/* v349 progressive disclosure (ux349.js) – clean & 2100 looks only */
+html[data-d180=z50] #dlg .ed .erow.x349{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:4px 0}
+html[data-d180=z50] #dlg .ed .erow.x349>span:first-child{flex:none;min-width:64px;font-size:.84rem;font-weight:600;color:var(--z-muted,#6a6670)}
+html[data-d180=z50] #dlg .ed .erow.x349 .x349s{flex:1 1 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:0 14px;
+ border-radius:14px;border:1px solid var(--z-line,#e6e3df);background:var(--z-solid,#fff);color:var(--z-ink,#17161a);font:inherit;font-size:.9rem;font-weight:600;cursor:pointer;text-align:start}
+html[data-d180=z50] #dlg .ed .erow.x349 .x349v.none{color:var(--z-muted,#6a6670);font-weight:400}
+html[data-d180=z50] #dlg .ed .erow.x349 .x349s i{font-style:normal;font-size:1.2rem;color:var(--z-muted,#6a6670);transition:transform .2s}
+html[data-d180=z50] #dlg .ed .erow.x349.open .x349s i{transform:rotate(-90deg)}
+/* folded: only the label and the value line */
+html[data-d180=z50] #dlg .ed .erow.x349:not(.open)>button:not(.x349s),html[data-d180=z50] #dlg .ed .erow.x349:not(.open)>small{display:none!important}
+/* open: the choices drop in under the line, big enough for a finger */
+html[data-d180=z50] #dlg .ed .erow.x349.open>button:not(.x349s){min-height:40px!important;padding:0 14px!important;font-size:.88rem!important;border-radius:999px!important}
+html[data-d180=z50] #dlg .ed .erow.x349.open>.x349s{flex-basis:calc(100% - 76px)}
+@media (prefers-reduced-motion:no-preference){html[data-d180=z50] #dlg .ed .erow.x349.open>button:not(.x349s){animation:x349in .22s ease-out both}}
+@keyframes x349in{from{opacity:0;transform:translateY(-4px)}}
+
+/* studio: ⋯ menu */
+#r360 .s349w{position:relative;display:flex}
+#r360 .s349b{width:40px;height:40px;border-radius:50%;border:1px solid var(--z-line,#e6e3df);background:var(--z-solid,#fff);color:var(--z-ink,#17161a);font-size:1.3rem;line-height:1;cursor:pointer;flex:none}
+#r360 .s349m{position:absolute;top:calc(100% + 8px);inset-inline-start:0;z-index:20;display:flex;flex-direction:column;gap:6px;min-width:180px;padding:8px;border-radius:18px;
+ background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid var(--z-line,#e6e3df);box-shadow:0 18px 40px -12px rgba(40,25,80,.35)}
+#r360 .s349m[hidden]{display:none}
+#r360 .s349m>button{width:100%;min-height:44px!important;justify-content:flex-start;text-align:start;border-radius:12px!important;padding:0 12px!important;font-size:.92rem!important}
+#r360 .s349m>button.z8r span{font-size:.92rem}
+/* studio: the small live avatar that follows her while she picks clothes (phone) */
+#r360 .s349f{position:fixed;z-index:30;bottom:calc(16px + env(safe-area-inset-bottom,0px));inset-inline-start:12px;width:84px;height:150px;padding:0;border:0;border-radius:42px 42px 16px 16px;overflow:hidden;
+ background:#c9d6e6;box-shadow:0 0 0 3px #fff,0 16px 34px -8px rgba(40,25,80,.45);cursor:pointer}
+#r360 .s349f[hidden]{display:none}
+#r360 .s349f canvas{width:100%;height:100%;display:block}
+@media (prefers-reduced-motion:no-preference){#r360 .s349f:not([hidden]){animation:s349in .3s cubic-bezier(.2,.8,.2,1)}}
+@keyframes s349in{from{opacity:0;transform:translateY(16px) scale(.9)}}
+
+/* closet shortcuts folded (ux349.js) */
+html[data-d180=z50] .z6q.f349:not(.open)>button:nth-child(n+5):not([aria-pressed=true]):not(.q349){display:none!important}
+html[data-d180=z50] .z6q.f349 .q349{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:64px;border-radius:16px;border:1px dashed var(--z-line-strong,#cfcac4);background:transparent;color:var(--z-ink,#17161a);font:inherit;font-size:.78rem;font-weight:600;cursor:pointer}
+html[data-d180=z50] .z6q.f349 .q349 i{font-style:normal;font-size:1rem}
+html[data-d180=z50] .z6q.f349.open>.q349{order:99}
+
+/* "עוד" sheet: search + folding groups (z277 openMore, v349) */
+#z5m .z5mq{display:flex;align-items:center;gap:8px;margin:6px 0 4px;padding:0 14px;min-height:48px;border-radius:16px;border:1px solid var(--z-line,#e6e3df);background:var(--z-solid,#fff)}
+#z5m .z5mq input{flex:1;min-width:0;border:0!important;box-shadow:none!important;min-height:0!important;padding:0!important;background:none!important;font:inherit;font-size:16px;color:inherit;outline:none}
+#z5m details.z5md{margin-top:10px;border-radius:18px;background:var(--z-surface,rgba(255,255,255,.66));border:1px solid var(--z-line,#e6e3df)}
+#z5m details.z5md[hidden]{display:none}
+#z5m details.z5md>summary{list-style:none;display:flex;align-items:center;gap:8px;min-height:52px;padding:0 16px;cursor:pointer}
+#z5m details.z5md>summary::-webkit-details-marker{display:none}
+#z5m details.z5md>summary h3{margin:0!important;flex:1;font-size:1rem!important;color:var(--z-ink,#17161a)!important}
+#z5m details.z5md>summary small{min-width:24px;height:24px;padding:0 7px;border-radius:12px;background:var(--z-tile,#efedea);font-size:.75rem;font-weight:700;display:grid;place-items:center}
+#z5m details.z5md>summary i{font-style:normal;font-size:1.3rem;color:var(--z-muted,#6a6670);transition:transform .2s}
+#z5m details.z5md[open]>summary i{transform:rotate(-90deg)}
+#z5m details.z5md>.z5mg{padding:0 10px 12px}
+#z5m .z5mg>button[hidden]{display:none}
+/* item window details box: the small tools behind ⋯ */
+html[data-d180=z50] #dlg .pd85h.f349{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+html[data-d180=z50] #dlg .pd85h.f349>b{flex:1}
+html[data-d180=z50] #dlg .pd85h.f349:not(.open)>button.mini{display:none!important}
+html[data-d180=z50] #dlg .pd85h.f349.open>button.mini{min-height:38px!important;padding:0 12px!important;font-size:.84rem!important;border-radius:999px!important}
+html[data-d180=z50] #dlg .pd85h .m349{width:40px;height:40px;border-radius:50%;border:1px solid var(--z-line,#e6e3df);background:var(--z-solid,#fff);font-size:1.2rem;line-height:1;cursor:pointer;flex:none;order:-1}
+html[data-d180=z50] #dlg .pd85h.f349.open>.m349{background:var(--z-ink,#17161a);color:#fff}

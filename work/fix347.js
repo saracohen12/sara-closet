@@ -8,6 +8,6 @@ document.addEventListener('keydown',e=>{try{if(e.key!='Escape'||document.querySe
 // 2) 2100: a picture that arrives after the page opened fades in (class z21ld → animation in z21.css). Pictures that were already there are untouched
 (function(){document.addEventListener('load',e=>{const t=e.target;if(t&&t.tagName=='IMG'&&document.documentElement.dataset.z21&&!t.classList.contains('z21ld')&&performance.now()>3000)t.classList.add('z21ld')},true)})();
 // 3) 2100 on a computer: the home avatar's arch leans very slightly toward the mouse, like a glass card (not with touch, not with "בלי תנועה")
-(function(){let raf=0;document.addEventListener('pointermove',e=>{if(e.pointerType!='mouse'||raf)return;raf=requestAnimationFrame(()=>{raf=0;try{const H=document.documentElement;const s=document.querySelector('#h180 .r3s.alive');if(!s||!H.dataset.z21||H.dataset.still)return;
+(function(){let raf=0;document.addEventListener('pointermove',e=>{if(e.pointerType!='mouse'||raf)return;raf=requestAnimationFrame(()=>{raf=0;try{const H=document.documentElement;const s=document.querySelector('#h180 .r3s');if(!s||!H.dataset.z21||H.dataset.still)return;
  const r=s.getBoundingClientRect();const x=(e.clientX-(r.left+r.width/2))/(r.width*2.2),y=(e.clientY-(r.top+r.height/2))/(r.height*2.2);
  const cx=Math.max(-1,Math.min(1,x)),cy=Math.max(-1,Math.min(1,y));s.style.setProperty('--ry',(cx*4).toFixed(2)+'deg');s.style.setProperty('--rx',(-cy*3).toFixed(2)+'deg')}catch(_){}})},{passive:true})})();

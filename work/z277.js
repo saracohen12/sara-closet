@@ -36,7 +36,7 @@ const svg=(k,a='')=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 {const u=k=>`url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${P[k]}</svg>`)}")`;
  const st=document.createElement('style');st.id='z277ic';
  st.textContent=[['#ord123b','orders'],['#sc185b','smart'],['#sh187b','shop']].map(([q,k])=>`html[data-d180=z50] #h180 ${q}::before{-webkit-mask-image:${u(k)};mask-image:${u(k)}}`).join('\n')+
-  `\nhtml[data-d180=z50] #h180 .z-pp::before{-webkit-mask-image:${u('play')};mask-image:${u('play')}}\nhtml[data-d180=z50] #h180 .z-pp[aria-pressed=true]::before{-webkit-mask-image:${u('pause')};mask-image:${u('pause')}}`;
+  `\nhtml[data-d180=z50] #h180 .z-pp::before{-webkit-mask-image:${u('pause')};mask-image:${u('pause')}}\nhtml[data-d180=z50] #h180 .z-pp[aria-pressed=true]::before{-webkit-mask-image:${u('play')};mask-image:${u('play')}}`;
  document.head.appendChild(st)}
 
 // ---------- the 4 tabs ----------
@@ -89,13 +89,18 @@ const MORE=[
   ['🧹','מקום לתמונות','כמה תפוס, לנקות, האווטאר הישן',()=>window.clean262&&clean262()],
   ['❓','איך משתמשים','הסבר קצר',()=>{const b=document.getElementById('helpb');b&&b.click()}],
   ['💬','לספר ל-Claude','מה לא תקין, עם תמונה של המסך',()=>window.openTell282&&openTell282()]]]];
+let OPEN349={};try{OPEN349=JSON.parse(localStorage.getItem('z5m349')||'{}')||{}}catch(_){}
 function openMore(){let d=document.getElementById('z5m');
  if(!d){d=document.createElement('dialog');d.id='z5m';d.dir='rtl';d.setAttribute('aria-labelledby','z5mt');document.body.appendChild(d);
   d.addEventListener('click',e=>{if(e.target===d)return d.close();if(e.target.closest('.z5mx'))return d.close();const b=e.target.closest('[data-z5m]');if(!b)return;const [g,i]=b.dataset.z5m.split('.').map(Number),f=MORE[g][1][i][3];
    closeD();try{f()}catch(err){ERR('more',err)}})}
  d.innerHTML=`<div class="z5mh"><h2 id="z5mt">כל מה שיש באתר</h2><button type="button" class="z5mx" aria-label="סגירה">✕</button></div>
   <p class="z5mi"><b>בית</b> מה לובשים היום · <b>הארון</b> כל הבגדים · <b>סטודיו</b> להלביש את האווטאר · <b>עוד</b> כל השאר, כאן</p>`+
-  MORE.map(([h,L],g)=>`<h3>${h}</h3><div class="z5mg">${L.map(([ic,n,sub],i)=>`<button type="button" data-z5m="${g}.${i}"><i aria-hidden="true">${ic}</i><span><b>${n}</b><small>${sub}</small></span></button>`).join('')}</div>`).join('');
+  // v349 (Sara: "שאני פחות כפתורים – אפתח כפתור, זה יראה לי כפתורים אחרים"): a search line + every group folds; the first group is open, the rest open with a tap (remembered on this phone)
+  `<label class="z5mq"><span aria-hidden="true">🔍</span><input type="search" placeholder="מה לחפש? למשל: החזרות, איפור, גיבוי" aria-label="חיפוש כלי"></label>`+
+  MORE.map(([h,L],g)=>`<details class="z5md" data-g="${g}"${(OPEN349[g]!=null?OPEN349[g]:g==0)?' open':''}><summary><h3>${h}</h3><small>${L.length}</small><i aria-hidden="true">›</i></summary><div class="z5mg">${L.map(([ic,n,sub],i)=>`<button type="button" data-z5m="${g}.${i}"><i aria-hidden="true">${ic}</i><span><b>${n}</b><small>${sub}</small></span></button>`).join('')}</div></details>`).join('');
+ d.querySelectorAll('details.z5md').forEach(x=>x.addEventListener('toggle',()=>{OPEN349[x.dataset.g]=x.open;try{localStorage.setItem('z5m349',JSON.stringify(OPEN349))}catch(_){}}));
+ const qi=d.querySelector('.z5mq input');qi.addEventListener('input',()=>{const q=qi.value.trim();d.querySelectorAll('details.z5md').forEach(x=>{let any=false;x.querySelectorAll('[data-z5m]').forEach(b=>{const hit=!q||b.textContent.includes(q);b.hidden=!hit;if(hit)any=true});x.hidden=!any;if(q&&any)x.open=true})});
  // the cart shows how many things are in it
  try{const n=window.ADV187?ADV187.list().filter(r=>r.st=='think').length:0;if(n){const b=d.querySelector('[data-z5m="0.0"] b');if(b)b.textContent='העגלה שלי ('+n+')'}}catch(_){}
  if(!d.open)d.showModal()}
