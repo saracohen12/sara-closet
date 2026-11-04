@@ -94,17 +94,22 @@ function retRow(id){const x=D[id],it=IT[id]||{};
  const meta=[x.size&&('מידה '+x.size),x.color,money(+x.paid||0)+(x.qty>1?` · ${x.qty} יח׳`:'')].filter(Boolean).map(x=>'<bdi>'+H(x)+'</bdi>').join(' · ');
  return `<div class="o3it o3rr${it.rsent?' sent':''}" data-o3row="${H(id)}"><button class="o3ph" data-o3item="${H(id)}" aria-label="פתיחת המוצר">${th(id)}</button>
  <div class="o3in"><b>${H(it.tname||x.short)}</b><small>${meta}</small>${it.rwhy?`<small class="o3rn">↩ ${H(it.rwhy)}</small>`:''}${it.note?`<small class="o3rn">📝 ${H(it.note)}</small>`:''}
- <div class="o3seg rr">${(it.rnr?'<span class="o3rnr">🎁 בלי החזרה</span>':b('rsent','1','📮 נשלח',it.rsent))}${b('refunded','1','💰 הכסף חזר',it.refunded)}${it.rsent?'':b('s','ret','✕ לא מחזירה',false)}</div></div></div>`}
+ <div class="o3seg rr">${it.rnr?'<span class="o3rnr">🎁 בלי החזרה</span>':retSteps(b,it)}${b('refunded','1','💰 הכסף חזר',it.refunded)}${it.rsent?'':b('s','ret','✕ לא מחזירה',false)}</div></div></div>`}
+// v340 (Sara 04/11 "לסמן האם שלחתי בקשה להחזר… האם כבר עשיתי את החבילה… האם כבר שלחתי את זה בדואר", "כפתור ירוק שאני מדליקה"):
+// every return has 3 steps before the money: 📝 asked the store (rreq) → 📦 packed (rpack) → 📮 mailed (rsent, as before). Each is a green switch.
+const retSteps=(b,it)=>b('rreq','1','📝 ביקשתי החזרה',it.rreq||it.rpack||it.rsent)+b('rpack','1','📦 ארזתי',it.rpack||it.rsent)+b('rsent','1','📮 שלחתי בדואר',it.rsent);
+const stepOf=id=>{const it=IT[id]||{};return it.rsent?3:it.rpack?2:it.rreq?1:0};  // legacy rows with only rsent count as all steps done
 const nItems=n=>n==1?'בגד אחד':n+' בגדים';
 // v338 (Sara 04/11 12:53 "תיקייה בהחזרות, בחירה לפי חברה ... חשבון, טמו 1, 2, 3, שיין, עלי אקספרס, ואחר כך ... לפי ההזמנה, מתוך הזמנה מסוימת, מה מוצרים שאני צריכה להחזיר"):
 // the returns lists (↩ להחזיר / 📮 הוחזרו) open like folders: first the account (only accounts that have returns, with counts), then the order, then its items.
 const RV=f=>f=='rp'||f=='rs';
 function qOnly(all,qq){if(!qq)return all;return all.filter(o=>o.k.toLowerCase().replace(/[-\s]/g,'').includes(qq)||o.ids.some(id=>(id+' '+D[id].short+' '+((IT[id]||{}).tname||'')).toLowerCase().replace(/[-\s]/g,'').includes(qq)))}
+const stepTxt=ids=>{const m=Math.min(...ids.map(stepOf));return m>=2?'📦':m>=1?'📝':ids.some(id=>stepOf(id))?'📝…':'⚪'};
 function retFold(G0,sent){const A=[['t1','טמו 1'],['t2','טמו 2'],['t3','טמו 3'],['sh','שיין'],['ae','עלי אקספרס']];
  const n=k=>G0.filter(g=>!k||g.o.src==k).reduce((t,g)=>t+g.ids.length,0);
  if(V.racc&&!n(V.racc))V.racc='';const G1=G0.filter(g=>!V.racc||g.o.src==V.racc);if(V.rord&&!G1.some(g=>g.o.k==V.rord))V.rord='';
  const acc=`<div class="o3rf"><span>📁 חשבון</span>${[['','הכל'],...A].filter(([k])=>!k||n(k)).map(([k,t])=>`<button data-o3racc="${k}" aria-pressed="${V.racc==k}">${t} <small>${n(k)}</small></button>`).join('')}</div>`;
- const ord=G1.length>1||V.rord?`<div class="o3rf o3rfo"><span>📦 הזמנה</span><button data-o3rord="" aria-pressed="${!V.rord}">כל ההזמנות <small>${G1.length}</small></button>${G1.map(({o,ids})=>`<button data-o3rord="${H(o.k)}" aria-pressed="${V.rord==o.k}">${V.racc?'':`<i class="sb2 ${o.src}">${ACC[o.src]}</i> `}${H(oname(o))}<small>${H(o.date||'')} · ${ids.length}</small></button>`).join('')}</div>`:'';
+ const ord=G1.length>1||V.rord?`<div class="o3rf o3rfo"><span>📦 הזמנה</span><button data-o3rord="" aria-pressed="${!V.rord}">כל ההזמנות <small>${G1.length}</small></button>${G1.map(({o,ids})=>`<button data-o3rord="${H(o.k)}" aria-pressed="${V.rord==o.k}">${V.racc?'':`<i class="sb2 ${o.src}">${ACC[o.src]}</i> `}${H(oname(o))}<small>${H(o.date||'')} · ${ids.length}${sent?'':' · '+stepTxt(ids)}</small></button>`).join('')}</div>`:'';
  return {G:G1.filter(g=>!V.rord||g.o.k==V.rord),head:acc+ord}}
 function retList(L,sent){const G0=L.map(o=>({o,ids:o.ids.filter(sent?retS:retP)})).filter(g=>g.ids.length);
  const F=G0.length?retFold(G0,sent):{G:[],head:''},G=F.G;
@@ -115,7 +120,7 @@ function retList(L,sent){const G0=L.map(o=>({o,ids:o.ids.filter(sent?retS:retP)}
  return F.head+`<div class="o3rtot">${sent?`📮 החזרת <b>${nItems(all.length)}</b> בשווי <b>${sum}</b> · 💰 הכסף חזר על <b>${rf}</b> מהם`:`↩ להחזיר: <b>${nItems(all.length)}</b> בשווי <b>${sum}</b> · <b>${G.length}</b> ${G.length==1?'חבילה':'חבילות'}`}</div><p class="o3hint">${sent?'מה שכבר החזרת, לפי הזמנה:':'כל חבילה = הזמנה אחת. אורזים יחד את מה שמופיע תחת אותה הזמנה:'}</p>`+G.map(({o,ids})=>{const c=osum(o);
   return `<div class="o3rg"><div class="o3rgh"><span class="sb2 ${o.src}">${ACC[o.src]}</span><b>${H(oname(o))}</b><small><bdi>${nItems(ids.length)}</bdi> · <bdi>${money(ids.reduce((t,id)=>t+(+D[id].paid||0),0))}</bdi>${sent?` · 💰 <bdi>${ids.filter(id=>(IT[id]||{}).refunded).length}/${ids.length}</bdi> החזר כספי`:''}</small>
    <span class="o3num"><small>מספר הזמנה ב${ACC[o.src]}:</small> <bdi>${H(onum(o))}</bdi> <button class="o3cp" data-o3copy="${H(onum(o))}">📋 העתק</button></span>${sent?'':retTxt(c.rdl,c.est)}
-   <div class="o3all">${sent?'':`<button data-o3sentall="${H(o.k)}">📮 שלחתי את כל החבילה</button>`}<button data-o3open="${H(o.k)}" class="ghost">לכל ההזמנה ›</button></div></div>
+   <div class="o3all">${sent?'':[['rreq','📝 ביקשתי לכל ההזמנה',1],['rpack','📦 ארזתי הכל',2],['rsent','📮 שלחתי את כל החבילה',3]].map(([k,t,n])=>`<button class="o3st" data-o3stepall="${k}" data-o="${H(o.k)}" aria-pressed="${ids.every(id=>stepOf(id)>=n)}">${t}</button>`).join('')}<button data-o3open="${H(o.k)}" class="ghost">לכל ההזמנה ›</button></div></div>
    <div class="o3items">${ids.map(retRow).join('')}</div></div>`}).join('')}
 function sheetHTML(){return `<div class="o3sbd" data-o3sheet="x"></div><div class="o3sheet" role="dialog" aria-label="סינון"><div class="o3sh"><b>סינון</b><button data-o3sheet="x" aria-label="סגירה">✕</button></div>
  ${FLT.map(([n,o])=>`<h4>${n}</h4><div class="o3sg">${o.map(([k,t])=>`<button data-o3f="${k}" aria-pressed="${V.flt==k}">${t}</button>`).join('')}</div>`).join('')}
@@ -186,7 +191,7 @@ function itemRow(id){const x=D[id],it=IT[id]||{},s=st(id);
  <div class="o3seg got">${b('got','y','✅ הגיע',s=='y')}${b('got','n','⏳ בדרך',s=='n')}${b('got','m','❌ חסר',s=='m')}</div>
  <div class="o3seg two"><span>${b('lk','y','😍 אוהבת',it.lk=='y')}${b('lk','m','🤔 לא בטוחה',it.lk=='m')}${b('lk','n','😕 לא אוהבת',it.lk=='n')}</span><span>${b('s','kept','🏠 משאירה',it.s=='kept')}${b('mb','1','❓ מתלבטת',!!it.mb&&!it.s)}${b('s','ret','↩ מחזירה',it.s=='ret')}</span></div>
  ${it.mb&&!it.s?`<div class="o3seg why"><small>למה?</small>${b('mbr','model','מחכה לדגם אחר',it.mbr=='model')}${b('mbr','size','מחכה למידה אחרת',it.mbr=='size')}${b('mbr','other','משהו אחר',it.mbr=='other')}</div>`:''}
- ${it.s=='ret'?`<div class="o3seg why rsent"><small>החזרה</small>${(it.rnr?'<span class="o3rnr">🎁 החזר בלי החזרה – לא שולחים</span>':b('rsent','1','📮 הוחזר (נשלח)',it.rsent))}${b('refunded','1','💰 הכסף חזר',it.refunded)}</div>`:''}
+ ${it.s=='ret'?`<div class="o3seg why rsent"><small>החזרה</small>${it.rnr?'<span class="o3rnr">🎁 החזר בלי החזרה – לא שולחים</span>':retSteps(b,it)}${b('refunded','1','💰 הכסף חזר',it.refunded)}</div>`:''}
  <div class="o3seg why pn${needPic(id)?' on':''}"><small>📸 תמונות</small>${b('pn','y','צריך להעלות',needPic(id))}${b('pn','n','לא צריך',!needPic(id))}<em>${nUp(id)?'📷 '+nUp(id)+' הועלו':'עוד אין'}</em></div>
  ${avRow(id)}
  <div class="o3seg marks">${b('fix','1','🧵 דרוש תיקון',it.fix)}${b('nofit','1','📏 לא במידה',it.nofit)}${b('bad','1','⚠️ פגום / לא כמו בתמונה',it.bad)}${b('oos','1','🚫 בוטל – אזל מהמלאי',false)}</div>
@@ -243,7 +248,9 @@ async function setMark(id,k,v){const it=IT[id]||{};let p;
   else p=cur==v&&(it.got==v)?{got:'',miss:''}:{got:v,miss:''};}
  else if(k=='fix')p=it.fix?{fix:'',fixk:''}:{fix:true};
  else if(k=='nofit'||k=='bad'||k=='refunded')p={[k]:!it[k]};
- else if(k=='rsent')p={rsent:it.rsent?'':1};
+ else if(k=='rsent')p=it.rsent?{rsent:''}:{rsent:1,rreq:1,rpack:1};
+ else if(k=='rreq')p=(it.rreq||it.rpack||it.rsent)?{rreq:'',rpack:'',rsent:''}:{rreq:1};
+ else if(k=='rpack')p=(it.rpack||it.rsent)?{rpack:'',rsent:''}:{rpack:1,rreq:1};
  else if(k=='oos')p=it.oos?{oos:'',reord:''}:{oos:Date.now(),got:'',miss:''};
  else if(k=='fixk'){const a=(it.fixk||[]).slice(),i=a.indexOf(v);i<0?a.push(v):a.splice(i,1);p={fixk:a.length?a:'',fix:true}}
  else if(k=='mb')p=it.mb&&!it.s?{mb:'',mbr:''}:{mb:1,s:''};
@@ -271,6 +278,9 @@ async function onClick(e){const t=e.target.closest('button,[data-o3cam],.o3sbd')
  if(t.dataset.o3af!=null){V.af=t.dataset.o3af;try{localStorage.setItem('o3af',V.af)}catch(_){}render();return}
  if(t.dataset.o3pf!=null){V.pf=t.dataset.o3pf;try{localStorage.setItem('o3pf',V.pf)}catch(_){}render();return}
  if(t.dataset.o3f!=null){const f=t.dataset.o3f;V.flt=V.flt==f&&!V.sheet?'':f;V.sheet=false;V.tag='';render();return}
+ if(t.dataset.o3stepall){const k=t.dataset.o3stepall,o=orders().find(o=>o.k==t.dataset.o);if(o){const n={rreq:1,rpack:2,rsent:3}[k],L=o.ids.filter(retP).filter(id=>!(IT[id]||{}).rnr),off=L.length&&L.every(id=>stepOf(id)>=n);
+  for(const id of L)await putItem(id,off?{[k]:'',...(n<=1?{rpack:''}:{}),...(n<=2?{rsent:''}:{})}:{[k]:1,...(n>=2?{rreq:1}:{}),...(n>=3?{rpack:1}:{})});
+  toast(off?'ביטלתי את הסימון':k=='rreq'?'סימנתי שביקשת החזרה 📝':k=='rpack'?'סימנתי שארזת 📦':'סימנתי שהחבילה נשלחה 📮')}refresh();return}
  if(t.dataset.o3sentall){const o=orders().find(o=>o.k==t.dataset.o3sentall);if(o){for(const id of o.ids.filter(retP))await putItem(id,{rsent:1});toast('סימנתי שהחבילה נשלחה 📮')}refresh();return}
  if(t.dataset.o3open){V.scroll=body().scrollTop;V.ord=t.dataset.o3open;V.hl='';render();return}
  if(t.dataset.o3shop){const k=t.dataset.o3shop,o=orders().find(o=>o.k==k);const num=o&&(o.src=='t1'||o.src=='t2'||o.src=='t3')?k.replace(/^P0/,'PO'):k;
