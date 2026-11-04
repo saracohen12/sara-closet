@@ -40,3 +40,8 @@ html:not([data-d180=z50]) #t282b:not(.in){bottom:calc(76px + env(safe-area-inset
 @keyframes t321p{50%{box-shadow:0 0 0 6px rgba(180,83,42,.25)}}
 #tell282 .t282s{flex-wrap:wrap}
 #t282b{direction:rtl}
+/* v339: in the header (round like the others), never over the content */
+#t282b.hd{position:relative;inset:auto!important;display:grid;place-items:center;width:44px;height:44px;min-width:0;padding:0;border-radius:50%;gap:0}
+#t282b.hd i{display:none}
+#t282b.hd b{top:-3px;inset-inline-end:-3px}
+@media (max-width:420px){.h9act{gap:6px}}

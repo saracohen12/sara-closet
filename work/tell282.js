@@ -84,8 +84,9 @@ const btn=document.createElement('button');btn.type='button';btn.id='t282b';btn.
 btn.addEventListener('click',e=>{e.stopPropagation();open()});document.body.appendChild(btn);
 function paintBtn(){const n=ROWS.filter(r=>r.ans&&!READ.has(r.id)).length,b=btn.querySelector('b');b.hidden=!n;b.textContent=n}
 // on the page it sits in the header row (round like the others); inside a window it floats at the bottom corner
-function place(){const d=topD(),act=null,p=d||document.body;   // v321: on the page a labelled bubble at the bottom corner, not a small round button in the header
- if(btn.parentNode!==p){if(p===act)act.prepend(btn);else p.appendChild(btn)}btn.classList.toggle('in',!!d);btn.classList.toggle('hd',!d&&p===act)}
+// v339 (Sara 04/11 22:09 "הקלוד… נמצא על המסך, הוא מסתיר לי כפתורים גם כשאני על המחשב וגם בטלפון"): back in the header row as a round 💬 button next to 🔍 ? Aא; the floating bubble only if the header is missing
+function place(){const d=topD(),h=document.querySelector('.h9act'),act=h&&h.offsetParent?h:null,p=d||act||document.body;
+ if(btn.parentNode!==p){if(p===act)act.appendChild(btn);else p.appendChild(btn)}btn.classList.toggle('in',!!d);btn.classList.toggle('hd',!d&&p===act)}
 new MutationObserver(()=>place()).observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});setInterval(place,1200);
 window.openTell282=open;window.openBug77=open;
 setTimeout(load,2500);
