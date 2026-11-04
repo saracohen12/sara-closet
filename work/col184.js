@@ -19,7 +19,7 @@ function inView(){const v=(($1('#q')||{}).value||'').trim();const q=normQ(v).spl
  const m=MODE(),c0=COL,out=[];
  try{COL='';$a('section[id][data-g]').forEach(s=>{if(s.dataset.g=='ord')return;
   const inG=m?(s.dataset.g=='clo'&&(!C||s.id==C)):(G=='all'||s.dataset.g==G)&&(!C||s.id==C);if(!inG)return;
-  s.querySelectorAll('.card').forEach(c=>{if((m!='day'||isDay(c))&&(m!='shab'||isShab(c))&&extra(c)&&(F=='all'||(F=='dup'?c.dataset.dup:c.dataset.src==F))&&(exact?c.dataset.id==exact:q.every(w=>(c.dataset.qn||(c.dataset.qn=normQ(c.dataset.q))).includes(w))))out.push(c)})})}
+  s.querySelectorAll('.card').forEach(c=>{if((m!='day'||isDay(c))&&(m!='shab'||isShab(c))&&extra(c)&&(F=='all'||(F=='dup'?c.dataset.dup:c.dataset.src==F))&&(exact?c.dataset.id==exact:q.every(w=>qHit(c.dataset.qn||(c.dataset.qn=normQ(c.dataset.q)),w))))out.push(c)})})}
  finally{COL=c0}return out}
 function where(){if(C){const h=$1('#'+CSS.escape(C)+' h2');if(h)return (h.firstChild&&h.firstChild.nodeType==3?h.firstChild.textContent:h.textContent).trim()}
  if(G=='all')return 'כל הארון';const b=$1(`.groups button[data-g="${G}"]`);return b?[...b.childNodes].filter(n=>n.nodeType==3).map(n=>n.textContent).join('').trim()||b.textContent.replace(/\d+/g,'').trim():'הארון'}

@@ -103,6 +103,8 @@ function paintPage(){try{const m=mode(),L=cats()
 
 function clearAll(){try{const q=document.getElementById('q');if(q)q.value=''
  const c=document.getElementById('pclr');if(c)c.click()
+ // v349 bug fix: "להחזיר בקרוב" is a sort, and the clear button did not reset the sort – the closet stayed on "תוצאות הסינון" with no way back
+ try{const so=document.getElementById('sort');if(so&&so.value){so.value='';so.dispatchEvent(new Event('change'))}}catch(_){}
  if(typeof G!='undefined'&&G!='all'){G='all';document.querySelectorAll('.ctrl .groups button').forEach(o=>o.setAttribute('aria-pressed',o.dataset.g=='all'))}
  if(typeof F!='undefined'&&F!='all'){F='all';const s=document.getElementById('src');if(s)s.value='all'}
  const p=document.getElementById('panel');if(p&&p.classList.contains('open'))(p.querySelector('.x9')||{click(){}}).click()}catch(e){ERR('clr',e)}go('',false)}

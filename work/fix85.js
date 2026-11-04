@@ -66,9 +66,9 @@ function card85(id){const d=document.getElementById('dlg');if(!d||!d.open||d.que
  const R={};const tb=d.querySelector('.dinfo-more table')||d.querySelector('table');if(tb)[...tb.rows].forEach(r=>{const h=r.querySelector('th'),v=r.querySelector('td');if(h&&v)R[h.textContent.trim()]=v.textContent.trim()});
  let cat='';try{const b=document.querySelector(`[data-h9cat="${X.cat}"]`);cat=b?b.textContent.replace(/\d+/g,'').trim():''}catch(_){}
  const dd=s=>{const m=String(s||'').match(/^(\d{4})-(\d\d)-(\d\d)/);return m?`${+m[3]}/${+m[2]}/${m[1]}`:''};
- const ord=R['מספר הזמנה']||((R['קובץ קבלה']||'').split('·').pop()||'').trim();
+ const ord=(R['מספר הזמנה']||((R['קובץ קבלה']||'').split('·').pop()||'').trim()).replace(/^P0-/,'PO-');   // v349: Temu numbers start with the letter O (PO-), the receipts OCR gave a zero
  const F=[['צבע',R['צבע']||X.color],['מידה',R['מידה']||X.size],['שילמת',R['שילמת בפועל']],['מחיר',R['מחיר בקבלה']||R['מחיר בחשבונית']],['כמות',X.qty>1?X.qty:''],
-  ['חנות',R['מאיפה']],['תאריך הזמנה',R['תאריך הזמנה']],['מספר הזמנה',ord],['קטגוריה',cat],['להחזרה עד',X.rdl&&!I.kept?dd(X.rdl):''],
+  ['חנות',R['מאיפה']],['תאריך הזמנה',R['תאריך הזמנה']],['מספר הזמנה',ord],['קטגוריה',cat],['להחזרה עד',X.rdl&&!I.kept&&!I.rnr&&I.s!='give'&&I.s!='kept'?dd(X.rdl):''],
   ['עונה',(X.season||[]).join(', ')],['תגיות',(X.tags||[]).join(', ')],['לבשתי',I.wear?I.wear+(I.wear==1?' פעם':' פעמים'):'']].filter(f=>f[1]!=null&&String(f[1]).trim()!=='');
  if(!F.length)return;const name=X.full||X.short||'';
  const html=`<div class="pd85"><div class="pd85h"><b>🏷 פרטי המוצר</b><button type="button" class="mini" data-pd85c>📋 העתקת הפרטים</button></div><dl>${F.map(([k,v])=>`<div><dt>${k}</dt><dd>${esc(String(v))}</dd></div>`).join('')}</dl></div>`;
@@ -78,7 +78,7 @@ if(typeof openItem=='function'){const _oi=openItem;openItem=function(id){const r
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-pd85c]');if(!t)return;e.preventDefault();const txt=t.closest('.pd85').dataset.txt||'';
  (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('✓ הפרטים הועתקו')).catch(()=>{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(_){}ta.remove();toast(ok?'✓ הפרטים הועתקו':'לא הצלחתי להעתיק')})});
 
-// ---- 7. belts, shoes and bags also get "👗 הבגד על האווטר ב-5 תנוחות" (upload a GPT 5-pose sheet) and sit on the avatar:
+// ---- 7. belts, shoes and bags also get "👗 הבגד על האווטאר ב-5 תנוחות" (upload a GPT 5-pose sheet) and sit on the avatar:
 // belt on the waist line, shoes on the feet, bag next to the hip – she can still move / resize each pose by hand
 const ACC85=['belt','shoes','bag'];
 try{ACC85.forEach(k=>{if(!P5G_SLOTS.includes(k))P5G_SLOTS.push(k)})}catch(e){ERR('slots',e)}
@@ -91,7 +91,7 @@ if(typeof p5gFit=='function'){const _pf=p5gFit;p5gFit=function(view,slot,c){if(!
  return {x:r1(cx/399*100),y:r1(cy/1365*100),w:r1(c.w*s/399*100)}};window.p5gFit=p5gFit}
 if(typeof renderImgRow=='function'){const _rr=renderImgRow;renderImgRow=function(id){const r=_rr.apply(this,arguments);try{if(!ACC85.includes(slotOf(id)))return r;const el=document.querySelector(`[data-imgrow="${id}"]`);if(!el)return r;let box=el.querySelector('.p5gbox');
  const what={belt:'החגורה',shoes:'הנעליים',bag:'התיק'}[slotOf(id)];
- if(!box){const dm=el.querySelector('details.dmore');const h=`<details class="p5gbox" open><summary>👗 ${what} על האווטר ב-5 תנוחות</summary><div class="gslot"></div></details>`;if(dm)dm.insertAdjacentHTML('beforebegin',h);else el.insertAdjacentHTML('beforeend',h);box=el.querySelector('.p5gbox')}
+ if(!box){const dm=el.querySelector('details.dmore');const h=`<details class="p5gbox" open><summary>👗 ${what} על האווטאר ב-5 תנוחות</summary><div class="gslot"></div></details>`;if(dm)dm.insertAdjacentHTML('beforebegin',h);else el.insertAdjacentHTML('beforeend',h);box=el.querySelector('.p5gbox')}
  box.querySelector('.gslot').innerHTML=p5gHTML(id)}catch(e){ERR('accbox',e)}return r};window.renderImgRow=renderImgRow}
 
 // ---- 8. (v87) one product with several pieces – a set (jacket + dress), a pack (3 belts, 3 shirts) – can be split into
@@ -141,7 +141,7 @@ function ptHTML(id){const ps=partsOf(id);const sg=ps.length?[]:suggest(id);const
   <p class="pt85h">כל פריט יקבל אווטאר משלו (גיליון 5 תנוחות נפרד), ובבניית לוק אפשר ללבוש כל אחד לבד או ביחד.${sg.length?' הצעתי לפי שם המוצר – אפשר לשנות שמות וסוגים:':''}</p>${editor(rows.length?rows:[{n:'',cat:cat=='sets'?'tops':cat},{n:'',cat:cat=='sets'?'skirts':cat}])}</details>`;
  return `<details class="pt85" open><summary>✂ הפריטים במוצר (${ps.length})</summary><p class="pt85h">לכל פריט מעלים גיליון 5 תנוחות משלו. בבניית לוק כל פריט נמצא בסוג שלו.</p>
   ${ps.map(p=>{const s=subId(id,p.k);const ok=typeof avReady=='function'&&avReady(s);return `<details class="pt85p" data-pt85row="${s}"${ok?'':' open'}><summary><b>${esc(p.n)}</b> <small>${(PT.find(x=>x[0]==p.cat)||[])[1]||''}</small> <i class="${ok?'ok':'no'}">${ok?'✓ יש אווטאר':'✗ עוד אין אווטאר'}</i></summary>
-   <div data-imgrow="${s}"><details class="p5gbox" open><summary>👗 ${esc(p.n)} על האווטר ב-5 תנוחות</summary><div class="gslot">${typeof p5gHTML=='function'&&D[s]?p5gHTML(s):''}</div></details></div></details>`}).join('')}
+   <div data-imgrow="${s}"><details class="p5gbox" open><summary>👗 ${esc(p.n)} על האווטאר ב-5 תנוחות</summary><div class="gslot">${typeof p5gHTML=='function'&&D[s]?p5gHTML(s):''}</div></details></div></details>`}).join('')}
   <details class="pt85x"><summary>✏️ לשנות את הפירוק</summary>${editor(ps)}</details></details>`}
 function ptMount(id){const d=document.getElementById('dlg');if(!d||!d.open||isPart(id))return;const cat=(IT[id]||{}).cat||(D[id]||{}).cat;if(!SPLITCATS.includes(cat))return;
  syncParts();if(partsOf(id).some(p=>/^g\d+$/.test(p.k))){const o=d.querySelector('.pt85');if(o)o.remove();return}   // v250: pieces made in the GPT window show there

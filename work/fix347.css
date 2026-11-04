@@ -15,3 +15,14 @@
 html[data-d180=z50] dialog summary,html[data-d180=z50] dialog details,html[data-d180=z50] dialog select,html[data-d180=z50] dialog input,html[data-d180=z50] dialog textarea{font-family:var(--z-body)!important}
 /* v349 bug fix: the first and last tab of "לוקים וכלים" sat under the edge fade (looked cut) – room for them inside the fade */
 #hub #htabs{padding-inline:24px!important;scroll-padding-inline:24px}
+/* v349 bug fixes from the deep crawl */
+/* the closet's "עוד ▾" category list ran under the bottom bar – its last line ("✦ כל הפריטים") could not be tapped */
+html[data-d180=z50] #z328n .z328d{max-height:calc(100dvh - 250px)!important;padding-bottom:12px}
+/* "↑ למעלה" sat on top of the ⚙ סינון sheet */
+body:has(#panel:not(.hide)) #totop{display:none!important}
+/* item window → ניהול: "למדוד על האווטאר" was stretched into a 113×103 black block, and the two buttons under "הולך טוב עם…" were 17px high on top of the text */
+#dlg .strip .go,#dlg .sim .go{align-self:center!important;max-height:56px;border-radius:999px!important;font-size:.88rem!important;flex:none!important;height:auto!important;min-height:40px!important;width:auto!important;aspect-ratio:auto!important;padding:8px 14px!important;line-height:1.2!important;white-space:normal!important;position:static!important}
+#dlg .sim{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.z316m[hidden]{display:none!important}
+/* v349: the studio's category chips: the first/last chip sat under the edge fade (looked cut) */
+#r360 .z8c{padding-inline:20px!important}

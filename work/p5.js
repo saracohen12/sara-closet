@@ -13,7 +13,7 @@ const _si=stageInner;stageInner=async function(S,opt={}){if((S.avbase||'long')!=
  const v=S.view||'front';const B=BASES.p5;const bgd=`<div class="sbg" style="background:${(BGS[S.bg]||BGS.studio)[1]}"></div>`;
  if(POSEIMG[v]){const mid=p5Main(S);const p=mid&&IT[mid].p5[v];
   if(p)return bgd+`<img class="sb" src="/_blob/${p}" alt="">`+(Object.values(S.items).filter(Boolean).length>1?`<p class="p5note">בתנוחה הזו רואים את ${esc(D[mid].short.slice(0,30))} כמו ש-GPT צייר. את שאר הפריטים רואים בחזית ובגב.</p>`:'');
-  return bgd+`<img class="sb" src="${POSEIMG[v]}" alt="">`+(opt.edit?`<p class="p5note">${Object.values(S.items).some(Boolean)?'לבגד הזה עוד אין תמונה בתנוחה הזו. בחלון הבגד: "👗 הבגד על האווטר ב-5 תנוחות".':'בחרי בגד כדי לראות אותו בתנוחה הזו.'}</p>`:'')}
+  return bgd+`<img class="sb" src="${POSEIMG[v]}" alt="">`+(opt.edit?`<p class="p5note">${Object.values(S.items).some(Boolean)?'לבגד הזה עוד אין תמונה בתנוחה הזו. בחלון הבגד: "👗 הבגד על האווטאר ב-5 תנוחות".':'בחרי בגד כדי לראות אותו בתנוחה הזו.'}</p>`:'')}
  const back=v=='back';const lays=[];
  for(const [slot,id] of Object.entries(S.items)){if(!id||!D[id])continue;const tf=S.tf[slot]||{};if(tf.hidden&&!opt.edit)continue;if(back&&slot=='jewelry')continue;
   const src=await srcOf(slot,id,tf);const z=(tf.z!=null?tf.z:SLOTZ[slot]);

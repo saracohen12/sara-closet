@@ -52,7 +52,7 @@ function paintSpin(){const el=$('#spin');if(!el||!ST)return;el.classList.remove(
     const it=IT[id]||{};const sp=S.view!='hip'&&(it.pics||[]).find(p=>p.k=='צד');const src=sp?await cutSafe('/_blob/'+sp.id):await srcOf(slot,id,tf);const k=sp?.72:sq;
     const pv=(tf.pv||{})[S.view];/* v68: a placement saved for this view wins over the squeezed guess */lays.push(`<img class="sl ap" data-slot="${slot}" src="${src}" style="left:${pv?pv.x:50+((tf.x||50)-50)*k}%;top:${pv?pv.y:(tf.y||50)}%;width:${pv?pv.w:(tf.w||40)*k}%;z-index:${tf.z!=null?tf.z:SLOTZ[slot]};transform:${tfStr(pv?Object.assign({},tf,{r:pv.r||0}):tf,false)}" alt="" draggable="false" onerror="this.remove()">`)}
    html=html.replace(/<p class="p5note">[\s\S]*?<\/p>/,'');
-   if(lays.length){html+=lays.join('');if(opt.edit&&!SPINT&&!S.quiet)html+=`<p class="p5note sm">תצוגה משוערת · לתמונה אמיתית: בחלון הבגד ← "👗 הבגד על האווטר ב-5 תנוחות"</p>`}}}
+   if(lays.length){html+=lays.join('');if(opt.edit&&!SPINT&&!S.quiet)html+=`<p class="p5note sm">תצוגה משוערת · לתמונה אמיתית: בחלון הבגד ← "👗 הבגד על האווטאר ב-5 תנוחות"</p>`}}}
  if(S.mir&&opt.edit){const notes=[];html=html.replace(/<p class="p5note[^"]*">[\s\S]*?<\/p>/g,m=>{notes.push(m);return ''});html=`<div class="mirw">${html}</div>`+notes.join('')}
  return html}}
 // 6) UI: zoom pill with reset, spin pill, handlers

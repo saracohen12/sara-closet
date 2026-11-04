@@ -471,7 +471,9 @@ function Stage(host,opt={}){
  api.alive=on=>{glOn=!!on&&opt.alive&&!matchMedia('(prefers-reduced-motion: reduce)').matches;el.classList.toggle('breathe',glOn);if(glOn){api.stop();if(cur)api.show(0,900);glance()}else clearTimeout(glT)};
  api.isAlive=()=>glOn;
  // v347: the angle on screen is painted first, then the other 7 (an empty arch showed while all 8 were drawn at once)
- api.draw=async()=>{const s=state(),f=cur;await paint(cvs[f],f,s,1).then(r=>{cvs[f]._done=1;if(r!==false)el.classList.add('ready')}).catch(()=>{});await Promise.all(cvs.map((c,v)=>v==f?0:paint(c,v,s,1).then(()=>{c._done=1})));label()};
+ api.draw=async()=>{const s=state(),f=cur;
+  // v349 bug fix: after "📌 לדף הבית" the spinning home avatar showed the OLD outfit on angles not yet repainted – the turn waits until all 8 are new
+  const was=!!tm;if(was){clearInterval(tm);tm=null}try{await paint(cvs[f],f,s,1).then(r=>{cvs[f]._done=1;if(r!==false)el.classList.add('ready')}).catch(()=>{});await Promise.all(cvs.map((c,v)=>v==f?0:paint(c,v,s,1).then(()=>{c._done=1})))}finally{if(was&&!tm)api.play()}label()};
  api.stop=()=>{if(tm){clearInterval(tm);tm=null;api.onplay&&api.onplay(false)}};
  api.play=(once)=>{api.stop();let n=0;const sp=opt.speed||170;tm=setInterval(()=>{api.show(cur+1,opt.alive?Math.round(sp*.92):0);n++;if(once&&n>=8){api.stop();opt.alive&&glOn&&glance()}},sp);api.onplay&&api.onplay(true)};
  api.playing=()=>!!tm;
@@ -742,6 +744,10 @@ function applyIds(ids,reset){ids=ids.filter(id=>D[id]);
  MISS=ids.filter(id=>!isReady(id)&&CATIDS.has(cat(id)))}
 async function thumb(){const c=document.createElement('canvas');await paint(c,0,ST);const t=document.createElement('canvas');t.width=120;t.height=180;t.getContext('2d').drawImage(c,0,0,120,180);return t.toDataURL('image/jpeg',.82)}
 async function saveLook3(){const ids=wornIds(ST);if(!ids.length&&!whole(ST.head)&&!ST.mk){toast_('עוד לא לבשת כלום');return}
+ // v349 bug fix: every tap on ♡ saved the same look again (לוק 15, לוק 16 …) – the same look is saved once
+ try{const sig=s=>JSON.stringify([Object.keys((s&&s.on)||{}).sort().map(k=>[k,s.on[k]]),(s&&s.head)||'',(s&&s.mk)||'']);const me=sig(ST);
+  const same=Object.values(typeof LOOKS=='object'&&LOOKS||{}).find(l=>l&&l.r360&&sig(l.r360)==me)||Object.values(L3||{}).find(l=>l&&sig(l)==me);
+  if(same){toast_(`♡ הלוק הזה כבר שמור${same.name?' – "'+same.name+'"':''}`);return}}catch(_){}
  const items={};ids.forEach(id=>{let s='extra';try{s=slotOf(id)}catch(_){}if(!items[s])items[s]=id});
  MISS.forEach(id=>{let s='extra';try{s=slotOf(id)}catch(_){}if(!items[s])items[s]=id});
  const th=await thumb();let id=null;
@@ -1004,7 +1010,11 @@ function styFrame0(k,o){o=o||{};const st=STY[k];if(!st)return Promise.resolve(''
   const u=f.toDataURL('image/jpeg',.84);KV.put(k0,u);return u})().catch(()=>'').then(u=>{if(!u)delete FR0[ck];return u})}
 setTimeout(()=>{try{KV.tidy(KVV)}catch(_){}},9000);   // pictures of older versions go
 // v288b: ↺ איפוס – everything off the avatar in one tap (Sara 28/10 15:18 "במקום שאני אוריד כל דבר… מאפס"); ↩ brings it all back
-function reset(){UNDO={a:clone(ST),n:'כל מה שהיה עלייך'};ST=Object.assign(clone(DEF),{on:{},bg:ST.bg,cam:ST.cam});UNDO.bj=JSON.stringify(ST);MISS=[];keep();redraw();try{paintMiss()}catch(_){}}
+function reset(){UNDO={a:clone(ST),n:'כל מה שהיה עלייך'};ST=Object.assign(clone(DEF),{on:{},bg:ST.bg,cam:ST.cam});UNDO.bj=JSON.stringify(ST);MISS=[];keep();redraw();try{paintMiss()}catch(_){}
+ // v349 bug fix: reset took everything off with no word and no way back on the screen – now a bar says so, with "↩ ביטול" for 8 seconds
+ try{let s=document.getElementById('r3undo349');if(s)s.remove();s=document.createElement('div');s.id='r3undo349';s.setAttribute('role','status');
+  s.innerHTML='<span>🔄 הורדתי הכול מהאווטאר</span><button type="button">↩ ביטול</button>';(dlg||document.body).append(s);
+  s.querySelector('button').onclick=()=>{if(UNDO){ST=clone(UNDO.a);UNDO=null;keep();redraw();try{paintMiss()}catch(_){}}s.remove();toast_('↩ הכול חזר')};setTimeout(()=>s.remove(),8000)}catch(_){}}
 // v332 (Sara 29/10 10:02 "תלביש לי כל יום 5 בובות … מה כדאי לי ללבוש היום … לפי מזג האוויר … מהכיסוי עד הנעליים"): whole looks for today, only from what is
 // already on the avatar – a dress / set / top + skirt, a cover in a tie, shoes, a belt, jewellery, a coat when it is cold or rainy (none when hot); each look different
 async function looksFor(wx,n){n=n||5;

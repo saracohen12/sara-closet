@@ -50,7 +50,7 @@ function btn(id){const d=document.getElementById('dlg');if(!d||!d.open||!D[id]||
  d.querySelectorAll('[data-gen161],.gen161ban').forEach(x=>x.remove());const g=gen161(id);
  const h=d.querySelector('.pd85h');const host=h||d.querySelector('h3');
  if(host)host.insertAdjacentHTML(h?'beforeend':'afterend',`<button type="button" class="mini gen161b" data-gen161="${id}" data-on="${g?0:1}">${g?'↩ להחזיר לארון':'🗃 לרשימה הכללית'}</button>`);
- if(g){const t=d.querySelector('h2')||d.querySelector('h3');const ban=`<div class="gen161ban"><span>🗃 המוצר הזה ברשימה הכללית, ולא מופיע בארון</span><button type="button" data-gen161="${id}" data-on="0">↩ להחזיר לארון</button></div>`;
+ if(g){const t=d.querySelector('h2')||d.querySelector('h3');const ban=`<div class="gen161ban"><span>${(()=>{const o=(IT[id]||{}).out;if(!o||!o.r)return '🗃 המוצר הזה ברשימה הכללית, ולא מופיע בארון';const W={torn:'🧵 נקרע',stain:'🟤 כתם שלא יורד',broken:'🔧 התקלקל / נהרס',small:'📏 כבר לא מתאים לי',daughter:'👧 עבר לבת שלי',gave:'🎁 נתתי למישהו',other:'✏ סיבה אחרת'};const d=String(o.d||'').slice(0,10).split('-');return `🧺 יצא משימוש: ${W[o.r]||o.r}${d.length==3?' · '+(+d[2])+'/'+(+d[1]):''}${o.note?' · '+String(o.note).replace(/[<>&]/g,''):''}`})()}</span><button type="button" data-gen161="${id}" data-on="0">↩ להחזיר לארון</button></div>`;
   const top=d.querySelector('.o3dl')||t;if(top)top.insertAdjacentHTML('afterend',ban)}}
 {const _oi=openItem;openItem=function(id){const r=_oi.apply(this,arguments);Promise.resolve(r).then(()=>setTimeout(()=>{try{btn(id)}catch(e){ERR('btn',e)}},320));return r};window.openItem=openItem}
 

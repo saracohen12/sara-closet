@@ -47,7 +47,7 @@ async function run(files){if(BUSY)return;BUSY=true;S={items:[]};const d=make();i
  try{let sample=null;try{sample=await TO(claude.use('sample'),12000,null)}catch(_){}
   const lim=sample?await TO(sample.limits().catch(()=>null),8000,null):null;
   if(!sample||!lim||!lim.images)return fail('אין לי כאן גישה לקריאת תמונות. אפשר לשלוח לי את הקבלה בצ׳אט, ואכניס אותה.');
-  let P;try{P=await toPages(files)}catch(e){ERR('pages',e);return fail(e&&e.message=='pdfjs'?'לא הצלחתי לפתוח את ה-PDF כאן. נסי צילומי מסך של הקבלה.':'לא הצלחתי לקרוא את הקובץ. נסי שוב, או צילומי מסך.')}
+  let P;try{P=await toPages(files)}catch(e){ERR('pages',e);return fail(e&&e.message=='pdfjs'?'לא הצלחתי לפתוח את ה-PDF‏ כאן. נסי צילומי מסך של הקבלה.':'לא הצלחתי לקרוא את הקובץ. נסי שוב, או צילומי מסך.')}
   if(!P.length)return fail('לא מצאתי עמודים בקובץ.');S.pages=P;
   const per=Math.max(1,Math.min(4,lim.images.maxCount||1));let head=null;
   for(let i=0;i<P.length;i+=per){const ch=P.slice(i,i+per);busy(`קוראת את הקבלה… עמוד ${i+1}${ch.length>1?'–'+(i+ch.length):''} מתוך ${P.length}`);
@@ -94,7 +94,7 @@ async function onClick(e){const t=e.target.closest('button');if(!t)return;
  if(t.classList.contains('rp9x2'))dlg.close()}
 document.addEventListener('change',e=>{const t=e.target;if(!t.matches||!t.matches('[data-rp299]'))return;const f=[...(t.files||[])];t.value='';if(f.length)run(f)},true);
 function inject(d){const l=d.querySelector('label.o3cam:not(.small):not(.rc296b)');if(!l||d.querySelector('.rp299b'))return;const after=d.querySelector('.rc296b')||l;
- after.insertAdjacentHTML('afterend',`<label class="o3cam small rp299b"><input type="file" accept="application/pdf,.pdf,image/*" multiple data-rp299><span class="ic">🧾</span><span><b>הזמנה חדשה מקבלה</b><small>מעלים את ה-PDF או צילומי מסך – והמוצרים נכנסים לבד</small></span></label>`)}
+ after.insertAdjacentHTML('afterend',`<label class="o3cam small rp299b"><input type="file" accept="application/pdf,.pdf,image/*" multiple data-rp299><span class="ic">🧾</span><span><b>הזמנה חדשה מקבלה</b><small>מעלים את ה-PDF‏ או צילומי מסך – והמוצרים נכנסים לבד</small></span></label>`)}
 const w=setInterval(()=>{const d=document.getElementById('ord123');if(!d)return;clearInterval(w);let q=0;
  new MutationObserver(()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;try{inject(d)}catch(e){ERR('inject',e)}})}).observe(d,{childList:true,subtree:true});try{inject(d)}catch(e){ERR('inject',e)}},800);
 window.RP299={run,accOf,snap};

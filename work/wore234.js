@@ -68,7 +68,9 @@ function week(){const b=$1('#wk83');if(!b)return;const days=weekDays(),td=today(
   const n=worn(k).length,p=DAYS[k]&&DAYS[k].ph;x.setAttribute('aria-label',dayName(k)+' '+dm(k)+(n?`: ${n} בגדים`:': לבחור מה לבשתי'));
   const c=x.querySelector('.w83c');if(c){if(p&&(c.querySelector('.me234')||{}).getAttribute?.('src')!='/_blob/'+p){   // v278: also when the day's photo was changed
   c.innerHTML=`<img class="me234" alt="" src="/_blob/${es(p)}">${n?`<i>${n}</i>`:''}`;x.classList.add('on')}
-   if(!n&&!p&&!c.querySelector('.pl234'))c.innerHTML='<span class="pl234" aria-hidden="true">+</span>'}});
+   if(!n&&!p&&!c.querySelector('.pl234'))c.innerHTML='<span class="pl234" aria-hidden="true">+</span>';
+   // v349 bug fix: a day with clothes but no selfie stayed "+" – now it shows the first piece she wore and how many
+   if(n&&!p){const f=worn(k)[0];if(c.dataset.w349!=f+n){c.dataset.w349=f+n;c.innerHTML=`<img class="me234" alt="" data-th="${es(f)}" src="${es(ph(f))}"><i>${n}</i>`;x.classList.add('on')}}}});
  const s=b.querySelector('.w83h small'),h='לחצי על יום: 👗 מה לבשתי · 📸 צלמי את עצמך';if(s&&!s.dataset.k234){s.dataset.k234=1;s.textContent=h}}
 setInterval(week,1500);setTimeout(week,600);
 document.addEventListener('click',e=>{const x=e.target.closest&&e.target.closest('#wk83 .w83d[data-wd234]');if(!x||x.disabled)return;e.preventDefault();e.stopImmediatePropagation();open(x.dataset.wd234)},true);
@@ -205,7 +207,7 @@ async function addPiece(i){const p=V.res&&V.res.pieces[i];if(!p||p.added)return;
 async function dayLook(k,go){try{const ids=worn(k);const id='d'+k;if(typeof LOOKS!='object')return;
  if(!ids.length){if(LOOKS[id]){delete LOOKS[id];if(typeof saveDoc=='function')await saveDoc('looks',id,null)}return}
  const items={};ids.forEach(x=>{let s=cat(x)||'extra',n=s,j=2;while(items[n])n=s+(j++);items[n]=x});
- const L=Object.assign({},LOOKS[id]||{},{id,name:'לבשתי · '+(k==today()?'היום ':dayName(k)+' ')+dm(k),occ:'day',items,created:k,worn:k,day234:1});delete L.r360;delete L.th360;LOOKS[id]=L;
+ const L=Object.assign({},LOOKS[id]||{},{id,name:'לבשתי · יום '+DN[new Date(k+'T12:00').getDay()]+' '+dm(k),   /* v349: "היום" stayed in the name forever */occ:'day',items,created:k,worn:k,day234:1});delete L.r360;delete L.th360;LOOKS[id]=L;
  if(typeof saveDoc=='function'&&typeof DB!='undefined'&&DB)await saveDoc('looks',id,L);else{try{localStorage.setItem('hub_looks',JSON.stringify(LOOKS))}catch(_){}}
  if(go)avatar(k)}catch(e){ERR('look',e)}}
 const ready=()=>new Set((window.R360&&R360.ready&&R360.ready())||[]);
@@ -229,7 +231,7 @@ document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.c
  if(d.wr234save!=null&&V.from=='resadd'){let n=0;for(const id of V.sel)if(!V.res.pieces.some(p=>p.id==id)){V.res.pieces.push({what:'',cat:cat(id),id,on:true,why:'',alt:[],self:1});n++}V.v='res';V.from='';render();if(n)toast_('✓ הוספתי '+(n==1?'בגד אחד':n+' בגדים'));return}
  if(d.wr234save!=null){const k=V.k,was=new Set(worn(k));t.disabled=true;
   for(const id of V.sel)if(!was.has(id))await setWorn(id,k,true);for(const id of was)if(!V.sel.has(id))await setWorn(id,k,false);
-  V.v='day';render();toast_(V.sel.size?`✓ נשמר: ${V.sel.size} בגדים ב${dayName(k)=='היום'?'היום':dayName(k)}, ונכנס ללוקים שלך`:'נשמר');week();dayLook(k);return}
+  V.v='day';render();toast_(V.sel.size?`✓ נשמר: ${V.sel.size==1?'בגד אחד':V.sel.size+' בגדים'} ${k==today()?'להיום':'ל'+dayName(k)}, ונכנס ללוקים שלך`:'נשמר');week();dayLook(k);return}
  if(d.wr234rm){await setWorn(d.wr234rm,V.k,false);render();week();dayLook(V.k);return}
  if(d.wr234av!=null){await dayLook(V.k,true);return}
  if(d.wr234pc!=null){const p=V.res.pieces[+d.wr234pc];if(p){p.on=!p.on;render()}return}
@@ -241,7 +243,7 @@ document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.c
  if(d.wr234no!=null){const p=V.res.pieces[+d.wr234no];if(p){p.no=1;render()}return}
  if(d.wr234swap!=null){const p=V.res.pieces[+d.wr234swap];V.fi=+d.wr234swap;V.sel=new Set(p.id?[p.id]:[]);V.from='res';V.v='pick';V.c=CATS.some(c=>c[0]==p.cat)?p.cat:'';V.q='';V.n=60;render();W.querySelector('.w234b').scrollTop=0;return}
  if(d.wr234ok!=null){const k=V.k,ids=V.res.pieces.filter(p=>p.id&&p.on).map(p=>p.id);t.disabled=true;
-  for(const id of ids)await setWorn(id,k,true);V.v='day';V.res=null;render();week();toast_(ids.length?`✓ סימנתי ${ids.length} בגדים ב${dayName(k)} ונשמר בלוקים שלך`:'לא סימנתי בגדים');if(ids.length)await dayLook(k,true);return}
+  for(const id of ids)await setWorn(id,k,true);V.v='day';V.res=null;render();week();toast_(ids.length?`✓ סימנתי ${ids.length==1?'בגד אחד':ids.length+' בגדים'} ${k==today()?'להיום':'ל'+dayName(k)} ונשמר בלוקים שלך`:'לא סימנתי בגדים');if(ids.length)await dayLook(k,true);return}
  }catch(err){ERR('click',err);toast_('משהו השתבש, נסי שוב')}});
 document.addEventListener('change',e=>{const t=e.target;if(!t.matches||!t.matches('#wr234 [data-wr234cam]'))return;const f=[...(t.files||[])];const more=t.dataset.wr234cam=='add';t.value='';if(f.length)scan(f,more)});
 let qT;document.addEventListener('input',e=>{if(!e.target||e.target.id!='q234')return;clearTimeout(qT);const el=e.target;qT=setTimeout(()=>{V.q=el.value;V.n=60;render();const n=W.querySelector('#q234');if(n){n.focus();try{n.setSelectionRange(n.value.length,n.value.length)}catch(_){}}},250)});

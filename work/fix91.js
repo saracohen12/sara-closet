@@ -176,7 +176,7 @@ const ME=()=>Object.assign({},ME0,(typeof SET=='object'&&SET.me93&&SET.me91)||{}
 const ML=[['h','גובה'],['b','היקף חזה'],['w','היקף מותן'],['hp','היקף ירכיים'],['sh','רוחב כתפיים'],['nw','מבסיס הצוואר עד המותן'],['wk','מהמותן עד הברך'],['wa','מהמותן עד הקרסול'],['wf','מהמותן עד הרצפה'],['ub','מתחת לחזה'],['arm','אורך יד (כתף עד פרק כף היד)'],['ua','היקף זרוע עליונה'],['wr','היקף פרק כף היד'],['nk','היקף צוואר'],['nb','מהגומה בצוואר עד קו החזה']];
 function meText(){const m=ME();const parts=ML.filter(([k])=>+m[k]>0).map(([k,n])=>`${n} ${m[k]} ס״מ`);
  return `המידות שלי: ${parts.join(', ')}. הבגד צריך להיות בדיוק במידה שלי ובפרופורציות של הגוף באווטר – לא צר יותר ולא קצר יותר.
-בכל חלק של גיליון האווטר, מלמעלה למטה: קו הכתפיים בערך ב-22% מגובה החלק, המותן ב-40%, הירכיים ב-51%, הברך ב-72%, הקרסול ב-93%. בכל חלק הבגד יושב בדיוק על הקווים האלה: הכתפיים של הבגד על קו הכתפיים, קו המותן של הבגד על המותן, והאורך לפי הגובה שלי (שמלה או חצאית מידי – עד אמצע השוק). רוחב הבגד בכתפיים ובשרוולים מכסה את הכתפיים והזרועות של האווטר.`}
+בכל חלק של גיליון האווטאר, מלמעלה למטה: קו הכתפיים בערך ב-22% מגובה החלק, המותן ב-40%, הירכיים ב-51%, הברך ב-72%, הקרסול ב-93%. בכל חלק הבגד יושב בדיוק על הקווים האלה: הכתפיים של הבגד על קו הכתפיים, קו המותן של הבגד על המותן, והאורך לפי הגובה שלי (שמלה או חצאית מידי – עד אמצע השוק). רוחב הבגד בכתפיים ובשרוולים מכסה את הכתפיים והזרועות של האווטאר.`}
 window.meText91=meText;
 const isG=t=>/^מצורפות שתי תמונות/.test(t||'')&&/5 חלקים/.test(t||'');
 function me91(){const d=document.getElementById('pr80');if(!d||!d.open)return;const ta=d.querySelector('#p80txt');if(ta&&isG(ta.value)&&!ta.value.includes('המידות שלי:'))ta.value=ta.value.replace(/\n?(בלי טקסט, בלי כותרות)/,'\n'+meText()+'\n$1').replace(/^((?![\s\S]*המידות שלי:)[\s\S]*)$/,m=>m.includes('המידות שלי:')?m:m+'\n'+meText());
@@ -185,5 +185,5 @@ function me91(){const d=document.getElementById('pr80');if(!d||!d.open)return;co
 {const _op=window.openPrompts80;if(_op)window.openPrompts80=function(){const r=_op.apply(this,arguments);try{me91()}catch(e){ERR('me91',e)}return r}}
 setInterval(()=>{try{me91()}catch(_){}},800);
 document.addEventListener('change',e=>{const t=e.target;if(!t||!t.matches||!t.matches('[data-me91]'))return;SET.me91=Object.assign({},ME(),{[t.dataset.me91]:+t.value||0});SET.me93=1;try{saveSet()}catch(_){}
- const ta=document.querySelector('#pr80 #p80txt');if(ta&&ta.value.includes('המידות שלי:'))ta.value=ta.value.replace(/המידות שלי:[\s\S]*?רוחב הבגד בכתפיים ובשרוולים מכסה את הכתפיים והזרועות של האווטר\./,meText());toast('📏 נשמר, ונכנס לפרומפטים')});
+ const ta=document.querySelector('#pr80 #p80txt');if(ta&&ta.value.includes('המידות שלי:'))ta.value=ta.value.replace(/המידות שלי:[\s\S]*?רוחב הבגד בכתפיים ובשרוולים מכסה את הכתפיים והזרועות של האווטאר\./,meText());toast('📏 נשמר, ונכנס לפרומפטים')});
 }

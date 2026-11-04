@@ -282,7 +282,7 @@ dialog#alerts,dialog#cmp2,dialog#ssave,dialog.cmpdlg{overflow-y:auto;max-height:
 <div class="row"><label>רק</label><select id="flf"><option value="">הכל</option><option value="fav">♥ מועדפים</option><option value="fix">צריך תיקון</option><option value="nofit">לא במידה</option><option value="note">עם הערה</option><option value="transit">עוד בדרך</option><option value="dup">כפולים</option><option value="avok">🟢 מסודר לאווטר</option><option value="avfix">🟠 דרוש תיקון לאווטר</option><option value="avno">🔴 עוד לא לאווטר</option></select>
 <label>ילד/ה</label><select id="kidf"><option value="">כל הילדים</option></select><datalist id="kids"></datalist><label>מיקום</label><select id="locf"><option value="">כל המקומות</option><option>ארון</option><option>מגירה</option><option>מחסן</option><option>כביסה</option><option>אצל התופרת</option></select></div>
 <div class="row"><label>מחיר</label><input id="pmin" type="number" inputmode="decimal" placeholder="מ-₪" class="num"><input id="pmax" type="number" inputmode="decimal" placeholder="עד ₪" class="num">
-<label>חודש</label><select id="monf"><option value="">כל החודשים</option><option value="8">אוגוסט</option><option value="9">ספטמבר</option><option value="10">אוקטובר</option></select></div>
+<label>חודש</label><select id="monf"><option value="">כל החודשים</option><option value="1">ינואר</option><option value="2">פברואר</option><option value="3">מרץ</option><option value="4">אפריל</option><option value="5">מאי</option><option value="6">יוני</option><option value="7">יולי</option><option value="8">אוגוסט</option><option value="9">ספטמבר</option><option value="10">אוקטובר</option><option value="11">נובמבר</option><option value="12">דצמבר</option></select></div>
 <div class="row"><label>הזמנה</label><select id="ordf"><option value="">כל ההזמנות</option></select></div>
 <div class="row"><label>קטגוריה חדשה</label><input id="ncn" placeholder="למשל: בגדי ים" class="num" style="width:150px"><select id="ncg"><option value="clo">בגדים</option><option value="acc">אביזרים</option><option value="nig">לילה</option><option value="kid">ילדים</option><option value="more">עוד</option></select><button id="addcat" class="fbtn" style="height:36px">הוסיפי</button><span id="custlist" class="chips" style="margin:0"></span></div>
 <div class="row tools2"><label>כלים</label><button id="qm" aria-pressed="false">⚡ סימון מהיר</button><button id="byo" aria-pressed="false">תצוגה לפי הזמנה</button><button id="cmp" aria-pressed="false">השוואה</button><button id="rnd">🎲 תפתיעי אותי</button><button id="csv">ייצוא לאקסל</button><button id="prt">הדפסה</button><button id="rail" aria-pressed="false">👗 תצוגת מתלה</button><button id="fsm">א-</button><button id="fsp">א+</button></div>
@@ -453,10 +453,14 @@ function toggleMode(id,which){const c=card(id);const it=IT[id]||{};let cur=it.tg
  putItem(id,{tg:cur});if($('#dlg').open&&CUR==id)openItem(id)}
 const MODE=()=>G=='day'?'day':G=='shab'?'shab':'';
 const FIN={'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'};function normQ(s){return (s||'').toLowerCase().replace(/[\u0591-\u05C7]/g,'').replace(/['"׳״`]/g,'').replace(/[ךםןףץ]/g,c=>FIN[c])}
+// v349 (closet search: "שמלה" found 33 of 87 dresses – the names say "שמלת"): Hebrew forms – prefixes ו ה ב ל מ ש כ and endings ה ת ות ים יות
+const QF={};function qForms(w){if(QF[w])return QF[w];const f=new Set([w]);const strip=s=>{for(const e of ['יות','ות','ימ','ה','ת','י'])if(s.length-e.length>=3&&s.endsWith(e))return s.slice(0,-e.length);return s};
+ if(/[\u0590-\u05ff]/.test(w)&&w.length>=3){f.add(strip(w));if(/^[והבלמשכ]/.test(w)&&w.length>=4){const s=w.slice(1);f.add(s);f.add(strip(s))}}return QF[w]=[...f].filter(x=>x.length>=2)}
+function qHit(h,w){return qForms(w).some(v=>h.includes(v))}
 function apply(){const q=normQ($('#q').value.trim()).split(/\s+/).filter(Boolean);const exact=D[$('#q').value.trim().toUpperCase()]?$('#q').value.trim().toUpperCase():'';
  let tot=0;
  $$('section').forEach(s=>{if(s.closest('dialog,#r360'))return;const inG=s.dataset.g=='ord'?true:MODE()?(s.dataset.g=='clo'&&(!C||s.id==C)):(G=='all'||s.dataset.g==G)&&(!C||s.id==C);let n=0;
-  s.querySelectorAll('.card').forEach(c=>{const ok=inG&&(MODE()!='day'||isDay(c))&&(MODE()!='shab'||isShab(c))&&extra(c)&&(F=='all'||(F=='dup'?c.dataset.dup:c.dataset.src==F))&&(exact?c.dataset.id==exact:q.every(w=>(c.dataset.qn||(c.dataset.qn=normQ(c.dataset.q))).includes(w)));c.classList.toggle('hide',!ok);if(ok)n++});
+  s.querySelectorAll('.card').forEach(c=>{const ok=inG&&(MODE()!='day'||isDay(c))&&(MODE()!='shab'||isShab(c))&&extra(c)&&(F=='all'||(F=='dup'?c.dataset.dup:c.dataset.src==F))&&(exact?c.dataset.id==exact:q.every(w=>qHit(c.dataset.qn||(c.dataset.qn=normQ(c.dataset.q)),w)));c.classList.toggle('hide',!ok);if(ok)n++});
   s.classList.toggle('hide',!n);const sp2=s.querySelector('h2 span');if(sp2)sp2.textContent=n;tot+=n});
  $$('.subs a').forEach(a=>{const vis=G!='all'&&(a.dataset.g==G||(MODE()&&a.dataset.g=='clo'));a.classList.toggle('hide',!vis);a.setAttribute('aria-pressed',a.getAttribute('href')=='#'+C);});
  $('.subs').classList.toggle('hide',G=='all');$('#empty').classList.toggle('hide',tot>0);$('#cnt').textContent=tot+' פריטים';updFb();if(window.READY)afterApply()}
@@ -472,7 +476,7 @@ setSize(sz);ensureCats();paintAll();apply();
 document.addEventListener('click',e=>{const a=e.target.closest('.dlink');if(a){e.preventDefault();openItem(a.dataset.id)}});
 
 /* ===== upgrades ===== */
-const MONTHS={8:'אוגוסט',9:'ספטמבר',10:'אוקטובר'};
+const MONTHS={1:'ינואר',2:'פברואר',3:'מרץ',4:'אפריל',5:'מאי',6:'יוני',7:'יולי',8:'אוגוסט',9:'ספטמבר',10:'אוקטובר',11:'נובמבר',12:'דצמבר'};   // v349: was only 8–10, so November orders could not be filtered
 let PMIN=null,PMAX=null,MONF='',ORDF='',QM=false,BYO=false,CMP=false,CMPSEL=[],LAST=null,RECENT=[];
 const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
 function daysLeft(iso){if(!iso)return null;const d=new Date(iso+'T00:00:00');return Math.round((d-today())/864e5)}

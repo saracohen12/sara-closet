@@ -9,7 +9,9 @@ let LOOKS={},PLAN={days:{}},CREDITS={},SET={};
 const DAYS=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
 const OCC={day:'חול',shab:'שבת',event:'אירוע',work:'עבודה'};
 function curSeason(){const mo=new Date().getMonth()+1;return [12,1,2,3].includes(mo)?'חורף':[6,7,8,9].includes(mo)?'קיץ':'מעבר'}
-function usable(id,o){const it=IT[id]||{};if(it.s=='ret'||it.s=='give'||it.nofit)return false;if(o.fav&&!it.fav)return false;return true}
+function usable(id,o){const it=IT[id]||{};if(it.s=='ret'||it.s=='give'||it.nofit)return false;
+ // v349 bug fix: looks were built from clothes still on the way / missing / cancelled / in the general list or out of use
+ const x=D[id]||{};let oa=false;try{oa=!!(ORD[x.order]||{}).arrived}catch(_){}if(it.oos||it.miss||it.gen||it.out||it.got=='n'||(x.transit&&!oa&&it.got!='y'))return false;if(o.fav&&!it.fav)return false;return true}
 function fitsOcc(id,occ){const c=card(id);if(!c)return false;const t=tgs(c);
  if(occ=='day')return isDay(c);if(occ=='shab')return isShab(c);if(occ=='event')return t.includes('אירוע')||isShab(c);if(occ=='work')return t.includes('עבודה')||isDay(c);return true}
 function fitsSeason(id,sea){if(!sea)return true;const c=card(id);const s=(c?.dataset.ss||'').split('|').filter(Boolean);return !s.length||s.includes(sea)||s.includes('מעבר')||(sea=='מעבר')}
@@ -104,7 +106,7 @@ function insights(){const ids=Object.keys(D).filter(id=>(i=>i.s!='ret'&&i.s!='gi
  ${nofit.length?`<p><b>סימנת "לא במידה":</b> ${nofit.map(id=>`<a href="#" data-open="${id}">${esc(D[id].short.slice(0,25))} (${esc(D[id].size||'')})</a>`).join(' · ')}</p>`:''}`}
 // v178: each return shows a small photo, the store, the order number and date, the deadline and whether it was sent
 function retRow177(id){const x=D[id],it=IT[id]||{},sh=x.src=='sh'||x.src=='ae';
- const ord=sh?x.order:String(x.order||'').replace(/^P0-/,'PO-'),rc=!sh&&x.file?' · '+x.file.replace('קובץ','קבלה'):'';
+ const ord=sh?x.order:String(x.order||'').replace(/^P0-/,'PO-'),rc=!sh&&x.file?' · '+x.file.replace('קובץ','קבלה').replace('חשבון נוסף','קבלה'):'';
  const dl=x.rdl?x.rdl.split('-').reverse().slice(0,2).join('/'):'';
  const left=x.rdl?Math.ceil((new Date(x.rdl)-new Date())/864e5):null;
  return `<div class="rt177r"><button class="ph" data-open="${id}" aria-label="פתיחת המוצר">${img(id)||x.hi?`<img data-th="${id}" src="${img(id)||TPH}" alt="">`:'<span>📦</span>'}</button>
@@ -122,11 +124,12 @@ const dkey=d=>{const [dd,mm]=String(d||'0/0').split('/');return ((+mm||0)<6?(+mm
 const isRet=id=>(IT[id]||{}).s=='ret'||!!(IT[id]||{}).rnr;
 function ret340(ret){const all=Object.keys(D);
  const OA={};all.forEach(id=>{const x=D[id],k=x.order||'?';(OA[x.src]=OA[x.src]||new Set()).add(k)});
- const nR=k=>ret.filter(id=>!k||D[id].src==k).length,nO=k=>k?(OA[k]||new Set()).size:Object.values(OA).reduce((t,s)=>t+s.size,0);
+ const todo=id=>{const i=IT[id]||{};return i.s=='ret'&&!i.rsent&&!i.rnr&&!i.refunded};   // v349: "להחזיר" = what still has to go back (same as the orders window)
+ const nR=k=>ret.filter(id=>(!k||D[id].src==k)&&todo(id)).length,nO=k=>k?(OA[k]||new Set()).size:Object.values(OA).reduce((t,s)=>t+s.size,0);
  const acc=`<div class="r340f"><span>📁 חשבון</span>${[['','הכל'],...ACC340].filter(([k])=>!k||nO(k)).map(([k,t])=>`<button data-r340acc="${k}" aria-pressed="${R340.acc==k}">${t} <small>${nO(k)} הזמנות · ${nR(k)} להחזיר</small></button>`).join('')}</div>`;
  const O={};all.forEach(id=>{const x=D[id];if(R340.acc&&x.src!=R340.acc)return;const k=x.order||'?';(O[k]=O[k]||[]).push(id)});
  const ks=Object.keys(O).sort((a,b)=>dkey(D[O[b][0]].date)-dkey(D[O[a][0]].date));if(R340.ord&&R340.ord!='*'&&!O[R340.ord])R340.ord='';
- const nm=k=>{const x=D[O[k][0]],r=O[k].filter(isRet).length;return (R340.acc?'':(ACC340.find(a=>a[0]==x.src)||['',''])[1]+' · ')+(x.date||'')+(x.file&&!(x.src=='sh'||x.src=='ae')&&!/\d+\/\d+/.test(x.file)?' · '+x.file.replace('קובץ','קבלה'):'')+' · '+O[k].length+' מוצרים'+(r?' · ↩ '+r+' להחזיר':'')};
+ const nm=k=>{const x=D[O[k][0]],r=O[k].filter(isRet).length;return (R340.acc?'':(ACC340.find(a=>a[0]==x.src)||['',''])[1]+' · ')+(x.date||'')+(x.file&&!(x.src=='sh'||x.src=='ae')&&!/\d+\/\d+/.test(x.file)?' · '+x.file.replace('קובץ','קבלה').replace('חשבון נוסף','קבלה'):'')+' · '+(O[k].length==1?'מוצר אחד':O[k].length+' מוצרים')+(r?' · ↩ '+r+' להחזיר':'')};
  const ord=`<div class="r340f r343"><span>📦 הזמנה</span><select id="r343s"><option value="">כל ההזמנות – רק מה שסימנתי להחזיר (${nR(R340.acc)})</option><option value="*"${R340.ord=='*'?' selected':''}>📂 כל ההזמנות${R340.acc?' של '+esc((ACC340.find(a=>a[0]==R340.acc)||['',''])[1]):''} – כל המוצרים (${ks.length} הזמנות)</option>${ks.map(k=>`<option value="${esc(k)}"${R340.ord==k?' selected':''}>${esc(nm(k))}</option>`).join('')}</select><small>${ks.length} הזמנות${R340.acc?' ב'+esc((ACC340.find(a=>a[0]==R340.acc)||['',''])[1]):''}</small></div>`;
  const st=ids=>{const mn=Math.min(...ids.map(step340));return mn>=3?'📮':mn>=2?'📦':mn>=1?'📝':'⚪'};
  const group=(k,ids,whole)=>{const x=D[O[k][0]],sh=x.src=='sh'||x.src=='ae',num=sh?k:String(k).replace(/^P0-/,'PO-'),L=ids.filter(id=>isRet(id)&&!(IT[id]||{}).rnr);
@@ -138,13 +141,18 @@ function ret340(ret){const all=Object.keys(D);
  if(R340.ord)return acc+ord+group(R340.ord,O[R340.ord].slice().sort((a,b)=>isRet(b)-isRet(a)),true);
  const RK=ks.filter(k=>O[k].some(isRet));
  return acc+ord+(RK.length?RK.map(k=>group(k,O[k].filter(isRet),false)).join(''):'<p class="m" style="padding:0">אין כאן מוצרים שסימנת להחזרה. בוחרים הזמנה ברשימה למעלה ולוחצים "↩ להחזיר".</p>')}
-function moneyTab(){const ret=Object.keys(D).filter(id=>(IT[id]||{}).s=='ret'||(IT[id]||{}).rnr);const exp=ret.reduce((s,id)=>s+D[id].paid,0);const got=ret.filter(id=>(IT[id]||{}).refunded).reduce((s,id)=>s+D[id].paid,0);
+function moneyTab(){const ret=Object.keys(D).filter(id=>(IT[id]||{}).s=='ret'||(IT[id]||{}).rnr);
+ // v349 bug fixes: the line follows the chosen account, and splits "still to return" / "sent" / "money back without returning" (it said 55 while the orders window said 50)
+ const A=(typeof R340!='undefined'&&R340.acc)||'';const mine=ret.filter(id=>!A||D[id].src==A);const I=id=>IT[id]||{};
+ const todoN=mine.filter(id=>I(id).s=='ret'&&!I(id).rsent&&!I(id).rnr&&!I(id).refunded).length,sentN=mine.filter(id=>I(id).s=='ret'&&I(id).rsent&&!I(id).refunded).length,rnrN=mine.filter(id=>I(id).rnr).length;
+ const exp=mine.reduce((s,id)=>s+D[id].paid,0);const got=mine.filter(id=>I(id).refunded).reduce((s,id)=>s+D[id].paid,0);
+ const accN=A?(((typeof ACC340!='undefined'&&ACC340.find(a=>a[0]==A))||['',''])[1]):'';
  const cr=Object.entries(CREDITS);
- return `<h3>החזרות</h3><p>סימנת ${ret.length} פריטים להחזרה. צפוי לחזור: <b>${money2(exp)}</b> · כבר חזר: <b>${money2(got)}</b></p>
+ return `<h3>החזרות</h3><p>${accN?'<b>'+esc(accN)+':</b> ':''}${todoN} עוד להחזיר${sentN?' · '+sentN+' כבר נשלחו':''}${rnrN?' · '+rnrN+' כסף חזר בלי להחזיר':''}. צפוי לחזור: <b>${money2(exp)}</b> · כבר חזר: <b>${money2(got)}</b></p>
  ${ret340(ret)}
  <h3>קרדיטים ויתרות</h3><div class="hrow"><select id="crs"><option>שיין</option><option>טמו 1</option><option>טמו 2</option><option>טמו 3</option></select><input id="cra" type="number" class="num" placeholder="סכום ₪"><label>תוקף</label><input id="crd" type="date" class="num" style="width:150px"><button id="cradd">הוסיפי</button></div>
  ${cr.length?`<table class="storet"><tr><th>חנות</th><th>סכום</th><th>תוקף</th><th></th></tr>${cr.map(([k,v])=>{const n=v.exp?daysLeft(v.exp):null;return `<tr><td>${esc(v.store)}</td><td>${money2(+v.amt)}</td><td style="color:${n!=null&&n<=14?'#c62828':''}">${v.exp?fmtD(v.exp)+(n!=null?` (עוד ${n} ימים)`:''):'—'}</td><td><button data-crdel="${k}">✕</button></td></tr>`}).join('')}</table>`:''}`}
-function homeTab(){const LOC=['ארון','מגירה','מחסן','כביסה','אצל התופרת'];const cnt={};Object.keys(D).forEach(id=>{const l=(IT[id]||{}).loc;if(l)cnt[l]=(cnt[l]||0)+1});
+function homeTab(){const LOC=['ארון','מגירה','מחסן','כביסה','אצל התופרת'];const cnt={};Object.keys(D).forEach(id=>{const i=IT[id]||{};if(i.gen||i.oos||i.s=='ret'||i.s=='give')return;const l=i.loc;if(l)cnt[l]=(cnt[l]||0)+1});   // v349: same items as the smart closet (it counted returned ones too)
  const sea=curSeason();const out=Object.keys(D).filter(id=>{const c=card(id);if(!c||!['dresses','skirts','tops','sweaters','outer','sets'].includes(curCat(id))||(IT[id]||{}).s=='ret')return false;const s=(c.dataset.ss||'').split('|');return sea=='חורף'?s.includes('קיץ'):sea=='קיץ'?s.includes('חורף'):false});
  const inn=Object.keys(D).filter(id=>{const c=card(id);if(!c||(IT[id]||{}).s=='ret')return false;const s=(c.dataset.ss||'').split('|');return s.includes(sea=='מעבר'?'חורף':sea)&&(IT[id]||{}).loc=='מחסן'});
  const give=Object.keys(D).filter(id=>(IT[id]||{}).s=='give');const gz={};give.forEach(id=>{const z=card(id)?.dataset.z||'ללא מידה';(gz[z]=gz[z]||[]).push(id)});
@@ -184,12 +192,12 @@ document.addEventListener('click',async e=>{const t=e.target;
   putItem(id,p);renderHub();toast('✓ נשמר');return}   // v344: paint first, the save goes on in the background (Sara: "לא עשה לי כלום")
  const rl=t.closest('[data-rall]');if(rl){const k=rl.dataset.rall,v={rreq:1,rpack:2,rsent:3}[k],ids=Object.keys(D).filter(id=>D[id].order==rl.dataset.o&&(IT[id]||{}).s=='ret'&&!(IT[id]||{}).rnr),off=ids.every(id=>step340(id)>=v);
   for(const id of ids)putItem(id,off?{[k]:'',...(v<=1?{rpack:''}:{}),...(v<=2?{rsent:''}:{})}:{[k]:1,...(v>=2?{rreq:1}:{}),...(v>=3?{rpack:1}:{})});renderHub();toast(off?'✓ הסימון בוטל':'✓ נשמר');return}
- const rf=t.closest('[data-refund]');if(rf){const id=rf.dataset.refund;await putItem(id,{refunded:!(IT[id]||{}).refunded});renderHub();return}
+ const rf=t.closest('[data-refund]');if(rf){const id=rf.dataset.refund;putItem(id,{refunded:!(IT[id]||{}).refunded});renderHub();return}   // v349: no await – a quick tab change right after showed the old tab's content
  if(t.closest('#cradd')){const amt=+$('#cra').value;if(!amt){$('#cra').focus();return}const k='c'+Date.now().toString(36);CREDITS[k]={store:$('#crs').value,amt,exp:$('#crd').value||''};if(DB)await saveDoc('credits',k,CREDITS[k]);else{try{localStorage.setItem('hub_credits',JSON.stringify(CREDITS))}catch(_){}}renderHub();return}
  const cd=t.closest('[data-crdel]');if(cd){delete CREDITS[cd.dataset.crdel];if(DB)await saveDoc('credits',cd.dataset.crdel,null);else{try{localStorage.setItem('hub_credits',JSON.stringify(CREDITS))}catch(_){}}renderHub();return}
  if(t.closest('#chkgo')){$('#chkres').innerHTML=checkSimilar($('#chk').value);return}
  if(t.closest('#tostore')){const sea=curSeason();for(const id of Object.keys(D)){const c=card(id);if(!c||!['dresses','skirts','tops','sweaters','outer','sets'].includes(curCat(id)))continue;const s=(c.dataset.ss||'').split('|');if((sea=='חורף'&&s.includes('קיץ'))||(sea=='קיץ'&&s.includes('חורף')))await putItem(id,{loc:'מחסן'})}renderHub();toast('סומנו כ"מחסן"');return}
- const fx=t.closest('[data-fixed]');if(fx){await putItem(fx.dataset.fixed,{fix:false});renderHub();return}
+ const fx=t.closest('[data-fixed]');if(fx){putItem(fx.dataset.fixed,{fix:false});renderHub();return}
  if(t.closest('#hubbtn')){openHub();return}
  if(t.closest('[data-lookfrom]')){const id=t.closest('[data-lookfrom]').dataset.lookfrom;$('#dlg').close();openHub('looks');const c=card(id);if(c&&isShab(c)&&!isDay(c))$('#hocc').value='shab';runGen(id);return}
  if(t.closest('[data-upimg]')&&!t.classList.contains('ovf')){const ub=t.closest('[data-upimg]');$('#upfile').dataset.id=ub.dataset.upimg;$('#upfile').dataset.upm=ub.dataset.upm||'main';setSt(ub.dataset.upimg,'busy','פותחת את בחירת התמונות…');$('#upfile').click();return}
