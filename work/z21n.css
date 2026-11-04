@@ -1,0 +1,33 @@
+/* v350 "2100 לילה" (html[data-z21n] on top of 2100): the same look in dark tones. Tokens first, then the places that had white written in */
+html[data-z21n]{color-scheme:dark;
+ --z-bg:#0f0d16;--z-surface:rgba(36,31,52,.7);--z-solid:#1b1826;--z-bar:rgba(24,21,34,.72);--z-tile:rgba(255,255,255,.07);
+ --z-ink:#eeeaf6;--z-muted:#a7a2b8;--z-line:rgba(255,255,255,.1);--z-line-strong:rgba(255,255,255,.2);
+ --z-acc:#e08a5e;--z-acc-soft:rgba(224,138,94,.18);--z-pri:#eeeaf6;--z-pri-ink:#15131c;--z-glass-b:1px solid rgba(255,255,255,.1);
+ --z-shadow:0 1px 1px rgba(0,0,0,.3),0 10px 26px -8px rgba(0,0,0,.6);--z-shadow-lg:0 30px 60px -18px rgba(0,0,0,.75)}
+html.d73.d78[data-z21n]{--card:#1b1826;--fg:#eeeaf6;--ink:#eeeaf6;--muted:#a7a2b8;--line:rgba(255,255,255,.1);--line2:rgba(255,255,255,.14);--chip:rgba(255,255,255,.07);--soft:rgba(224,138,94,.16);--fig:#221e30;--bg:#0f0d16;--price:#eeeaf6;--pri:#eeeaf6;--pri-fg:#15131c}
+html[data-z21n] body{background:#0f0d16!important;color:#eeeaf6}
+html[data-z21n] body::before{opacity:.32}
+/* surfaces that were white */
+html[data-z21n] .card,html[data-z21n] dialog,html[data-z21n] #ord123,html[data-z21n] #r360,html[data-z21n] .z5nav button[aria-current=page],
+html[data-z21n] #ord123 .o3h,html[data-z21n] #r360 .r3h,html[data-z21n] .h9bar,html[data-z21n] #h180 .z-pp{background:#1b1826!important;color:#eeeaf6!important}
+html[data-z21n] #r360{background:radial-gradient(60% 40% at 20% 0%,rgba(255,150,130,.12),transparent 70%),radial-gradient(60% 40% at 90% 30%,rgba(170,140,255,.12),transparent 70%),#0f0d16!important}
+html[data-z21n] #r360 .r3c,html[data-z21n] .card{background:#1d1a2a!important;border-color:rgba(255,255,255,.08)!important}
+/* every ordinary button: dark glass with light text (the pressed-green, primary and colour-swatch buttons keep their own colours) */
+html[data-z21n] button:not([aria-pressed=true]):not(.pri):not(.z-go):not(.z-lkw):not(.c349):not(.z6all):not(.card):not([style*="background"]):not(.r3st):not(.zbtn):not(.gnav):not(.s349f):not(.z-pp):not(.z5sp){background-color:#221e30!important;color:#eeeaf6!important;border-color:rgba(255,255,255,.12)!important}
+html[data-z21n] button:not([aria-pressed=true]) small,html[data-z21n] button:not([aria-pressed=true]) b,html[data-z21n] button:not([aria-pressed=true]) span{color:inherit}
+/* boxes that had white written in */
+html[data-z21n] .wx332b,html[data-z21n] .ib334b,html[data-z21n] #h180 .z5w,html[data-z21n] #h180 .z-lkbox,html[data-z21n] .pd85,html[data-z21n] .pd85 dl>div,html[data-z21n] .x83,html[data-z21n] .dinfo-more,html[data-z21n] .ed,html[data-z21n] .ed .erow,
+html[data-z21n] .o3sum>*,html[data-z21n] .o3list>*,html[data-z21n] .z316m,html[data-z21n] .z6q,html[data-z21n] details.z5md,html[data-z21n] .z5mq,html[data-z21n] .sc185d,html[data-z21n] .gw83,html[data-z21n] .wh83,html[data-z21n] .g250box,html[data-z21n] .r152why,html[data-z21n] #dlbody>div,html[data-z21n] #hbody .look,html[data-z21n] #hbody details,html[data-z21n] .r340g,html[data-z21n] .r343n,html[data-z21n] .rt177r{background:#1b1826!important;color:#eeeaf6!important;border-color:rgba(255,255,255,.1)!important}
+html[data-z21n] .pd85 dl>div{background:#241f33!important}
+html[data-z21n] .wx332b *,html[data-z21n] .ib334b *,html[data-z21n] .pd85 *,html[data-z21n] .o3sum *,html[data-z21n] .o3list *,html[data-z21n] #hbody *{color:inherit}
+html[data-z21n] #hbody,html[data-z21n] #hub{background:#0f0d16!important;color:#eeeaf6!important}
+html[data-z21n] input,html[data-z21n] select,html[data-z21n] textarea{background:#221e30!important;color:#eeeaf6!important;border-color:rgba(255,255,255,.14)!important}
+html[data-z21n] #h180 .z-lkw,html[data-z21n] .z-go,html[data-z21n] button.pri:not([aria-pressed=true]){background:linear-gradient(160deg,#f3effa,#d9d2ea)!important;color:#15131c!important}
+html[data-z21n] .z5nav button[aria-current=page]::after{background:var(--z-holo)}
+html[data-z21n] img{filter:brightness(.94)}
+html[data-z21n] #r360 .r3stage{background:linear-gradient(180deg,rgba(15,13,22,.97) 70%,rgba(15,13,22,.86))!important;border-bottom-color:rgba(255,255,255,.08)!important}
+html[data-z21n] .s349m,html[data-z21n] #r3undo349 button{background:#221e30!important;color:#eeeaf6!important}
+html[data-z21n] ::-webkit-scrollbar{background:#0f0d16}
+html[data-z21n] .gcap,html[data-z21n] .mwrap .gcap{background:rgba(20,17,30,.78)!important;color:#eeeaf6!important}
+html[data-z21n] #fb{background:#eeeaf6!important;color:#15131c!important}
+html[data-z21n] #fb *{color:#15131c!important}

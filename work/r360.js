@@ -960,18 +960,33 @@ function nudgePin(){const b=dlg&&dlg.querySelector('.r3pin');if(!b)return;b.clas
 (async()=>{try{const db=await window.claude?.use?.('db');if(!db)return;const d=await db.collection('r360').doc('home').get();const v=d&&d.exists&&d.data&&d.data();
  if(v&&!localStorage.getItem('r3home')){HOME=Object.assign({head:'c',pin:null},v);STAGES.forEach(s=>s.today&&s.draw());HOMEL.forEach(f=>{try{f()}catch(_){}})}}catch(_){}})();
 let LOTD=null;const lotdIds=()=>{if(!LOTD||LOTD.ids.some(id=>!READY[id]))LOTD=lotd();return LOTD.ids.filter(id=>READY[id]&&!READY[id].head)};   // v267: an item taken off the avatar no longer breaks the look of the day
+// v350 the stylist's look of the day: 6 looks from looksFor (colours that go together, a matching cover or – some days – the wig with a hairstyle, makeup, jewellery),
+// kept for the day; "↻ הצעה אחרת" moves to the next one. If she picks wig/cover on the home herself, her choice wins for that day.
+const tdK=()=>new Date().toISOString().slice(0,10);
+let SM=null;try{SM=JSON.parse(localStorage.getItem('lotd350')||'null')}catch(_){}
+const smOK=()=>SM&&SM.d==tdK()&&SM.o==occNow()&&Array.isArray(SM.L)&&SM.L.length&&SM.L.every(l=>(l.ids||[]).every(id=>D[id]));
+let smBusy=null;
+function smart(fresh){if(!fresh&&smOK())return Promise.resolve(SM);if(smBusy)return smBusy;
+ smBusy=(async()=>{try{let wx=null;try{const o=JSON.parse(localStorage.getItem('wx332w')||'null');if(o&&o.hi!=null)wx=o}catch(_){}
+  const r=await looksFor(wx,6);if(r&&r.looks&&r.looks.length){SM={d:tdK(),o:occNow(),i:0,L:r.looks.map(l=>({ids:l.ids,s:clone(l.s)}))};try{localStorage.setItem('lotd350',JSON.stringify(SM))}catch(_){}
+   if(!HOME.pin){STAGES.forEach(s=>s.today&&s.draw());HOMEL.forEach(f=>{try{f()}catch(_){}})}}}catch(e){ERR('smart',e)}finally{smBusy=null}return SM})();return smBusy}
+setTimeout(()=>smart(false),3500);setInterval(()=>{if(!document.hidden&&!smOK())smart(false)},60000);
+const myHead=()=>HOME.headDay==tdK()&&HOME.head?HOME.head:'';
 function homeState(){const head=HOME.head||'c';
  if(HOME.pin)return Object.assign(clone(DEF),clone(HOME.pin),{head});
+ if(smOK()&&SM.L[SM.i]){const s=Object.assign(clone(DEF),clone(SM.L[SM.i].s));const h=myHead();
+  if(h=='c'&&(s.head=='w'||/^yh/.test(s.head||''))){s.head='c'}else if(h=='w'&&!(s.head=='w'||/^yh/.test(s.head||''))){s.head=styList('hair')[0]||'w';s.tf='';s.tc=null}
+  return s}
  return stateFrom(lotdIds(),{head,cam:ST.cam,wb:ST.wb,bg:ST.bg})}
 const TODAY={state:homeState,
  ids:()=>{const s=homeState();return wornIds(s).filter(id=>READY[id]&&!READY[id].head)},
- pinned:()=>!!HOME.pin,heads:()=>HEAD2().map(h=>({k:h.k,n:h.n||nm(h.id).split(' ').slice(0,2).join(' '),src:h.k=='c'&&STH[defTie()+'|'+GREY.join(',')]||(h.src?h.src+(h.dyn?'':V):ph(h.id))})),coverThumb,head:()=>HOME.head||'c',
- setHead:k=>{HOME.head=k;saveHome()},
+ pinned:()=>!!HOME.pin,smart:()=>smOK()?{i:SM.i,n:SM.L.length}:null,heads:()=>HEAD2().map(h=>({k:h.k,n:h.n||nm(h.id).split(' ').slice(0,2).join(' '),src:h.k=='c'&&STH[defTie()+'|'+GREY.join(',')]||(h.src?h.src+(h.dyn?'':V):ph(h.id))})),coverThumb,head:()=>{const h=myHead();if(h)return h;const s=homeState();return s.head=='w'||/^yh/.test(s.head||'')?'w':'c'},
+ setHead:k=>{HOME.head=k;HOME.headDay=tdK();saveHome()},
  pin:()=>pinGo(ST),
  pinLook:k=>{const o=lookOf(k);if(!o)return;if(!wornIds(o.s).length)return toast_('אין עוד בגד מהלוק הזה על האווטאר 360');pinGo(o.s,o.name)},
  pinIds:(ids,name)=>{ids=ids.filter(id=>D[id]);if(!ids.some(isReady))return toast_('אין עוד בגד מהלוק הזה על האווטאר 360');pinGo(stateFrom(ids.filter(isReady),{head:HOME.head||'c',cam:ST.cam,bg:ST.bg}),name)},
  unpin:()=>{HOME.pin=null;saveHome()},
- next:()=>{HOME.pin=null;LOTD=lotd(true);saveHome();return TODAY.ids()},
+ next:()=>{HOME.pin=null;if(smOK()){SM.i=(SM.i+1)%SM.L.length;try{localStorage.setItem('lotd350',JSON.stringify(SM))}catch(_){}}else LOTD=lotd(true);saveHome();return TODAY.ids()},
  onchange:f=>HOMEL.add(f),
  wear:()=>{const s=homeState();ST=Object.assign(clone(DEF),clone(s));MISS=[];keep();open();redraw()}};
 
@@ -1032,19 +1047,32 @@ async function looksFor(wx,n){n=n||5;
  // the bases: every dress and set, and every top (or sweater) with a skirt
  let B=[...of('dresses','sets').map(id=>[id])];
  const tops=of('tops','sweaters','base'),sks=of('skirts');tops.forEach(t=>sks.forEach(k=>B.push([t,k])));
- B=B.map(b=>({b,v:b.reduce((a,id)=>a+fit(id),0)/b.length})).sort((a,b)=>b.v-a.v).map(x=>x.b);
+ // v350 stylist (Sara 4/11: "חייב להיות מעצב – להתאים צבעים לבגדים, לא רנדומלי"): every base gets a real score –
+ // colours that go together (HARM), at most two strong colours, her favourites, and what she has NOT worn lately comes first
+ const NEU=new Set(['שחור','לבן','אפור','בז׳','']);const wornAgo=id=>{try{const w=(itOf(id).wl||[]).slice().sort();if(!w.length)return 99;return Math.round((Date.now()-new Date(w[w.length-1]+'T12:00'))/864e5)}catch(_){return 99}};
+ const pairOK=fs=>{let s=0;for(let i=0;i<fs.length;i++)for(let j=i+1;j<fs.length;j++){let g=true;try{g=goes(fs[i],fs[j])}catch(_){}s+=g?2:-6}return s};
+ const strong=fs=>new Set(fs.filter(f=>!NEU.has(f))).size;
+ const bScore=b=>{const fs=b.map(fam);let v=b.reduce((a,id)=>a+fit(id),0)/b.length;v+=pairOK(fs);if(strong(fs)>2)v-=4;b.forEach(id=>{if(itOf(id).fav)v+=1.2;const d=wornAgo(id);v+=d<4?-3:d<8?-1.2:d>=99?.8:Math.min(1.5,d/20)});return v+Math.random()*1.2};
+ B=B.map(b=>({b,v:bScore(b)})).sort((a,b)=>b.v-a.v).map(x=>x.b);
  const out=[],usedB=new Set(),usedA=new Map();
  const covers=Object.keys(D).filter(id=>ok(id)&&(READY[id]&&READY[id].head||isCover(id)&&isReady(id))).concat(Object.keys(D).filter(id=>ok(id)&&coverTie(id)));
  const ties=styList('tie');
  for(const b of B){if(out.length>=n)break;if(b.some(id=>usedB.has(id)))continue;
   const fs=b.map(fam).filter(Boolean),ids=b.slice(),av=new Set(),cnt=id=>usedA.get(id)||0;
-  const add=(pool,p)=>{if(Math.random()>p)return;pool=pool.slice().sort((x,y)=>cnt(x)-cnt(y));const lo2=pool.filter(id=>cnt(id)==cnt(pool[0]));const id=harm(lo2.length?lo2:pool,fs,av);if(id){ids.push(id);const f=fam(id);if(f)fs.push(f)}};
+  // v350: an accessory is the one whose colour suits the whole look best (repeats one of its colours or a neutral), not a random one that merely does not clash
+  const aScore=id=>{const f=fam(id);let v=pairOK(fs.concat([f]))-pairOK(fs);if(f&&fs.includes(f))v+=2.5;else if(NEU.has(f))v+=1.5;if(strong(fs.concat([f]))>2)v-=5;v-=cnt(id)*2;if(itOf(id).fav)v+=1;return v+Math.random()*.8};
+  const add=(pool,p)=>{if(Math.random()>p)return;pool=pool.filter(id=>!av.has(id));if(!pool.length)return;const id=pool.map(id=>[id,aScore(id)]).sort((a,b)=>b[1]-a[1])[0][0];if(id){ids.push(id);const f=fam(id);if(f)fs.push(f)}};
   if(!hot&&(cold||rain||sea=='חורף'))add(of('outer'),1);else if(!hot&&sea!='קיץ')add(of('outer'),.25);
   if(b.some(id=>['dresses','skirts'].includes(cat(id))))add(of('belts'),.65);
-  add(of('shoes'),1);add(of('jewelry'),.8);add(of('bags'),.5);
+  add(of('shoes'),1);add(of('jewelry'),1);add(of('bags'),.5);   // v350: jewellery in every look (Sara: "שים גם תכשיטים")
   let s=stateFrom(ids,{head:'c',cam:ST.cam,wb:ST.wb,bg:ST.bg});
   // the cover: her scarf in a tie (a different tie style each look when the scarf has none of its own)
-  const cv=covers.slice().sort((x,y)=>cnt(x)-cnt(y));const c=cv.length?harm(cv.filter(id=>cnt(id)==cnt(cv[0])),fs,new Set()):'';
+  // v350 (Sara: "לא תמיד כיסוי, לפעמים פאה"): about one look in three – and most Shabbat looks – wear the wig with one of her hairstyles; the rest a cover that matches
+  const hairs=styList('hair'),wigDay=(out.length%3==1)||(occ=='shab'&&out.length%2==0);
+  const mks=styList('mk');if(mks.length){const ev=occ=='shab',pref=mks.filter(k=>ev?/ערב|שבת|אירוע|חגיג|דרמט|כהה|בולט/.test(STY[k].n||''):/יום|טבעי|עדין|קליל|ניוד|רך/.test(STY[k].n||''));const L2=pref.length?pref:mks;s.mk=L2[(out.length+new Date().getDate())%L2.length]}   // makeup that suits the day
+  if(wigDay){s.head=hairs.length?hairs[(out.length+new Date().getDate())%hairs.length]:'w';b.forEach(id=>usedB.add(id));ids.forEach(id=>usedA.set(id,cnt(id)+1));out.push({ids,s:clone(s),base:b,wig:1});continue}
+  // the cover whose colour goes best with the clothes (same colour family or a neutral that goes with all of them)
+  const cv=covers.filter(id=>!ids.includes(id));const c=cv.length?cv.map(id=>[id,aScore(id)]).sort((a,b)=>b[1]-a[1])[0][0]:'';
   if(c){const r=READY[c],own=itOf(c).tie?tieFor(c):'',k=own||ties[out.length%Math.max(1,ties.length)]||tieFor(c);
    if(k&&STY[k]){s.head=k;s.tf=r&&r.head?r.k[0]:c;try{s.tc=await tfRGB(s.tf)}catch(_){s.tc=null}ids.unshift(c)}
    else if(r&&r.head){s.head=r.k[0];ids.unshift(c)}}

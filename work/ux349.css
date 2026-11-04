@@ -71,3 +71,14 @@ html[data-d180=z50] #ord123 .c349 em,html[data-d180=z50] #ord123 .p349 em{font-s
 html[data-d180=z50] #ord123 .p349{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;margin:6px 0;padding:0 14px;border-radius:14px;border:1px solid var(--z-line,#e6e3df);background:var(--z-solid,#fff);font:inherit;font-size:.88rem;font-weight:600;color:var(--z-ink,#17161a);cursor:pointer}
 #r3undo349{position:fixed;z-index:40;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:12px;padding:10px 12px 10px 18px;border-radius:999px;background:#15131c;color:#fff;font-size:.92rem;box-shadow:0 14px 34px -10px rgba(0,0,0,.5);white-space:nowrap}
 #r3undo349 button{min-height:36px;padding:0 14px;border-radius:999px;border:0;background:#fff;color:#15131c;font:inherit;font-weight:700;cursor:pointer}
+
+/* v350 dressing room on the phone (Sara: "סטודיו במסך מלא – האווטאר למעלה והבגדים נגללים למטה"): the avatar stays pinned under the top bar
+   while the clothes scroll beneath her; the floating mini avatar is no longer needed there */
+@media (max-width:899px){
+ html[data-d180=z50] #r360 .r3stage{position:sticky!important;top:var(--r3hh,112px);z-index:3;padding:6px 12px 8px!important;gap:6px!important;
+  background:linear-gradient(180deg,rgba(245,243,248,.97) 70%,rgba(245,243,248,.86));-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid rgba(120,110,150,.14)}
+ html[data-d180=z50] #r360 .r3stage .r3fig{width:auto!important;height:min(34vh,300px)!important;height:min(34svh,300px)!important;aspect-ratio:360/637}
+ html[data-d180=z50] #r360 .r3stage .r3fig .r3s{height:100%!important;width:auto!important}
+ html[data-d180=z50] #r360 .r3stage .r3ctl2,html[data-d180=z50] #r360 .r3stage .r3hint{display:none!important}
+ html[data-d180=z50] #r360 .r3stage .r3ctl{margin:0!important}
+ html[data-d180=z50] #r360 .s349f{display:none!important}}

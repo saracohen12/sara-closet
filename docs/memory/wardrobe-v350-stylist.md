@@ -1,0 +1,11 @@
+---
+name: wardrobe-v350-stylist
+description: v350 (4/11 night) – the 5 upgrades: live stats, stylist look of the day (colour scoring, wig days, matching covers, makeup, jewellery), phone dressing room, 2100 night, return reminders
+---
+Sara 4/11: "תעשה את כל ה-5 שדרוגים… מה ללבוש היום – מעצב, להתאים צבעים לבגדים, לא רנדומלי; לא תמיד כיסוי, לפעמים פאה; כיסויים תואמים לבגדים; שים גם תכשיטים ואיפורים".
+
+- **Stylist (r360.js looksFor + homeState):** bases scored by HARM pairs (+2/-6), ≤2 strong colours, favourites, days since last worn (itOf.wl); accessories by aScore (repeat a look colour or neutral, no clash). Jewellery p=1. Head: wigDay = look index %3==1 or (Shabbat and even) → hair style STY (styList('hair')) else 'w'; otherwise the cover (READY head scarves + coverTie covers) with best aScore, tie in the cover's colour (existing tf/tc). Makeup: styList('mk') filtered by name words (day: יום/טבעי/עדין…, Shabbat: ערב/שבת/אירוע…), rotating by date. Home look of the day = SM (localStorage `lotd350` {d,o,i,L:[{ids,s}]}, 6 looks, refreshed daily); "↻ הצעה אחרת" = SM.i+1. Her own wig/cover choice on the home (`HOME.headDay`=today) overrides the stylist's head for the day. Weather page wx332 uses the same looksFor.
+- **stats350.js/css:** live "📊 מספרים וסיכומים" (captures every `[data-h9="more"]` click); old sheet via "הטבלאות המלאות" (pass flag). Bars one hue #6b4fd8 light / #8f72ef dark (validated), values written next to bars.
+- **Dressing room (ux349.css):** phone: `#r360 .r3stage` sticky under the top bar (`--r3hh` measured), avatar 34vh, hint rows hidden; mini float hidden.
+- **2100 לילה:** design `z21n` → data-z21 + data-z21n; `work/z21n.css` (tokens + generic dark buttons + list of white boxes).
+- **remind350.js:** home card #rm350 (marked ret & not sent with rdl ≤7 days; or arrived & undecided ≤3 days), daily toast, Notification once a day if granted (asks only by the "🔔 גם התראה" chip).

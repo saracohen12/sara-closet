@@ -1,0 +1,43 @@
+/* v350 live stats (stats350.js) */
+#st350{width:min(720px,100vw);max-width:100vw;max-height:94dvh;margin:auto auto 0;padding:0 16px 22px;border:0;border-radius:24px 24px 0 0;background:var(--z-solid,#fff);color:var(--z-ink,#17161a);box-sizing:border-box;
+ --st-bar:#6b4fd8;--st-track:rgba(107,79,216,.1)}
+@media (min-width:701px){#st350{margin:auto;border-radius:24px}}
+#st350::backdrop{background:rgba(20,12,30,.45)}
+#st350 .st350h{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;padding:16px 0 6px;background:inherit}
+#st350 h2{flex:1;margin:0;font-size:1.3rem;letter-spacing:-.01em}
+#st350 .st350x{width:44px;height:44px;border-radius:50%;border:1px solid var(--z-line,#e6e3df);background:none;color:inherit;font-size:1rem;cursor:pointer}
+#st350 .st350s{margin:0 0 12px;color:var(--z-muted,#6a6670);font-size:.84rem}
+#st350 .st350g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (min-width:600px){#st350 .st350g{grid-template-columns:repeat(4,minmax(0,1fr))}}
+#st350 .st350k{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:16px;background:var(--z-tile,#f3f1f6)}
+#st350 .st350k b{font-size:1.45rem;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+#st350 .st350k span{font-size:.84rem;font-weight:600}
+#st350 .st350k small{font-size:.74rem;color:var(--z-muted,#6a6670)}
+#st350 h3{margin:22px 0 8px;font-size:1rem}
+#st350 .st350b{display:flex;flex-direction:column;gap:6px}
+#st350 .st350r{display:grid;grid-template-columns:minmax(80px,30%) 1fr auto;grid-template-areas:"n t v" ". s s";align-items:center;column-gap:10px;row-gap:1px;padding:2px 0;border-radius:8px}
+#st350 .st350r:hover{background:var(--z-tile,#f3f1f6)}
+#st350 .st350r .n{grid-area:n;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#st350 .st350r .t{grid-area:t;height:12px;border-radius:4px;background:var(--st-track);overflow:hidden}
+#st350 .st350r .t i{display:block;height:100%;border-radius:0;border-start-end-radius:4px;border-end-end-radius:4px;background:var(--st-bar)}
+#st350 .st350r b{grid-area:v;font-size:.86rem;font-variant-numeric:tabular-nums;min-width:3.5em;text-align:start}
+#st350 .st350r small{grid-area:s;font-size:.74rem;color:var(--z-muted,#6a6670)}
+#st350 .st350w{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+#st350 .st350w button{display:flex;align-items:center;gap:10px;width:100%;padding:6px;border-radius:14px;border:1px solid var(--z-line,#e6e3df);background:none;color:inherit;font:inherit;text-align:start;cursor:pointer}
+#st350 .st350w img{width:44px;height:44px;border-radius:10px;object-fit:cover;background:var(--z-tile,#eee)}
+#st350 .st350w span{flex:1;font-size:.86rem}
+#st350 .st350old{display:block;width:100%;margin-top:22px;min-height:46px;border-radius:999px;border:1px dashed var(--z-line-strong,#cfcac4);background:none;color:inherit;font:inherit;font-weight:600;cursor:pointer}
+html[data-z21n] #st350{background:#15121f!important;--st-bar:#8f72ef;--st-track:rgba(143,114,239,.16)}
+html[data-z21n] #st350 .st350k{background:#1f1b2d!important}
+/* v350 return reminder card on the home (remind350.js) */
+#rm350{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 10px;min-height:60px;padding:10px 16px;border-radius:20px;border:1px solid rgba(214,120,40,.35);background:linear-gradient(135deg,#fff4e6,#ffe8d6);color:#5b2d0c;font:inherit;text-align:start;cursor:pointer;grid-column:1/-1;box-shadow:0 8px 20px -10px rgba(180,90,20,.35)}
+#rm350.urgent{border-color:rgba(200,40,40,.45);background:linear-gradient(135deg,#ffecec,#ffdcd6);color:#6b1414}
+#rm350>i{font-style:normal;font-size:1.5rem}
+#rm350>span{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+#rm350 b{font-size:.95rem}
+#rm350 small{font-size:.8rem;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#rm350 em{font-style:normal}
+#rm350 .rm350n{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.75);font-size:.78rem;font-weight:700;white-space:nowrap}
+html[data-z21n] #rm350{background:linear-gradient(135deg,#3a2414,#2c1a10)!important;color:#ffd9b8!important;border-color:rgba(255,160,90,.35)!important}
+html[data-z21n] #rm350.urgent{background:linear-gradient(135deg,#43181a,#2e1012)!important;color:#ffc9c9!important}
+html[data-z21n] #rm350 .rm350n{background:rgba(255,255,255,.12)}

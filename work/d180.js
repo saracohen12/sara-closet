@@ -4,6 +4,7 @@
 const H=document.documentElement;
 const DESIGNS=[
  {k:'z21',n:'2100 ✦ (הכי חדש)',d:'זכוכית חלבית, אורורה רכה, אווטאר חי עם הילה – על בסיס הנקי',sw:['#f4f1fb','#ffffff','#c58cff','#14121a']},
+ {k:'z21n',n:'2100 לילה 🌙',d:'אותו 2100 בגוונים כהים – נעים בערב ובחושך',sw:['#0f0d16','#1d1a29','#c58cff','#eeeaf6']},
  {k:'z50',n:'נקי (החדש)',d:'לבן ונקי, 4 לשוניות למטה ודף בית במסך אחד',sw:['#f6f5f3','#ffffff','#b4532a','#17161a']},
  {k:'pearl',n:'פנינה',d:'בהיר ואוורירי, כרטיסי זכוכית רכים וגוון אפרסק',sw:['#fbf7f3','#ffd9c4','#b4532c','#2a1d17']},
  {k:'night',n:'לילה',d:'במה כהה עם זרקור על האוותר ונגיעות זהב',sw:['#140f0c','#2a201b','#e9b886','#f7ede3']},
@@ -12,8 +13,8 @@ const DESIGNS=[
 // v347: once, move her from the clean look to 2100 (the clean look stays in 🎨)
 function get(){try{let v=localStorage.getItem('d180');if(!localStorage.getItem('z21seen')){localStorage.setItem('z21seen','1');if(v===null||v=='z50'||v=='pearl'){v='z21';localStorage.setItem('d180',v)}}return v===null?'z21':v}catch(_){return 'z21'}}
 // v347 (Sara 4/11 "מראה של שנות 2100"): 'z21' = the clean layout (z50, so every z50 rule keeps working) + the 2100 skin html[data-z21]
-function set(k){if(k=='z21'){H.dataset.d180='z50';H.dataset.z21='1'}else{delete H.dataset.z21;if(k)H.dataset.d180=k;else delete H.dataset.d180}try{localStorage.setItem('d180',k)}catch(_){}
- const m=document.querySelector('meta[name=theme-color]')||Object.assign(document.createElement('meta'),{name:'theme-color'});m.content=k=='night'?'#140f0c':k=='terra'?'#f2e7da':k=='z50'?'#f6f5f3':'#fbf7f3';document.head.appendChild(m)}
+function set(k){delete H.dataset.z21n;if(k=='z21'||k=='z21n'){H.dataset.d180='z50';H.dataset.z21='1';if(k=='z21n')H.dataset.z21n='1'}else{delete H.dataset.z21;if(k)H.dataset.d180=k;else delete H.dataset.d180}try{localStorage.setItem('d180',k)}catch(_){}
+ const m=document.querySelector('meta[name=theme-color]')||Object.assign(document.createElement('meta'),{name:'theme-color'});m.content=k=='z21n'?'#0f0d16':k=='night'?'#140f0c':k=='terra'?'#f2e7da':k=='z50'?'#f6f5f3':'#fbf7f3';document.head.appendChild(m)}
 set(get());
 
 // ---------- chooser ----------
@@ -31,7 +32,7 @@ function chooser(first){
   pick.querySelector('.zpx').onclick=done;pick.querySelector('.zpok').onclick=()=>{done();(window.toast||(()=>{}))('✓ העיצוב נשמר')};
   pick.addEventListener('click',e=>{if(e.target===pick)done()});document.body.appendChild(pick)}
  mark();if(!pick.open)pick.showModal()}
-function mark(){if(!pick)return;const k=H.dataset.z21?'z21':(H.dataset.d180||'');pick.querySelectorAll('.zpl button').forEach(b=>b.setAttribute('aria-checked',b.dataset.k==k))}
+function mark(){if(!pick)return;const k=H.dataset.z21n?'z21n':H.dataset.z21?'z21':(H.dataset.d180||'');pick.querySelectorAll('.zpl button').forEach(b=>b.setAttribute('aria-checked',b.dataset.k==k))}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#d71t,[data-zpick]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();chooser()},true);
 
 // ---------- new home ----------

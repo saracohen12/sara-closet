@@ -82,3 +82,5 @@ function apply(){try{const d=document.getElementById('ord123');if(!d||!d.open||H
  const s=b.querySelector(':scope>.o3sum');if(s)s.classList.add('s349')}catch(_){}}
 setInterval(apply,500);
 })();
+// v350: the dressing room needs the real height of the studio's top bar (it wraps to 2–3 lines on a phone)
+setInterval(()=>{try{const d=document.getElementById('r360');if(!d||!d.open)return;const h=d.querySelector('.r3h');if(h){const v=Math.round(h.getBoundingClientRect().height)+'px';if(d.style.getPropertyValue('--r3hh')!=v)d.style.setProperty('--r3hh',v)}}catch(_){}},500);
