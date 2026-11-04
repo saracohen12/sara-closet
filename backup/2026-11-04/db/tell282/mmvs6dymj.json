@@ -1,0 +1,56 @@
+{
+  "ans": "השיער: אני בודקת. ראיתי שבתצוגה מקדימה השיער נגמר בכתפיים ונראה חתוך.",
+  "dlg": [
+    "r360"
+  ],
+  "errs": [
+    "v83 backup: arguments must be plain JSON data within the store's limits"
+  ],
+  "h": 758,
+  "home": null,
+  "item": "",
+  "itemName": "",
+  "note": "השיער חתוך על הפנים רואים את הגוף וזה לא נראה טיבעי",
+  "shot": "75577eec498f306be4408688aaa2e373",
+  "st": "seen",
+  "studio": {
+    "head": "w",
+    "mk": "",
+    "on": {
+      "b": 0,
+      "d": 1,
+      "e": 1,
+      "j": 1,
+      "n": 1,
+      "s": 0,
+      "uSNM5K4": 0,
+      "uSNM5K5": 0,
+      "uT147": 0,
+      "uT156": 0,
+      "uT170": 0,
+      "uT171": 0,
+      "uT23120615": 0,
+      "uT23120616": 0,
+      "uT240": 0,
+      "uT241": 0,
+      "uT245": 0,
+      "uT364": 0,
+      "uT389": 0,
+      "uT47": 0,
+      "uT5112063": 0,
+      "uT59109110": 0,
+      "uT5910918": 0,
+      "uT6310054": 0,
+      "uT81512062": 0
+    },
+    "tf": "",
+    "tuck": 0,
+    "under": 0
+  },
+  "t": 1793195643670,
+  "tab": "home",
+  "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+  "ver": "גרסה 293",
+  "w": 1353,
+  "wearing": "הפאה · שמלת "
+}

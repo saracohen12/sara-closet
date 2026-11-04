@@ -1,0 +1,40 @@
+{
+  "avbase": "p5",
+  "fit": {
+    "w": 151.6,
+    "x": 35.1,
+    "y": 63.3
+  },
+  "gn": "",
+  "gt": 1792711906803,
+  "h": 1231,
+  "id": "T241",
+  "img": "<img class=\"sl\" data-slot=\"skirt\"  style=\"left:35.1%;top:63.3%;width:151.6%;z-index:10;transform:translate(-50%,-50%) rotate(0deg) scale(1,1) skewX(0deg)\" alt=\"\" draggable=\"false\">",
+  "kind": "dbg114",
+  "slot": "skirt",
+  "t": 1792711937863,
+  "tf": {
+    "af": {
+      "front:": 1
+    },
+    "g112": 1792711906803,
+    "pv": {
+      "front": {
+        "q": 1,
+        "r": 0,
+        "w": 159.8,
+        "x": 49.3,
+        "y": 62.7
+      }
+    },
+    "pvv": "half",
+    "q": 1,
+    "r": 0,
+    "w": 151.6,
+    "x": 35.1,
+    "y": 63.3
+  },
+  "v": "half",
+  "ver": 114,
+  "w": 2560
+}

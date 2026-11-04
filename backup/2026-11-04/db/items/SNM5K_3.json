@@ -1,0 +1,51 @@
+{
+ "a8": [
+  {
+   "L": [
+    "3f2054be1ea2a93dba5b6e988e0cd6b4~0",
+    "3f2054be1ea2a93dba5b6e988e0cd6b4~1",
+    "3f2054be1ea2a93dba5b6e988e0cd6b4~2",
+    "3f2054be1ea2a93dba5b6e988e0cd6b4~3",
+    "3f2054be1ea2a93dba5b6e988e0cd6b4~4",
+    "3f2054be1ea2a93dba5b6e988e0cd6b4~5",
+    "3f2054be1ea2a93dba5b6e988e0cd6b4~6",
+    "3f2054be1ea2a93dba5b6e988e0cd6b4~7"
+   ],
+   "cv": 8,
+   "k": "jacket",
+   "s": "outer",
+   "sh": null,
+   "src": "63b55f7742d4039940e6838c7078676a",
+   "t": 1793078284122
+  }
+ ],
+ "a8up": [
+  {
+   "a": "63b55f7742d4039940e6838c7078676a",
+   "n": "1005266541.png",
+   "t": 1793078284122
+  }
+ ],
+ "blt": "n",
+ "fab": "y",
+ "fs": "all",
+ "ft": "soft",
+ "got": "y",
+ "img": "f3c9626ba692a8e9fb875f3b0146226b",
+ "imgs": [
+  {
+   "c": 1,
+   "id": "f3c9626ba692a8e9fb875f3b0146226b",
+   "t": 1792743868467
+  }
+ ],
+ "lk": "y",
+ "pics": [],
+ "rb": "y",
+ "rc279": 1,
+ "s": "kept",
+ "tg": [
+  "עבודה",
+  "שבת וחג"
+ ]
+}
