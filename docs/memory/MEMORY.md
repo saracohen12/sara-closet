@@ -56,3 +56,40 @@
 - 29/10: גיבוי מלא לפני סוף ה-Max (נתונים, סקילים, זיכרון, משימות, הוראות מעבר) ב-backup/2026-10-29 במאגר; התמונות (3,360, 776MB) לא בגיבוי: wardrobe-backup-1029.md
 - גרסה 337 (29/10): "💾 גיבוי כל התמונות והנתונים" בפאנל הניהול – כל התמונות + הנתונים בקבצי זיפ של ~120MB (bk337.js). גיבוי מלא ב-backup/2026-10-29 (נתונים, דפים, קבצי פרויקט, זיכרון, סקילים): wardrobe-backup-1029.md
 - 4/11: המעבר לחשבון החדש – אתר חדש HRNDqDjgDUStZnjQVCCjpq (פרטי), שוחזרו 1,587 תמונות ו-977 רשומות, 888/98 כמו באתר הישן; תיקיית הדרייב המשותפת לכל קובץ מעכשיו: wardrobe-new-account-0411.md
+
+## מהפרויקט "ארון הבגדים של שרה החדש" (25–29/10, נוסף 4/11 מחבילת ההיסטוריה)
+- [wardrobe-dup-check](wardrobe-dup-check.md) — 27/10 Sara's wishlist page "מה אני רוצה לקנות" (store photos vs what she owns, קניתי/מתלבטת/לא קונה in db 'wish'); how to add rounds; tools in project
+- [wardrobe-new-project-move](wardrobe-new-project-move.md) — 25/10/2026 Sara moved the closet work to this new project; repo saracohen12/sara-closet holds all files (site v179)
+- [wardrobe-parallel-sessions](wardrobe-parallel-sessions.md) — 26/10 several Claude sessions build Sara's closet on the SAME branch and artifact – always fetch/fast-forward before building; ledger source = repo cl
+- [wardrobe-summary-180-235](wardrobe-summary-180-235.md) — 27/10 Sara's handoff summary of v180–v235 (done in the OLD project in parallel) – file location, links, and the open items list
+- [wardrobe-v181-studio360](wardrobe-v181-studio360.md) — v181-185 (25/10) Sara's closet: the studio IS the 360 avatar now (r360.js), whole closet in it, home look of the day, lace dress pipeline, wig still p
+- [wardrobe-v185-wig-pin](wardrobe-v185-wig-pin.md) — v185–v186 (25/10) closet – smart closet stage A live, – wig head one size in all 8 views, pin-a-look-to-home buttons, home spin speed slider, terra ph
+- [wardrobe-v187-shop-advisor](wardrobe-v187-shop-advisor.md) — v187 (25/10) "🛍 יועץ קניות" in Sara's closet – smart-closet stage C: photo/text check vs closet, looks, size, verdict, archive DB 'shop187'
+- [wardrobe-v206-styles-hide](wardrobe-v206-styles-hide.md) — v206–v207 (26/10) styles library: Sara's 20 detailed ties + her 30 hairstyles for her wig, 🗑 hide/↩ restore, full-prompt reader, new wig sheet
+- [wardrobe-v208-catcover](wardrobe-v208-catcover.md) — v208 (26/10) category pictures in Sara's closet: pick from the list; an item already on the 360 avatar shows her wearing it and turns on touch (cat180
+- [wardrobe-v209-base-rename](wardrobe-v209-base-rename.md) — v209–v211 (26/10) Sara's 50 makeup prompts, category picker search + mouse-over spin, ✏️ item rename (IT.nm), new "חולצות בסיס" category worn under th
+- [wardrobe-v213-cut-faces](wardrobe-v213-cut-faces.md) — v213–v215 (26/10) hairstyle/tie cutter fix + background re-cut (cut8.CVW=4, hair first), makeup cards = two big faces (cover/wig) fitted onto each hea
+- [wardrobe-v216-head-makeup](wardrobe-v216-head-makeup.md) — v215–v218 (one makeup prompt + upload), (26/10) wig/hairstyle head placement, makeup fitted onto wigs (colour delta, 1.7x), beige hair-rim fix, big st
+- [wardrobe-v221-makeup-precise](wardrobe-v221-makeup-precise.md) — v221–v227 (26/10) makeup per feature, foldable studio, makeup groups that fold; v221: how makeup is laid on wigs/hairstyles in r360 mkDelta/mkFit
+- [wardrobe-v228-cover-ties](wardrobe-v228-cover-ties.md) — v228 (26/10) real ties per cover – IT[id].tx list, prompt+upload per tie in the cover window, pick which tie is on the avatar/home; no more painted gr
+- [wardrobe-v238-order-temu3](wardrobe-v238-order-temu3.md) — v237–v239 (27/10) ✨ fix in GPT, style pictures cached in IndexedDB + ⭐ favourite/recent order for ties & hairstyles (STYORD), Temu account 3 (src 't3'
+- [wardrobe-v245-ties27](wardrobe-v245-ties27.md) — v245 (27/10) 27 tie sheets added as styles docs k27n01..27, cutter fix for long scarves, new cover tie window (3 big turning cards, image prompt, shee
+- [wardrobe-v247-tie-zip-face8](wardrobe-v247-tie-zip-face8.md) — v246–v247 (27/10) cover tie collection (≤10, txw) → one ZIP for GPT with her face-8 close-up; batch upload sorts results; cu8 close-ups spin on card +
+- [wardrobe-v250-gpt-zip](wardrobe-v250-gpt-zip.md) — v250–v251 (27/10) "🚀 הכול ל-GPT" box in every item window – one ZIP (photos+doll+prompt) and one upload back; packs/sets/jewelry split into pieces; bl
+- [wardrobe-v252-batch-cover-cu](wardrobe-v252-batch-cover-cu.md) — v252–v253 (27/10) multi-product GPT ZIP per category, bag half-body close-up (half-8), cover cards/picker/home tile show the turning tie close-up, dia
+- [wardrobe-v256-pack-folders](wardrobe-v256-pack-folders.md) — v256 (27/10) packs of base shirts split up front into folders – count/colours read from the name, one folder card per piece in the grid, piece window,
+- [wardrobe-v267-analysis](wardrobe-v267-analysis.md) — 27/10 full-site analysis doc of Sara's closet (159 bugs, 90 ideas, redesign plan, work order) and the v267 packer safety fix
+- [wardrobe-v271-top-tear](wardrobe-v271-top-tear.md) — v271 (27/10) torn/smeared tops on the 360 avatar – cause in cut8 slide(), the no-tear fix, and auto re-cut of tops via cut8.cvOf
+- [wardrobe-v272-storage](wardrobe-v272-storage.md) — v272–v273 (27/10) storage fixes in Sara's closet – WebP sheets on upload (slim272), background shrink of stored PNG sheets (SLIM273, db slim272), 🧹 re
+- [wardrobe-v276-verify-tuck](wardrobe-v276-verify-tuck.md) — v274–v276 (27–28/10) Sara's closet – batch-upload mix-ups found and fixed (ZIP order), Claude checks every GPT upload vs product photo, clear belt / w
+- [wardrobe-v277-redesign-home](wardrobe-v277-redesign-home.md) — v277 (28/10) redesign screen 1 of Sara's closet – clean look html[data-d180=z50], one-screen home, 4 tabs; how tabs hide parts; hooks; next screens
+- [wardrobe-v282-tell](wardrobe-v282-tell.md) — v282 (28/10) 💬 "לספר ל-Claude" in Sara's closet – her in-site reports land in db 'tell282' (read them!), answer by writing ans/st on the row
+- [wardrobe-v284-studio-quality](wardrobe-v284-studio-quality.md) — v284–v285 (28/10) studio "✏ לסדר את הלוק" block (z284.js) + belt matte / clear-belt / chain fixes in cut8 and the wig chin fix in r360; QA harness not
+- [wardrobe-v300-backup-errlog](wardrobe-v300-backup-errlog.md) — v300 (28/10) closet daily backup split into parts (256KB doc limit) and in-site errors auto-logged to db 'errlog'
+- [wardrobe-v306-diary-keep](wardrobe-v306-diary-keep.md) — v304–v307 (28/10) 🧹 progress + old-avatar button, "📅 מה לבשתי" diary window (diary306.js), items out of use (IT.out), keep-only-main-photo automation 
+- [wardrobe-v308-neck-sort](wardrobe-v308-neck-sort.md) — v308–v311 (28/10) diary reminder, 🗂 closet sorting, open-jacket body band cut, 📌 לדף הבית label, old-avatar auto delete, neckline skin cut (neckSkin)
+- [wardrobe-v312-rules-closet](wardrobe-v312-rules-closet.md) — v312–v317 (28/10) cut rules, GPT sendings history, closet redesign z313, Shabbat/weekday switch, 10 styles at once (sty199 batchS), GPT window back st
+- [wardrobe-v321-ask-bubble](wardrobe-v321-ask-bubble.md) — v318–v321 (28/10) closet: wavy wig_ref, home layout per screen, ask-Claude bubble with auto screenshot (doc.scr) + 🎤 voice, wider hair close-ups
+- [wardrobe-v323-scroll-tabs](wardrobe-v323-scroll-tabs.md) — v323–v325 (29/10) closet: page jumped back while mouse-scrolling (z283 scrollIntoView, r3on lock), sheer garments on black bodysuit (sbk), item window
+- [wardrobe-v332-wear-today-covers](wardrobe-v332-wear-today-covers.md) — v332–v333 (29/10) "☀ מה ללבוש היום" weather page (wx332), "🧕 כמה כיסויים יחד" 8 covers × 4 ties batch (tie202 MC333), Temu refund-without-return field
+- [wardrobe-verify-uploads-rule](wardrobe-verify-uploads-rule.md) — Sara's rule (27/10 23:32): every GPT file she uploads must be checked against the product photo before it goes on the avatar
