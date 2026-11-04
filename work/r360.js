@@ -536,7 +536,7 @@ function build(){
   <div class="r3pane" data-p="looks" role="tabpanel" hidden><div class="r3lt"><button type="button" class="r3cmpb" aria-pressed="false">⚖ להשוות 2 לוקים</button><span class="r3cmph" hidden>בוחרים 2 לוקים (אפשר גם "מה שעליי עכשיו")</span></div><div class="r3looks"></div></div>
  </div></div>`; // divs, not <section>: the closet filter treats every <section> as a category
  document.body.appendChild(dlg);
- big=Stage(dlg.querySelector('.r3fig'),{speed:150});STAGES.add(big);
+ big=Stage(dlg.querySelector('.r3fig'),{speed:150,alive:1})   // v347: smooth turns in the studio too;STAGES.add(big);
  const dots=dlg.querySelector('.r3dots');NAMES.forEach((n,i)=>{const b=document.createElement('button');b.type='button';b.setAttribute('aria-label',n);b.onclick=()=>{big.stop();big.show(i)};dots.appendChild(b)});
  big.onview=v=>{[...dots.children].forEach((b,k)=>b.setAttribute('aria-pressed',k==v));dlg.querySelector('.r3ang').textContent=NAMES[v]};big.show(0);
  const pb=dlg.querySelector('.r3play');big.onplay=on=>{pb.textContent=on?'⏸ עצירה':'▶ סיבוב';pb.setAttribute('aria-pressed',on)};

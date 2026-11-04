@@ -86,3 +86,19 @@ html[data-z21] .r3s.alive:not(.ready)::before{content:"";position:absolute;inset
 html[data-z21] :focus-visible{outline:2px solid #8a6cff!important;outline-offset:2px}
 html[data-z21]{scrollbar-color:rgba(120,100,180,.35) transparent}
 html[data-z21] #h180{overflow:visible;overflow-x:clip}
+
+/* tab change cross-fade (z277 tab() → View Transitions); the bottom bar stays still */
+html[data-z21] .z5nav{view-transition-name:z5nav}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.28s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+::view-transition-new(root){animation-name:z21vtin}
+@keyframes z21vtin{from{opacity:0;transform:translateY(8px)}}
+/* pictures fade in softly the moment they arrive (only pictures that load after the page is open – nothing is ever hidden) */
+@media (prefers-reduced-motion:no-preference){html[data-z21]:not([data-still]) img.z21ld{animation:z21img .45s ease-out}}
+@keyframes z21img{from{opacity:.15;filter:blur(6px)}to{opacity:1;filter:none}}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){html[data-z21]:not([data-still]) #h180 .r3s.alive{transform:perspective(1100px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s cubic-bezier(.2,.8,.2,1)}}
+
+/* ---------- orders window in 2100 ---------- */
+html[data-z21] #ord123{background:linear-gradient(180deg,#f7f4fb,#f3f1f6)!important}
+html[data-z21] #ord123 .o3h{background:rgba(255,255,255,.7)!important;-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);border-bottom:1px solid var(--z-line)!important}
+html[data-z21] #ord123 .o3h .o3x{background:#15131c!important;border-color:#15131c!important}
+html[data-z21] #ord123 .o3h h3{letter-spacing:-.01em}

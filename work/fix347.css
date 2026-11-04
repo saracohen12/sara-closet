@@ -5,3 +5,7 @@
  button[data-k300],button[data-r313]{min-height:40px!important}}
 /* desktop: the "הלוק של היום" card no longer stretches to the avatar's height with a big empty gap */
 @media (min-width:900px){html[data-d180=z50] #h180 .z-lkbox{align-self:start}html[data-d180=z50] #h180 .z-lka{margin-top:12px}}
+/* desktop: the home avatar was 730px tall in a 360px column – the arch was cut on the right and ▶/speed sat under the bottom bar. Now it fits the column and the screen */
+@media (min-width:900px){html[data-d180=z50] #h180 .z-av{align-self:start!important}
+ html[data-d180=z50] #h180 .z-stage{width:min(100%,calc((100svh - 230px) * 360 / 637))!important;height:auto!important;min-height:0!important;max-height:none!important;aspect-ratio:360/637;margin-inline:auto}
+ html[data-d180=z50] #h180 .z-stage .r3s{width:100%!important;height:auto!important}}

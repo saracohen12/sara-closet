@@ -46,7 +46,9 @@ nav.innerHTML=TABS.map(([k,n])=>`<button type="button" data-zt="${k}">${svg(k)}<
 B.appendChild(nav);
 let TAB='home';
 function paintNav(){nav.querySelectorAll('[data-zt]').forEach(b=>{const k=b.dataset.zt;if(k=='home'||k=='closet')b.setAttribute('aria-current',k==TAB?'page':'false')})}
-function tab(t,keep){TAB=t;B.dataset.z50=t;paintNav();if(!keep)window.scrollTo(0,0);if(t=='home')paintWait()}
+function tab0(t,keep){TAB=t;B.dataset.z50=t;paintNav();if(!keep)window.scrollTo(0,0);if(t=='home')paintWait()}
+// v347 (2100): switching tabs cross-fades the page (View Transitions) where the phone supports it and motion is allowed; otherwise exactly as before
+function tab(t,keep){try{if(t!=TAB&&H.dataset.z21&&document.startViewTransition&&!H.dataset.still&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&!document.querySelector('dialog[open]')){document.startViewTransition(()=>tab0(t,keep));return}}catch(_){}tab0(t,keep)}
 tab('home',1);
 // other scripts that show the closet's list call zCloset() first (filters, categories, search "see them all"); the pin-a-look jump calls zHome()
 window.zCloset=()=>{if(on()&&TAB!='closet')tab('closet',1)};

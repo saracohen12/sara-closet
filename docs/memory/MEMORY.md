@@ -95,3 +95,4 @@
 - [wardrobe-verify-uploads-rule](wardrobe-verify-uploads-rule.md) — Sara's rule (27/10 23:32): every GPT file she uploads must be checked against the product photo before it goes on the avatar
 - 4/11: קריאה מלאה של שני פרויקטי הארון (2,004 הודעות) – מה בתוקף ומה הוחלף, ומה פתוח: wardrobe-history-decisions-0411.md
 - 4/11 ערב: claude_code_cloud-000/001 נבדקו – אין החלטות חדשות; 7 קבצי זיכרון אוחדו משני הפרויקטים. v338 בתיקיות החזרות; חבילת מעבר עברית ב-backup/2026-11-04b (commit 30fadab). 888/98 בממשק הניהול = כמו באתר הישן (הקטלוג בקוד 890/100).
+- [wardrobe-v347-2100-alive](wardrobe-v347-2100-alive.md) — v347 (4/11 ערב) עיצוב 2100 (z21 מעל z50), אווטאר חי בדף הבית (Stage alive), סבב באגים מזחלן; 909/907 = 2 ברשימה הכללית
