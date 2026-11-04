@@ -284,3 +284,14 @@
 .o3seg.rr button[aria-pressed="true"],.o3seg.rsent button[aria-pressed="true"],.o3all button.o3st[aria-pressed="true"]{background:#2e8b57!important;color:#fff!important;border-color:#2e8b57!important}
 .o3all button.o3st{background:var(--card);color:var(--fg);border:1px solid var(--line)}
 .o3all button.o3st[aria-pressed="true"]::before{content:'✓ '}
+/* v340: folders + green steps in "לוקים וכלים → החזרות וקרדיטים" */
+.r340f{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.r340f>span{font-weight:700;font-size:.85rem;color:var(--muted);margin-inline-end:4px}
+.r340f button{padding:7px 12px;border:1px solid var(--line);border-radius:99px;background:var(--card,#fff);color:var(--fg);font:inherit;font-size:.86rem;min-height:38px;cursor:pointer}
+.r340f button small{opacity:.7;margin-inline-start:4px}
+.r340f button[aria-pressed="true"]{background:var(--fg);color:var(--bg,#fff);border-color:var(--fg)}
+.r340g{margin-top:12px;padding:10px;border:1px solid var(--line);border-radius:16px}
+.r340h{display:flex;flex-direction:column;gap:4px}
+.r340h .bt,.rt177r .bt{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+button.r340{padding:7px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card,#fff);color:var(--fg);font:inherit;font-size:.86rem;min-height:40px;cursor:pointer}
+button.r340[aria-pressed="true"]{background:#2e8b57!important;color:#fff!important;border-color:#2e8b57!important}
