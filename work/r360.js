@@ -964,12 +964,16 @@ function nudgePin(){const b=dlg&&dlg.querySelector('.r3pin');if(!b)return;b.clas
 let LOTD=null;const lotdIds=()=>{if(!LOTD||LOTD.ids.some(id=>!READY[id]))LOTD=lotd();return LOTD.ids.filter(id=>READY[id]&&!READY[id].head)};   // v267: an item taken off the avatar no longer breaks the look of the day
 // v350 the stylist's look of the day: 6 looks from looksFor (colours that go together, a matching cover or – some days – the wig with a hairstyle, makeup, jewellery),
 // kept for the day; "↻ הצעה אחרת" moves to the next one. If she picks wig/cover on the home herself, her choice wins for that day.
-const tdK=()=>new Date().toISOString().slice(0,10);
+const tdK=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};   // local day (UTC changed the day at 2–3 am in Israel)
 let SM=null;try{SM=JSON.parse(localStorage.getItem('lotd350')||'null')}catch(_){}
 const smOK=()=>SM&&SM.d==tdK()&&SM.o==occNow()&&Array.isArray(SM.L)&&SM.L.length&&SM.L.every(l=>(l.ids||[]).every(id=>D[id]));
 let smBusy=null;
 function smart(fresh){if(!fresh&&smOK())return Promise.resolve(SM);if(smBusy)return smBusy;
- smBusy=(async()=>{try{let wx=null;try{const o=JSON.parse(localStorage.getItem('wx332w')||'null');if(o&&o.hi!=null)wx=o}catch(_){}
+ smBusy=(async()=>{try{
+  // v353: today's weather (the home weather card fetches it a moment after opening) – and what she said herself ("חם / קר / גשם") wins
+  const SAYW={hot:{hi:31,lo:21,rain:0},nice:{hi:24,lo:15,rain:0},cold:{hi:14,lo:7,rain:10},rain:{hi:17,lo:10,rain:90,mm:6}};
+  const rd=()=>{try{const o=JSON.parse(localStorage.getItem('wx332w')||'null');if(!o||o.hi==null||(o.d&&o.d!=tdK()))return null;const s=JSON.parse(localStorage.getItem('wx332s')||'null');return s&&s.d==o.d&&SAYW[s.k]?Object.assign({},o,SAYW[s.k]):o}catch(_){return null}};
+  let wx=rd();for(let k=0;k<6&&!wx;k++){await new Promise(r=>setTimeout(r,1000));wx=rd()}
   const r=await looksFor(wx,6);if(r&&r.looks&&r.looks.length){SM={d:tdK(),o:occNow(),i:0,L:r.looks.map(l=>({ids:l.ids,s:clone(l.s)}))};try{localStorage.setItem('lotd350',JSON.stringify(SM))}catch(_){}
    if(!HOME.pin){STAGES.forEach(s=>s.today&&s.draw());HOMEL.forEach(f=>{try{f()}catch(_){}})}}}catch(e){ERR('smart',e)}finally{smBusy=null}return SM})();return smBusy}
 setTimeout(()=>smart(false),3500);setInterval(()=>{if(!document.hidden&&!smOK())smart(false)},60000);
@@ -988,6 +992,7 @@ const TODAY={state:homeState,
  pinLook:k=>{const o=lookOf(k);if(!o)return;if(!wornIds(o.s).length)return toast_('אין עוד בגד מהלוק הזה על האווטאר 360');pinGo(o.s,o.name)},
  pinIds:(ids,name)=>{ids=ids.filter(id=>D[id]);if(!ids.some(isReady))return toast_('אין עוד בגד מהלוק הזה על האווטאר 360');pinGo(stateFrom(ids.filter(isReady),{head:HOME.head||'c',cam:ST.cam,bg:ST.bg}),name)},
  unpin:()=>{HOME.pin=null;saveHome()},
+ rate:async v=>{const ids=TODAY.ids();const s=homeState();if(s&&/^y/.test(s.tf||''))ids.push(s.tf);await rateLook(ids,v);if(v<0)return TODAY.next();return ids},
  next:()=>{HOME.pin=null;if(smOK()){SM.i=(SM.i+1)%SM.L.length;try{localStorage.setItem('lotd350',JSON.stringify(SM))}catch(_){}}else LOTD=lotd(true);saveHome();return TODAY.ids()},
  onchange:f=>HOMEL.add(f),
  wear:()=>{const s=homeState();ST=Object.assign(clone(DEF),clone(s));MISS=[];keep();open();redraw()}};
@@ -1034,6 +1039,13 @@ function reset(){UNDO={a:clone(ST),n:'כל מה שהיה עלייך'};ST=Object.
   s.querySelector('button').onclick=()=>{if(UNDO){ST=clone(UNDO.a);UNDO=null;keep();redraw();try{paintMiss()}catch(_){}}s.remove();toast_('↩ הכול חזר')};setTimeout(()=>s.remove(),8000)}catch(_){}}
 // v332 (Sara 29/10 10:02 "תלביש לי כל יום 5 בובות … מה כדאי לי ללבוש היום … לפי מזג האוויר … מהכיסוי עד הנעליים"): whole looks for today, only from what is
 // already on the avatar – a dress / set / top + skirt, a cover in a tie, shoes, a belt, jewellery, a coat when it is cold or rainy (none when hot); each look different
+// v353 her taste: 👍/👎 on a look adds +1/−1 to every pair of pieces in it; the stylist adds these to its scores (a pair she disliked twice rarely comes back)
+let TASTE={p:{}};try{TASTE=Object.assign({p:{}},JSON.parse(localStorage.getItem('taste353')||'{}'))}catch(_){}
+(async()=>{try{const db=await window.claude?.use?.('db');if(!db)return;const s=await db.collection('r360').doc('taste353').get();const v=s&&s.exists&&s.data&&s.data();if(v&&v.p){for(const k in v.p)if(TASTE.p[k]==null)TASTE.p[k]=v.p[k]}}catch(_){}})();
+const tpk=(a,b)=>a<b?a+'|'+b:b+'|'+a;
+const tasteOf=(id,ids)=>ids.reduce((s,o)=>s+(o!=id?(TASTE.p[tpk(id,o)]||0):0),0);
+async function rateLook(ids,v){ids=[...new Set(ids)];for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++){const k=tpk(ids[i],ids[j]);TASTE.p[k]=Math.max(-3,Math.min(3,(TASTE.p[k]||0)+v))}
+ try{localStorage.setItem('taste353',JSON.stringify(TASTE))}catch(_){}try{const db=await window.claude?.use?.('db');if(db)await db.collection('r360').doc('taste353').set(TASTE)}catch(_){}}
 async function looksFor(wx,n,opt){n=n||5;opt=opt||{};   // v352: opt.occ (a given day's occasion), opt.avoid (bases already used this week)
  for(let t=0;t<20&&!styList('tie').length;t++)await new Promise(r=>setTimeout(r,300));   // the tie styles come from the db a moment after the page opens
  const occ=opt.occ||occNow();let sea='';try{sea=curSeason()}catch(_){}
@@ -1054,7 +1066,7 @@ async function looksFor(wx,n,opt){n=n||5;opt=opt||{};   // v352: opt.occ (a give
  const NEU=new Set(['שחור','לבן','אפור','בז׳','']);const wornAgo=id=>{try{const w=(itOf(id).wl||[]).slice().sort();if(!w.length)return 99;return Math.round((Date.now()-new Date(w[w.length-1]+'T12:00'))/864e5)}catch(_){return 99}};
  const pairOK=fs=>{let s=0;for(let i=0;i<fs.length;i++)for(let j=i+1;j<fs.length;j++){let g=true;try{g=goes(fs[i],fs[j])}catch(_){}s+=g?2:-6}return s};
  const strong=fs=>new Set(fs.filter(f=>!NEU.has(f))).size;
- const bScore=b=>{const fs=b.map(fam);let v=b.reduce((a,id)=>a+fit(id),0)/b.length;v+=pairOK(fs);if(strong(fs)>2)v-=4;b.forEach(id=>{if(itOf(id).fav)v+=1.2;const d=wornAgo(id);v+=d<4?-3:d<8?-1.2:d>=99?.8:Math.min(1.5,d/20)});return v+Math.random()*1.2};
+ const bScore=b=>{const fs=b.map(fam);let v=b.reduce((a,id)=>a+fit(id),0)/b.length;v+=pairOK(fs);if(b.length>1)v+=2.5*tasteOf(b[0],b.slice(1));if(strong(fs)>2)v-=4;b.forEach(id=>{if(itOf(id).fav)v+=1.2;const d=wornAgo(id);v+=d<4?-3:d<8?-1.2:d>=99?.8:Math.min(1.5,d/20)});return v+Math.random()*1.2};
  B=B.map(b=>({b,v:bScore(b)})).sort((a,b)=>b.v-a.v).map(x=>x.b);
  const out=[],usedB=new Set(opt.avoid||[]),usedA=new Map();
  const covers=Object.keys(D).filter(id=>ok(id)&&(READY[id]&&READY[id].head||isCover(id)&&isReady(id))).concat(Object.keys(D).filter(id=>ok(id)&&coverTie(id)));
@@ -1062,7 +1074,7 @@ async function looksFor(wx,n,opt){n=n||5;opt=opt||{};   // v352: opt.occ (a give
  for(const b of B){if(out.length>=n)break;if(b.some(id=>usedB.has(id)))continue;
   const fs=b.map(fam).filter(Boolean),ids=b.slice(),av=new Set(),cnt=id=>usedA.get(id)||0;
   // v350: an accessory is the one whose colour suits the whole look best (repeats one of its colours or a neutral), not a random one that merely does not clash
-  const aScore=id=>{const f=fam(id);let v=pairOK(fs.concat([f]))-pairOK(fs);if(f&&fs.includes(f))v+=2.5;else if(NEU.has(f))v+=1.5;if(strong(fs.concat([f]))>2)v-=5;v-=cnt(id)*2;if(itOf(id).fav)v+=1;return v+Math.random()*.8};
+  const aScore=id=>{const f=fam(id);let v=pairOK(fs.concat([f]))-pairOK(fs)+2*tasteOf(id,ids);if(f&&fs.includes(f))v+=2.5;else if(NEU.has(f))v+=1.5;if(strong(fs.concat([f]))>2)v-=5;v-=cnt(id)*2;if(itOf(id).fav)v+=1;return v+Math.random()*.8};
   const add=(pool,p)=>{if(Math.random()>p)return;pool=pool.filter(id=>!av.has(id));if(!pool.length)return;const id=pool.map(id=>[id,aScore(id)]).sort((a,b)=>b[1]-a[1])[0][0];if(id){ids.push(id);const f=fam(id);if(f)fs.push(f)}};
   if(!hot&&(cold||rain||sea=='חורף'))add(of('outer'),1);else if(!hot&&sea!='קיץ')add(of('outer'),.25);
   if(b.some(id=>['dresses','skirts'].includes(cat(id))))add(of('belts'),.65);

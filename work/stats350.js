@@ -43,6 +43,12 @@ function html(){const ids=Object.keys(D),L=ids.filter(live);
  <h3>מה יש בארון – לפי סוג</h3>${bars(cats)}
  ${mons.length?`<h3>לפי חודש – כמה הזמנת</h3>${bars(mons,'₪')}`:''}
  ${top.length?`<h3>הכי נלבשו</h3><ol class="st350w">${top.map(([id,n])=>`<li><button type="button" data-open="${es(id)}"><img alt="" data-th="${es(id)}" src="${es((typeof img=='function'&&img(id))||'')}"><span>${es(nm(id))}</span><b>${n}×</b></button></li>`).join('')}</ol>`:''}
+ ${(()=>{const wn=id=>Math.max(I(id).wear||0,(I(id).wl||[]).length),pd=id=>+(D[id]||{}).paid||0;
+  const cpw=L.filter(id=>wn(id)>0&&pd(id)>0).map(id=>[id,pd(id)/wn(id)]).sort((a,b)=>a[1]-b[1]).slice(0,5);
+  const idle=L.filter(id=>wn(id)==0&&pd(id)>=40&&['dresses','skirts','tops','sweaters','outer','sets','shoes','bags'].includes(cat(id))).sort((a,b)=>pd(b)-pd(a)).slice(0,5);
+  const row=(id,r)=>`<li><button type="button" data-open="${es(id)}"><img alt="" data-th="${es(id)}" src="${es((typeof img=='function'&&img(id))||'')}"><span>${es(nm(id))}</span><b>${r}</b></button></li>`;
+  return (cpw.length?`<h3>הכי משתלם – מחיר ללבישה</h3><ol class="st350w">${cpw.map(([id,v])=>row(id,nis(v)+' ללבישה')).join('')}</ol>`:'')+
+   (idle.length?`<h3>שווה ללבוש – יקרים שעוד לא לבשת</h3><ol class="st350w">${idle.map(id=>row(id,nis(pd(id)))).join('')}</ol>`:'')})()}
  <button type="button" class="st350old">📋 הטבלאות המלאות (הישנות)</button>`}
 let dlg=null,pass=false;
 function open(){try{if(!dlg){dlg=document.createElement('dialog');dlg.id='st350';dlg.dir='rtl';dlg.setAttribute('aria-labelledby','st350t');document.body.append(dlg);

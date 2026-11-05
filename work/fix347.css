@@ -26,3 +26,5 @@ body:has(#panel:not(.hide)) #totop{display:none!important}
 .z316m[hidden]{display:none!important}
 /* v349: the studio's category chips: the first/last chip sat under the edge fade (looked cut) */
 #r360 .z8c{padding-inline:20px!important}
+/* v353 bug fix: the notice bar ("סומן: לבשת היום · ביטול") sat on top of buttons in the item window for a few seconds – taps now go through it, except on its own button */
+.toast{pointer-events:none}.toast button,.toast a{pointer-events:auto}

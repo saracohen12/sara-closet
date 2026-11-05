@@ -11,10 +11,11 @@ const wornToday=ids=>ids.length&&ids.every(id=>((typeof IT=='object'&&IT[id]||{}
 let busy=false;
 function paint(){try{const T=window.R360&&R360.today,box=document.querySelector('#h180 .z-lk');if(!T||!box)return;const ids=T.ids();
  let w=box.querySelector('.h351');if(!w){w=document.createElement('div');w.className='h351';const at=box.querySelector('.z-lki');(at||box).after(w);
-  w.addEventListener('click',e=>{if(e.target.closest('[data-h351w]'))mark()})}
+  w.addEventListener('click',async e=>{if(e.target.closest('[data-h351w]'))return mark();const r=e.target.closest('[data-h351r]');if(r&&R360.today.rate){const v=+r.dataset.h351r;
+   await R360.today.rate(v);(window.toast||(()=>{}))(v>0?'👍 רשמתי שאת אוהבת את השילוב הזה':'👎 הבנתי – הנה הצעה אחרת, ואזכור לא להציע את השילוב הזה');setTimeout(paint,300)}})}
  const fs=[...new Set(ids.map(fam).filter(Boolean))].slice(0,4),h=T.head(),sm=T.smart&&T.smart(),pin=T.pinned(),done=wornToday(ids);
  const html=`<span class="h351c">${fs.map(f=>`<i style="background:${COL[f]||'#ccc'}" aria-hidden="true"></i>`).join('')}<small>${es(fs.join(' · '))}${fs.length?' · ':''}${h=='w'?'💇 פאה':'🧕 כיסוי תואם'}${sm&&!pin?` · הצעה ${sm.i+1} מתוך ${sm.n}`:''}</small></span>
-  <button type="button" data-h351w aria-pressed="${done}">${done?'✓ לבשתי היום':'לבשתי היום?'}</button>`;
+  <span class="h351t">${pin?'':`<button type="button" data-h351r="1" aria-label="אהבתי את הלוק">👍</button><button type="button" data-h351r="-1" aria-label="לא אהבתי – הצעה אחרת">👎</button>`}<button type="button" data-h351w aria-pressed="${done}">${done?'✓ לבשתי היום':'לבשתי היום?'}</button></span>`;
  if(w.innerHTML!=html)w.innerHTML=html}catch(e){ERR('paint',e)}}
 async function mark(){if(busy||!window.WR234)return;busy=true;try{const T=R360.today,ids=T.ids(),k=tday(),on=!wornToday(ids);
  for(const id of ids)await WR234.setWorn(id,k,on);try{await WR234.dayLook(k)}catch(_){}
