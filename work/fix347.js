@@ -19,3 +19,8 @@ document.addEventListener('keydown',e=>{try{if(e.key!='Escape'||document.querySe
  Object.values(LOOKS).forEach(l=>{if(l&&typeof l.name=='string'&&l.name.startsWith('לבשתי · היום ')&&l.created){const d=new Date(String(l.created).slice(0,10)+'T12:00');if(!isNaN(d))l.name='לבשתי · יום '+DN[d.getDay()]+' '+l.name.slice('לבשתי · היום '.length)}})}catch(_){}},1500)})();
 // 6) v349: the "ילד/ה" filter had only "כל הילדים" – a filter that does nothing; it hides until a child's name is given to some item
 (function(){const f=()=>{try{const s=document.getElementById('kidf');if(!s)return;const row=s.closest('.row')||s.parentElement;const one=s.options.length<=1;s.hidden=one;const l=s.previousElementSibling;if(l&&l.tagName=='LABEL')l.hidden=one}catch(_){}};setTimeout(f,2500);setInterval(f,15000)})();
+// 7) v352 bug fix: "⏰ להחזיר בקרוב" listed items whose return date had passed and items she kept / already sent – now only what can still go back, soonest first
+(function(){const go=()=>{try{if(typeof extra!='function'||typeof SORT=='undefined'){setTimeout(go,800);return}if(extra._r352)return;const base=extra;
+ extra=function(c){if(!base.apply(this,arguments))return false;if(SORT!='ret')return true;const n=typeof daysLeft=='function'?daysLeft(c.dataset.rdl):null;if(n==null||n<0)return false;
+  const i=(typeof IT=='object'&&IT[c.dataset.id])||{};return !(i.s=='kept'||i.s=='give'||i.rsent||i.rnr||i.refunded||i.oos||i.gen)};extra._r352=1;
+  const so=document.getElementById('sort');if(so)so.addEventListener('change',()=>setTimeout(()=>{try{apply()}catch(_){}},0));try{if(SORT=='ret')apply()}catch(_){}}catch(_){}};setTimeout(go,1500)})();

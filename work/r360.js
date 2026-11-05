@@ -663,7 +663,9 @@ function paintRoom(){if(!dlg)return;
  dlg.querySelectorAll('.r3grid [data-it]').forEach(b=>{if(isReady(b.dataset.it)||coverTie(b.dataset.it))b.setAttribute('aria-pressed',ids.includes(b.dataset.it))})}
 
 // her closet, by category; items with a 360 sheet first
-function pool(){return Object.keys(D).concat(window.pieces85?pieces85():[]).filter(id=>{if(!CATIDS.has(cat(id)))return false;const it=(typeof IT=='object'&&IT&&IT[id])||{};if(it.gen||it.oos||it.s=='ret'||it.s=='give')return false;return true})}
+function pool(){return Object.keys(D).concat(window.pieces85?pieces85():[]).filter(id=>{if(!CATIDS.has(cat(id)))return false;const it=(typeof IT=='object'&&IT&&IT[id])||{};if(it.gen||it.oos||it.s=='ret'||it.s=='give'||it.out)return false;
+  // v352 bug fix: insoles, laces, heel pads, clips and make-up bags are not something the avatar can wear – they stay in the closet, not in the studio (unless already on the avatar)
+  if(!isReady(id)&&/מדרס|שרוכ|כריות|רפידות|מגן עקב|סוליות|קליפס|תיק איפור|תיק אחסון|קוסמטיק|ארגונית|מתלה/.test(((D[id]||{}).short||'')+' '+(it.nm||'')))return false;return true})}
 function paintCats(){if(!dlg)return;const P=pool();const n=c=>c=='all'?P.length:c=='ready'?P.filter(isReady).length:P.filter(id=>cat(id)==c).length;
  dlg.querySelector('.r3cats').innerHTML=CATS.map(([k,t])=>{const c=n(k);return c||k=='all'?`<button type="button" data-cat="${k}" aria-pressed="${k==CAT}">${t} <small>${c}</small></button>`:''}).join('')}
 function paintGrid(){if(!dlg||TAB!='closet')return;dlg.querySelectorAll('.r3cats button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.cat==CAT));
@@ -1032,9 +1034,9 @@ function reset(){UNDO={a:clone(ST),n:'כל מה שהיה עלייך'};ST=Object.
   s.querySelector('button').onclick=()=>{if(UNDO){ST=clone(UNDO.a);UNDO=null;keep();redraw();try{paintMiss()}catch(_){}}s.remove();toast_('↩ הכול חזר')};setTimeout(()=>s.remove(),8000)}catch(_){}}
 // v332 (Sara 29/10 10:02 "תלביש לי כל יום 5 בובות … מה כדאי לי ללבוש היום … לפי מזג האוויר … מהכיסוי עד הנעליים"): whole looks for today, only from what is
 // already on the avatar – a dress / set / top + skirt, a cover in a tie, shoes, a belt, jewellery, a coat when it is cold or rainy (none when hot); each look different
-async function looksFor(wx,n){n=n||5;
+async function looksFor(wx,n,opt){n=n||5;opt=opt||{};   // v352: opt.occ (a given day's occasion), opt.avoid (bases already used this week)
  for(let t=0;t<20&&!styList('tie').length;t++)await new Promise(r=>setTimeout(r,300));   // the tie styles come from the db a moment after the page opens
- const occ=occNow();let sea='';try{sea=curSeason()}catch(_){}
+ const occ=opt.occ||occNow();let sea='';try{sea=curSeason()}catch(_){}
  const hi=wx&&wx.hi!=null?+wx.hi:null,lo=wx&&wx.lo!=null?+wx.lo:null;
  if(hi!=null)sea=hi<18?'חורף':hi>=28?'קיץ':'מעבר';
  const cold=hi!=null&&(hi<19||lo<12),rain=!!wx&&((+wx.rain||0)>=40||(+wx.mm||0)>=1),hot=hi!=null&&hi>=29;
@@ -1043,7 +1045,7 @@ async function looksFor(wx,n){n=n||5;
  const of=(...c)=>R.filter(id=>c.includes(cat(id)));
  const fam=id=>{try{return famOf(id)}catch(_){return ''}};
  const harm=(pool,fs,av)=>{pool=pool.filter(id=>!av.has(id));if(!pool.length)return '';try{return pickHarm(pool,fs,new Set())||pool[0]}catch(_){return pool[Math.floor(Math.random()*pool.length)]}};
- const fit=id=>{let v=0;try{if(sea&&fitsSeason(id,sea))v+=2}catch(_){}try{if(fitsOcc(id,occ))v+=1}catch(_){}return v+Math.random()};
+ const fit=id=>{let v=0;try{if(sea&&fitsSeason(id,sea))v+=2}catch(_){}try{if(fitsOcc(id,occ))v+=opt.occ?4:1}catch(_){}return v+Math.random()};
  // the bases: every dress and set, and every top (or sweater) with a skirt
  let B=[...of('dresses','sets').map(id=>[id])];
  const tops=of('tops','sweaters','base'),sks=of('skirts');tops.forEach(t=>sks.forEach(k=>B.push([t,k])));
@@ -1054,7 +1056,7 @@ async function looksFor(wx,n){n=n||5;
  const strong=fs=>new Set(fs.filter(f=>!NEU.has(f))).size;
  const bScore=b=>{const fs=b.map(fam);let v=b.reduce((a,id)=>a+fit(id),0)/b.length;v+=pairOK(fs);if(strong(fs)>2)v-=4;b.forEach(id=>{if(itOf(id).fav)v+=1.2;const d=wornAgo(id);v+=d<4?-3:d<8?-1.2:d>=99?.8:Math.min(1.5,d/20)});return v+Math.random()*1.2};
  B=B.map(b=>({b,v:bScore(b)})).sort((a,b)=>b.v-a.v).map(x=>x.b);
- const out=[],usedB=new Set(),usedA=new Map();
+ const out=[],usedB=new Set(opt.avoid||[]),usedA=new Map();
  const covers=Object.keys(D).filter(id=>ok(id)&&(READY[id]&&READY[id].head||isCover(id)&&isReady(id))).concat(Object.keys(D).filter(id=>ok(id)&&coverTie(id)));
  const ties=styList('tie');
  for(const b of B){if(out.length>=n)break;if(b.some(id=>usedB.has(id)))continue;

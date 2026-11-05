@@ -16,7 +16,7 @@ const setCats=v=>{B.classList.toggle('z313c',v);const b=bar.querySelector('[data
 const setMore=v=>{B.classList.toggle('z313f',v);bar.querySelector('[data-z313=more]').setAttribute('aria-expanded',v);LSS('z313f',v?'1':'')};
 function paintBar(){try{const s=wrap.querySelector('.z6c'),n=s?s.querySelectorAll('button[data-h9cat]').length:0,b=bar.querySelector('[data-z313=cats]');
   b.textContent=B.classList.contains('z313c')?'▴ פחות קטגוריות':`▾ כל ${n} הקטגוריות`;
-  const g=document.querySelector('.groups button[aria-pressed=true] .gc,.groups button.on .gc')||document.querySelector('.groups .gc'),c=document.getElementById('z313n');if(c&&g)c.textContent=g.textContent.trim()+' פריטים'}catch(e){ERR('bar',e)}}
+  const g=document.querySelector('.groups button[aria-pressed=true] .gc,.groups button.on .gc')||document.querySelector('.groups .gc'),c=document.getElementById('z313n');if(c&&g){/* v352: the same number as "📊 מספרים וסיכומים" – what is really in the closet now (909 counted cancelled, returned, given and the general list too) */let n=0;try{n=Object.keys(D).filter(id=>{const i=IT[id]||{};return !i.gen&&!i.oos&&i.s!='ret'&&i.s!='give'&&!i.out}).length}catch(_){}c.textContent=n?n+' בגדים בארון':g.textContent.trim()+' פריטים'}}catch(e){ERR('bar',e)}}
 bar.addEventListener('click',e=>{const b=e.target.closest('[data-z313]');if(!b)return;if(b.dataset.z313=='cats')setCats(!B.classList.contains('z313c'));else setMore(!B.classList.contains('z313f'))});
 // after a category is picked on a phone, the long list folds again so the clothes are right there
 wrap.addEventListener('click',e=>{if(e.target.closest('.z6c [data-h9cat],.z6c [data-h9=all]')&&innerWidth<760&&B.classList.contains('z313c'))setTimeout(()=>setCats(false),60)});

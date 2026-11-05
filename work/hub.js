@@ -34,6 +34,14 @@ function genLook(o,avoid=new Set(),anchor=null){
  if(!L.bag&&Math.random()<.6)put('bag',pickHarm(poolOf(['bags'],o,id=>!/איפור|קוסמט/.test(D[id].short)),fs,avoid));
  if(o.kids){const kp=poolOf(['girls','boys'],o);const k=pickHarm(kp,fs,avoid);if(k)L.kid=k}
  Object.keys(L).forEach(k=>{if(!L[k])delete L[k]});return L}
+// v352 (Sara: "מעצב, להתאים צבעים, לא רנדומלי"): "✨ הרכיבי לי לוקים" and every look built here = the best of 12 tries –
+// colours that go together, at most two strong colours, favourites, and what she has not worn lately (the same rules as the stylist on the home)
+{const g0=genLook;const NEU=new Set(['שחור','לבן','אפור','בז׳','']);
+ const ago=id=>{const w=((IT[id]||{}).wl||[]).slice().sort();if(!w.length)return 99;return Math.round((Date.now()-new Date(w[w.length-1]+'T12:00'))/864e5)};
+ const score=L=>{const ids=Object.values(L||{});if(!ids.length)return -1e9;const fs=ids.map(famOf);let s=0;
+  for(let i=0;i<fs.length;i++)for(let j=i+1;j<fs.length;j++)s+=goes(fs[i],fs[j])?2:-6;if(new Set(fs.filter(f=>!NEU.has(f))).size>2)s-=5;
+  ids.forEach(id=>{if((IT[id]||{}).fav)s+=1;const d=ago(id);s+=d<4?-3:d<8?-1:d>=99?.6:0});if(L.dress||(L.skirt&&L.top)||L.set)s+=3;if(L.jewelry)s+=1;if(L.shoes)s+=1;return s+Math.random()*.5};
+ genLook=function(o,avoid,anchor){let best=null,bs=-1e9;for(let k=0;k<12;k++){const L=g0(o,avoid,anchor);const v=score(L);if(v>bs){bs=v;best=L}}return best||{}}}
 const SLOTN={dress:'שמלה',set:'סט',skirt:'חצאית',top:'חולצה',outer:'ז׳קט',scarf:'כיסוי ראש',belt:'חגורה',shoes:'נעליים',jewelry:'תכשיט',bag:'תיק',kid:'לילדים',extra:'עוד'};
 function lookHTML(L,idx,saved){const ids=Object.entries(L);const tot=ids.reduce((s,[k,id])=>s+(D[id]?.paid||0),0);
  return `<div class="look" data-i="${idx}">${saved?`<h4>${esc(saved.name)} <small>${OCC[saved.occ]||''}</small></h4>`:''}<div class="lk">${ids.map(([k,id])=>`<div class="ls"><button class="mini" data-open="${id}">${img(id)||(D[id]||{}).hi?`<img data-th="${id}" src="${img(id)||TPH}" alt="">`:''}<span>${SLOTN[k]||k}</span></button>${saved?'':`<button class="rr" data-rr="${idx}|${k}" title="החליפי">↻</button>`}</div>`).join('')}</div>
