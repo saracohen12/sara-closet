@@ -404,7 +404,7 @@ async function paint(cv,v,s,pad){s=headOf(s);const bg=s.bg||'';const hw=whole(s.
  const oc=document.createElement('canvas');oc.width=BW;oc.height=BH+pt+pb;const c=oc.getContext('2d',{willReadFrequently:true});
  const E=pb&&!bg?floorPad(base):null;
  if(pt||pb){if(!bg){c.drawImage(base,0,0,BW,2,0,0,BW,pt+1);if(E)c.drawImage(E,0,0,2,1,0,pt+BH-8,BW,pb+8)}c.save();c.translate(0,pt)}
- if(bg){if(bc)c.drawImage(bc,FX[v]-210,FY-615);else{c.fillStyle='#f6efe6';c.fillRect(0,-pt,oc.width,oc.height)}
+ if(bg){if(bc)c.drawImage(bc,FX[v]-210,FY-615);else if(bg!='clear'){c.fillStyle='#f6efe6';c.fillRect(0,-pt,oc.width,oc.height)}   // v356 'clear': the cut doll on nothing – the stage's own fixed background shows through
   const g=c.createRadialGradient(FX[v],FY+3,2,FX[v],FY+3,52);g.addColorStop(0,'rgba(40,28,20,.30)');g.addColorStop(1,'rgba(40,28,20,0)');c.save();c.translate(FX[v],FY+3);c.scale(1,.16);c.translate(-FX[v],-FY-3);c.fillStyle=g;c.fillRect(FX[v]-60,FY-60,120,126);c.restore()}
  c.drawImage(base,0,0);if(E){for(let i=0;i<8;i++){c.globalAlpha=(i+1)/8;c.drawImage(E,0,0,2,1,0,BH-8+i,BW,1)}c.globalAlpha=1}
  if(hw&&!bg){const nk=await im('ch'+(v+1));if(nk)c.drawImage(nk,0,0)}   // v284: under a wig or hairstyle, her real neck (the no-head picture has a blurred stump there with a second chin shadow)
@@ -460,7 +460,7 @@ function Stage(host,opt={}){
  // v347 (Sara 4/11 "האווטאר זז כל רגע ורואים שזה תמונות שעוברות… שיהיה הרבה יותר טבעי"): opt.alive – the pictures live in an inner layer that breathes,
  // every turn slides + cross-fades in the direction of the turn, a drag keeps turning a little after the finger lets go, and when nothing happens she stands
  // facing you and now and then glances to one side and back (instead of a slideshow that never stops).
- const inn=opt.alive?el.appendChild(Object.assign(document.createElement('div'),{className:'r3in'})):el;if(opt.alive)el.classList.add('alive');
+ const inn=opt.alive?el.appendChild(Object.assign(document.createElement('div'),{className:'r3in'})):el;if(opt.alive)el.classList.add('alive');if(opt.clear)el.classList.add('clr');
  const cvs=[...Array(8)].map((_,i)=>{const c=document.createElement('canvas');c.width=360;c.height=541+PT+PB;c.className=i?'':'on';inn.appendChild(c);return c});
  host.appendChild(el);let cur=0,tm=null,sx=null,si=0,moved=false,lt=0,lx=0,vel=0,glT=null,glOn=false,inT=null;
  const api={el,get view(){return cur},onview:null};
@@ -476,13 +476,18 @@ function Stage(host,opt={}){
  api.alive=on=>{glOn=!!on&&opt.alive&&!matchMedia('(prefers-reduced-motion: reduce)').matches;el.classList.toggle('breathe',glOn);if(glOn){api.stop();if(cur)api.show(0,900);glance()}else clearTimeout(glT)};
  api.isAlive=()=>glOn;
  // v347: the angle on screen is painted first, then the other 7 (an empty arch showed while all 8 were drawn at once)
- api.draw=async()=>{const s=state(),f=cur;
+ // v356 (Sara: "למה הרקע זז? מה שאמור להסתובב זה רק הבובה"): every angle picture had its own blue backdrop baked in, so the backdrop jumped with every turn –
+ // stages with opt.clear draw only the cut doll; one fixed background (CSS) stays still behind her
+ api.draw=async()=>{let s=state();if(opt.clear&&!s.bg)s=Object.assign({},s,{bg:'clear'});const f=cur;
   // v349 bug fix: after "📌 לדף הבית" the spinning home avatar showed the OLD outfit on angles not yet repainted – the turn waits until all 8 are new
   const was=!!tm;if(was){clearInterval(tm);tm=null}try{await paint(cvs[f],f,s,1).then(r=>{cvs[f]._done=1;if(r!==false)el.classList.add('ready')}).catch(()=>{});await Promise.all(cvs.map((c,v)=>v==f?0:paint(c,v,s,1).then(()=>{c._done=1})))}finally{if(was&&!tm)api.play()}label()};
  api.stop=()=>{if(tm){clearInterval(tm);tm=null;api.onplay&&api.onplay(false)}};
  api.play=(once)=>{api.stop();let n=0;const sp=opt.speed||170;tm=setInterval(()=>{api.show(cur+1,opt.alive?Math.round(sp*.92):0);n++;if(once&&n>=8){api.stop();opt.alive&&glOn&&glance()}},sp);api.onplay&&api.onplay(true)};
  api.playing=()=>!!tm;
  api.speed=ms=>{opt.speed=ms;el.style.setProperty('--r3f',Math.min(450,Math.round(ms*.6))+'ms');if(tm)api.play()};   // v185: the home spin speed she chooses
+ // v356 (Sara 26/10 12:21 "כשהעכבר מגיע לשם, לבד זה יסתובב, וכשהעכבר ילך זה יפסיק… ותמיד יישאר על החזית"): with a mouse, hovering turns her, leaving brings her back to the front
+ if(opt.hover){let hv=false;el.addEventListener('pointerenter',e=>{if(e.pointerType!='mouse'||tm||matchMedia('(prefers-reduced-motion: reduce)').matches)return;hv=true;api.play()});
+  el.addEventListener('pointerleave',e=>{if(e.pointerType!='mouse'||!hv)return;hv=false;api.stop();api.show(0)})}
  el.addEventListener('pointerdown',e=>{api.stop();clearInterval(inT);sx=e.clientX;si=cur;moved=false;lt=performance.now();lx=e.clientX;vel=0;try{el.setPointerCapture(e.pointerId)}catch(_){}});
  el.addEventListener('pointermove',e=>{if(sx==null)return;const now=performance.now();if(now>lt){vel=.7*vel+.3*((lx-e.clientX)/(now-lt));lt=now;lx=e.clientX}
   const step=Math.max(22,el.clientWidth/9);const d=Math.round((sx-e.clientX)/step);if(d)moved=true;api.show(si+d,180)});
@@ -543,7 +548,7 @@ function build(){
   <div class="r3pane" data-p="looks" role="tabpanel" hidden><div class="r3lt"><button type="button" class="r3cmpb" aria-pressed="false">⚖ להשוות 2 לוקים</button><span class="r3cmph" hidden>בוחרים 2 לוקים (אפשר גם "מה שעליי עכשיו")</span></div><div class="r3looks"></div></div>
  </div></div>`; // divs, not <section>: the closet filter treats every <section> as a category
  document.body.appendChild(dlg);
- big=Stage(dlg.querySelector('.r3fig'),{speed:150});STAGES.add(big);
+ big=Stage(dlg.querySelector('.r3fig'),{speed:150,clear:1});STAGES.add(big);
  const dots=dlg.querySelector('.r3dots');NAMES.forEach((n,i)=>{const b=document.createElement('button');b.type='button';b.setAttribute('aria-label',n);b.onclick=()=>{big.stop();big.show(i)};dots.appendChild(b)});
  big.onview=v=>{[...dots.children].forEach((b,k)=>b.setAttribute('aria-pressed',k==v));dlg.querySelector('.r3ang').textContent=NAMES[v]};big.show(0);
  const pb=dlg.querySelector('.r3play');big.onplay=on=>{pb.textContent=on?'⏸ עצירה':'▶ סיבוב';pb.setAttribute('aria-pressed',on)};
@@ -987,6 +992,9 @@ const myHead=()=>HOME.headDay==tdK()&&HOME.head?HOME.head:'';
 function homeState(){const head=HOME.head||'c';
  if(HOME.pin)return Object.assign(clone(DEF),clone(HOME.pin),{head});
  if(smOK()&&SM.L[SM.i]){const s=Object.assign(clone(DEF),clone(SM.L[SM.i].s));const h=myHead();
+  // v356 her own settings for the home (✏️): what is on the head and which makeup – 'auto' = the stylist decides
+  const E=HOME.ed||{};if(E.mk&&E.mk!='auto')s.mk=E.mk=='none'?'':(STY[E.mk]?E.mk:s.mk);
+  if(!h&&E.head&&E.head!='auto'){const wig=s.head=='w'||/^yh/.test(s.head||'');if(E.head=='c'){if(wig){s.head='c';s.tf='';s.tc=null}}else if(E.head=='w'){if(!wig){s.head=styList('hair')[0]||'w';s.tf='';s.tc=null}}else if(STY[E.head]||E.head=='w'){s.head=E.head;s.tf='';s.tc=null}}
   if(h=='c'&&(s.head=='w'||/^yh/.test(s.head||''))){s.head='c'}else if(h=='w'&&!(s.head=='w'||/^yh/.test(s.head||''))){s.head=styList('hair')[0]||'w';s.tf='';s.tc=null}
   return s}
  return stateFrom(lotdIds(),{head,cam:ST.cam,wb:ST.wb,bg:ST.bg})}
@@ -994,6 +1002,8 @@ const TODAY={state:homeState,
  ids:()=>{const s=homeState();return wornIds(s).filter(id=>READY[id]&&!READY[id].head)},
  pinned:()=>!!HOME.pin,smart:()=>smOK()?{i:SM.i,n:SM.L.length}:null,heads:()=>HEAD2().map(h=>({k:h.k,n:h.n||nm(h.id).split(' ').slice(0,2).join(' '),src:h.k=='c'&&STH[defTie()+'|'+GREY.join(',')]||(h.src?h.src+(h.dyn?'':V):ph(h.id))})),coverThumb,head:()=>{const h=myHead();if(h)return h;const s=homeState();return s.head=='w'||/^yh/.test(s.head||'')?'w':'c'},
  setHead:k=>{HOME.head=k;HOME.headDay=tdK();saveHome()},
+ ed:()=>Object.assign({head:'auto',mk:'auto'},HOME.ed||{}),setEd:(k,v)=>{HOME.ed=Object.assign({head:'auto',mk:'auto'},HOME.ed||{},{[k]:v});if(k=='head')HOME.headDay='';saveHome()},
+ styles:set=>styList(set).map(k=>({k,n:STY[k].n||''})),
  pin:()=>pinGo(ST),
  pinLook:k=>{const o=lookOf(k);if(!o)return;if(!wornIds(o.s).length)return toast_('אין עוד בגד מהלוק הזה על האווטאר 360');pinGo(o.s,o.name)},
  pinIds:(ids,name)=>{ids=ids.filter(id=>D[id]);if(!ids.some(isReady))return toast_('אין עוד בגד מהלוק הזה על האווטאר 360');pinGo(stateFrom(ids.filter(isReady),{head:HOME.head||'c',cam:ST.cam,bg:ST.bg}),name)},

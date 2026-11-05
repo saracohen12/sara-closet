@@ -114,7 +114,10 @@ async function zipHair(k,b){const o=b.textContent;b.disabled=true;b.textContent=
   b.textContent='✓ ירד. עכשיו ל-GPT'}catch(e){ERR('hzip',e);b.textContent='לא הצלחתי'}setTimeout(()=>{if(b.isConnected){b.textContent=o;b.disabled=false}},2600)}
 const C8S={};let C8I=0;
 (window.rawSetInterval||setInterval)(()=>{const im=document.querySelectorAll('img[data-sycu8]');if(!im.length)return;C8I=(C8I+1)%8;im.forEach(i=>{const a=i.dataset.sycu8;if(!a)return;const F=C8S[a];
-  if(!F){if(F===undefined&&window.cu8Frames){C8S[a]=null;cu8Frames(a).then(F=>{C8S[a]=F||false})}if(!i.src)i.src='/_blob/'+a;return}if(i.matches(':hover')&&i.dataset.st)return;i.src=F[C8I]})},650);
+  if(!F){if(F===undefined&&window.cu8Frames){C8S[a]=null;cu8Frames(a).then(F=>{C8S[a]=F||false})}if(!i.src)i.src='/_blob/'+a;return}if(i.matches(':hover')&&i.dataset.st)return;
+  // v356 (Sara: "כשהעכבר מגיע זה מסתובב, כשהולך – נשאר על החזית"): with a mouse only the close-up under it turns, the rest stay on the front
+  const hv=HOVER356.matches;const s=hv&&!i.matches(':hover')?F[0]:F[C8I];if(i.getAttribute('src')!=s)i.src=s})},650);
+const HOVER356=matchMedia('(hover:hover) and (pointer:fine)');
 const cuPrompt=x=>{if(x.set=='hair')return zipPrompt(x.id);if(x.set=='tie'||x.cu8){const p=P(),pr=x.p?preOf(x.set,x.p):null;return p&&p.batchS?p.batchS(x.set,[itemOf(x.set,pr,x)]):''}const p=P();if(!p||!p.mkBoth)return '';const pr=x.p?preOf('mk',x.p):null;return p.mkBoth(x.n,pr?pr.d||pr.sub:'')};
 const faces=k=>[['c','עם כיסוי'],['h','עם פאה']].map(([h,t])=>`<span class="syfc"><img alt="${t}" data-syface="${es(k)}" data-h="${h}" src=""><small>${t}</small></span>`).join('');
 function card(set,pr,x){if(SKIP&&SKIP.has(hidK(pr,x)))return '';const k=pr?pr.k:x.id,b=busy()&&PROC.k==k,title=x?x.n:pr.n;   // her own name once she renamed it

@@ -79,8 +79,9 @@ function loadTh(ids){const cs=new Set(ids.map(id=>D[id]&&D[id].cat).filter(Boole
 
 // put her pictures on the tiles (home + closet window); runs again whenever something re-renders them
 function paint(){const C=cov();const ids=[];
- document.querySelectorAll('.h9cat[data-h9cat]').forEach(b=>{const sid=b.dataset.h9cat.slice(1);const id=C[sid];b.classList.toggle('c180mine',!!id);if(!id||!D[id])return;
-  let im=b.querySelector('.h9im img');if(!im){const sp=b.querySelector('.h9im');if(!sp)return;sp.classList.remove('h9e');sp.innerHTML='<img alt="" loading="lazy">';im=sp.firstChild}
+ // v356: the closet's category tiles of the clean look (.z6c) too – her avatar picture there turns when the mouse is on it (Sara 26/10 13:21 "יסתובב במעבר לעכבר")
+ document.querySelectorAll('.h9cat[data-h9cat], .z6c [data-h9cat]').forEach(b=>{const sid=b.dataset.h9cat.slice(1);const id=C[sid];b.classList.toggle('c180mine',!!id);if(!id||!D[id])return;
+  let im=b.querySelector('.h9im img, .z6ci img');if(!im){const sp=b.querySelector('.h9im, .z6ci');if(!sp)return;sp.classList.remove('h9e');sp.innerHTML='<img alt="" loading="lazy">';im=sp.firstChild}
   const sp=im.parentNode,av=avOf(sid,id),cu=cuOf(sid,id);sp.classList.toggle('c208av',av);sp.dataset.c208=av?id:'';sp.classList.toggle('c253',!!cu);
   if(cu){if(!sp.querySelector('.c208h'))sp.insertAdjacentHTML('beforeend','<i class="c208h" aria-hidden="true">🔄 360</i>');
    if(im.dataset.c253!=cu&&!im._t){im.dataset.c253=cu;window.fr253&&fr253(cu).then(F=>{if(F&&im.dataset.c253==cu){im.dataset.th='cu:'+cu;im.src=F[0]}})}return}

@@ -54,7 +54,7 @@ function home(){
  gather();new MutationObserver(gather).observe(top,{childList:true,subtree:true});
  const tiles=top.querySelector('.h9tiles');if(tiles)s.after(tiles);
  // v181: the avatar here wears the look of the day, or the look she pinned in the studio (Sara 25/10 20:59, 21:17); it turns slowly, ⏸/▶ stops it on her face
- if(window.R360){const T=R360.today;const st=R360.Stage(s.querySelector('.z-stage'),{speed:1700,state:T.state,today:1,fade:1});window.H180ST=st;   // v351: vid351.js (video / smooth body sway) works on this stage
+ if(window.R360){const T=R360.today;const st=R360.Stage(s.querySelector('.z-stage'),{speed:1700,state:T.state,today:1,fade:1,clear:1,hover:1});window.H180ST=st;   // v351: vid351.js (video / smooth body sway) works on this stage
   const av=s.querySelector('.z-av');const ctl=document.createElement('div');ctl.className='z-avc';
   ctl.innerHTML=`<button type="button" class="z-pp" aria-label="עצירת הסיבוב">⏸</button><div class="z-hds" role="radiogroup" aria-label="על הראש בדף הראשי"></div>
    <label class="z-spd"><span aria-hidden="true">🐢</span><input type="range" min="1" max="7" step="1" aria-label="מהירות הסיבוב"><span aria-hidden="true">🐇</span></label>`;av.appendChild(ctl);

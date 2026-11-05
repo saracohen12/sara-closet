@@ -36,7 +36,7 @@ function frame(now){raf=requestAnimationFrame(frame);try{const st=window.H180ST,
  const g=sw.getContext('2d');const t=(now-t0)/1000;
  // feet ≈ 93% down the picture; the sway grows with height (feet still, head moves most); two slow waves so it never looks mechanical
  const feet=Hh*.93,A=W*.012,sA=Math.sin(t*2*Math.PI/5.6),sB=Math.sin(t*2*Math.PI/3.1+1.3)*.35,br=1+.006*Math.sin(t*2*Math.PI/4.2);
- g.clearRect(0,0,W,Hh);g.drawImage(src,0,0);   // background first (unchanged)
+ g.clearRect(0,0,W,Hh);g.drawImage(src,0,feet,W,Hh-feet,0,feet,W,Hh-feet);   // v356: the doll is on a clear background now – only the feet strip is copied as is, the body rows sway
  const step=3;for(let y=0;y<feet;y+=step){const k=Math.pow((feet-y)/feet,1.5),dx=A*(sA+sB)*k;
   // breath: the body above the feet stretches a hair upwards and back
   const sy=feet-(feet-y)*br;g.drawImage(src,0,y,W,step,dx,sy,W,step*br+.6)}

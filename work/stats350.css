@@ -141,3 +141,25 @@ html[data-z21n] #p353{background:#15121f!important}html[data-z21n] #p353 .p353f{
 #w352 .w352i img{width:52px;height:66px}
 #h180 .h351t button[data-h351w]{white-space:nowrap;font-size:.76rem;padding:0 8px}
 html[data-z21n] .h351c i,html[data-z21n] #w352 .w352c i{box-shadow:0 0 0 1.5px rgba(255,255,255,.55)!important}
+/* v356 one still background behind the cut doll (Stage opt.clear) – soft studio light and a floor shadow; only the doll moves */
+.r3s.clr{background:radial-gradient(ellipse 34% 3.2% at 50% 93.5%,rgba(30,40,70,.28),transparent 72%),radial-gradient(ellipse 70% 45% at 50% 32%,rgba(255,255,255,.55),transparent 75%),linear-gradient(180deg,#dde6f1 0%,#cbd7e7 62%,#bfcde0 100%)!important}
+html[data-z21n] .r3s.clr{background:radial-gradient(ellipse 34% 3.2% at 50% 93.5%,rgba(0,0,0,.45),transparent 72%),radial-gradient(ellipse 70% 45% at 50% 32%,rgba(140,130,200,.18),transparent 75%),linear-gradient(180deg,#2a2840 0%,#211f33 100%)!important}
+/* v356 home editing sheet (home356.js) */
+#h180 .h356e{position:relative;width:40px;height:40px;flex:none;border-radius:50%;border:0;background:rgba(255,255,255,.92);font-size:1rem;box-shadow:var(--z-shadow,0 2px 6px rgba(0,0,0,.15));cursor:pointer}
+html[data-z21n] #h180 .h356e{background:rgba(30,26,44,.88)!important;border:1px solid rgba(255,255,255,.18)!important}
+#h356{width:min(600px,100vw);max-width:100vw;max-height:94dvh;margin:auto auto 0;padding:0 16px 22px;border:0;border-radius:24px 24px 0 0;background:var(--z-solid,#fff);color:var(--z-ink,#17161a);box-sizing:border-box}
+@media (min-width:640px){#h356{margin:auto;border-radius:24px}}
+#h356::backdrop{background:rgba(20,12,30,.45)}
+#h356 .h356h{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;padding:16px 0 6px;background:inherit}
+#h356 h2{flex:1;margin:0;font-size:1.2rem}
+#h356 .h356x{width:44px;height:44px;border-radius:50%;border:1px solid var(--z-line,#e6e3df);background:none;color:inherit;cursor:pointer}
+#h356 h3{margin:16px 0 8px;font-size:.95rem}
+#h356 .h356s{margin:8px 0 6px;font-size:.8rem;color:var(--z-muted,#6a6670)}
+#h356 .h356r{display:flex;flex-wrap:wrap;gap:6px}
+#h356 .h356r button{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--z-line,#e6e3df);background:var(--z-solid,#fff);color:inherit;font:inherit;font-size:.86rem;cursor:pointer}
+#h356 .h356bg button{display:flex;align-items:center;gap:6px}
+#h356 .h356bg i{width:22px;height:22px;border-radius:50%;background:var(--sw);box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+#h356 .h356c{display:flex;flex-direction:column;gap:4px}
+#h356 .h356c label{display:flex;align-items:center;gap:10px;min-height:44px;font-size:.9rem}
+#h356 .h356c input{width:22px;height:22px;accent-color:#2e8b57}
+html[data-z21n] #h356{background:#15121f!important}
