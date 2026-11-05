@@ -189,10 +189,15 @@ function styFace(k,h,o){o=o||{};if(k&&!STY[k])return Promise.resolve('');const h
 // v216 (Sara 16:55 "את הפרצוף שלי עם איזה איפור שאני רוצה, אבל אני רוצה את זה עם פאה"): the same fit in every view, for every whole head (tie, hairstyle, her wig) –
 // paint() lays the doll's face with the makeup on that head's face instead of the bare makeup layer (it doubled eyes and mouth on a hairstyle; on the wig there was no makeup at all)
 const FCV=[[176,64,25,28],[163,63,25,27],[158,65,21,28],null,null,[205,58,10,18],[197,60,17,28],[181,58,24,28]],FITV=window.FITV216={},FMK={},DLUM={};   // the face per view (cut8 FACE)
+// v353 speed: the fit is a search of ~7,600 positions per head and angle (about a second on a phone, at every opening since the stylist puts makeup on the look of the day) –
+// the answer for the same head picture never changes, so it is kept on this phone and reused
+let FITLS={};try{FITLS=JSON.parse(localStorage.getItem('fitv353')||'{}')||{}}catch(_){}
+const fitSave=()=>{try{const ks=Object.keys(FITLS);if(ks.length>400)ks.slice(0,ks.length-400).forEach(x=>delete FITLS[x]);localStorage.setItem('fitv353',JSON.stringify(FITLS))}catch(_){}};
 async function fitV(hk,v,raw){const k=hk+'|'+v+'|'+(DYN[hk+(v+1)]||'')+(raw?'|raw':'');if(FITV[k])return FITV[k];const e=FCV[v];if(!e)return null;
+ if(Array.isArray(FITLS[k]))return FITV[k]=Promise.resolve(FITLS[k]);
  return FITV[k]=(async()=>{const A=document.createElement('canvas');if(!await paint(A,v,Object.assign(clone(DEF),{on:{},bg:'',head:hk,mk:'',tc:null,rawHead:raw?1:0})))return null;
   if(!DLUM[v])DLUM[v]=(async()=>{const D=document.createElement('canvas');return await paint(D,v,Object.assign(clone(DEF),{on:{},bg:'',head:'c',rawc:1,mk:'',tc:null}))?lumOf(D):null})();
-  const D=await DLUM[v];if(!D)return null;return fitFace(D,lumOf(A),A.width,A.height,e[0],e[1]-2,Math.max(6,Math.round(e[2]*.78)),Math.round(e[3]*.86))})()}
+  const D=await DLUM[v];if(!D)return null;const r=fitFace(D,lumOf(A),A.width,A.height,e[0],e[1]-2,Math.max(6,Math.round(e[2]*.78)),Math.round(e[3]*.86));if(r&&DYN[hk+(v+1)]){FITLS[k]=r.map(x=>Math.round(x*1e4)/1e4);fitSave()}return r})()}
 // v217 (Sara 17:14 "איפה האיפור ... פאה ותסרוקת לא יושבת טוב, בעיקר פנים ופאה"): the head keeps ITS face (the doll's face pasted on a wig looked like another face);
 // only the makeup is carried over: (doll with makeup − doll) inside the face oval, softened, moved onto that head's face by the fit
 function mkDelta(mk,v){const k=mk+'|'+v+'|'+(DYN[mk+(v+1)]||'');if(FMK[k])return FMK[k];const e=FCV[v];

@@ -157,5 +157,5 @@ document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.c
   if(a[0]=='o'){const i=+a.slice(1);const f=fs[i];if(!f)return;const n=await save102([[f,f.name]]);if(n){(G106.one||(G106.one=new Set())).add(i);toast('✓ ירדה')}return}
   const zb=await zip109(fs);const n=await save102([[zb,nm102(G106.id,'ל-GPT').replace(/\.jpg$/,'')+'.zip']]);if(n){G106.got=`ירד זיפ עם ${fs.length} תמונות`;toast('✓ הזיפ ירד – עכשיו שלב 4')}}
  catch(err){ERR('v108 g106',err);toast('משהו לא עבד, נסי שוב')}finally{t.disabled=false;t.textContent=old;paint106()}},true);
-window.open106=open106;window.blob102=blob102;window.save102=save102;window.zip109=zip109;window.G106=G106;window.paint106=paint106;window.copy106=copy106;
+window.all102=all102;window.open106=open106;window.blob102=blob102;window.save102=save102;window.zip109=zip109;window.G106=G106;window.paint106=paint106;window.copy106=copy106;
 }

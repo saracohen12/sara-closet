@@ -24,3 +24,6 @@ document.addEventListener('keydown',e=>{try{if(e.key!='Escape'||document.querySe
  extra=function(c){if(!base.apply(this,arguments))return false;if(SORT!='ret')return true;const n=typeof daysLeft=='function'?daysLeft(c.dataset.rdl):null;if(n==null||n<0)return false;
   const i=(typeof IT=='object'&&IT[c.dataset.id])||{};return !(i.s=='kept'||i.s=='give'||i.rsent||i.rnr||i.refunded||i.oos||i.gen)};extra._r352=1;
   const so=document.getElementById('sort');if(so)so.addEventListener('change',()=>setTimeout(()=>{try{apply()}catch(_){}},0));try{if(SORT=='ret')apply()}catch(_){}}catch(_){}};setTimeout(go,1500)})();
+// 8) v353: "כל התמונות (N)" counted the avatar pictures too, and the number grew a moment after opening – it now says so and stays up to date
+setInterval(()=>{try{const d=document.getElementById('dlg');if(!d||!d.open||typeof all102!='function')return;const b=d.querySelector('.pk102b');if(!b)return;const id=b.dataset.pk102open;
+ const L=all102(id),n=L.length,av=L.filter(p=>/אווטאר/.test(p.n||'')).length;const t=`🖼 כל התמונות (${n}${av?` · ${av} של האווטאר`:''}) · לבחור ולהוריד`;if(b.textContent!=t)b.textContent=t}catch(_){}},1500);
