@@ -31,3 +31,9 @@ html[data-z21n] ::-webkit-scrollbar{background:#0f0d16}
 html[data-z21n] .gcap,html[data-z21n] .mwrap .gcap{background:rgba(20,17,30,.78)!important;color:#eeeaf6!important}
 html[data-z21n] #fb{background:#eeeaf6!important;color:#15131c!important}
 html[data-z21n] #fb *{color:#15131c!important}
+/* v355 night fixes (night check): gallery caption, arrows and 🔍 on the item photo, the "on the avatar" pill, the speed button and the ✦ logo */
+html[data-z21n] #dlg .mwrap .gcap,html[data-z21n] #dlgbody .gcap{background:rgba(20,17,30,.8)!important;color:#f4f0fa!important}
+html[data-z21n] #dlg .gnav,html[data-z21n] #dlg .zbtn{background:rgba(20,17,30,.78)!important;color:#fff!important;border-color:rgba(255,255,255,.2)!important}
+html[data-z21n] .it77p.b188,html[data-z21n] .b188{color:#0f2e1c!important}
+html[data-z21n] #h180 .z5sp,html[data-z21n] #h180 .z-pp,html[data-z21n] #h180 .v351b{background:rgba(30,26,44,.88)!important;color:#eeeaf6!important;border:1px solid rgba(255,255,255,.18)!important}
+html[data-z21n] .h9logo{background:#eeeaf6!important;color:#15131c!important}

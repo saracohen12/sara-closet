@@ -21,7 +21,8 @@ function show(){try{const st=window.H180ST,el=st&&st.el;if(!el)return;let m=el.q
  if(!m||m.dataset.a!=c.a){if(m)m.remove();m=document.createElement(c.k=='g'?'img':'video');m.className='v351m';m.dataset.a=c.a;m.alt='';
   if(c.k!='g'){m.muted=true;m.loop=true;m.playsInline=true;m.autoplay=true;m.setAttribute('playsinline','');m.setAttribute('muted','')}
   m.src=c.u;el.append(m);if(m.play)m.play().catch(()=>{})}
- el.classList.add('v351on');try{st.stop()}catch(_){}}catch(e){ERR('show',e)}}
+ el.classList.add('v351on');try{st.stop()}catch(_){}}catch(e){ERR('show',e)}
+ try{const av=window.H180ST.el.closest('.z-av');if(av)av.classList.toggle('v351vid',!!cur());if(!cur()&&window.H180ST.playing()){window.H180ST.stop();window.H180ST.show(0)}}catch(_){}}   // v355: ▶/speed do nothing over a video – hidden then; back to the avatar = calm, not spinning
 
 // ---------- 2) the body sway, drawn from the front picture ----------
 let sw=null,raf=0,t0=performance.now();
@@ -44,7 +45,7 @@ function startSway(){if(!raf)raf=requestAnimationFrame(frame)}
 
 // ---------- the 🎬 sheet ----------
 let dlg=null;
-const PROMPT=`צרי סרטון קצר (4–6 שניות, לופ חלק בלי קפיצה) של האישה בתמונה המצורפת – זו אני.
+const PROMPT=`צרי סרטון קצר (4–6 שניות, לופ חלק בלי קפיצה) של האישה בתמונה ששלחתי – זו אני.
 היא עומדת במקום, פנים אליי, נושמת בעדינות, הגוף מתנדנד קצת, יד על המותן זזה מעט, השיער זז ברכות.
 אותם פנים בדיוק, אותו גוף, אותם בגדים ואותו כיסוי ראש/פאה כמו בתמונה – בלי לשנות שום דבר.
 רקע אחיד בהיר כמו בתמונה, מצלמה קבועה, בלי טקסט. תמונה אנכית 2:3. הורידי כ-GIF או MP4.`;

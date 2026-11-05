@@ -76,6 +76,7 @@ const MORE=[
  ['לוקים ואווטאר',[
   ['📅','השבוע שלי','לוק לכל יום מהסטייליסטית',()=>window.WEEK352&&WEEK352.open()],
   ['🧳','לארוז','לנסיעה או לשבת: לוקים ורשימה עם ✓',()=>window.PACK353&&PACK353.open()],
+  ['🎬','אווטאר בתנועה','סרטון / GIF מ-GPT בדף הבית',()=>window.VID351&&VID351.sheet()],
   ['📊','מספרים וסיכומים','הכול חי: חנויות, סוגים, חודשים',()=>window.STATS350&&STATS350.open()],
   ['☀','מה ללבוש היום','5 לוקים לפי מזג האוויר במודיעין עילית',()=>window.WX332&&WX332.open()],
   ['🧕','כמה כיסויים יחד','עד 8 כיסויים × 4 קשירות ב-GPT אחד',()=>window.MC333&&MC333.open()],
@@ -103,7 +104,7 @@ function openMore(){let d=document.getElementById('z5m');
   `<label class="z5mq"><span aria-hidden="true">🔍</span><input type="search" placeholder="מה לחפש? למשל: החזרות, איפור, גיבוי" aria-label="חיפוש כלי"></label>`+
   MORE.map(([h,L],g)=>`<details class="z5md" data-g="${g}"${(OPEN349[g]!=null?OPEN349[g]:g==0)?' open':''}><summary><h3>${h}</h3><small>${L.length}</small><i aria-hidden="true">›</i></summary><div class="z5mg">${L.map(([ic,n,sub],i)=>`<button type="button" data-z5m="${g}.${i}"><i aria-hidden="true">${ic}</i><span><b>${n}</b><small>${sub}</small></span></button>`).join('')}</div></details>`).join('');
  d.querySelectorAll('details.z5md').forEach(x=>x.addEventListener('toggle',()=>{OPEN349[x.dataset.g]=x.open;try{localStorage.setItem('z5m349',JSON.stringify(OPEN349))}catch(_){}}));
- const qi=d.querySelector('.z5mq input');qi.addEventListener('input',()=>{const q=qi.value.trim();d.querySelectorAll('details.z5md').forEach(x=>{let any=false;x.querySelectorAll('[data-z5m]').forEach(b=>{const hit=!q||b.textContent.includes(q);b.hidden=!hit;if(hit)any=true});x.hidden=!any;if(q&&any)x.open=true})});
+ const qi=d.querySelector('.z5mq input');qi.addEventListener('input',()=>{const q=qi.value.trim();d.querySelectorAll('details.z5md').forEach(x=>{let any=false;x.querySelectorAll('[data-z5m]').forEach(b=>{const hit=!q||b.textContent.includes(q);b.hidden=!hit;if(hit)any=true});x.hidden=!any;if(q&&any)x.open=true});let e=d.querySelector('.z5mnone');const none=q&&![...d.querySelectorAll('details.z5md')].some(x=>!x.hidden);if(none&&!e){e=document.createElement('p');e.className='z5mnone';d.append(e)}if(e){e.hidden=!none;e.textContent=none?'לא מצאתי "'+q+'" – נסי מילה אחרת':''}});
  // the cart shows how many things are in it
  try{const n=window.ADV187?ADV187.list().filter(r=>r.st=='think').length:0;if(n){const b=d.querySelector('[data-z5m="0.0"] b');if(b)b.textContent='העגלה שלי ('+n+')'}}catch(_){}
  if(!d.open)d.showModal()}

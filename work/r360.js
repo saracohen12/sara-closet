@@ -971,7 +971,8 @@ let LOTD=null;const lotdIds=()=>{if(!LOTD||LOTD.ids.some(id=>!READY[id]))LOTD=lo
 // kept for the day; "↻ הצעה אחרת" moves to the next one. If she picks wig/cover on the home herself, her choice wins for that day.
 const tdK=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};   // local day (UTC changed the day at 2–3 am in Israel)
 let SM=null;try{SM=JSON.parse(localStorage.getItem('lotd350')||'null')}catch(_){}
-const smOK=()=>SM&&SM.d==tdK()&&SM.o==occNow()&&Array.isArray(SM.L)&&SM.L.length&&SM.L.every(l=>(l.ids||[]).every(id=>D[id]));
+const liveIt=id=>{const i=(typeof IT=='object'&&IT&&IT[id])||{};return D[id]&&!i.gen&&!i.oos&&!i.out&&i.s!='ret'&&i.s!='give'};   // v355: an item given away / returned today leaves the look
+const smOK=()=>SM&&SM.d==tdK()&&SM.o==occNow()&&Array.isArray(SM.L)&&SM.L.length&&SM.L.every(l=>(l.ids||[]).every(liveIt));
 let smBusy=null;
 function smart(fresh){if(!fresh&&smOK())return Promise.resolve(SM);if(smBusy)return smBusy;
  smBusy=(async()=>{try{
@@ -997,7 +998,8 @@ const TODAY={state:homeState,
  pinLook:k=>{const o=lookOf(k);if(!o)return;if(!wornIds(o.s).length)return toast_('אין עוד בגד מהלוק הזה על האווטאר 360');pinGo(o.s,o.name)},
  pinIds:(ids,name)=>{ids=ids.filter(id=>D[id]);if(!ids.some(isReady))return toast_('אין עוד בגד מהלוק הזה על האווטאר 360');pinGo(stateFrom(ids.filter(isReady),{head:HOME.head||'c',cam:ST.cam,bg:ST.bg}),name)},
  unpin:()=>{HOME.pin=null;saveHome()},
- rate:async v=>{const ids=TODAY.ids();const s=homeState();if(s&&/^y/.test(s.tf||''))ids.push(s.tf);await rateLook(ids,v);if(v<0)return TODAY.next();return ids},
+ allIds:()=>{if(!HOME.pin&&smOK()&&SM.L[SM.i])return SM.L[SM.i].ids.filter(id=>D[id]);return TODAY.ids()},   // v355: with the cover/scarf (ids() leaves head items out)
+ rate:async v=>{const ids=TODAY.allIds();await rateLook(ids,v);if(v<0)return TODAY.next();return ids},
  next:()=>{HOME.pin=null;if(smOK()){SM.i=(SM.i+1)%SM.L.length;try{localStorage.setItem('lotd350',JSON.stringify(SM))}catch(_){}}else LOTD=lotd(true);saveHome();return TODAY.ids()},
  onchange:f=>HOMEL.add(f),
  wear:()=>{const s=homeState();ST=Object.assign(clone(DEF),clone(s));MISS=[];keep();open();redraw()}};
@@ -1080,7 +1082,7 @@ async function looksFor(wx,n,opt){n=n||5;opt=opt||{};   // v352: opt.occ (a give
   const fs=b.map(fam).filter(Boolean),ids=b.slice(),av=new Set(),cnt=id=>usedA.get(id)||0;
   // v350: an accessory is the one whose colour suits the whole look best (repeats one of its colours or a neutral), not a random one that merely does not clash
   const aScore=id=>{const f=fam(id);let v=pairOK(fs.concat([f]))-pairOK(fs)+2*tasteOf(id,ids);if(f&&fs.includes(f))v+=2.5;else if(NEU.has(f))v+=1.5;if(strong(fs.concat([f]))>2)v-=5;v-=cnt(id)*2;if(itOf(id).fav)v+=1;return v+Math.random()*.8};
-  const add=(pool,p)=>{if(Math.random()>p)return;pool=pool.filter(id=>!av.has(id));if(!pool.length)return;const id=pool.map(id=>[id,aScore(id)]).sort((a,b)=>b[1]-a[1])[0][0];if(id){ids.push(id);const f=fam(id);if(f)fs.push(f)}};
+  const add=(pool,p)=>{if(Math.random()>p)return;pool=pool.filter(id=>!av.has(id));if(!pool.length)return;const bst=pool.map(id=>[id,aScore(id)]).sort((a,b)=>b[1]-a[1])[0];const id=bst[1]>-2?bst[0]:'';if(id){   /* v355: no accessory that clashes (the one blue jewellery set went with brown looks too) */ids.push(id);const f=fam(id);if(f)fs.push(f)}};
   if(!hot&&(cold||rain||sea=='חורף'))add(of('outer'),1);else if(!hot&&sea!='קיץ')add(of('outer'),.25);
   if(b.some(id=>['dresses','skirts'].includes(cat(id))))add(of('belts'),.65);
   add(of('shoes'),1);add(of('jewelry'),1);add(of('bags'),.5);   // v350: jewellery in every look (Sara: "שים גם תכשיטים")

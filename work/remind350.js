@@ -11,7 +11,7 @@ const LS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorag
 const today=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())};
 const left=s=>{const m=String(s||'').match(/^(\d{4})-(\d\d)-(\d\d)/);if(!m)return null;return Math.round((new Date(+m[1],+m[2]-1,+m[3])-today())/864e5)};
 const nm=id=>{const x=D[id]||{};return String(I(id).nm||I(id).tname||x.short||x.full||id).replace(/^[A-Za-z0-9&'.\-\s]+(?=[֐-׿])/,'').split(/[,،]/)[0].slice(0,42)};
-const days=n=>n<=0?'היום היום האחרון':n==1?'נשאר יום אחד':n==2?'נשארו יומיים':`נשארו ${n} ימים`;
+const days=n=>n<=0?'היום – היום האחרון':n==1?'נשאר יום אחד':n==2?'נשארו יומיים':`נשארו ${n} ימים`;
 function list(){const ids=Object.keys(typeof D=='object'&&D||{});const out=[],may=[];
  ids.forEach(id=>{const x=D[id],i=I(id);if(!x||!x.rdl||i.gen||i.oos||i.refunded||i.rnr||i.s=='give')return;const n=left(x.rdl);if(n==null||n<0)return;
   if(i.s=='ret'&&!i.rsent){if(n<=7)out.push([id,n])}
@@ -21,8 +21,8 @@ function card(){try{const s=document.getElementById('h180');if(!s)return;const {
  if(!out.length&&!may.length){if(c)c.remove();return}
  if(!c){c=document.createElement('button');c.type='button';c.id='rm350';c.addEventListener('click',e=>{if(e.target.closest('.rm350n'))return ask();try{openHub('money')}catch(_){try{openOrders123()}catch(_){}}});
   const anchor=s.querySelector('.ib334b')||s.querySelector('.wx332b');if(anchor)anchor.after(c);else s.prepend(c)}
- const f=out[0]||may[0],more=out.length+may.length-1;
- const h=`<i aria-hidden="true">⏰</i><span><b>${out.length?days(f[1])+' להחזיר':days(f[1])+' – עוד אפשר להחזיר'}</b><small>${es(nm(f[0]))}${more>0?` · ועוד ${more}`:''}</small></span>${('Notification' in window)&&Notification.permission=='default'&&!LS('rm350ask')?'<em class="rm350n" role="button" tabindex="0">🔔 גם התראה</em>':''}<em aria-hidden="true">‹</em>`;
+ const f=out[0]||may[0],more=out.length?out.length-1:may.length-1,also=out.length&&may.length?may.length:0;   // v355: "ועוד" counts the same kind only
+ const h=`<i aria-hidden="true">⏰</i><span><b>${out.length?days(f[1])+' להחזיר':days(f[1])+' – עוד אפשר להחזיר'}</b><small>${es(nm(f[0]))}${more>0?` · ועוד ${more}`:''}${also?` · ועוד ${also} שאפשר להחזיר`:''}</small></span>${('Notification' in window)&&Notification.permission=='default'&&!LS('rm350ask')?'<em class="rm350n" role="button" tabindex="0">🔔 גם התראה</em>':''}<em aria-hidden="true">‹</em>`;
  if(c.innerHTML!=h)c.innerHTML=h;c.classList.toggle('urgent',!!out.length&&f[1]<=3);
  c.setAttribute('aria-label',(out.length?days(f[1])+' להחזיר את ':'עוד אפשר להחזיר את ')+nm(f[0])+(more>0?' ועוד '+more:'')+'. לפתוח את ההחזרות');
  daily(out,may)}catch(e){ERR('card',e)}}

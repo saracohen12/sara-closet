@@ -17,7 +17,7 @@ html[data-d180=z50] #dlg .ed .erow.x349.open>.x349s{flex-basis:calc(100% - 76px)
 /* studio: ⋯ menu */
 #r360 .s349w{position:relative;display:flex}
 #r360 .s349b{width:40px;height:40px;border-radius:50%;border:1px solid var(--z-line,#e6e3df);background:var(--z-solid,#fff);color:var(--z-ink,#17161a);font-size:1.3rem;line-height:1;cursor:pointer;flex:none}
-#r360 .s349m{position:absolute;top:calc(100% + 8px);inset-inline-start:0;z-index:20;display:flex;flex-direction:column;gap:6px;min-width:180px;padding:8px;border-radius:18px;
+#r360 .s349m{position:absolute;top:calc(100% + 8px);inset-inline-start:auto;inset-inline-end:0;z-index:20;display:flex;flex-direction:column;gap:6px;min-width:180px;padding:8px;border-radius:18px;
  background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid var(--z-line,#e6e3df);box-shadow:0 18px 40px -12px rgba(40,25,80,.35)}
 #r360 .s349m[hidden]{display:none}
 #r360 .s349m>button{width:100%;min-height:44px!important;justify-content:flex-start;text-align:start;border-radius:12px!important;padding:0 12px!important;font-size:.92rem!important}
@@ -82,3 +82,4 @@ html[data-d180=z50] #ord123 .p349{display:flex;align-items:center;justify-conten
  html[data-d180=z50] #r360 .r3stage .r3ctl2,html[data-d180=z50] #r360 .r3stage .r3hint{display:none!important}
  html[data-d180=z50] #r360 .r3stage .r3ctl{margin:0!important}
  html[data-d180=z50] #r360 .s349f{display:none!important}}
+#z5m .z5mnone{text-align:center;padding:20px;color:var(--z-muted,#6a6670)}

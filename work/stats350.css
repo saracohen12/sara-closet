@@ -135,3 +135,9 @@ html[data-z21n] #w352{background:#15121f!important}html[data-z21n] #w352 .w352d{
 #p353 .p353u span{font-size:.88rem}
 #p353 .p353u input:checked~span{text-decoration:line-through;opacity:.55}
 html[data-z21n] #p353{background:#15121f!important}html[data-z21n] #p353 .p353f{background:#1f1b2d!important}
+/* v355 fixes from the night check */
+#h180 .z-av.v351vid .z-pp,#h180 .z-av.v351vid .z5sp,#h180 .z-av.v351vid .z-spd{display:none!important}
+#w352 .w352i{flex-wrap:wrap;overflow:visible}
+#w352 .w352i img{width:52px;height:66px}
+#h180 .h351t button[data-h351w]{white-space:nowrap;font-size:.76rem;padding:0 8px}
+html[data-z21n] .h351c i,html[data-z21n] #w352 .w352c i{box-shadow:0 0 0 1.5px rgba(255,255,255,.55)!important}

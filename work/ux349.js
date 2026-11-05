@@ -7,17 +7,20 @@
 const H=document.documentElement,ERR=(w,e)=>(window.ERRS=window.ERRS||[]).push('v349 '+w+': '+(e&&e.message||e));
 const on=()=>H.dataset.d180=='z50';
 const val=r=>{const b=[...r.querySelectorAll(':scope>button[aria-pressed=true]:not(.x349s)')];const t=b.map(x=>[...x.childNodes].map(n=>n.textContent.trim()).filter(Boolean).join(' ')).filter(Boolean);return t.length?t.join(' · '):'לא נבחר'};
-function fold(r){if(r.querySelector(':scope>.x349s'))return paint(r);r.classList.add('x349');   // a row the site re-filled (innerHTML) gets its line again
+// v355: the site re-draws a row after every choice – which rows are open is kept by their label, so a re-drawn row stays as she left it
+const OPEN=new Set();const labOf=r=>((r.querySelector(':scope>span')||{}).textContent||'').trim();
+function fold(r){if(r.querySelector(':scope>.x349s')){paint(r);return}r.classList.add('x349');   // a row the site re-filled (innerHTML) gets its line again
  const lab=r.querySelector(':scope>span');const s=document.createElement('button');s.type='button';s.className='x349s';s.setAttribute('aria-expanded','false');
  s.innerHTML='<span class="x349v"></span><i aria-hidden="true">›</i>';
  if(lab){s.setAttribute('aria-label',lab.textContent.trim()+' – לפתוח');lab.after(s)}else r.prepend(s);
  s.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const o=!r.classList.contains('open');
   r.parentElement&&r.parentElement.querySelectorAll('.x349.open').forEach(x=>{if(x!==r){x.classList.remove('open');const q=x.querySelector('.x349s');q&&q.setAttribute('aria-expanded','false')}});
-  r.classList.toggle('open',o);s.setAttribute('aria-expanded',String(o))});
+  r.classList.toggle('open',o);s.setAttribute('aria-expanded',String(o));const lb=labOf(r);OPEN.clear();if(o)OPEN.add(lb)});
  // after choosing: show the new value (the site may re-render the row – then fold() runs again on the new one)
- if(!r._x349)r.addEventListener('click',e=>{if(e.target.closest('.x349s'))return;if(e.target.closest('button'))setTimeout(()=>{paint(r);if(!r.matches('.multi349'))close(r)},380)});
+ if(!r._x349)r.addEventListener('click',e=>{if(e.target.closest('.x349s'))return;if(e.target.closest('button')){const lb=labOf(r),multi=r.matches('.multi349');if(!multi)OPEN.delete(lb);
+  setTimeout(()=>{document.querySelectorAll('#dlg .ed .erow.x349').forEach(x=>{if(labOf(x)==lb){paint(x);if(multi){x.classList.add('open');const q=x.querySelector('.x349s');q&&q.setAttribute('aria-expanded','true')}else close(x)}})},380)}});
  // rows where several can be on together (סימון, סגנון, עונה) stay open until she closes them
- r._x349=1;const lt=lab?lab.textContent.trim():'';if(/סימון|סגנון|עונה/.test(lt))r.classList.add('multi349');
+ r._x349=1;const lt=lab?lab.textContent.trim():'';if(/סימון|סגנון|עונה/.test(lt))r.classList.add('multi349');if(OPEN.has(lt)){r.classList.add('open');s.setAttribute('aria-expanded','true')}
  paint(r)}
 function close(r){r.classList.remove('open');const s=r.querySelector('.x349s');s&&s.setAttribute('aria-expanded','false')}
 function paint(r){const v=r.querySelector('.x349v');if(v){const t=val(r);if(v.textContent!=t)v.textContent=t;v.classList.toggle('none',t=='לא נבחר')}}

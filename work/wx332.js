@@ -59,11 +59,11 @@ function head(w){const [ic,tx]=WC(w.code),T=tips(w),dd=new Date().toLocaleDateSt
   <p class="wxt"><bdi dir="ltr">${w.hi}°</bdi> / <bdi dir="ltr">${w.lo}°</bdi>${tx?' · '+tx:''}${(+w.rain||0)>=20?` · ☔ ${w.rain}%`:''}${w.now!=null?` · עכשיו <bdi dir="ltr">${w.now}°</bdi>`:''}</p><small>${src}</small></div></div>
   <ul class="wxtips">${T.map(([i,t])=>`<li><span aria-hidden="true">${i}</span>${esc(t)}</li>`).join('')}</ul>
   <div class="wxsay" role="group" aria-label="איך מזג האוויר אצלך?"><small>זה לא נכון?</small>${Object.entries(SAY).map(([k,v])=>`<button type="button" data-wxsay="${k}" aria-pressed="${w.say==k}">${v.t}</button>`).join('')}${w.say?'<button type="button" data-wxsay="">↺ תחזית</button>':''}</div>
-  <h3 class="wxhi">שרה, אלו הלוקים שאני ממליץ לך היום 💕</h3><p class="wxsub">מהכיסוי ועד הנעליים, רק מבגדים שכבר על האווטאר שלך. לגעת בבובה כדי לסובב אותה.</p>`}
+  <h3 class="wxhi">שרה, אלו הלוקים שהסטייליסטית בחרה לך היום 💕</h3><p class="wxsub">מהכיסוי ועד הנעליים, רק מבגדים שכבר על האווטאר שלך. לגעת בבובה כדי לסובב אותה.</p>`}
 const CATN={dresses:'שמלה',sets:'סט',tops:'חולצה',base:'חולצת בסיס',sweaters:'סוודר',skirts:'חצאית',outer:'מעיל / ז׳קט',shoes:'נעליים',belts:'חגורה',jewelry:'תכשיט',bags:'תיק',scarves:'כיסוי'}
 function lookCard(L,i,w){const nm=id=>R360.nm(id),c=id=>R360.catOf(id)
  const coat=L.ids.find(id=>c(id)=='outer'),why=coat&&((+w.rain||0)>=40||(+w.mm||0)>=1)?'☔ עם מעיל, כי יורד גשם':coat&&w.hi<19?'🧥 עם מעיל, כי קר':''
- return `<article class="wxc" data-wxi="${i}"><div class="wxst" data-wxst="${i}"></div><div class="wxcb"><b>לוק ${i+1}</b>${why?`<small class="wxwhy">${why}</small>`:''}
+ return `<article class="wxc" data-wxi="${i}"><div class="wxst" data-wxst="${i}"></div><div class="wxcb"><b>לוק ${i+1}</b>${why?`<small class="wxwhy">${why}</small>`:''}${L.s&&(L.s.head=='w'||/^yh/.test(L.s.head||''))?'<small class="wxwhy">💇 עם הפאה ותסרוקת</small>':''}
   <ul>${L.ids.map(id=>`<li><button type="button" class="wxit" data-open="${esc(id)}"><img alt="" data-th="${esc(id)}" src="${esc(R360.ph(id))}"><span><small>${CATN[c(id)]||''}</small>${esc(nm(id))}</span></button></li>`).join('')}</ul>
   <div class="wxa"><button type="button" class="pri" data-wxwear="${i}">👗 לבשתי / ללבוש בסטודיו</button><button type="button" data-wxpin="${i}">📌 לדף הבית</button></div></div></article>`}
 async function looks(w,fresh){const k=day()+'|'+(w.say||'')+'|'+Math.round(w.hi/3)+'|'+((+w.rain||0)>=40||(+w.mm||0)>=1?1:0),c=LS('wx332l')
