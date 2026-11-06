@@ -172,12 +172,14 @@ function lumOf(c){const d=c.getContext('2d',{willReadFrequently:true}).getImageD
 function fitFace(D,A,W,H,cx=176,cy=62,rx=19,ry=24){const P=[];   // the doll's eyes, nose and mouth (D) against the head (A) → [dx,dy,scale,turn°,score]
  for(let y=cy-ry;y<=cy+ry;y++)for(let x=cx-rx;x<=cx+rx;x++){const u=(x-cx)/rx,v=(y-cy)/ry;if(u*u+v*v<=1)P.push(x-cx,y-cy,D[y*W+x])}
  const n=P.length/3,V=new Float32Array(n);let m=0;for(let i=2;i<P.length;i+=3)m+=P[i];m/=n;let sd=0;for(let i=2;i<P.length;i+=3){P[i]-=m;sd+=P[i]*P[i]}sd=Math.sqrt(sd)||1;
- const score=(dx,dy,s,t)=>{const c=Math.cos(t*Math.PI/180)*s,si=Math.sin(t*Math.PI/180)*s;let sa=0,sb=0,sab=0;
+ const score=(dx,dy,s,t,st=1)=>{const c=Math.cos(t*Math.PI/180)*s,si=Math.sin(t*Math.PI/180)*s;let sa=0,sb=0,sab=0;   /* v360: st=3 – the wide search looks at every 3rd point (3× faster), the fine one at all */
+  if(st>1){let k=0;for(let i=0;i<P.length;i+=3*st,k++){const x=Math.round(cx+dx+c*P[i]-si*P[i+1]),y=Math.round(cy+dy+si*P[i]+c*P[i+1]);const a=x<0||y<0||x>=W||y>=H?0:A[y*W+x];V[k]=a;sa+=a}
+   const ma=sa/k;let sd2=0;for(let i=0,q=0;q<k;i+=3*st,q++){const a=V[q]-ma;sab+=a*P[i+2];sb+=a*a;sd2+=P[i+2]*P[i+2]}return sab/((Math.sqrt(sd2)||1)*(Math.sqrt(sb)||1))}
   for(let i=0,j=0;i<P.length;i+=3,j++){const x=Math.round(cx+dx+c*P[i]-si*P[i+1]),y=Math.round(cy+dy+si*P[i]+c*P[i+1]);const a=x<0||y<0||x>=W||y>=H?0:A[y*W+x];V[j]=a;sa+=a}
   const ma=sa/n;for(let j=0;j<n;j++){const a=V[j]-ma;sab+=a*P[j*3+2];sb+=a*a}return sab/(sd*(Math.sqrt(sb)||1))};
- let best=[0,0,1,0],bs=score(0,0,1,0);
- for(let s=.9;s<=1.101;s+=.025)for(let t=-6;t<=6;t+=2)for(let dy=-10;dy<=10;dy+=2)for(let dx=-10;dx<=10;dx+=2){const r=score(dx,dy,s,t);if(r>bs){bs=r;best=[dx,dy,s,t]}}
- const [bx,by,bS,bT]=best;
+ let best=[0,0,1,0],bs=score(0,0,1,0),bc=score(0,0,1,0,3);
+ for(let s=.9;s<=1.101;s+=.025)for(let t=-6;t<=6;t+=2)for(let dy=-10;dy<=10;dy+=2)for(let dx=-10;dx<=10;dx+=2){const r=score(dx,dy,s,t,3);if(r>bc){bc=r;best=[dx,dy,s,t]}}
+ const [bx,by,bS,bT]=best;bs=score(bx,by,bS,bT);
  for(let s=bS-.02;s<=bS+.021;s+=.01)for(let t=bT-1.5;t<=bT+1.51;t+=.5)for(let dy=by-2;dy<=by+2;dy++)for(let dx=bx-2;dx<=bx+2;dx++){const r=score(dx,dy,s,t);if(r>bs){bs=r;best=[dx,dy,s,t]}}
  return [...best,bs]}
 function styFace(k,h,o){o=o||{};if(k&&!STY[k])return Promise.resolve('');const hk=h=='h'?hairHead():defTie()||'c';
