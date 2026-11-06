@@ -127,9 +127,9 @@ function getAlerts(){const A=[];const add=(lvl,txt,ids)=>A.push({lvl,txt,ids:ids
  const dsoon=soon.filter(id=>card(id)?.dataset.dup);if(dsoon.length)add(3,`${dsoon.length} פריטים כפולים שאפשר להחזיר תוך שבועיים. כדאי להחליט עכשיו.`,dsoon);
  const vs=soon.filter(id=>daysLeft(D[id].rdl)<=7&&!dsoon.includes(id));if(vs.length)add(3,`${vs.length} פריטים שנשארו פחות משבוע להחזיר. לא סימנת אם להשאיר.`,vs);
  const s2=soon.filter(id=>!dsoon.includes(id)&&!vs.includes(id));if(s2.length)add(2,`${s2.length} פריטים שאפשר להחזיר רק עוד 8–14 ימים.`,s2);
- const ret=Object.keys(D).filter(id=>(IT[id]||{}).s=='ret'&&!(IT[id]||{}).refunded);if(ret.length)add(2,`החזרת ${ret.length} פריטים, ועדיין לא סימנת שהכסף חזר (${money2(ret.reduce((s,id)=>s+D[id].paid,0))}).`,ret);
+ const ret=Object.keys(D).filter(id=>{const i=IT[id]||{};return i.s=='ret'&&i.rsent&&!i.refunded&&!i.rnr});   /* v360: sent back, money not yet */if(ret.length)add(2,`החזרת ${ret.length} פריטים, ועדיין לא סימנת שהכסף חזר (${money2(ret.reduce((s,id)=>s+D[id].paid,0))}).`,ret);
  Object.values(CREDITS).forEach(c=>{const n=c.exp?daysLeft(c.exp):null;if(n!=null&&n>=0&&n<=14)add(n<=7?3:2,`קרדיט של ${money2(+c.amt)} ב${c.store} פג בעוד ${n} ימים.`)});
- const ords=[...new Set(Object.keys(D).filter(id=>D[id].transit&&!(ORD[D[id].order]||{}).arrived).map(id=>D[id].order))];if(ords.length)add(1,`${ords.length} הזמנות עוד בדרך. כשהן מגיעות, לוחצים "ההזמנה הגיעה".`,Object.keys(D).filter(id=>ords.includes(D[id].order)).slice(0,30));
+ const ords=[...new Set(Object.keys(D).filter(id=>D[id].transit&&!(ORD[D[id].order]||{}).arrived&&(IT[id]||{}).got!='y').map(id=>D[id].order))];if(ords.length)add(1,`${ords.length} הזמנות עוד בדרך. כשהן מגיעות, לוחצים "ההזמנה הגיעה".`,Object.keys(D).filter(id=>ords.includes(D[id].order)).slice(0,30));
  const fix=Object.keys(D).filter(id=>(IT[id]||{}).fix);if(fix.length)add(1,`${fix.length} בגדים מחכים לתופרת.`,fix);
  const td=new Date().getDay();const tl=LOOKS[(PLAN.days||{})[td]];if(tl)add(1,`הלוק של היום (${DAYS[td]}): ${tl.name}`,Object.values(tl.items));
  const unm=Object.keys(D).filter(id=>!(IT[id]||{}).s).length;if(unm)add(0,`עוד ${unm} פריטים לא סימנת אם השארת. "⚡ סימון מהיר" בסינון עושה את זה מהר.`);

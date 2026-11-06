@@ -348,7 +348,8 @@ document.addEventListener('click',e=>{if(!(e.target.closest&&e.target.closest('[
 // ---- 38 + 45 in the bell: the weekly "5 to upload", and return-tomorrow
 function upWeek(){return Object.keys(D).filter(id=>live(id)&&usesPoses(id)&&!(window.avReady&&avReady(id))).sort((a,b)=>((IT[b]||{}).wear||0)-((IT[a]||{}).wear||0)||((IT[b]||{}).fav?1:0)-((IT[a]||{}).fav?1:0)).slice(0,5)}
 if(typeof getAlerts=='function'){const _ga=getAlerts;getAlerts=function(){const A=_ga.apply(this,arguments)||[];try{
- const L=lastDay();if(L.length){const t0=L.filter(id=>daysLeft(D[id].rdl)===0);A.unshift({lvl:3,txt:t0.length?`היום היום האחרון להחזרה של ${t0.length} פריטים!`:`מחר היום האחרון להחזרה של ${L.length} פריטים.`,ids:L})}
+ const L=lastDay();if(L.length){const t0=L.filter(id=>daysLeft(D[id].rdl)===0);A.unshift({lvl:3,txt:t0.length?`היום היום האחרון להחזרה של ${t0.length} פריטים!`:`מחר היום האחרון להחזרה של ${L.length} פריטים.`,ids:L})
+  for(let k=A.length-1;k>0;k--){const x=A[k];if(!x||!Array.isArray(x.ids))continue;const n0=x.ids.length;const r=x.ids.filter(id=>!L.includes(id));if(r.length==n0)continue;if(!r.length){A.splice(k,1);continue}x.ids=r;x.txt=String(x.txt).replace(String(n0),String(r.length))}}   // v360: an item of the last-day alert is not listed again in "less than a week"
  const u=upWeek();if(u.length)A.push({lvl:1,txt:`השבוע כדאי להעלות לאווטאר ${u.length} בגדים שאת לובשת הרבה. ב"מה חסר לאווטאר" יש פרומט לכל אחד.`,ids:u})}catch(e){ERR('alerts',e)}return A}}
 
 // ================= CLOSET =================

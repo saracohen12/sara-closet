@@ -101,7 +101,7 @@ function outHtml(){const ids=outIds().sort((a,b)=>String(IT[b].out.d||'').locale
 const SRT=[['love','♥ אוהבת, משאירה'],['keep','✓ משאירה'],['out','🧺 יצא משימוש'],['daughter','👧 לבת שלי'],['give','🎁 למסור'],['tailor','🪡 לתופרת'],['wait','⏳ לא בטוחה, לשאול שוב בעוד 3 חודשים']];
 const sorted_=id=>{const r=it(id).srt;if(!r||!r.v)return false;return !(r.v=='wait'&&r.until&&r.until<=today())};
 function sortQ(){let L=Object.keys(D).filter(id=>liveId(id)&&it(id).s!='give'&&!sorted_(id));if(S.sc)L=L.filter(id=>cat(id)==S.sc);
- const dt=id=>String((D[id]||{}).date||'9999');return L.sort((a,b)=>wearN(a)-wearN(b)||dt(a).localeCompare(dt(b)))}
+ const dt=id=>{const m=String((D[id]||{}).date||'').match(/^(\d{1,2})\/(\d{1,2})/);if(!m)return '9999';const mm=+m[2],nowM=new Date().getMonth()+1;return String((mm>nowM+1?0:1)*10000+mm*100+(+m[1])).padStart(5,'0')};   /* v360: dates are d/m (it compared them as text and showed NaN) */return L.sort((a,b)=>wearN(a)-wearN(b)||dt(a).localeCompare(dt(b)))}
 let UNDO=[];
 function sortHtml(){const L=sortQ(),all=Object.keys(D).filter(id=>liveId(id)&&(!S.sc||cat(id)==S.sc)),done=all.filter(sorted_).length,has=new Set(Object.keys(D).filter(liveId).map(cat));
  const chips=`<div class="cs234" role="group" aria-label="סוג">${OCATS.filter(([c])=>!c||has.has(c)||S.sc==c).map(([c,t])=>`<button type="button" data-dy306sc="${c}" aria-pressed="${(S.sc||'')==c}">${t}</button>`).join('')}</div>`;
@@ -110,7 +110,7 @@ function sortHtml(){const L=sortQ(),all=Object.keys(D).filter(id=>liveId(id)&&(!
  const x=D[id]||{},n=wearN(id),wl=(it(id).wl||[]).slice().sort(),pr=price(id);
  return chips+bar+`<div class="dysc309"><img alt="" data-th="${es(id)}" src="${ph(id)}"><div><b>${es(nm(id))}</b>
   <small>${es([catName(cat(id)),x.color,x.size].filter(Boolean).join(' · '))}</small>
-  <small>${x.date?'נקנה '+es(dm(String(x.date).slice(0,10))+'/'+String(x.date).slice(2,4)):''}${pr?` · ₪${pr.toFixed(0)}`:''}</small>
+  <small>${x.date?'נקנה '+es(String(x.date)):''}${pr?` · ₪${pr.toFixed(0)}`:''}</small>
   <small>${n?`לבשת ${n==1?'פעם אחת':n+' פעמים'} · לאחרונה ${dm(wl[wl.length-1]||today())}`:'עוד לא סימנת שלבשת'}</small>
   <button type="button" class="dyop309" data-dy306open="${es(id)}">לפתוח את הבגד ›</button></div></div>
  <h4 class="h234">מה עושים איתו?</h4>

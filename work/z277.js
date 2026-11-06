@@ -61,6 +61,7 @@ nav.addEventListener('click',e=>{const b=e.target.closest('[data-zt]');if(!b)ret
 
 // ---------- v281 (Sara 28/10 "איפה נמצאת עגלת קניות, איפה כל דבר נמצא"): "עוד" = one clear page with everything by name ----------
 const TL=n=>{try{for(const [,L] of (window.TOOLS172||[]))for(const t of L){const nm=typeof t[1]=='function'?t[1]():t[1];if(String(nm).includes(n)&&typeof t[2]=='function')return t[2]}}catch(_){}return null};
+window.MORE277=()=>MORE;   // v360: the global search also finds every screen of "עוד"
 const closeD=()=>document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(_){}});
 const MORE=[
  ['קניות',[
@@ -103,7 +104,7 @@ function openMore(){let d=document.getElementById('z5m');
  d.innerHTML=`<div class="z5mh"><h2 id="z5mt">כל מה שיש באתר</h2><button type="button" class="z5mx" aria-label="סגירה">✕</button></div>
   <p class="z5mi"><b>בית</b> מה לובשים היום · <b>הארון</b> כל הבגדים · <b>סטודיו</b> להלביש את האווטאר · <b>עוד</b> כל השאר, כאן</p>`+
   // v349 (Sara: "שאני פחות כפתורים – אפתח כפתור, זה יראה לי כפתורים אחרים"): a search line + every group folds; the first group is open, the rest open with a tap (remembered on this phone)
-  `<label class="z5mq"><span aria-hidden="true">🔍</span><input type="search" placeholder="מה לחפש? למשל: החזרות, איפור, גיבוי" aria-label="חיפוש כלי"></label>`+
+  `<label class="z5mq"><span aria-hidden="true">🔍</span><input type="search" placeholder="מה לחפש? למשל: החזרות, איפור, עגלה" aria-label="חיפוש כלי"></label>`+
   MORE.map(([h,L],g)=>`<details class="z5md" data-g="${g}"${(OPEN349[g]!=null?OPEN349[g]:g==0)?' open':''}><summary><h3>${h}</h3><small>${L.length}</small><i aria-hidden="true">›</i></summary><div class="z5mg">${L.map(([ic,n,sub],i)=>`<button type="button" data-z5m="${g}.${i}"><i aria-hidden="true">${ic}</i><span><b>${n}</b><small>${sub}</small></span></button>`).join('')}</div></details>`).join('');
  d.querySelectorAll('details.z5md').forEach(x=>x.addEventListener('toggle',()=>{OPEN349[x.dataset.g]=x.open;try{localStorage.setItem('z5m349',JSON.stringify(OPEN349))}catch(_){}}));
  const qi=d.querySelector('.z5mq input');qi.addEventListener('input',()=>{const q=qi.value.trim();d.querySelectorAll('details.z5md').forEach(x=>{let any=false;x.querySelectorAll('[data-z5m]').forEach(b=>{const hit=!q||b.textContent.includes(q);b.hidden=!hit;if(hit)any=true});x.hidden=!any;if(q&&any)x.open=true});let e=d.querySelector('.z5mnone');const none=q&&![...d.querySelectorAll('details.z5md')].some(x=>!x.hidden);if(none&&!e){e=document.createElement('p');e.className='z5mnone';d.append(e)}if(e){e.hidden=!none;e.textContent=none?'לא מצאתי "'+q+'" – נסי מילה אחרת':''}});

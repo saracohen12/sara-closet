@@ -51,7 +51,7 @@ function counts(){const ids=Object.keys(D);const r={};
  r.gen=Object.keys(IT||{}).filter(gen).length;
  r.transit=new Set(ids.filter(id=>D[id].transit&&!(ORD[D[id].order]||{}).arrived&&(IT[id]||{}).got!='y').map(id=>D[id].order)).size;
  r.soon=ids.filter(id=>{const n=daysLeft(D[id].rdl);return n!=null&&n>=0&&n<=14&&live(id)&&(IT[id]||{}).s!='kept'}).length;
- r.refund=ids.filter(id=>(IT[id]||{}).s=='ret'&&!(IT[id]||{}).refunded).length;
+ r.refund=ids.filter(id=>{const i=IT[id]||{};return i.s=='ret'&&i.rsent&&!i.refunded&&!i.rnr}).length;   // v360: only what she already sent back (the 50 still at home were counted as returned)
  // v175: cancelled by the shop (out of stock, orders thread v174) and the money didn't come back yet
  r.oosw=ids.filter(id=>(IT[id]||{}).oos&&!(IT[id]||{}).refunded).length;
  r.fix=ids.filter(id=>(IT[id]||{}).fix).length;r.nofit=ids.filter(id=>(IT[id]||{}).nofit).length;
@@ -67,7 +67,7 @@ const WAIT=[
  ['⏰','אפשר להחזיר עוד עד שבועיים','soon',1,()=>{shut();try{const so=$1('#sort');if(so&&so.value!='ret'){so.value='ret';so.dispatchEvent(new Event('change'))}}catch(_){}only(FLF||'');setTimeout(()=>toast('הארון מסודר לפי תאריך ההחזרה, הכי דחוף למעלה'),200)}],
  ['💸','החזרתי ועוד לא סימנתי שהכסף חזר','refund',1,hub('money')],
  ['🚫','בוטלו (אזל מהמלאי) והכסף עוד לא חזר','oosw',1,()=>{shut();openOrders123();setTimeout(()=>{const c=document.querySelector('[data-o3f="oos"]');if(c&&c.getAttribute('aria-pressed')!='true')c.click()},120)}],
- ['🚚','הזמנות שעוד בדרך','transit',0,()=>{shut();openOrders123()}],
+ ['🚚','הזמנות שעוד בדרך','transit',0,()=>{shut();openOrders123();setTimeout(()=>{const c=document.querySelector('#ord123 [data-o3f="n"]');if(c&&c.getAttribute('aria-pressed')!='true')c.click()},120)}],   // v360: opens on "בדרך" (it opened on everything)
  ['🧍‍♀️','בגדים שעוד לא על האווטאר 360','avno',0,()=>{shut();window.R360?R360.prompts():openMiss77()}],
  ['✂','מחכים לתופרת','fix',0,()=>only('fix')],
  ['📏','לא במידה','nofit',0,()=>only('nofit')],

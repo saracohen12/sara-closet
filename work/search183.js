@@ -26,7 +26,7 @@ const words=q=>norm(q).split(' ').filter(Boolean);
 const FORMS={};
 function forms(w){if(FORMS[w])return FORMS[w];const f=new Set([w]);
  const strip=s=>{let r=s;for(const e of ['יות','ות','ים','ה','ת','י'])if(r.length-e.length>=3&&r.endsWith(e)){r=r.slice(0,-e.length);break}return r};
- if(/[֐-׿]/.test(w)&&w.length>=3){f.add(strip(w));if(/^[והבלמשכ]/.test(w)&&w.length>=4){const s=w.slice(1);f.add(s);f.add(strip(s))}}
+ if(/[֐-׿]/.test(w)&&w.length>=3){f.add(strip(w));if(/^[והבלמשכ]/.test(w)&&w.length>=4){const s=w.slice(1);f.add(s);const ss=strip(s);if(ss.length>=4)f.add(ss)}}   /* v360: "שחורה" → "חור" matched every "חורף" item */
  return FORMS[w]=[...f].filter(x=>x.length>=2)}
 const hit=(h,ws)=>ws.every(w=>forms(w).some(v=>h.includes(v)));
 function score(id,ws,q){const n=' '+norm(nm(id))+' ';let s=0;if(n.includes(' '+ws[0]))s+=4;if(n.includes(q))s+=3;if(hay()[id].includes(' '+norm(catName(cat(id)))+' ')&&norm(catName(cat(id))).includes(ws[0]))s+=2;if(!status(id)[0])s+=1;return s}
@@ -39,6 +39,7 @@ function tools(){const L=[];
  add('📋','פרומפטים ל-GPT (אווטאר 360)',()=>R360&&R360.prompts&&R360.prompts(),'פרומט gpt גיליון פאה');
  try{(window.WAIT172||[]).forEach(w=>add(w[0],w[1],w[4]))}catch(_){}
  try{(window.TOOLS172||[]).forEach(([g,T])=>T.forEach(t=>{if(typeof t[2]=='function')add(t[0],t[1],t[2],g)}))}catch(_){}
+ try{(window.MORE277?MORE277():[]).forEach(([g,T])=>T.forEach(t=>{if(typeof t[3]=='function')add(t[0],t[1],()=>{try{document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(_){}})}catch(_){}t[3]()},g+' '+(t[2]||''))}))}catch(_){}   // v360: עגלה, מה לבשתי, מזג אוויר… were not found
  const seen=new Set();return L.filter(t=>!seen.has(t.n)&&seen.add(t.n))}
 function looks(ws,ids){let LK={};try{LK=LOOKS||{}}catch(_){}const set=new Set(ids);
  return Object.entries(LK).filter(([id,l])=>l&&l.items&&!l.auto).filter(([id,l])=>hit(' '+norm(l.name||'')+' '+norm(l.notes||'')+' ',ws)||Object.values(l.items).some(x=>set.has(x))).slice(0,12)}
