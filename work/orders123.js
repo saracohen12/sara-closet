@@ -115,7 +115,9 @@ function retFold(G0,sent){const A=[['t1','טמו 1'],['t2','טמו 2'],['t3','ט
  const acc=`<div class="o3rf"><span>📁 חשבון</span>${[['','הכל'],...A].filter(([k])=>!k||n(k)).map(([k,t])=>`<button data-o3racc="${k}" aria-pressed="${V.racc==k}">${t} <small>${n(k)}</small></button>`).join('')}</div>`;
  const ord=G1.length>1||V.rord?`<details class="o3rfd"><summary>📦 ${V.rord?'הזמנה אחת נבחרה – להחליף':'לבחור הזמנה אחת'} <small>(${G1.length} הזמנות)</small></summary><div class="o3rf o3rfo"><span>📦 הזמנה</span><button data-o3rord="" aria-pressed="${!V.rord}">כל ההזמנות <small>${G1.length}</small></button>${G1.map(({o,ids})=>`<button data-o3rord="${H(o.k)}" aria-pressed="${V.rord==o.k}">${V.racc?'':`<i class="sb2 ${o.src}">${ACC[o.src]}</i> `}${H(oname(o))}<small>${H(o.date||'')} · ${ids.length}${sent?'':' · '+stepTxt(ids)}</small></button>`).join('')}</div></details>`:'';
  return {G:G1.filter(g=>!V.rord||g.o.k==V.rord),head:acc+ord}}
-function retList(L,sent){const G0=L.map(o=>({o,ids:o.ids.filter(sent?retS:retP)})).filter(g=>g.ids.length);
+// v360 (Sara: "להחזיר… לראות את כל המוצרים בתמונה גדולה"): the returns list can switch to big pictures (the gallery with the same filter)
+function retList(L,sent){return `<div class="o3vw" role="group" aria-label="תצוגה"><button data-o3allp="0" aria-pressed="true">📦 לפי חבילות</button><button data-o3allp="1" aria-pressed="false">🖼 בתמונות גדולות</button></div>`+retList0(L,sent)}
+function retList0(L,sent){const G0=L.map(o=>({o,ids:o.ids.filter(sent?retS:retP)})).filter(g=>g.ids.length);
  const F=G0.length?retFold(G0,sent):{G:[],head:''},G=F.G;
  if(!G.length)return `<p class="o3empty">${sent?'עוד לא סימנת שהחזרת משהו. כששולחים חבילה – לוחצים "📮 הוחזר" ליד הבגד.':'אין בגדים שמחכים להחזרה. בתוך הזמנה לוחצים "↩ מחזירה" ליד הבגד.'}</p>`;
  G.sort((a,b)=>String(osum(a.o).rdl||'9').localeCompare(String(osum(b.o).rdl||'9')));
