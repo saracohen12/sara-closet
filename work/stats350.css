@@ -225,3 +225,14 @@ html[data-z21n] #ord123 .o3tile{background:#1b1826!important}html[data-z21n] #or
 @media (max-width:380px){.h9bar{gap:6px}.h9bar .h9act{gap:3px;min-width:0}.h9bar .h9act>button{width:40px;height:40px;min-width:40px}.h9bar .h9logo{gap:6px}}
 /* v360 speed: closet cards outside the screen are not laid out until she scrolls to them (a category opened ~40% faster on a phone) */
 .wrap>section .card{content-visibility:auto;contain-intrinsic-size:auto 280px}
+/* v360 home editor: hairstyles and makeup with a small picture */
+#h356 .h356r button.h356pb{display:inline-flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;width:92px;min-height:0;padding:6px 6px 8px;border-radius:16px;font-size:.74rem;line-height:1.2;text-align:center;vertical-align:top}
+#h356 .h356p{display:block;width:76px;height:84px;border-radius:12px;overflow:hidden;background:linear-gradient(110deg,#ece8f2 30%,#f7f4fa 50%,#ece8f2 70%);background-size:200% 100%;animation:h356sh 1.4s linear infinite}
+#h356 .h356p:has(img){animation:none;background:#dde6f1}
+#h356 .h356p img{width:100%;height:100%;object-fit:cover;object-position:50% 0;display:block;transform:scale(1.75);transform-origin:50% 4%}
+#h356 .h356p[data-pk^="m:"] img{transform:none}
+#h356 .h356r button.h356pb[aria-pressed=true]{outline:2px solid #2e8b57;outline-offset:1px}
+@keyframes h356sh{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){#h356 .h356p{animation:none}}
+html[data-z21n] #h356 .h356p{background:#2a2840}
+#h356 .h356r{align-items:flex-start}

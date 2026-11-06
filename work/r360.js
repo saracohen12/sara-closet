@@ -986,7 +986,8 @@ function smart(fresh){if(!fresh&&smOK())return Promise.resolve(SM);if(smBusy)ret
   // v353: today's weather (the home weather card fetches it a moment after opening) – and what she said herself ("חם / קר / גשם") wins
   const SAYW={hot:{hi:31,lo:21,rain:0},nice:{hi:24,lo:15,rain:0},cold:{hi:14,lo:7,rain:10},rain:{hi:17,lo:10,rain:90,mm:6}};
   const rd=()=>{try{const o=JSON.parse(localStorage.getItem('wx332w')||'null');if(!o||o.hi==null||(o.d&&o.d!=tdK()))return null;const s=JSON.parse(localStorage.getItem('wx332s')||'null');return s&&s.d==o.d&&SAYW[s.k]?Object.assign({},o,SAYW[s.k]):o}catch(_){return null}};
-  let wx=rd();for(let k=0;k<6&&!wx;k++){await new Promise(r=>setTimeout(r,1000));wx=rd()}
+  let wx=rd();for(let k=0;k<5&&!wx;k++){await new Promise(r=>setTimeout(r,400));wx=rd()}   // v360: 2 s at most (it waited 6 and the home showed another look meanwhile)
+  if(!wx)try{const o=JSON.parse(localStorage.getItem('wx332w')||'null');if(o&&o.hi!=null)wx=o}catch(_){}   // no weather yet today – yesterday's is close enough
   const r=await looksFor(wx,6);if(r&&r.looks&&r.looks.length){SM={d:tdK(),o:occNow(),i:0,L:r.looks.map(l=>({ids:l.ids,s:clone(l.s)}))};try{localStorage.setItem('lotd350',JSON.stringify(SM))}catch(_){}
    if(!HOME.pin){STAGES.forEach(s=>s.today&&s.draw());HOMEL.forEach(f=>{try{f()}catch(_){}})}}}catch(e){ERR('smart',e)}finally{smBusy=null}return SM})();return smBusy}
 setTimeout(()=>smart(false),3500);setInterval(()=>{if(!document.hidden&&!smOK())smart(false)},60000);

@@ -16,14 +16,19 @@ function apply(){try{const b=BG.find(x=>x[0]==S.bg);const el=document.querySelec
  st.textContent=CARDS.filter(c=>S.hide.includes(c[0])).map(c=>`body[data-z50=home] ${c[2].split(',').join(',body[data-z50=home] ')}{display:none!important}`).join('\n')}catch(e){ERR('apply',e)}}
 let dlg=null;
 function paint(){if(!dlg)return;const T=R360.today,E=T.ed(),hair=T.styles('hair'),mk=T.styles('mk');
- const r=(g,v,t,on)=>`<button type="button" data-h356="${g}" data-v="${es(v)}" aria-pressed="${on}">${es(t)}</button>`;
+ const r=(g,v,t,on,pk)=>`<button type="button" data-h356="${g}" data-v="${es(v)}" aria-pressed="${on}"${pk?' class="h356pb"':''}>${pk?`<i class="h356p" data-pk="${es(pk)}" aria-hidden="true">${PIC[pk]?`<img alt="" src="${PIC[pk]}">`:''}</i>`:''}${es(t)}</button>`;
  dlg.querySelector('.h356b').innerHTML=`
  <h3>על הראש</h3><div class="h356r">${r('head','auto','✨ לפי הסטייליסטית',E.head=='auto')}${r('head','c','🧕 תמיד כיסוי',E.head=='c')}${r('head','w','💇 תמיד פאה',E.head=='w')}</div>
- ${hair.length?`<p class="h356s">או תסרוקת קבועה לפאה:</p><div class="h356r">${hair.map(h=>r('head',h.k,h.n||'תסרוקת',E.head==h.k)).join('')}</div>`:''}
- <h3>איפור</h3><div class="h356r">${r('mk','auto','✨ לפי הסטייליסטית',E.mk=='auto')}${r('mk','none','בלי איפור',E.mk=='none')}${mk.map(m=>r('mk',m.k,m.n||'איפור',E.mk==m.k)).join('')}</div>
+ ${hair.length?`<p class="h356s">או תסרוקת קבועה לפאה:</p><div class="h356r">${hair.map(h=>r('head',h.k,h.n||'תסרוקת',E.head==h.k,'h:'+h.k)).join('')}</div>`:''}
+ <h3>איפור</h3><div class="h356r">${r('mk','auto','✨ לפי הסטייליסטית',E.mk=='auto')}${r('mk','none','בלי איפור',E.mk=='none')}${mk.map(m=>r('mk',m.k,m.n||'איפור',E.mk==m.k,'m:'+m.k)).join('')}</div>
  <h3>הרקע מאחורי הבובה</h3><div class="h356r h356bg">${BG.map(([k,n,g])=>`<button type="button" data-h356="bg" data-v="${k}" aria-pressed="${S.bg==k}" style="--sw:${g}"><i aria-hidden="true"></i>${es(n)}</button>`).join('')}</div>
  <h3>מה מופיע בדף הבית</h3><div class="h356c">${CARDS.map(([k,n])=>`<label><input type="checkbox" data-h356c="${k}"${S.hide.includes(k)?'':' checked'}> ${es(n)}</label>`).join('')}</div>
- <h3>עוד</h3><div class="h356r">${r('go','look','📌 לבחור לוק לדף הבית',false)}${r('go','week','📅 השבוע שלי',false)}${r('go','cats','🖼 תמונות הקטגוריות בארון',false)}${r('go','vid','🎬 סרטון במקום הבובה',false)}</div>`}
+ <h3>עוד</h3><div class="h356r">${r('go','look','📌 לבחור לוק לדף הבית',false)}${r('go','week','📅 השבוע שלי',false)}${r('go','cats','🖼 תמונות הקטגוריות בארון',false)}${r('go','vid','🎬 סרטון במקום הבובה',false)}</div>`;setTimeout(pics,120)}
+// v360: a small picture on every hairstyle and makeup (24 + 10 names alone were hard to choose from) – drawn one by one while the sheet is open, kept for the visit
+const PIC={};let picRun=false;
+async function pics(){if(picRun)return;picRun=true;try{for(;;){if(!dlg||!dlg.open)break;const el=[...dlg.querySelectorAll('.h356p[data-pk]')].find(x=>!x.firstChild&&!PIC[x.dataset.pk+'#x']);if(!el)break;const pk=el.dataset.pk,k=pk.slice(2);
+ let u='';try{u=pk[0]=='h'?await R360.styCard(k,{one:1}):await R360.styFace(k)}catch(_){}if(u&&typeof u!='string')u='';if(u)PIC[pk]=u;else PIC[pk+'#x']=1;
+ dlg.querySelectorAll(`.h356p[data-pk="${CSS.escape(pk)}"]`).forEach(i=>{if(u&&!i.firstChild)i.innerHTML=`<img alt="" src="${u}">`});await new Promise(r=>setTimeout(r,30))}}catch(e){ERR('pics',e)}picRun=false}
 function open(){try{if(!window.R360||!R360.today||!R360.today.ed)return toast('האווטאר עוד נטען');
  if(!dlg){dlg=document.createElement('dialog');dlg.id='h356';dlg.dir='rtl';dlg.setAttribute('aria-labelledby','h356t');document.body.append(dlg);
   dlg.innerHTML=`<div class="h356h"><h2 id="h356t">✏️ לעצב את דף הבית</h2><button type="button" class="h356x" aria-label="סגירה">✕</button></div><div class="h356b"></div>`;
