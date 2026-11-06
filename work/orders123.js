@@ -422,6 +422,10 @@ function qbar(){const d=q('#dlg');if(!d)return;let bar=d.querySelector('.o3qb360
  bar.dataset.id=id;bar.dataset.k=k;
  bar.innerHTML=`<button type="button" data-k="got" data-v="y" aria-pressed="${s=='y'}">✅ הגיע</button><button type="button" data-k="s" data-v="kept" aria-pressed="${it.s=='kept'}">🏠 משאירה</button><button type="button" data-k="s" data-v="ret" aria-pressed="${it.s=='ret'}">↩ מחזירה</button>`}
 setInterval(()=>{try{const d=q('#dlg');if(d&&(d.open&&V.back||d.querySelector('.o3qb360')))qbar()}catch(_){}},500);
+// v360: › ‹ in an item opened from an order (or the gallery) go to the next picture of that same list – they walked the closet and left the order
+document.addEventListener('click',e=>{try{const b=e.target.closest&&e.target.closest('#dlg [data-dstep],#dlg #prev,#dlg #next');if(!b||!V.back)return;const o=q('#ord123');if(!o)return;
+ const ids=[...o.querySelectorAll('[data-o3row]')].map(x=>x.dataset.o3row).filter((x,i,a)=>D[x]&&a.indexOf(x)==i);const cur=(typeof CUR!='undefined'&&CUR)||'';const i=ids.indexOf(cur);if(i<0)return;
+ const dd=b.dataset.dstep!=null?(+b.dataset.dstep||1):(b.id=='prev'?-1:1);const n=ids[i+dd];e.preventDefault();e.stopPropagation();if(!n){toast(dd>0?'זה המוצר האחרון ברשימה':'זה המוצר הראשון ברשימה');return}V.back.hl=n;openItem(n);setTimeout(qbar,250)}catch(err){LOG('step',err)}},true);
 function armBack(bk){const d=q('#dlg');if(!d)return;V.back=bk;setTimeout(qbar,300);
  if(!d.dataset.o3bk){d.dataset.o3bk=1;d.addEventListener('close',()=>{const b=V.back;if(!b)return;V.back=null;
   setTimeout(()=>{if([...document.querySelectorAll('dialog[open]')].some(x=>x.id!='ord123'))return;

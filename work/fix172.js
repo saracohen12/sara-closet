@@ -49,7 +49,7 @@ function counts(){const ids=Object.keys(D);const r={};
  // v186: the avatar is the 360 one now – count what is on it (the old doll's numbers were misleading)
  try{if(window.R360){const [a,b]=R360.readyCount();r.ok=a;r.avno=Math.max(0,b-a)}}catch(_){}
  r.gen=Object.keys(IT||{}).filter(gen).length;
- r.transit=new Set(ids.filter(id=>D[id].transit&&!(ORD[D[id].order]||{}).arrived&&(IT[id]||{}).got!='y').map(id=>D[id].order)).size;
+ r.transit=new Set(ids.filter(id=>D[id].order&&((IT[id]||{}).got=='n'&&!(IT[id]||{}).miss||D[id].transit&&!(ORD[D[id].order]||{}).arrived&&(IT[id]||{}).got!='y')).map(id=>D[id].order)).size;
  r.soon=ids.filter(id=>{const n=daysLeft(D[id].rdl);return n!=null&&n>=0&&n<=14&&live(id)&&(IT[id]||{}).s!='kept'}).length;
  r.refund=ids.filter(id=>{const i=IT[id]||{};return i.s=='ret'&&i.rsent&&!i.refunded&&!i.rnr}).length;   // v360: only what she already sent back (the 50 still at home were counted as returned)
  // v175: cancelled by the shop (out of stock, orders thread v174) and the money didn't come back yet
