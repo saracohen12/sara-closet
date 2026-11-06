@@ -50,10 +50,10 @@ const toState=(ids,s,msg)=>setMany(ids,()=>({loc:s,locT:s?today():''}),msg);
 patch.loc='עליי';patch.locT=today()}}catch(_){}return _p.apply(this,arguments)}}
 
 // ---------- badges on the closet cards and in the studio ----------
-function badge(id){const c=document.querySelector(`.card[data-id="${CSS.escape(id)}"]`);if(!c)return;const s=stOf(id);if((c.dataset.s185||'')==s)return;
+function badge(id,c){c=c||document.querySelector(`.card[data-id="${CSS.escape(id)}"]`);if(!c)return;const s=stOf(id);if((c.dataset.s185||'')==s)return;
  if(s)c.dataset.s185=s;else delete c.dataset.s185;const ph_=c.querySelector('.ph');if(!ph_)return;let b=ph_.querySelector('.st185');
  if(!s){if(b)b.remove();return}if(!b){b=document.createElement('span');b.className='st185';ph_.appendChild(b)}b.textContent=SI[s][1]+' '+SI[s][2]}
-let BT=0;function badges(){clearTimeout(BT);BT=setTimeout(()=>{try{Object.keys(D).forEach(badge);studio()}catch(e){ERR('badges',e)}},120)}
+let BT=0;function badges(){clearTimeout(BT);BT=setTimeout(()=>{try{document.querySelectorAll('.card[data-id]').forEach(c=>{if(D[c.dataset.id])badge(c.dataset.id,c)});studio()   /* v360: one pass over the cards (was a search per item) */}catch(e){ERR('badges',e)}},120)}
 function studio(){const d=$1('#r360');if(!d||!d.open)return;$a('[data-it]',d).forEach(b=>{const s=stOf(b.dataset.it);if((b.dataset.s185||'')!=s){if(s)b.dataset.s185=s;else delete b.dataset.s185;b.title=s?SI[s][2]:''}})}
 setInterval(studio,1200);
 

@@ -292,10 +292,11 @@ const CF={};function cropFrames(ids){const ck=ids.join(',');if(CF[ck])return CF[
  let x0=w,y0=h,x1=-1,y1=-1;for(const m of ims){g.clearRect(0,0,w,h);g.drawImage(m,0,0,w,h);const d=g.getImageData(0,0,w,h).data;for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(d[(y*w+x)*4+3]>40){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}}
  if(x1<0)return null;let bx=x0/k,by=y0/k,bw=(x1-x0+1)/k,bh=(y1-y0+1)/k;const pd=Math.max(bw,bh)*.06;bx-=pd;by-=pd;bw+=2*pd;bh+=2*pd;
  let cw=Math.max(bw,bh*.75),ch=cw/.75;const cx=bx+bw/2;const o=document.createElement('canvas');o.width=360;o.height=480;const og=o.getContext('2d');
- return ims.map(m=>{og.clearRect(0,0,360,480);og.drawImage(m,cx-cw/2,by,cw,ch,0,0,360,480);return o.toDataURL('image/webp',.9)})})()}
+ const out=[];for(const m of ims){og.clearRect(0,0,360,480);og.drawImage(m,cx-cw/2,by,cw,ch,0,0,360,480);out.push(await c2u(o,'image/webp',.9))}return out})()}
 // v247: GPT's close-up in 8 angles (2 rows of 4, like the doll) → 8 frames that turn like the avatar
+const c2u=(c,t,q)=>new Promise(r=>{try{c.toBlob(b=>r(b?URL.createObjectURL(b):c.toDataURL(t,q)),t,q)}catch(_){r(c.toDataURL(t,q))}});   /* v360: encoded off the main thread (toDataURL froze the phone at load) */
 const C8={};function cu8Frames(a){if(C8[a])return C8[a];return C8[a]=new Promise(res=>{const m=new Image();m.onload=()=>{try{const W=m.naturalWidth,H=m.naturalHeight,pw=W/4,ph=H/2,ix=pw*.025,iy=ph*.02,w=Math.round(pw-2*ix),h=Math.round(ph-2*iy),k=Math.min(1,520/w),c=document.createElement('canvas');
-  c.width=Math.round(w*k);c.height=Math.round(h*k);const g=c.getContext('2d');const F=[];for(let r=0;r<2;r++)for(let q=0;q<4;q++){g.drawImage(m,q*pw+ix,r*ph+iy,w,h,0,0,c.width,c.height);F.push(c.toDataURL('image/jpeg',.88))}res(F)}catch(_){res(null)}};m.onerror=()=>res(null);m.src='/_blob/'+a})}
+  c.width=Math.round(w*k);c.height=Math.round(h*k);const g=c.getContext('2d');(async()=>{const F=[];for(let r=0;r<2;r++)for(let q=0;q<4;q++){g.clearRect(0,0,c.width,c.height);g.drawImage(m,q*pw+ix,r*ph+iy,w,h,0,0,c.width,c.height);F.push(await c2u(c,'image/jpeg',.88))}res(F)})().catch(()=>res(null))}catch(_){res(null)}};m.onerror=()=>res(null);m.src='/_blob/'+a})}
 window.cu8Frames=cu8Frames;window.sheetKind247=f=>sheetKind(f);
 async function framesFor(img){if(img._F)return img._F;if(img.dataset.t247c8){const F=await cu8Frames(img.dataset.t247c8);if(F)img._F=F;return img._F||null}if(img.dataset.t245l){const F=await cropFrames(img.dataset.t245l.split(','));img._F=F||img.dataset.t245l.split(',').map(a=>'/_blob/'+a);return img._F}
  const F=await framesOf(img.dataset.t245k);if(F&&F.length==8&&F[0])img._F=F;return img._F||null}

@@ -13,8 +13,9 @@ const sub=(id,k)=>id+'~'+k;
 const ready=s=>{try{return !!(R()&&R().isReady(s))}catch(_){return false}};
 const photo=id=>{try{return img(id)||TPH}catch(_){return ''}};
 const FR={};   // the piece on her, front angle (and the 8 angles for a turn on hover)
+const c2u=(c,t,q)=>new Promise(r=>{try{c.toBlob(b=>r(b?URL.createObjectURL(b):c.toDataURL(t,q)),t,q)}catch(_){r(c.toDataURL(t,q))}});   /* v360: encoded off the main thread (toDataURL froze the phone at load) */
 function still(s,v){const k=s+'|'+v+'|'+a8sig(s);if(!FR[k])FR[k]=(async()=>{try{try{R()&&R().sync&&R().sync()}catch(_){}const c=R()&&R().still?await R().still(s,v):null;if(!c||!c.width)throw 0;
-  const o=document.createElement('canvas');o.width=300;o.height=Math.round(c.height*300/c.width);o.getContext('2d').drawImage(c,0,0,o.width,o.height);return o.toDataURL('image/webp',.86)}catch(_){delete FR[k];return ''}})();return FR[k]}
+  const o=document.createElement('canvas');o.width=300;o.height=Math.round(c.height*300/c.width);o.getContext('2d').drawImage(c,0,0,o.width,o.height);return await c2u(o,'image/webp',.86)}catch(_){delete FR[k];return ''}})();return FR[k]}
 function folderH(id,p,i,n){const s=sub(id,p.k),ok=ready(s),own=!!(it(s).a8||it(s).p5g||it(s).a8up);
  return `<div class="pk256" role="button" tabindex="0" data-pk256="${es(s)}" data-of="${es(id)}" aria-label="${es(p.n)} – תיקייה ${i+1} מתוך ${n}">
   <span class="ph"><img alt="" loading="lazy" src="${es(photo(id))}"${ok?` data-pk256v="${es(s)}"`:''}><span class="pk256f">📁 ${i+1} מתוך ${n}</span>

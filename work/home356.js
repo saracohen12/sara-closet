@@ -35,6 +35,7 @@ function open(){try{if(!window.R360||!R360.today||!R360.today.ed)return toast('�
   dlg.addEventListener('change',e=>{const k=e.target.dataset.h356c;if(!k)return;S.hide=S.hide.filter(x=>x!=k);if(!e.target.checked)S.hide.push(k);keep()})}
  paint();if(!dlg.open)dlg.showModal()}catch(e){ERR('open',e)}}
 // the ✏️ by the home avatar's controls
-setInterval(()=>{try{apply();const c=document.querySelector('#h180 .z-avc');if(c&&!c.querySelector('.h356e')){const b=document.createElement('button');b.type='button';b.className='h356e';b.setAttribute('aria-label','לעצב את דף הבית');b.textContent='✏️';b.onclick=open;c.append(b)}}catch(_){}},1500);
+setInterval(()=>{try{apply();const c=document.querySelector('#h180 .z-avc');const ph=matchMedia('(max-width:600px)').matches,at=ph?c&&c.parentElement:c;   /* v360: on a phone the ✏️ sits in the stage's corner (the row ran out of the screen) */
+ if(at&&!document.querySelector('#h180 .h356e')){const b=document.createElement('button');b.type='button';b.className='h356e';b.setAttribute('aria-label','לעצב את דף הבית');b.textContent='✏️';b.onclick=open;at.append(b)}}catch(_){}},1500);
 window.HOME356={open};
 })();
