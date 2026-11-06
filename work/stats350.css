@@ -208,3 +208,4 @@ html[data-z21n] #ord123 .o3tile{background:#1b1826!important}html[data-z21n] #or
 #ord123 .o3b.big358 .o3oh:not(.open358)>*:not(.sb2):not(b):not(small):not(.o3num):not(.o3r){display:none!important}
 #ord123 .o3more358{width:100%;min-height:42px;margin:8px 0 0;border-radius:14px;border:1px dashed var(--z-line-strong,#cfcac4);background:none;color:inherit;font:inherit;font-size:.84rem;font-weight:600;cursor:pointer}
 #ord123 .o3cnt358{margin:4px 0 8px;font-size:.82rem;color:var(--z-muted,#6a6670)}
+#ord123 .o3tqk.steps button{font-size:.7rem;min-height:34px}
