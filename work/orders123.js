@@ -58,7 +58,7 @@ function loadThumbs(ids){const cs=new Set(ids.map(id=>D[id]&&D[id].cat).filter(B
 
 // ---- dialog
 function dlg(){let d=q('#ord123');if(d)return d;
- d=document.createElement('dialog');d.id='ord123';d.innerHTML='<div class="o3h"><button class="o3back" data-o3="back" aria-label="חזרה" hidden>‹</button><h3>📦 ההזמנות שלי</h3><button class="o3x" data-o3="close" aria-label="סגירה">✕</button></div><div class="o3b"></div>';
+ d=document.createElement('dialog');d.id='ord123';d.dir='rtl';d.lang='he';   /* v360: was left-to-right (the big pictures started on the left, the title was on the left) */d.innerHTML='<div class="o3h"><button class="o3back" data-o3="back" aria-label="חזרה" hidden>›</button><h3>📦 ההזמנות שלי</h3><button class="o3x" data-o3="close" aria-label="סגירה">✕</button></div><div class="o3b"></div>';
  document.body.appendChild(d);
  d.addEventListener('click',onClick);d.addEventListener('toggle',e=>{const x=e.target;if(x.matches&&x.matches('[data-o3fab]')){x.open?V.open.add(x.dataset.o3fab):V.open.delete(x.dataset.o3fab)}},true);d.addEventListener('input',onInput);d.addEventListener('change',onChange);
  d.addEventListener('close',()=>{V.ord='';V.hl='';try{paintEntry()}catch(_){}});
@@ -133,7 +133,7 @@ function sheetHTML(){return `<div class="o3sbd" data-o3sheet="x"></div><div clas
  <h4>🏷 בד ואיכות</h4>${FAB.map(([k,n,o])=>`<div class="o3sg">${o.map(([v,t])=>`<button data-o3tag="${k}:${v}" aria-pressed="${V.flt=='fabq'&&V.tag==k+':'+v}">${t}</button>`).join('')}</div>`).join('')}</div>`}
 // v358: "🖼 כל המוצרים בתמונות" – every product of the chosen shop as a big picture; the status chips filter the products themselves
 function gal358(all,qq){let os=all;if(V.acc)os=os.filter(o=>o.src==V.acc);const f0=V.flt;if(f0=='pnd'||f0=='pdd')os=os.filter(o=>picDone(o)==(f0=='pdd'));else if(f0=='anl'||f0=='and')os=os.filter(o=>avDone(o)==(f0=='and'));else if(f0=='mb')os=os.filter(o=>osum(o).mb);   /* v360: the order filters (photos / avatar) work in the gallery too */let ids=os.flatMap(o=>o.ids);
- const f=V.flt;if(f=='rp')ids=ids.filter(retP);else if(f=='rs')ids=ids.filter(retS);else if(['y','n','m'].includes(f))ids=ids.filter(id=>st(id)==f);else if(f=='u')ids=ids.filter(id=>!st(id));else if(f=='oos')ids=ids.filter(id=>(IT[id]||{}).oos);
+ const f=V.flt;if(f=='rp'){ids=ids.filter(retP);const dl=id=>String(D[id].rdl||(os.find(o=>o.ids.includes(id))&&osum(os.find(o=>o.ids.includes(id))).rdl)||'9');ids.sort((a,b)=>dl(a).localeCompare(dl(b)))}   /* v360: to return – the nearest deadline first */else if(f=='rs')ids=ids.filter(retS);else if(['y','n','m'].includes(f))ids=ids.filter(id=>st(id)==f);else if(f=='u')ids=ids.filter(id=>!st(id));else if(f=='oos')ids=ids.filter(id=>(IT[id]||{}).oos);
  if(qq){const m=ids.filter(id=>{const x=D[id],i=IT[id]||{};return ((i.tname||'')+' '+(x.short||'')+' '+(x.full||'')+' '+id+' '+(x.color||'')).toLowerCase().replace(/[-\s'׳]/g,'').includes(qq.replace(/['׳]/g,''))});ids=m}
  const n=V.n358||40;loadThumbs(ids.slice(0,n));
  const vw=`<div class="o3vw" role="group" aria-label="תצוגה"><button data-o3allp="0" aria-pressed="false">📦 לפי הזמנות</button><button data-o3allp="1" aria-pressed="true">🖼 כל המוצרים בתמונות</button></div>`;
@@ -248,7 +248,7 @@ try{V.allp=localStorage.getItem('o3allp358')=='1'}catch(_){}
 const STB={y:['✅','הגיע'],n:['⏳','בדרך'],m:['❌','חסר'],c:['🚫','בוטל'],'':['⚪','לא סומן']};
 function tile(id){const x=D[id],it=IT[id]||{},s=st(id);
  const b=(k,v,tx,on)=>`<button data-o3set="${k}" data-v="${v}" data-id="${H(id)}" aria-pressed="${!!on}">${tx}</button>`;
- const tag=it.oos?'🚫 בוטל':it.rnr?'🎁 כסף חזר, נשאר אצלי':it.s=='ret'?(it.refunded?'💰 הכסף חזר':it.rsent?'📮 נשלח':it.rpack?'📦 ארוז':it.rreq?'📝 ביקשתי':'↩ להחזיר'):it.s=='kept'?'🏠 משאירה':(STB[s]||STB[''])[0]+' '+(STB[s]||STB[''])[1];
+ const tag=it.oos?'🚫 בוטל':it.rnr?'🎁 כסף חזר, נשאר אצלי':it.s=='ret'?(it.refunded?'💰 הכסף חזר':it.rsent?'📮 נשלח':it.rpack?'📦 ארוז':it.rreq?'📝 ביקשתי':'↩ להחזיר'+(x.rdl?' עד '+(+x.rdl.slice(8,10))+'/'+(+x.rdl.slice(5,7)):'')):it.s=='kept'?'🏠 משאירה':(STB[s]||STB[''])[0]+' '+(STB[s]||STB[''])[1];
  return `<div class="o3tile s${s||'u'}${it.s=='ret'?' ret':it.s=='kept'?' kept':''}${V.hl==id?' hl':''}" data-o3row="${H(id)}">
  <button class="o3tp" data-o3item="${H(id)}" aria-label="פתיחת ${H(it.tname||x.short)}">${th(id,'o3ti')}<span class="o3tb">${tag}</span>${x.qty>1?`<span class="o3tq2">×${x.qty}</span>`:''}</button>
  <b class="o3tn">${H(it.tname||x.short)}</b><small class="o3tm">${[x.size&&(/^מידה/.test(x.size)?x.size:'מידה '+x.size),x.color,money(+x.paid||0)].filter(Boolean).map(v=>'<bdi>'+H(v)+'</bdi>').join(' · ')}</small>
