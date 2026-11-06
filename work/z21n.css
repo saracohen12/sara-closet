@@ -36,4 +36,7 @@ html[data-z21n] #dlg .mwrap .gcap,html[data-z21n] #dlgbody .gcap{background:rgba
 html[data-z21n] #dlg .gnav,html[data-z21n] #dlg .zbtn{background:rgba(20,17,30,.78)!important;color:#fff!important;border-color:rgba(255,255,255,.2)!important}
 html[data-z21n] .it77p.b188,html[data-z21n] .b188{color:#0f2e1c!important}
 html[data-z21n] #h180 .z5sp,html[data-z21n] #h180 .z-pp,html[data-z21n] #h180 .v351b{background:rgba(30,26,44,.88)!important;color:#eeeaf6!important;border:1px solid rgba(255,255,255,.18)!important}
-html[data-z21n] .h9logo{background:#eeeaf6!important;color:#15131c!important}
+html[data-z21n][data-d180] .h9logo i{background:#eeeaf6!important;color:#15131c!important}   /* v360: was on the whole logo – a white box hid "הארון" */
+/* v360: "⚙ סינון" in the closet was dark on dark (the 2100 primary is dark at night) */
+html[data-z21n][data-d180][data-z21] #fb,html[data-z21n][data-d180][data-z21] .ctrl .tools #fb{background:#eeeaf6!important;color:#15131c!important}
+html[data-z21n][data-d180][data-z21] #fb[aria-expanded=true]{background:#e08a5e!important}
