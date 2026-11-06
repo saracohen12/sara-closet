@@ -411,7 +411,18 @@ function renderRes(){const b=body(),r=V.res;
  loadThumbs(r.ids);}
 
 // ---- item window opened from an order: closing it returns to that order (unless something else opened, e.g. the studio)
-function armBack(bk){const d=q('#dlg');if(!d)return;V.back=bk;
+// v360 (Sara: "נפתח לי החלון, אני מסמנת מה אני מחזירה, ואז אני חוזרת אחורה"): an item opened from an order gets a bar at the bottom –
+// ✅ הגיע · 🏠 משאירה · ↩ מחזירה – for the item on screen (also after › ‹ to the next one); back returns to the order as before
+function qbar(){const d=q('#dlg');if(!d)return;let bar=d.querySelector('.o3qb360');const id=(typeof CUR!='undefined'&&CUR&&D[CUR])?CUR:'';
+ if(!d.open||!V.back||!id||(V.back.ord&&D[id].order!=V.back.ord)){if(bar)bar.remove();return}
+ const it=IT[id]||{},s=st(id);const k=[s=='y',it.s=='kept',it.s=='ret'].join();if(bar&&bar.dataset.id==id&&bar.dataset.k==k)return;
+ if(!bar){bar=document.createElement('div');bar.className='o3qb360';bar.dir='rtl';bar.setAttribute('role','group');bar.setAttribute('aria-label','סימון מהיר');d.appendChild(bar);
+  bar.addEventListener('click',async e=>{const b=e.target.closest('button[data-k]');if(!b)return;const id=bar.dataset.id;if(!id)return;b.disabled=true;
+   try{await setMark(id,b.dataset.k,b.dataset.v);toast(b.dataset.k=='got'?'✓ נשמר':((IT[id]||{}).s==b.dataset.v?(b.dataset.v=='ret'?'↩ סומן להחזרה':'🏠 סומן שמשאירה'):'✓ הסימון בוטל'))}catch(err){LOG('qbar',err)}b.disabled=false;bar.dataset.k='';qbar()})}
+ bar.dataset.id=id;bar.dataset.k=k;
+ bar.innerHTML=`<button type="button" data-k="got" data-v="y" aria-pressed="${s=='y'}">✅ הגיע</button><button type="button" data-k="s" data-v="kept" aria-pressed="${it.s=='kept'}">🏠 משאירה</button><button type="button" data-k="s" data-v="ret" aria-pressed="${it.s=='ret'}">↩ מחזירה</button>`}
+setInterval(()=>{try{const d=q('#dlg');if(d&&(d.open&&V.back||d.querySelector('.o3qb360')))qbar()}catch(_){}},500);
+function armBack(bk){const d=q('#dlg');if(!d)return;V.back=bk;setTimeout(qbar,300);
  if(!d.dataset.o3bk){d.dataset.o3bk=1;d.addEventListener('close',()=>{const b=V.back;if(!b)return;V.back=null;
   setTimeout(()=>{if([...document.querySelectorAll('dialog[open]')].some(x=>x.id!='ord123'))return;
    const id=(typeof CUR!='undefined'&&CUR&&D[CUR]&&D[CUR].order==b.ord)?CUR:b.hl;open(b.ord,id)},60)})}}   /* v358: 250 → 60 ms (a quick second back left the site in the gap) */

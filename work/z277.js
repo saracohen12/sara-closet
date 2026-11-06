@@ -107,7 +107,7 @@ function openMore(){let d=document.getElementById('z5m');
  d.querySelectorAll('details.z5md').forEach(x=>x.addEventListener('toggle',()=>{OPEN349[x.dataset.g]=x.open;try{localStorage.setItem('z5m349',JSON.stringify(OPEN349))}catch(_){}}));
  const qi=d.querySelector('.z5mq input');qi.addEventListener('input',()=>{const q=qi.value.trim();d.querySelectorAll('details.z5md').forEach(x=>{let any=false;x.querySelectorAll('[data-z5m]').forEach(b=>{const hit=!q||b.textContent.includes(q);b.hidden=!hit;if(hit)any=true});x.hidden=!any;if(q&&any)x.open=true});let e=d.querySelector('.z5mnone');const none=q&&![...d.querySelectorAll('details.z5md')].some(x=>!x.hidden);if(none&&!e){e=document.createElement('p');e.className='z5mnone';d.append(e)}if(e){e.hidden=!none;e.textContent=none?'לא מצאתי "'+q+'" – נסי מילה אחרת':''}});
  // the cart shows how many things are in it
- try{const n=window.ADV187?ADV187.list().filter(r=>r.st=='think').length:0;if(n){const b=d.querySelector('[data-z5m="0.0"] b');if(b)b.textContent='העגלה שלי ('+n+')'}}catch(_){}
+ try{const n=window.ADV187?ADV187.list().filter(r=>r.st=='think').length:0;if(n){const b=[...d.querySelectorAll('[data-z5m] b')].find(x=>/^העגלה שלי/.test(x.textContent));if(b)b.textContent='העגלה שלי ('+n+')'}}catch(_){}
  if(!d.open)d.showModal()}
 window.openMore281=openMore;
 
