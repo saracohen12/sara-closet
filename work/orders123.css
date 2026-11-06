@@ -134,7 +134,7 @@
 .o3sum button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 .o3bar2{display:flex;gap:6px;align-items:center;min-width:0}
 .o3bar2 .o3tabs{flex:1;min-width:0}
-.o3fbtn{flex:none;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:7px 12px;font-weight:700;font-size:.86rem;min-height:38px;max-width:46vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.o3fbtn{flex:none;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:7px 12px;font-weight:700;font-size:.86rem;min-height:38px;max-width:62vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .o3fbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .o3fclr{flex:none;width:34px;height:34px;border-radius:50%;border:0;background:var(--chip);color:var(--muted);padding:0}
 .o3tabs button{padding:6px 10px;font-size:.82rem;min-height:36px}
@@ -305,3 +305,11 @@ button.r340[aria-pressed="true"]{background:#2e8b57!important;color:#fff!importa
 .r343n{opacity:.92}
 /* v344: pressed return steps – green with a check so it is clear they are done */
 .o3seg.rr button[aria-pressed="true"]::before,button.r340[aria-pressed="true"]::before{content:'✓ '}
+/* v360: the order picker of the returns list is folded */
+.o3rfd{margin:6px 0 10px}
+.o3rfd>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-weight:700;font-size:.88rem}
+.o3rfd>summary::-webkit-details-marker{display:none}
+.o3rfd>summary::after{content:"▾";font-size:.8em}
+.o3rfd[open]>summary::after{content:"▴"}
+.o3rfd>summary small{font-weight:500;opacity:.75}
+.o3rfd .o3rfo{margin-top:8px}

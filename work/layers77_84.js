@@ -168,7 +168,9 @@ function oldWorn(){const now=Date.now(),day=864e5;const L=Object.keys(D).filter(
 function paintStrips(){strip('rv79','ראיתי לאחרונה',lsJ('rv79',[]).filter(id=>D[id]).slice(0,12));strip('old79','מזמן לא לבשתי',oldWorn(),'<small>מועדפים ובגדים שלא נלבשו 45 יום</small>')}
 
 // ---------- 4/19. "לבשתי היום"
-async function wore(ids){const before={};for(const id of ids){const it=IT[id]||{};before[id]={wear:it.wear||0,lastWorn:it.lastWorn||''};await putItem(id,{wear:(it.wear||0)+1})}
+async function wore(ids){const td=(d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'))(new Date());   // v360: one wear a day – another tap on "לבשתי היום" counted 2, 3…
+ const n0=ids.length;ids=ids.filter(id=>((IT[id]||{}).lastWorn||'')!=td);if(!ids.length){toast(n0>1?'✓ כבר סימנת היום שלבשת את כולם':'✓ כבר סימנת שלבשת היום');return}
+ const before={};for(const id of ids){const it=IT[id]||{};before[id]={wear:it.wear||0,lastWorn:it.lastWorn||''};await putItem(id,{wear:(it.wear||0)+1})}
  if(navigator.vibrate)try{navigator.vibrate(15)}catch(_){}
  setTimeout(()=>toast(ids.length>1?`סומן: לבשת ${ids.length} בגדים היום`:'סומן: לבשת היום',async()=>{for(const id of ids)await putItem(id,before[id]);refresh()}),60);refresh()}
 function refresh(){try{if($('#dlg')?.open&&CUR)wearBtn(CUR)}catch(_){}try{paintStrips()}catch(_){}}

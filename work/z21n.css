@@ -40,3 +40,8 @@ html[data-z21n][data-d180] .h9logo i{background:#eeeaf6!important;color:#15131c!
 /* v360: "⚙ סינון" in the closet was dark on dark (the 2100 primary is dark at night) */
 html[data-z21n][data-d180][data-z21] #fb,html[data-z21n][data-d180][data-z21] .ctrl .tools #fb{background:#eeeaf6!important;color:#15131c!important}
 html[data-z21n][data-d180][data-z21] #fb[aria-expanded=true]{background:#e08a5e!important}
+/* v360 bug hunt F: at night the toast text (every "נשמר"/"ביטול" message), a just-marked row and the colour-score box were light on light / dark on dark */
+html[data-z21n][data-d180][data-z21] .toast{background:#eeeaf6!important;color:#15131c!important}
+html[data-z21n][data-d180][data-z21] .toast button{color:#15131c!important;border-color:rgba(0,0,0,.25)!important;background:transparent!important}
+html[data-z21n] #ord123 .o3it.hl{background:rgba(255,255,255,.07)!important}
+html[data-z21n] .lscore,html[data-z21n] .lscore.ok{background:#1f3a2a!important;color:#e6f4ea!important}

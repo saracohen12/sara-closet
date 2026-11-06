@@ -12,7 +12,9 @@ function push(){try{history.pushState(Object.assign({},history.state||{},{d358:1
 function need(){let n=want();while(slots<n)push()}
 new MutationObserver(ms=>{let ch=false;for(const m of ms){const d=m.target;if(d.tagName!='DIALOG'||!d.id||SKIP.has(d.id))continue;const i=REC.indexOf(d);if(i>=0)REC.splice(i,1);
  if(d.open)REC.push(d);else for(let j=CB.length-1;j>=0;j--)if(CB[j].d===d)CB.splice(j,1);ch=true}if(ch)setTimeout(need,30)}).observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['open']});
-addEventListener('popstate',e=>{if(slots>0)slots--;const d=top();if(!d){home(e.state);return}const c=CB.length&&CB[CB.length-1];
+addEventListener('popstate',e=>{const orphan=slots>want();if(slots>0)slots--;
+ const d=top();if(!d){if(orphan&&document.body.dataset.z50=='closet'){try{history.back()}catch(_){}return}   // v360: in the closet, a step of a window she already closed with ✕ – take the next step at once (it was a back press that did nothing); on the home screen it stays a safe stop
+  home(e.state);return}const c=CB.length&&CB[CB.length-1];
  if(c&&c.d===d){CB.pop();try{c.fn()}catch(e){ERR('cb',e)}return}
  try{d.close()}catch(_){}});
 // v360 (Sara: "אחורה זה צריך לעבוד לי תמיד"): in the closet with no window open, back went out of the site – now the closet has its own step: back from it = the home screen
