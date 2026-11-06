@@ -37,7 +37,7 @@ async function run(files,ord){if(BUSY)return;BUSY=true;R={ord,urls:files.map(f=>
   const lim=sample?await TO(sample.limits().catch(()=>null),8000,null):null;
   if(!sample||!lim||!lim.images)return fail('אין לי כאן גישה לזיהוי תמונה. אפשר לסמן בתוך כל הזמנה "✅ הכל הגיע".');
   const max=Math.max(1,Math.min(files.length,(lim.images.maxCount||1)-1));
-  const ph=(await Promise.all(files.slice(0,max).map(f=>TO(shrink(f,1400),15000,null)))).filter(Boolean);if(!ph.length)return fail('לא הצלחתי לקרוא את התמונה. נסי שוב.');
+  const ph=(await Promise.all(files.slice(0,max).map(f=>TO(shrink(f,1400),15000,null)))).filter(Boolean);if(!ph.length)return fail('לא הצלחתי לקרוא את התמונה. נסי שוב.');R.ph=ph;   // v358: kept so products that are in no order can be saved with the photo
   const P=pool(ord);if(!P.length)return fail(ord?'בהזמנה הזאת כל המוצרים כבר מסומנים שהגיעו.':'כל המוצרים כבר מסומנים שהגיעו 🎉');
   busy(`מסתכל על התמונה ומחפש בין ${P.length} מוצרים שעוד לא הגיעו…`);
   const r1=await TO(sample.json(`My client photographed the products she just received in a parcel from Temu or Shein – usually several products laid out together (${ph.length} photo${ph.length>1?'s':''} attached). Below is every product she ordered that has not arrived yet, one per line: id | product title (machine-translated, may be vague) | colour | size | category | note.
@@ -66,16 +66,19 @@ function paint(){const L=R.items,n=L.filter(x=>x.on&&x.pick).length;
  B().innerHTML=`<div class="rc9ph">${R.urls.map(u=>`<img src="${es(u)}" alt="">`).join('')}</div>
  <p class="rc9t">ראיתי ${L.length} מוצרים. בדקי שכל אחד נכון – ✓ יסומן שהגיע. אם טעיתי, לחצי על האפשרות הנכונה מתחת.</p>
  <ul class="rc9l">${L.map((x,i)=>`<li class="${x.on&&x.pick?'on':''}"><div class="rc9w">👀 ${es(x.what)}${x.pick&&x.sure?' <em>בטוח</em>':''}</div>
-  ${x.pick?`<button type="button" class="rc9m" data-rc9on="${i}" aria-pressed="${!!x.on}">${card(x.pick)}<i>${x.on?'✓':''}</i></button>`:'<p class="rc9no">לא מצאתי אותו ברשימה של מה שעוד לא הגיע</p>'}
+  ${x.pick?`<button type="button" class="rc9m" data-rc9on="${i}" aria-pressed="${!!x.on}">${card(x.pick)}<i>${x.on?'✓':''}</i></button>`:`<p class="rc9no">לא מצאתי אותו ברשימה של מה שעוד לא הגיע</p><button type="button" class="rc9st" data-rc9st="${i}" aria-pressed="${!!x.st}">${x.st?'✓ נשמר ברשימת "הגיע ולא בהזמנות"':'📌 לשמור ברשימת "הגיע ולא בהזמנות"'}</button>`}
   ${x.ids.filter(id=>id!=x.pick).length?`<div class="rc9alt"><small>או:</small>${x.ids.filter(id=>id!=x.pick).map(id=>`<button type="button" data-rc9alt="${i}" data-id="${es(id)}">${card(id)}</button>`).join('')}</div>`:''}</li>`).join('')}</ul>
  <div class="rc9a"><button type="button" class="rc9ok" ${n?'':'disabled'}>✅ לסמן ${n==1?'מוצר אחד':n+' מוצרים'} שהגיעו</button></div>`}
 async function onClick(e){const t=e.target.closest('button');if(!t)return;
  if(t.classList.contains('rc9x'))return dlg.close();
  if(t.dataset.rc9on!=null){const x=R.items[+t.dataset.rc9on];x.on=!x.on;return paint()}
+ if(t.dataset.rc9st!=null){const x=R.items[+t.dataset.rc9st];if(!x.st&&window.STRAY357){x.st=1;paint();try{await STRAY357.add(x.what,R.ph&&R.ph[0])}catch(er){ERR('stray',er)}}return}
  if(t.dataset.rc9alt!=null){const x=R.items[+t.dataset.rc9alt],id=t.dataset.id;R.items.forEach(y=>{if(y!==x&&y.pick==id){y.pick='';y.on=false}});x.pick=id;x.on=true;x.sure=false;return paint()}
  if(t.classList.contains('rc9ok')){t.disabled=true;const L=R.items.filter(x=>x.on&&x.pick);let k=0;
   for(const x of L){t.textContent=`מסמנת… ${k+1}/${L.length}`;try{await putItem(x.pick,{got:'y',miss:''});k++}catch(er){ERR('put',er)}}
   R.done=1;toast_(`✅ סימנתי ${k} מוצרים שהגיעו`);
+  // v358: what was seen but is in no order is not lost – it goes to "📦 הגיע ולא בהזמנות"
+  try{const S=R.items.filter(x=>!x.pick&&!x.st);for(const x of S){x.st=1;if(window.STRAY357)await STRAY357.add(x.what,R.ph&&R.ph[0])}if(S.length)toast_(`📦 ${S.length==1?'מוצר אחד':S.length+' מוצרים'} שלא מצאתי – נשמרו ב"הגיע ולא בהזמנות"`)}catch(er){ERR('stray',er)}
   B().innerHTML=`<p class="rc9t big">✅ סימנתי ${k} מוצרים שהגיעו.</p><p class="rc9t">מה שלא היה בתמונה נשאר "בדרך". אם משהו חסר בחבילה – בתוך ההזמנה לוחצים ❌.</p><div class="rc9a"><label class="rc9again"><input type="file" accept="image/*" multiple data-rc296="${es(R.ord||'')}">📷 עוד תמונה</label><button type="button" class="rc9x2">סיום</button></div>`}
  if(t.classList.contains('rc9x2'))dlg.close()}
 document.addEventListener('change',e=>{const t=e.target;if(!t.matches||!t.matches('[data-rc296]'))return;const f=[...(t.files||[])];t.value='';if(f.length)run(f,t.dataset.rc296||'')},true);

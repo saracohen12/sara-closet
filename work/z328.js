@@ -134,6 +134,7 @@ function rec(){try{const s={z328:1,c:C||'',all:ALL},h=history.state
 addEventListener('popstate',e=>{const s=e.state
  if(!s||!s.z328||H.dataset.d180!='z50')return
  if(B.dataset.z50!='closet')return
+ if((s.c||'')==(C||'')&&!!s.all==!!ALL)return   // v358: a step that only closed a window – stay where she is
  go(s.c,s.all,false)})
 
 try{if(!(history.state&&history.state.z328))history.replaceState({z328:1,c:'',all:false},'')}catch(_){}
