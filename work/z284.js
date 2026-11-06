@@ -36,7 +36,7 @@ function setup(d){dlg=d;const side=d.querySelector('.r3side');if(!side)return;
   if(b.dataset.z7off!=null){const c=dlg.querySelector(`.r3worn [data-off="${CSS.escape(b.dataset.z7off)}"]`);if(c)c.click();setTimeout(paint,60)}}catch(er){ERR('click',er)}});
  let q=0;const mo=new MutationObserver(()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;paint()})});
  mo.observe(d,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','src']});   // v291: the dialog, not the side – the worn list may move into the ✏ windowconst jy=d.querySelector('.r3jyb');if(jy)mo.observe(jy,{attributes:true,attributeFilter:['hidden']});
- d.addEventListener('change',()=>setTimeout(paint,40));paint()}
+ d.addEventListener('change',()=>setTimeout(paint,40));d.addEventListener('click',()=>{setTimeout(paint,90);setTimeout(paint,450)},true);paint()}   // v360: a choice (כיסוי / פאה …) shows in the sheet at once – it waited for the doll to be redrawn (3–5 s)
 const t=setInterval(()=>{const d=document.getElementById('r360');if(d&&d.querySelector('.r3side')){clearInterval(t);setup(d)}},700);
 window.Z284={paint};
 })();
