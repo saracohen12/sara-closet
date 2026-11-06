@@ -7,7 +7,7 @@
 const ERR=(w,e)=>(window.ERRS=window.ERRS||[]).push('v356h '+w+': '+(e&&e.message||e));
 const mouse=()=>matchMedia('(hover:hover) and (pointer:fine)').matches;
 const FR={};
-function frames(id){if(FR[id])return FR[id];return FR[id]=(async()=>{const out=[];for(let v=0;v<8;v++){const c=await R360.still(id,v);if(!c||!c.width)return null;out.push(c.toDataURL('image/webp',.82))}return out})().catch(()=>null)}
+function frames(id){if(FR[id])return FR[id];return FR[id]=(async()=>{const out=[];for(let v=0;v<8;v++){const c=await R360.still(id,v);if(!c||!c.width)return null;out.push(await new Promise(r=>{try{c.toBlob(b=>r(b?URL.createObjectURL(b):c.toDataURL('image/webp',.82)),'image/webp',.82)}catch(_){r(c.toDataURL('image/webp',.82))}}))   /* v360: encoded off the main thread */}return out})().catch(()=>null)}
 let cur=null;
 document.addEventListener('pointerover',async e=>{if(e.pointerType=='touch'||!window.R360||!R360.still)return;const ph=e.target.closest&&e.target.closest('#r360 .r3c.ok .r3ph');if(!ph||ph===cur)return;
  const card=ph.closest('.r3c'),id=card&&card.dataset.it,im=ph.querySelector('img');if(!id||!im)return;cur=ph;if(!im.dataset.o356)im.dataset.o356=im.getAttribute('src')||'';

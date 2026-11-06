@@ -54,7 +54,8 @@ tab('home',1);
 window.zCloset=()=>{if(on()&&TAB!='closet')tab('closet',1)};
 window.zHome=()=>{if(on())tab('home')};
 nav.addEventListener('click',e=>{const b=e.target.closest('[data-zt]');if(!b)return;const k=b.dataset.zt;
- try{if(k=='home'||k=='closet'){document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(_){}});B.style.overflow='';tab(k)}
+ try{if(k=='closet'&&TAB=='closet'&&!document.querySelector('dialog[open]')){const h=document.querySelector('#z328n [data-z328c=""]');if(h&&h.getAttribute('aria-current')!='page'){h.click();return}}   // v360: "הארון" again from inside a category = the closet's first page
+  if(k=='home'||k=='closet'){document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(_){}});B.style.overflow='';tab(k)}
   else if(k=='studio'){if(window.R360)R360.open();else (window.openStudio||(()=>{}))()}
   else if(k=='more')openMore()}catch(err){ERR('tab',err)}});
 
