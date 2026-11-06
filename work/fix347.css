@@ -29,3 +29,5 @@ body:has(#panel:not(.hide)) #totop{display:none!important}
 /* v353 bug fix: the notice bar ("סומן: לבשת היום · ביטול") sat on top of buttons in the item window for a few seconds – taps now go through it, except on its own button */
 .toast{pointer-events:none}.toast button,.toast a{pointer-events:auto}
 #hub #htabs{direction:rtl}   /* v360: the hub tabs ran left-to-right (the first tab "לוקים" sat on the left) */
+/* v360: the recent-searches box stayed on screen after leaving the search (display:flex beat [hidden]) and covered the חול/שבת chips */
+.qsug[hidden]{display:none!important}

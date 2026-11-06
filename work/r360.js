@@ -1012,8 +1012,8 @@ const TODAY={state:homeState,
  pinIds:(ids,name)=>{ids=ids.filter(id=>D[id]);if(!ids.some(isReady))return toast_('אין עוד בגד מהלוק הזה על האווטאר 360');pinGo(stateFrom(ids.filter(isReady),{head:HOME.head||'c',cam:ST.cam,bg:ST.bg}),name)},
  unpin:()=>{HOME.pin=null;saveHome()},
  allIds:()=>{if(!HOME.pin&&smOK()&&SM.L[SM.i])return SM.L[SM.i].ids.filter(id=>D[id]);return TODAY.ids()},   // v355: with the cover/scarf (ids() leaves head items out)
- rate:async v=>{const ids=TODAY.allIds();await rateLook(ids,v);if(v<0)return TODAY.next();return ids},
- next:()=>{HOME.pin=null;if(smOK()){SM.i=(SM.i+1)%SM.L.length;try{localStorage.setItem('lotd350',JSON.stringify(SM))}catch(_){}}else LOTD=lotd(true);saveHome();return TODAY.ids()},
+ rate:async v=>{const ids=TODAY.allIds();await rateLook(ids,v);if(v<0){if(smOK()&&SM.L[SM.i])SM.L[SM.i].bad=1;if(smOK()&&SM.L.every(l=>l.bad)){await smart(true)}return TODAY.next()}return ids},
+ next:()=>{HOME.pin=null;if(smOK()){const n=SM.L.length;let i=SM.i;for(let k=0;k<n;k++){i=(i+1)%n;if(!SM.L[i].bad)break}SM.i=i;   /* v360: a look she gave 👎 is not offered again today */try{localStorage.setItem('lotd350',JSON.stringify(SM))}catch(_){}}else LOTD=lotd(true);saveHome();return TODAY.ids()},
  onchange:f=>HOMEL.add(f),
  wear:()=>{const s=homeState();ST=Object.assign(clone(DEF),clone(s));MISS=[];keep();open();redraw()}};
 
@@ -1052,7 +1052,7 @@ function styFrame0(k,o){o=o||{};const st=STY[k];if(!st)return Promise.resolve(''
   const u=f.toDataURL('image/jpeg',.84);KV.put(k0,u);return u})().catch(()=>'').then(u=>{if(!u)delete FR0[ck];return u})}
 setTimeout(()=>{try{KV.tidy(KVV)}catch(_){}},9000);   // pictures of older versions go
 // v288b: ↺ איפוס – everything off the avatar in one tap (Sara 28/10 15:18 "במקום שאני אוריד כל דבר… מאפס"); ↩ brings it all back
-function reset(){UNDO={a:clone(ST),n:'כל מה שהיה עלייך'};ST=Object.assign(clone(DEF),{on:{},bg:ST.bg,cam:ST.cam});UNDO.bj=JSON.stringify(ST);MISS=[];keep();redraw();try{paintMiss()}catch(_){}
+function reset(){UNDO={a:clone(ST),n:'כל מה שהיה עלייך'};ST=Object.assign(clone(DEF),{on:{},bg:ST.bg,cam:ST.cam,head:ST.head||DEF.head,mk:ST.mk||'',tf:ST.tf||'',tc:ST.tc||null});   /* v360: איפוס takes the clothes off but keeps her head (a wig turned into a cover) and makeup */UNDO.bj=JSON.stringify(ST);MISS=[];keep();redraw();try{paintMiss()}catch(_){}
  // v349 bug fix: reset took everything off with no word and no way back on the screen – now a bar says so, with "↩ ביטול" for 8 seconds
  try{let s=document.getElementById('r3undo349');if(s)s.remove();s=document.createElement('div');s.id='r3undo349';s.setAttribute('role','status');
   s.innerHTML='<span>🔄 הורדתי הכול מהאווטאר</span><button type="button">↩ ביטול</button>';(dlg||document.body).append(s);

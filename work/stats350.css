@@ -236,3 +236,5 @@ html[data-z21n] #ord123 .o3tile{background:#1b1826!important}html[data-z21n] #or
 @media (prefers-reduced-motion:reduce){#h356 .h356p{animation:none}}
 html[data-z21n] #h356 .h356p{background:#2a2840}
 #h356 .h356r{align-items:flex-start}
+/* v360: on a computer the studio's top chips (פאה/כיסוי, תסרוקות, איפור) were off-screen in a row with no scrollbar – they wrap now */
+@media (min-width:900px){#r360 .z8c{flex-wrap:wrap!important;overflow-x:visible!important;white-space:normal!important}}

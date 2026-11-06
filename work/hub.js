@@ -65,7 +65,7 @@ loadLocalHub();
  db.collection('credits').onSnapshot(sn=>{const n={};sn.docs.forEach(d=>{n[d.id]=JSON.parse(JSON.stringify(d.data()||{}))});CREDITS=n;renderHub()},e=>{});
  db.collection('settings').onSnapshot(sn=>{sn.docs.forEach(d=>{if(d.id=='main'){SET=JSON.parse(JSON.stringify(d.data()||{}));SET0={v:JSON.parse(JSON.stringify(SET))}}/* v93: the snapshot object is read-only – every change to SET was silently lost and saved back as the old doc */});renderHub()},e=>{})}catch(e){}})();
 async function savePlan(){PLAN.days=PLAN.days||{};if(DB)await saveDoc('plan','week',PLAN);else{try{localStorage.setItem('hub_plan',JSON.stringify(PLAN))}catch(_){}}}
-async function saveLook(L,occ,name){const id='l'+Date.now().toString(36);LOOKS[id]={id,name:name||('לוק '+(Object.keys(LOOKS).length+1)),occ,items:L,created:new Date().toISOString().slice(0,10)};
+async function saveLook(L,occ,name){const id='l'+Date.now().toString(36);LOOKS[id]={id,name:name||((n=>{const has=new Set(Object.values(LOOKS).map(l=>l&&l.name));while(has.has('לוק '+n))n++;return 'לוק '+n})(Object.keys(LOOKS).length+1)),occ,items:L,created:new Date().toISOString().slice(0,10)};
  if(DB)await saveDoc('looks',id,LOOKS[id]);else{try{localStorage.setItem('hub_looks',JSON.stringify(LOOKS))}catch(_){}}toast('הלוק נשמר באלבום');renderHub();return id}
 async function delLook(id){delete LOOKS[id];Object.keys(PLAN.days||{}).forEach(d=>{if(PLAN.days[d]==id)delete PLAN.days[d]});if(DB)await saveDoc('looks',id,null);else{try{localStorage.setItem('hub_looks',JSON.stringify(LOOKS))}catch(_){}}await savePlan();renderHub()}
 // share look as image

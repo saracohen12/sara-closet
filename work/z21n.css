@@ -46,3 +46,5 @@ html[data-z21n][data-d180][data-z21] .toast button{color:#15131c!important;borde
 html[data-z21n] #ord123 .o3it.hl{background:rgba(255,255,255,.07)!important}
 html[data-z21n] .lscore,html[data-z21n] .lscore.ok{background:#1f3a2a!important;color:#e6f4ea!important}
 html[data-z21n] #z5m .z5mh{background:rgb(27,24,38)!important}   /* v360: the sheet head was a darker band at night */
+/* v360 bug hunt G: item window "ניהול" panels (ניהול הפריט, דומים, הולך טוב עם) were white text on a light panel at night */
+html[data-z21n].d73.d78 #dlbody .imgrow,html[data-z21n].d73.d78 #dlbody .drest>.ed,html[data-z21n].d73.d78 #dlbody .sim,html[data-z21n].d73.d78 #dlbody details.srch9{background:rgba(255,255,255,.06)!important}

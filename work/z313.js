@@ -44,9 +44,9 @@ const cards=()=>[...document.querySelectorAll('.wrap>section[id] .card')];
 // v349: by the page's category (C) or group (G) – not by what is visible (an empty choice hid the section and every number became 0)
 function paint(){try{const cc=(typeof C!='undefined'&&C)||'',gg=(typeof G!='undefined'&&G&&!['all','day','shab'].includes(G))?G:'';
  const inPage=c=>{const s=c.closest('section');if(!s)return false;if(cc)return s.id==cc;if(gg)return (s.dataset.g||'')==gg;return true};
- const L=cards().filter(c=>(cc||gg?true:MG.has(sg(c)))&&inPage(c)&&base(c));
+ const L=cards().filter(c=>inPage(c)&&base(c));   // v360: every card on the page (accessories stay in view when חול/שבת is chosen – the numbers now match what she sees)
  const pgG=cc?((document.getElementById(cc)||{dataset:{}}).dataset.g||''):gg;box.hidden=!!pgG&&!MG.has(pgG);   // accessories are not split into חול/שבת – no chips that do nothing
-  box.querySelectorAll('[data-z316]').forEach(b=>{const m=b.dataset.z316;b.setAttribute('aria-checked',m==M);b.querySelector('small').textContent=(m=='day'?L.filter(isDay):m=='shab'?L.filter(isShab):L).length});
+  box.querySelectorAll('[data-z316]').forEach(b=>{const m=b.dataset.z316;b.setAttribute('aria-checked',m==M);b.querySelector('small').textContent=(m=='day'?L.filter(c=>!MG.has(sg(c))||isDay(c)):m=='shab'?L.filter(c=>!MG.has(sg(c))||isShab(c)):L).length});
   document.querySelectorAll('.wrap>section[id]').forEach(s=>{const v=M&&MG.has(s.dataset.g)?M:'';if((s.dataset.m316||'')!=v)s.dataset.m316=v});
   // the count under each category picture = what she will see in it now
   wrap.querySelectorAll('.z6c [data-h9cat]').forEach(b=>{const s=document.querySelector(b.dataset.h9cat);if(!s)return;let sm=b.querySelector('small');if(!sm){sm=document.createElement('small');b.append(sm)}

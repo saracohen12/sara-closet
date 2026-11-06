@@ -172,7 +172,8 @@ async function wore(ids){const td=(d=>d.getFullYear()+'-'+String(d.getMonth()+1)
  const n0=ids.length;ids=ids.filter(id=>((IT[id]||{}).lastWorn||'')!=td);if(!ids.length){toast(n0>1?'✓ כבר סימנת היום שלבשת את כולם':'✓ כבר סימנת שלבשת היום');return}
  const before={};for(const id of ids){const it=IT[id]||{};before[id]={wear:it.wear||0,lastWorn:it.lastWorn||''};await putItem(id,{wear:(it.wear||0)+1})}
  if(navigator.vibrate)try{navigator.vibrate(15)}catch(_){}
- setTimeout(()=>toast(ids.length>1?`סומן: לבשת ${ids.length} בגדים היום`:'סומן: לבשת היום',async()=>{for(const id of ids)await putItem(id,before[id]);refresh()}),60);refresh()}
+ setTimeout(()=>toast(ids.length>1?`סומן: לבשת ${ids.length} בגדים היום`:'סומן: לבשת היום',async()=>{for(const id of ids)await putItem(id,before[id]);refresh();wrow()}),60);refresh();wrow()}
+function wrow(){try{const b=document.querySelector('#dlbody .erow.wear b');if(b&&typeof CUR!='undefined'&&CUR)b.textContent=(IT[CUR]||{}).wear||0}catch(_){}}   // v360: the ניהול tab's wear count follows a tap on "לבשתי היום"
 function refresh(){try{if($('#dlg')?.open&&CUR)wearBtn(CUR)}catch(_){}try{paintStrips()}catch(_){}}
 function wearBtn(id){const bar=document.querySelector('#dlbody .it77');if(!bar)return;bar.querySelector('.w79')?.remove();const it=IT[id]||{};const today=(it.lastWorn||'')==new Date().toISOString().slice(0,10);
  bar.querySelector('.it77t')?.insertAdjacentHTML('afterend',`<button class="w79${today?' on':''}" data-w79="${id}">${today?'✓ לבשתי היום':'👗 לבשתי היום'}<small>${it.wear?` · ${it.wear==1?'פעם אחת':it.wear+' פעמים'}`:''}</small></button>`)}
