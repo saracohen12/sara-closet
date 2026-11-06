@@ -63,6 +63,7 @@ const TL=n=>{try{for(const [,L] of (window.TOOLS172||[]))for(const t of L){const
 const closeD=()=>document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(_){}});
 const MORE=[
  ['קניות',[
+  ['📦','הגיע ולא מופיע בהזמנות','מוצר שקיבלת ואין לו הזמנה באתר',()=>window.STRAY358&&STRAY358.open()],
   ['🛒','העגלה שלי','מה שאת עוד חושבת לקנות',()=>window.ADV187&&(ADV187.cart?ADV187.cart():ADV187.open('arc'))],
   ['🔎','לבדוק לפני שקונים','יש לי כבר? מתאים? כדאי?',()=>window.ADV187&&ADV187.open('new')],
   ['📦','ההזמנות שלי','מה הגיע, מה בדרך, מה להחזיר',()=>window.openOrders123&&openOrders123()],

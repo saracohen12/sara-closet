@@ -153,7 +153,7 @@ function moneyTab(){const ret=Object.keys(D).filter(id=>(IT[id]||{}).s=='ret'||(
  // v349 bug fixes: the line follows the chosen account, and splits "still to return" / "sent" / "money back without returning" (it said 55 while the orders window said 50)
  const A=(typeof R340!='undefined'&&R340.acc)||'';const mine=ret.filter(id=>!A||D[id].src==A);const I=id=>IT[id]||{};
  const todoN=mine.filter(id=>I(id).s=='ret'&&!I(id).rsent&&!I(id).rnr&&!I(id).refunded).length,sentN=mine.filter(id=>I(id).s=='ret'&&I(id).rsent&&!I(id).refunded).length,rnrN=mine.filter(id=>I(id).rnr).length;
- const exp=mine.reduce((s,id)=>s+D[id].paid,0);const got=mine.filter(id=>I(id).refunded).reduce((s,id)=>s+D[id].paid,0);
+ const exp=mine.filter(id=>!I(id).refunded&&!I(id).rnr).reduce((s,id)=>s+D[id].paid,0);   /* v358: what is still to come back (money already back is not counted twice) */const got=mine.filter(id=>I(id).refunded).reduce((s,id)=>s+D[id].paid,0);
  const accN=A?(((typeof ACC340!='undefined'&&ACC340.find(a=>a[0]==A))||['',''])[1]):'';
  const cr=Object.entries(CREDITS);
  return `<h3>החזרות</h3><p>${accN?'<b>'+esc(accN)+':</b> ':''}${todoN} עוד להחזיר${sentN?' · '+sentN+' כבר נשלחו':''}${rnrN?' · '+rnrN+' כסף חזר בלי להחזיר':''}. צפוי לחזור: <b>${money2(exp)}</b> · כבר חזר: <b>${money2(got)}</b></p>

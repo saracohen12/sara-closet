@@ -43,7 +43,7 @@ function oname(o){const n=(/(\d+)\s*$/.exec(o.file)||[])[1];
  if(o.src=='sh'||o.src=='ae')return 'הזמנה \u2066'+o.k.slice(o.src=='ae'?-6:-4)+'\u2069';
  return n?'קבלה '+n:'הזמנה \u2066'+o.k.slice(-6)+'\u2069';}
 function osum(o){const c={y:0,n:0,m:0,u:0,c:0,lk:0,no:0,ret:0,kept:0,mb:0,fix:0,paid:0};let rd=null;
- for(const id of o.ids){const s=st(id),it=IT[id]||{};c[s||'u']++;if(it.lk=='y')c.lk++;if(it.lk=='n')c.no++;if(it.s=='ret')c.ret++;if(it.s=='kept')c.kept++;if(it.fix)c.fix++;if(it.mb&&!it.s)c.mb++;c.paid+=+D[id].paid||0;
+ for(const id of o.ids){const s=st(id),it=IT[id]||{};c[s||'u']++;if(it.lk=='y')c.lk++;if(it.lk=='n')c.no++;if(it.s=='ret'&&!it.rsent&&!it.rnr&&!it.refunded)c.ret++;if(it.s=='kept')c.kept++;if(it.fix)c.fix++;if(it.mb&&!it.s)c.mb++;c.paid+=+D[id].paid||0;
   const r=D[id].rdl;if(r&&(!rd||r<rd))rd=r}
  c.rdl=rd;c.est=o.src=='sh'&&o.ids.some(id=>!D[id].rex);c.n_=o.ids.length-c.c;return c;}
 function ostate(c){if(c.m)return 'm';if(c.u)return 'u';if(c.n)return 'n';return 'y';}
@@ -65,6 +65,7 @@ function dlg(){let d=q('#ord123');if(d)return d;
  return d;}
 function body(){return dlg().querySelector('.o3b')}
 function open(ord,hl){const d=dlg();V.ord=ord||'';V.hl=hl||'';render();if(!d.open)d.showModal();
+ if(ord)setTimeout(()=>{try{window.NAV358&&NAV358.step(d,()=>{V.ord='';V.hl='';render();setTimeout(()=>{body().scrollTop=V.scroll||0},30)})}catch(_){}},40);   // v358: opened straight into an order (or back from an item) – back goes to the list
  if(!ord&&hl&&V.allp)setTimeout(()=>{const r=body().querySelector(`[data-o3row="${CSS.escape(hl)}"]`);if(r)r.scrollIntoView({block:'center'})},90)}   // v358: back from an item opened in the big gallery – the same place
 window.openOrders123=open;
 
@@ -84,8 +85,8 @@ const FLT=[['מה הגיע',[['','הכל'],['u','⚪ לא סימנתי'],['m','�
  ['תמונות',[['pnd','📸 עוד לא העליתי תמונות'],['pdd','✅ סיימתי להעלות תמונות']]],
  ['אווטאר',[['anl','🧍 עוד לא סיימתי אווטאר'],['and','✅ סיימתי אווטאר']]]];
 const fltName=()=>{if(V.flt=='fabq')return fabLbl(...V.tag.split(':'))||'בד ואיכות';for(const[,o]of FLT){const x=o.find(f=>f[0]==V.flt);if(x)return x[1]}return 'הכל'};
-const retP=id=>{const it=IT[id]||{};return it.s=='ret'&&!it.rsent&&!it.rnr};
-const retS=id=>{const it=IT[id]||{};return (it.s=='ret'&&!!it.rsent)||!!it.rnr};   // v345: refund without return counts as done
+const retP=id=>{const it=IT[id]||{};return it.s=='ret'&&!it.rsent&&!it.rnr&&!it.refunded};   // v358: money already back = not "to return" (same as the money tab)
+const retS=id=>{const it=IT[id]||{};return (it.s=='ret'&&(!!it.rsent||!!it.refunded))||!!it.rnr};   // v345: refund without return counts as done
 function fabList(L){const [k,v]=(V.tag||':').split(':');const ids=L.flatMap(o=>o.ids).filter(id=>(IT[id]||{})[k]==v);
  if(ids.length)loadThumbs(ids);
  return ids.length?`<p class="o3hint">${ids.length} בגדים</p><div class="o3items">${ids.map(itemRow).join('')}</div>`:'<p class="o3empty">עוד אין בגדים עם הסימון הזה. מסמנים בתוך כל הזמנה, ב"🏷 בד ואיכות" של הבגד.</p>'}
@@ -247,8 +248,8 @@ function tile(id){const x=D[id],it=IT[id]||{},s=st(id);
  const tag=it.oos?'🚫 בוטל':it.rnr?'🎁 כסף חזר, נשאר אצלי':it.s=='ret'?(it.refunded?'💰 הכסף חזר':it.rsent?'📮 נשלח':it.rpack?'📦 ארוז':it.rreq?'📝 ביקשתי':'↩ להחזיר'):it.s=='kept'?'🏠 משאירה':(STB[s]||STB[''])[0]+' '+(STB[s]||STB[''])[1];
  return `<div class="o3tile s${s||'u'}${it.s=='ret'?' ret':it.s=='kept'?' kept':''}${V.hl==id?' hl':''}" data-o3row="${H(id)}">
  <button class="o3tp" data-o3item="${H(id)}" aria-label="פתיחת ${H(it.tname||x.short)}">${th(id,'o3ti')}<span class="o3tb">${tag}</span>${x.qty>1?`<span class="o3tq2">×${x.qty}</span>`:''}</button>
- <b class="o3tn">${H(it.tname||x.short)}</b><small class="o3tm">${[x.size&&'מידה '+x.size,x.color,money(+x.paid||0)].filter(Boolean).map(v=>'<bdi>'+H(v)+'</bdi>').join(' · ')}</small>
- ${it.oos?'':`<div class="o3tqk">${s!='y'?b('got','y','✅ הגיע',false):''}${b('s','kept','🏠 משאירה',it.s=='kept')}${b('s','ret','↩ מחזירה',it.s=='ret')}</div>`}
+ <b class="o3tn">${H(it.tname||x.short)}</b><small class="o3tm">${[x.size&&(/^מידה/.test(x.size)?x.size:'מידה '+x.size),x.color,money(+x.paid||0)].filter(Boolean).map(v=>'<bdi>'+H(v)+'</bdi>').join(' · ')}</small>
+ ${it.oos?'':`<div class="o3tqk">${b('got','y','✅ הגיע',s=='y')}${b('s','kept','🏠 משאירה',it.s=='kept'&&!it.rnr)}${b('s','ret','↩ מחזירה',it.s=='ret'&&!it.rnr)}</div>`}
  ${it.s=='ret'&&!it.rnr&&!it.oos?`<div class="o3tqk steps">${b('rreq','1','📝 ביקשתי',!!(it.rreq||it.rpack||it.rsent))}${b('rpack','1','📦 ארזתי',!!(it.rpack||it.rsent))}${b('rsent','1','📮 שלחתי',!!it.rsent)}</div>`:''}</div>`}
 function renderOrder(){const b=body(),o=orders().find(o=>o.k==V.ord);if(!o){V.ord='';return renderList()}
  const sw=(BIG?`<button class="o3more358" data-o3more="1" aria-expanded="false">⚙ פעולות על ההזמנה (תמונות, אווטאר, הכל הגיע, החנות) ▾</button>`:'')+`<div class="o3vw" role="group" aria-label="תצוגה"><button data-o3big="1" aria-pressed="${BIG}">🖼 תמונות גדולות</button><button data-o3big="0" aria-pressed="${!BIG}">☰ רשימה מפורטת</button></div>`;
@@ -268,7 +269,7 @@ function oheadHTML(o){const c=osum(o),ps=picSum(o);
   <div class="o3all"><button data-o3all="y">✅ הכל הגיע</button><button data-o3all="n">⏳ הכל עוד בדרך</button><button data-o3all="clear" class="ghost">איפוס</button></div></div>`;}
 // v145: a mark redraws only its row and the order header, not the whole screen (was ~0.7s on the phone)
 function rowRefresh(id){const b=body();if(!V.ord||V.res||V.flt&&!V.ord)return refresh();const o=orders().find(o=>o.k==V.ord);const r=b.querySelector(`[data-o3row="${CSS.escape(id)}"]`);const h=b.querySelector('.o3oh');if(!o||!r||!h)return refresh();
- r.outerHTML=r.classList.contains('o3tile')?tile(id):itemRow(id);h.outerHTML=oheadHTML(o);loadThumbs([id]);V.local=Date.now()}
+ const wasOpen=h.classList.contains('open358');r.outerHTML=r.classList.contains('o3tile')?tile(id):itemRow(id);h.outerHTML=oheadHTML(o);if(wasOpen){const h2=b.querySelector('.o3oh');h2&&h2.classList.add('open358')}loadThumbs([id]);V.local=Date.now()}
 
 // ---- marks
 async function setMark(id,k,v){const it=IT[id]||{};let p;
@@ -284,7 +285,8 @@ async function setMark(id,k,v){const it=IT[id]||{};let p;
  else if(k=='oos')p=it.oos?{oos:'',reord:''}:{oos:Date.now(),got:'',miss:''};
  else if(k=='fixk'){const a=(it.fixk||[]).slice(),i=a.indexOf(v);i<0?a.push(v):a.splice(i,1);p={fixk:a.length?a:'',fix:true}}
  else if(k=='mb')p=it.mb&&!it.s?{mb:'',mbr:''}:{mb:1,s:''};
- else if(k=='s')p=it.s==v?{s:'',rsent:''}:{s:v,mb:'',mbr:'',...(v!='ret'?{rsent:''}:{})};
+ else if(k=='s'){if(it.s=='ret'&&(it.rreq||it.rpack||it.rsent||it.refunded)&&!confirm('להחזיר זה כבר בתהליך ('+(it.refunded?'הכסף חזר':it.rsent?'נשלח':it.rpack?'ארוז':'ביקשת')+'). לבטל את ההחזרה?'))return;   // v358: one tap no longer wipes a return that is under way
+  p=it.s==v?{s:'',rsent:'',rreq:'',rpack:''}:{s:v,mb:'',mbr:'',...(v!='ret'?{rsent:'',rreq:'',rpack:''}:{}),...(!it.got&&!it.miss&&!it.oos?{got:'y'}:{})}}   // keeping or returning it means it arrived
  else p={[k]:it[k]==v?'':v};
  for(const x of Object.keys(p))if(!p[x]&&!it[x])delete p[x];
  if(!Object.keys(p).length)return;
@@ -305,7 +307,7 @@ async function onClick(e){const t=e.target.closest('button,[data-o3cam],.o3sbd')
  if(t.dataset.o3big!=null){BIG=t.dataset.o3big=='1';try{localStorage.setItem('o3big358',BIG?'1':'0')}catch(_){}refresh();return}
  try{
  if(t.dataset.o3=='close'){dlg().close();return}
- if(t.dataset.o3=='back'){if(V.res){V.ord=V.res.ord||'';V.res=null}else V.ord='';V.hl='';render();return}
+ if(t.dataset.o3=='back'){if(V.res){V.ord=V.res.ord||'';V.res=null}else{V.ord='';try{window.NAV358&&NAV358.unstep(dlg())}catch(_){}}V.hl='';render();return}
  if(t.dataset.o3acc!=null){V.acc=t.dataset.o3acc;render();return}
  if(t.dataset.o3sheet){V.sheet=t.dataset.o3sheet=='open';const y=body().scrollTop;render();body().scrollTop=y;return}
  if(t.dataset.o3racc!=null){V.racc=t.dataset.o3racc;V.rord='';refresh();return}
@@ -317,7 +319,9 @@ async function onClick(e){const t=e.target.closest('button,[data-o3cam],.o3sbd')
   for(const id of L)putItem(id,off?{[k]:'',...(n<=1?{rpack:''}:{}),...(n<=2?{rsent:''}:{})}:{[k]:1,...(n>=2?{rreq:1}:{}),...(n>=3?{rpack:1}:{})});
   toast(off?'ביטלתי את הסימון':k=='rreq'?'סימנתי שביקשת החזרה 📝':k=='rpack'?'סימנתי שארזת 📦':'סימנתי שהחבילה נשלחה 📮')}refresh();return}
  if(t.dataset.o3sentall){const o=orders().find(o=>o.k==t.dataset.o3sentall);if(o){for(const id of o.ids.filter(retP))await putItem(id,{rsent:1});toast('סימנתי שהחבילה נשלחה 📮')}refresh();return}
- if(t.dataset.o3open){V.scroll=body().scrollTop;V.ord=t.dataset.o3open;V.hl='';render();return}
+ if(t.dataset.o3open){V.scroll=body().scrollTop;V.ord=t.dataset.o3open;V.hl='';render();
+  // v358: back (phone) from an order goes to the list, not out of the window
+  try{window.NAV358&&NAV358.step(dlg(),()=>{V.ord='';V.hl='';render();const b=body();setTimeout(()=>{b.scrollTop=V.scroll||0},30)})}catch(_){}return}
  if(t.dataset.o3shop){const k=t.dataset.o3shop,o=orders().find(o=>o.k==k);const num=o&&(o.src=='t1'||o.src=='t2'||o.src=='t3')?k.replace(/^P0/,'PO'):k;
   try{await navigator.clipboard.writeText(num)}catch(_){}
   const u=o&&o.src=='ae'?'https://www.aliexpress.com/p/order/detail.html?orderId='+encodeURIComponent(num):o&&o.src=='sh'?'https://m.shein.com/il/user/orders/detail/'+encodeURIComponent(num):'https://www.temu.com/bgt_order_detail.html?parent_order_sn='+encodeURIComponent(num); // v137: straight to the order page
@@ -402,7 +406,7 @@ function renderRes(){const b=body(),r=V.res;
 function armBack(bk){const d=q('#dlg');if(!d)return;V.back=bk;
  if(!d.dataset.o3bk){d.dataset.o3bk=1;d.addEventListener('close',()=>{const b=V.back;if(!b)return;V.back=null;
   setTimeout(()=>{if([...document.querySelectorAll('dialog[open]')].some(x=>x.id!='ord123'))return;
-   const id=(typeof CUR!='undefined'&&CUR&&D[CUR]&&D[CUR].order==b.ord)?CUR:b.hl;open(b.ord,id)},250)})}}
+   const id=(typeof CUR!='undefined'&&CUR&&D[CUR]&&D[CUR].order==b.ord)?CUR:b.hl;open(b.ord,id)},60)})}}   /* v358: 250 → 60 ms (a quick second back left the site in the gap) */
 // ---- entry points: home button, item window link, search, card badge "חסר"
 function paintEntry(){try{
  const cta=q('.h9cta')||q('.h9hero');if(!cta)return;let e=q('#ord123b');

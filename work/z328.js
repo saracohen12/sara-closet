@@ -129,7 +129,7 @@ function go(c,all,push){try{if(window.zCloset&&B.dataset.z50!='closet')zCloset()
 
 function rec(){try{const s={z328:1,c:C||'',all:ALL},h=history.state
  if(h&&h.z328&&h.c==s.c&&h.all==s.all)return
- history.pushState(s,'')}catch(e){ERR('push',e)}}
+ history.pushState(s,'');try{window.NAV358&&NAV358.reset()}catch(_){}}catch(e){ERR('push',e)}}   // v358: the steps of windows closed with ✕ stay behind – a new category starts fresh
 
 addEventListener('popstate',e=>{const s=e.state
  if(!s||!s.z328||H.dataset.d180!='z50')return
