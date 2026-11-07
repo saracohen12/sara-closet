@@ -18,8 +18,10 @@ function bitmap(id){let p=BM.get(id);if(!p){p=(async()=>{let last;for(const w of
   p.then(()=>setTimeout(()=>{if(BM.get(id)===p){BM.delete(id);p.then(b=>{try{b.close()}catch(_){}})}},20000),()=>BM.delete(id))}return p}
 const FR=new Map();   // "<id>~<v>" -> Promise<{b:Blob,u:objectURL}>
 function frame(id,v){const k=id+'~'+v;let p=FR.get(k);if(p)return p;
- p=(async()=>{let b=await kvGet(k);if(!b){const bm=await bitmap(id),fw=bm.width/4,fh=bm.height/2,c=document.createElement('canvas');c.width=fw;c.height=fh;
-   c.getContext('2d').drawImage(bm,(v%4)*fw,(v>>2)*fh,fw,fh,0,0,fw,fh);b=await new Promise(ok=>c.toBlob(ok,'image/png'));if(!b)throw new Error('encode');kvPut(k,b)}
+ // v365: garments get their edges cleaned once (window.EDGE365, edge365.js) and are kept under another name
+ const cl=!!(window.EDGE365&&EDGE365.want(id)),kk=cl?'e365|'+k:k;
+ p=(async()=>{let b=await kvGet(kk);if(!b){const bm=await bitmap(id),fw=bm.width/4,fh=bm.height/2,c=document.createElement('canvas');c.width=fw;c.height=fh;
+   c.getContext('2d').drawImage(bm,(v%4)*fw,(v>>2)*fh,fw,fh,0,0,fw,fh);if(cl){try{EDGE365.clean(c)}catch(e){ERR('edge',e)}}b=await new Promise(ok=>c.toBlob(ok,'image/png'));if(!b)throw new Error('encode');kvPut(kk,b)}
   return {b,u:URL.createObjectURL(b)}})();
  FR.set(k,p);p.catch(e=>{FR.delete(k);ERR('frame',e)});return p}
 window.SP262={frame,RX,isPacked:a=>typeof a=='string'&&/^[0-9a-f]{32}~[0-7]$/.test(a)};

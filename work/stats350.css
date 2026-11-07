@@ -272,3 +272,14 @@ html[data-z21n] #big362 .b362c button,html[data-z21n] #r360 .r3fig .b362o{backgr
 #big362 .b362s{inset:56px 0 130px}
 html[data-z21n] #big362 .b362c button{color:#eeeaf6}
 html[data-z21n] #big362 .b362sp button{background:#2a2640;color:#eeeaf6}
+/* v365: cut check */
+.cc365r{flex-basis:100%;margin-top:8px;padding:10px 12px;border-radius:14px;background:#f6f3fb;border:1px solid #e3ddef;font-size:.88rem;line-height:1.5}
+.cc365r ul{margin:4px 0;padding-inline-start:18px}
+.cc365r .cc365ok b{color:#1f7a45}.cc365r .cc365bad b{color:#b4471f}
+.cc365r .cc365s{color:#5b5368;margin:6px 0}
+.cc365r .cc365a{display:flex;flex-wrap:wrap;gap:6px}
+.cc365r .cc365a button{min-height:40px;padding:0 14px;border-radius:999px;font:inherit;font-weight:700}
+html[data-z21n] .cc365r{background:#221f32;border-color:rgba(255,255,255,.14);color:#eeeaf6}
+html[data-z21n] .cc365r .cc365s{color:#c9c2da}
+/* v365: pin to home on the studio doll */
+#r360 .r3fig .b365p{position:absolute;top:6px;left:50%;transform:translateX(-50%);z-index:6;white-space:nowrap;min-height:30px;padding:0 10px;border-radius:999px;border:0;background:#2e8b57;color:#fff;font:inherit;font-weight:700;font-size:.76rem;box-shadow:0 4px 12px rgba(30,20,50,.2);cursor:pointer}

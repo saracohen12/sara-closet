@@ -34,5 +34,8 @@ function open(){try{if(!dlg){dlg=document.createElement('dialog');dlg.id='big362
   dlg.addEventListener('close',()=>{clearInterval(T);T=0;stop()})}
  paintPlay();copy();if(!dlg.open)dlg.showModal();clearInterval(T);T=setInterval(()=>{if(!dlg.open){clearInterval(T);T=0;return}copy()},350)}catch(e){ERR('open',e)}}
 setInterval(()=>{try{const st=document.querySelector('#r360[open] .r3fig');if(!st||st.querySelector('.b362o'))return;const b=document.createElement('button');b.type='button';b.className='b362o';b.setAttribute('aria-label','לראות את הבובה בגדול');b.innerHTML='<span aria-hidden="true">⛶</span> בגדול';b.onclick=open;st.append(b)}catch(_){}},800);
+// v365 (Sara 22:36 "כשאני בונה לוק אני לא רואה איך בקלות אני שמה את זה בדף הבית"): "📌 לדף הבית" right on the doll's frame (it was only in the ⋯ menu)
+setInterval(()=>{try{const st=document.querySelector('#r360[open] .r3fig');if(!st||st.querySelector('.b365p'))return;const b=document.createElement('button');b.type='button';b.className='b365p';b.setAttribute('aria-label','לשים את הלוק הזה בדף הבית');b.innerHTML='📌 לדף הבית';
+ b.onclick=()=>{const p=document.querySelector('#r360 .r3pin');if(p)p.click();else (window.toast||(()=>{}))('לא מצאתי – נסי מתפריט ⋯')};st.append(b)}catch(_){}},800);
 window.BIG362={open};
 })();
