@@ -33,9 +33,13 @@ document.querySelectorAll('.grid .card').forEach(c=>{const im=c.querySelector('.
 function origSrc(id){const c=card(id);const o=c&&c.dataset.orig;return (o&&o!='th'?o:'')||TH[id]||''}
 // v27: the built-in thumbnail lives in a bundle (TH), not in the card's src, so "no image" is decided by D[id].hi, never by an empty src
 // v361: the full photo is set only when its card is on (or near) the screen – the browser fetched all ~400 hidden ones (80 MB) at every opening
-window.LZ361=(()=>{let io=null;const go=im=>{const u=im.dataset.lz361;if(!u)return;delete im.dataset.lz361;try{io&&io.unobserve(im)}catch(_){}if(im.getAttribute('src')!=u)im.src=u};
+window.LZ361=(()=>{let io=null;const go=im=>{const u=im.dataset.lz361;if(!u)return;delete im.dataset.lz361;try{io&&io.unobserve(im)}catch(_){}
+  // v361: the card gets the small copy of her photo (from the category pack) – the full photo only opens in the item window
+  const bid=(u.split('/_blob/')[1]||'').split(/[?~]/)[0],x=D[im.dataset.lzid||'']||{};const set=v=>{if(im.getAttribute('src')!=v)im.src=v};
+  if(bid&&x.cat&&typeof thLoad=='function'){const t=typeof TH=='object'&&TH['b:'+bid];if(t)return set(t);Promise.resolve(thLoad(x.cat)).then(()=>set((typeof TH=='object'&&TH['b:'+bid])||u),()=>set(u));return}
+  set(u)};
  try{io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)go(e.target)}),{rootMargin:'900px 0px'})}catch(_){}
- return (im,u)=>{if(!io){im.src=u;return}im.dataset.lz361=u;try{io.observe(im)}catch(_){im.src=u}}})();   // no measuring here (400 cards × a forced layout froze the start); the observer reports the visible ones at once
+ return (im,u,id)=>{if(id)im.dataset.lzid=id;if(!io){im.src=u;return}im.dataset.lz361=u;try{io.observe(im)}catch(_){im.src=u}}})();   // no measuring here (400 cards × a forced layout froze the start); the observer reports the visible ones at once
 // v361: the closet's thumbnail packs (8 MB) wait until the closet is opened
 setInterval(()=>{try{const q=window.THQ361;if(!q||!q.size||document.body.dataset.z50!='closet'||typeof thLoad!='function')return;const L=[...q];q.clear();L.forEach(c=>{try{thLoad(c)}catch(_){}})}catch(_){}},400);
 window.LZ361now=im=>{const u=im&&im.dataset&&im.dataset.lz361;if(u){delete im.dataset.lz361;im.src=u}};
@@ -43,7 +47,7 @@ paintImg=function(id){const c=card(id);if(!c)return;const it=IT[id]||{};const x=
  if(!u){if(x.hi||(c.dataset.orig&&c.dataset.orig!='th')){if(!im){ph.querySelector('.noimg')?.remove();im=document.createElement('img');im.alt='';im.loading='lazy';ph.prepend(im)}
    const t=c.dataset.orig&&c.dataset.orig!='th'?c.dataset.orig:(TH[id]||TPH);im.dataset.th=id;if(im.getAttribute('src')!=t)im.src=t;if(!TH[id]&&x.hi&&typeof thLoad=='function'){if(document.body.dataset.z50=='closet')thLoad(x.cat);else (window.THQ361=window.THQ361||new Set).add(x.cat)}}
   else if(im){im.remove();if(!ph.querySelector('.noimg'))ph.insertAdjacentHTML('afterbegin','<span class="noimg">אין תמונה</span>')}}
- else{if(!im){ph.querySelector('.noimg')?.remove();im=document.createElement('img');im.alt='';ph.prepend(im)}im.loading='lazy';im.decoding='async';im.removeAttribute('data-th');if(im.getAttribute('src')!=u){if(window.LZ361)LZ361(im,u);else im.src=u}}   /* v361 (Sara 7/11 "נטען מאוד לאט"): her own photos load when the card comes into view – all ~400 full pictures (80 MB) were downloaded at every opening */
+ else{if(!im){ph.querySelector('.noimg')?.remove();im=document.createElement('img');im.alt='';ph.prepend(im)}im.loading='lazy';im.decoding='async';im.removeAttribute('data-th');const sm=it.img&&typeof TH=='object'&&TH['b:'+it.img];if(sm){if(im.getAttribute('src')!=sm){delete im.dataset.lz361;im.src=sm}}else if(im.getAttribute('src')!=u){if(window.LZ361)LZ361(im,u,id);else im.src=u}}   /* v361 (Sara 7/11 "נטען מאוד לאט"): her own photos load when the card comes into view – all ~400 full pictures (80 MB) were downloaded at every opening */
  ph.querySelector('.busyb')?.remove();ph.querySelector('.npics')?.remove();if((it.pics||[]).length)ph.insertAdjacentHTML('beforeend',`<span class="npics">📷 ${it.pics.length+1}</span>`);if(UPST[id]=='busy')ph.insertAdjacentHTML('beforeend','<span class="busyb">שומרת…</span>')};
 // חיתוך: מוצא את הרצועה הגבוהה ביותר של שורות "תוכן" (לא פס אחיד של ממשק הטלפון), ואז מקצץ שוליים אחידים בצדדים
 function flatLine(d,n,step){let s=0,s2=0,c=0,cr=0,cg=0,cb=0;const L=[];for(let i=0;i<n;i++){const k=i*step;const r=d[k],g=d[k+1],b=d[k+2];const y=.3*r+.59*g+.11*b;s+=y;s2+=y*y;L.push([r,g,b])}

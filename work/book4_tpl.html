@@ -310,8 +310,8 @@ const CARDM=new Map();function cardEl(id){let e=CARDM.get(id);if(e&&e.isConnecte
 function img(id){const k=cardEl(id);const c=k?k.querySelector('img'):null;const u=c?c.getAttribute('src'):'';if(u&&u!=TPH)return u;return TH[id]||''}
 function thApply(j){document.querySelectorAll('img[data-th]').forEach(im=>{const u=j[im.dataset.th];if(!u)return;const cur=im.getAttribute('src')||'';if(cur&&cur!=TPH&&!cur.startsWith('data:'))return;if(cur!=u)im.src=u})}
 const THR={};function thGot(cat,j){Object.assign(TH,j);thApply(j);if(THR[cat])THR[cat](j);try{document.dispatchEvent(new CustomEvent('thumbs',{detail:cat}))}catch(_){}}
-function thScript(cat){return new Promise((ok,bad)=>{THR[cat]=ok;const s=document.createElement('script');s.src='th/'+cat+'.js';s.async=true;s.onerror=()=>{s.remove();bad(new Error('script'))};document.head.appendChild(s);setTimeout(()=>bad(new Error('timeout')),45000)})}
-function thFetch(cat){return fetch('th/'+cat+'.json').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(j=>{thGot(cat,j);return j})}
+function thScript(cat){return new Promise((ok,bad)=>{THR[cat]=ok;const s=document.createElement('script');s.src='th/'+cat+'.js?v='+(window.VER||'');s.async=true;s.onerror=()=>{s.remove();bad(new Error('script'))};document.head.appendChild(s);setTimeout(()=>bad(new Error('timeout')),45000)})}
+function thFetch(cat){return fetch('th/'+cat+'.json?v='+(window.VER||'')).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(j=>{thGot(cat,j);return j})}
 function thLoad(cat){if(!cat)return Promise.resolve({});if(THP[cat])return THP[cat];return THP[cat]=thFetch(cat).catch(()=>thScript(cat)).catch(()=>{delete THP[cat];return {}})}
 function thCats(root){const s=new Set();root.querySelectorAll('img[data-th]').forEach(im=>{const x=D[im.dataset.th];if(x&&x.cat)s.add(x.cat)});return s}
 function thStart(){try{const secs=Array.from(document.querySelectorAll('section[id]'));
