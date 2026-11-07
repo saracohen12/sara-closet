@@ -255,3 +255,20 @@ html[data-z21n] #big362 .b362c button,html[data-z21n] #r360 .r3fig .b362o{backgr
 /* v363: the remembered home doll, shown until the live one is drawn */
 #h180 .r3s>img.h363{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:2;pointer-events:none;transition:opacity .4s}
 #h180 .r3s>img.h363.h363off{opacity:0}
+/* v364 (Sara 7/11 21:28 "איפה הכפתור שהאווטאר מסתובב לבד, מהר/לאט?"): on a narrow phone the doll's buttons sat over the bottom of a ~130px frame and ▶ was cut off –
+   they go under the doll, in a row that can wrap */
+@media (max-width:600px){
+ html[data-d180=z50] #h180 .z-avc{position:static!important;inset:auto!important;flex-wrap:wrap!important;justify-content:center;gap:6px!important;margin-top:8px}
+ html[data-d180=z50] #h180 .z-avc>button,html[data-d180=z50] #h180 .z-avc>.z-hds{width:40px;height:40px;min-width:40px}
+ html[data-d180=z50] #h180 .z-avc .z-spd{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%)}
+}
+/* big view: play / speed */
+#big362 .b362c button{color:#2d211b;display:grid;place-items:center;padding:0}
+#big362 .b362c button svg{width:24px;height:24px}
+#big362 .b362c .b362pl{width:58px;height:58px;background:#2e8b57;color:#fff;border-color:#2e8b57}
+#big362 .b362sp{position:absolute;bottom:calc(84px + env(safe-area-inset-bottom,0px));inset-inline:0;display:flex;justify-content:center;gap:6px}
+#big362 .b362sp button{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid rgba(0,0,0,.12);background:rgba(255,255,255,.9);font:inherit;font-size:.82rem;font-weight:700;color:#2d211b}
+#big362 .b362sp button[aria-pressed=true]{background:#2e8b57;color:#fff;border-color:#2e8b57}
+#big362 .b362s{inset:56px 0 130px}
+html[data-z21n] #big362 .b362c button{color:#eeeaf6}
+html[data-z21n] #big362 .b362sp button{background:#2a2640;color:#eeeaf6}
