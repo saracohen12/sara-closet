@@ -55,7 +55,7 @@ async function paint(){const d=dlg();CUR=await rows();
 async function open(){const d=dlg();d.innerHTML='<div class="ibw"><p class="ibp">טוענת…</p></div>';if(!d.open)d.showModal();await paint()}
 // ---------- the home screen: a bar under the title, only when something waits ----------
 let HN=-1;
-async function home(){try{const c=document.querySelector('#h180 .z-txt');if(!c)return;let b=document.querySelector('.ib334b');const L=await rows(),n=L.length;
+async function home(){try{const c=document.querySelector('#h180 .z-txt');if(!c)return;let b;const L=await rows(),n=L.length;document.querySelectorAll('.ib334b').forEach((x,i)=>{if(i)x.remove()});b=document.querySelector('.ib334b');   /* v363: two calls at once both added the card (it showed twice) – look again after the wait */
   if(!n){if(b)b.hidden=true;HN=0;return}
   if(!b){b=document.createElement('button');b.type='button';b.className='ib334b';b.addEventListener('click',open)}
   if(b.parentNode!=c){const w=c.querySelector('.wx332b');if(w)w.after(b);else c.append(b)}
