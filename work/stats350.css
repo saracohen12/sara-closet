@@ -283,3 +283,11 @@ html[data-z21n] .cc365r{background:#221f32;border-color:rgba(255,255,255,.14);co
 html[data-z21n] .cc365r .cc365s{color:#c9c2da}
 /* v365: pin to home on the studio doll */
 #r360 .r3fig .b365p{position:absolute;top:6px;left:50%;transform:translateX(-50%);z-index:6;white-space:nowrap;min-height:30px;padding:0 10px;border-radius:999px;border:0;background:#2e8b57;color:#fff;font:inherit;font-weight:700;font-size:.76rem;box-shadow:0 4px 12px rgba(30,20,50,.2);cursor:pointer}
+/* v370: sort chips in the closet */
+#srt370{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:6px 16px 10px;align-items:center;direction:rtl}
+#srt370::-webkit-scrollbar{display:none}
+#srt370>span{flex:none;font-weight:700;font-size:.85rem;opacity:.75}
+#srt370 button{flex:none;min-height:38px;padding:0 13px;border-radius:999px;border:1px solid var(--z-line,#e2dcd3);background:var(--z-solid,#fff);color:inherit;font:inherit;font-size:.86rem;font-weight:600;white-space:nowrap;cursor:pointer}
+#srt370 button[aria-pressed=true]{background:#2e8b57;border-color:#2e8b57;color:#fff}
+html[data-z21n] #srt370 button{background:#2a2640;border-color:rgba(255,255,255,.16)}
+html[data-z21n] #srt370 button[aria-pressed=true]{background:#2e8b57}
