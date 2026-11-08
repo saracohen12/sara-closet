@@ -307,7 +307,8 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const TH={},THP={},TPH="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 // v145: cached lookup of a garment's card – querying 700 cards by attribute again and again made the orders screen slow on the phone
 const CARDM=new Map();function cardEl(id){let e=CARDM.get(id);if(e&&e.isConnected&&e.dataset.id==id)return e;e=document.querySelector(`.grid .card[data-id="${id}"]`)||document.querySelector(`.card[data-id="${id}"]`);if(e)CARDM.set(id,e);else CARDM.delete(id);return e}
-function img(id){const k=cardEl(id);const c=k?k.querySelector('img'):null;const u=c?c.getAttribute('src'):'';if(u&&u!=TPH)return u;return TH[id]||''}
+function img(id){try{const pv=typeof PREV=='object'&&PREV&&PREV[id];if(pv)return pv;const m=typeof IT=='object'&&IT[id]&&IT[id].img;if(m)return TH['b:'+m]||'/_blob/'+m}catch(_){}   /* v367 (Sara 8/11 "העליתי תמונות והן לא מתעדכנות"): her own photo first – the closet card may still hold the shop picture until it is scrolled into view */
+ const k=cardEl(id);const c=k?k.querySelector('img'):null;const u=c?c.getAttribute('src'):'';if(u&&u!=TPH)return u;return TH[id]||''}
 function thApply(j){document.querySelectorAll('img[data-th]').forEach(im=>{const u=j[im.dataset.th];if(!u)return;const cur=im.getAttribute('src')||'';if(cur&&cur!=TPH&&!cur.startsWith('data:'))return;if(cur!=u)im.src=u})}
 const THR={};function thGot(cat,j){Object.assign(TH,j);thApply(j);if(THR[cat])THR[cat](j);try{document.dispatchEvent(new CustomEvent('thumbs',{detail:cat}))}catch(_){}}
 function thScript(cat){return new Promise((ok,bad)=>{THR[cat]=ok;const s=document.createElement('script');s.src='th/'+cat+'.js?v='+(window.VER||'');s.async=true;s.onerror=()=>{s.remove();bad(new Error('script'))};document.head.appendChild(s);setTimeout(()=>bad(new Error('timeout')),45000)})}
