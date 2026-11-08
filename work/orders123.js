@@ -200,6 +200,13 @@ function dupBox(id){const L=dupsOf(id);
   const w=[y.file,y.date,y.size&&('מידה '+y.size),y.color].filter(Boolean).map(v=>'<bdi>'+H(v)+'</bdi>').join(' · ');
   const k=t.s=='kept'?' · 🏠 משאירה':t.s=='ret'?' · ↩ מחזירה':'';
   return `<button class="o3dupi" data-o3item="${H(o)}">${th(o,'o3dt')}<span><b>${H(t.tname||y.short)}</b><small><span class="sb2 ${H(y.src)}">${H(ACC[y.src]||y.src)}</span> ${w}</small><small>${DST[s]||''}${k}${y.order==D[id].order?' · באותה הזמנה':''}</small></span></button>`}).join('')}</div>`}
+// v371 (Sara 9/11 "איפה נעלם לי אם היה לי בגד כפול… אני רוצה גם את האופציה הזאת, לא רק תמונות בגדול"): the duplicate box is also in the item window
+// (every item, from the closet or from an order), and every big tile says "👯 כפול" when she has it twice
+window.DUPBOX371=id=>{try{return dupBox(id)}catch(_){return ''}};window.DUPS371=id=>{try{return dupsOf(id).length}catch(_){return 0}};
+setInterval(()=>{try{const d=q('#dlg');if(!d||!d.open||typeof CUR=='undefined'||!CUR||!D[CUR])return;const b=d.querySelector('#dlbody');if(!b)return;let w=b.querySelector('.dup371');
+ if(w&&w.dataset.id==CUR)return;if(w)w.remove();w=document.createElement('div');w.className='dup371';w.dataset.id=CUR;w.innerHTML=dupBox(CUR);
+ const at=b.querySelector('.dinfo h2, .dinfo .dtitle, .dinfo')||b;if(at.matches&&at.matches('.dinfo'))at.prepend(w);else at.after(w)}catch(_){}},600);
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('#dlg .dup371 [data-o3item]');if(!t)return;e.preventDefault();e.stopPropagation();try{openItem(t.dataset.o3item)}catch(_){}},true);
 function itemRow(id){const x=D[id],it=IT[id]||{},s=st(id);
  const b=(k,v,t,on)=>`<button data-o3set="${k}" data-v="${v}" data-id="${H(id)}" aria-pressed="${!!on}"${on&&/^(rreq|rpack|rsent|refunded|rnr)$/.test(k)?G344:''}>${t}</button>`;
  const meta=[catName(id),x.size&&('מידה '+x.size),x.color,money(+x.paid||0)+(x.qty>1?` · ${x.qty} יח׳`:'')].filter(Boolean).map(x=>'<bdi>'+H(x)+'</bdi>').join(' · ');
@@ -252,12 +259,12 @@ function tile(id){const x=D[id],it=IT[id]||{},s=st(id);
  const b=(k,v,tx,on)=>`<button data-o3set="${k}" data-v="${v}" data-id="${H(id)}" aria-pressed="${!!on}">${tx}</button>`;
  const tag=it.oos?'🚫 בוטל':it.rnr?'🎁 כסף חזר, נשאר אצלי':it.s=='ret'?(it.refunded?'💰 הכסף חזר':it.rsent?'📮 נשלח':it.rpack?'📦 ארוז':it.rreq?'📝 ביקשתי':'↩ להחזיר'+(x.rdl?' עד '+(+x.rdl.slice(8,10))+'/'+(+x.rdl.slice(5,7)):'')):it.s=='kept'?'🏠 משאירה':(STB[s]||STB[''])[0]+' '+(STB[s]||STB[''])[1];
  return `<div class="o3tile s${s||'u'}${it.s=='ret'?' ret':it.s=='kept'?' kept':''}${V.hl==id?' hl':''}" data-o3row="${H(id)}">
- <button class="o3tp" data-o3item="${H(id)}" aria-label="פתיחת ${H(it.tname||x.short)}">${th(id,'o3ti')}<span class="o3tb">${tag}</span>${x.qty>1?`<span class="o3tq2">×${x.qty}</span>`:''}</button>
+ <button class="o3tp" data-o3item="${H(id)}" aria-label="פתיחת ${H(it.tname||x.short)}">${th(id,'o3ti')}<span class="o3tb">${tag}</span>${x.qty>1?`<span class="o3tq2">×${x.qty}</span>`:''}${dupsOf(id).length?'<span class="o3td371">👯 כפול</span>':''}</button>
  <b class="o3tn">${H(it.tname||x.short)}</b><small class="o3tm">${[x.size&&(/^מידה/.test(x.size)?x.size:'מידה '+x.size),x.color,money(+x.paid||0)].filter(Boolean).map(v=>'<bdi>'+H(v)+'</bdi>').join(' · ')}</small>
  ${it.oos?'':`<div class="o3tqk">${b('got','y','✅ הגיע',s=='y')}${b('s','kept','🏠 משאירה',it.s=='kept'&&!it.rnr)}${b('s','ret','↩ מחזירה',it.s=='ret'&&!it.rnr)}</div>`}
  ${it.s=='ret'&&!it.rnr&&!it.oos?`<div class="o3tqk steps">${b('rreq','1','📝 ביקשתי',!!(it.rreq||it.rpack||it.rsent))}${b('rpack','1','📦 ארזתי',!!(it.rpack||it.rsent))}${b('rsent','1','📮 שלחתי',!!it.rsent)}</div>`:''}</div>`}
 function renderOrder(){const b=body(),o=orders().find(o=>o.k==V.ord);if(!o){V.ord='';return renderList()}
- const sw=(BIG?`<button class="o3more358" data-o3more="1" aria-expanded="false">⚙ פעולות על ההזמנה (תמונות, אווטאר, הכל הגיע, החנות) ▾</button>`:'')+`<div class="o3vw" role="group" aria-label="תצוגה"><button data-o3big="1" aria-pressed="${BIG}">🖼 תמונות גדולות</button><button data-o3big="0" aria-pressed="${!BIG}">☰ רשימה מפורטת</button></div>`;
+ const sw=(BIG?`<button class="o3more358" data-o3more="1" aria-expanded="false">⚙ פעולות על ההזמנה (תמונות, אווטאר, הכל הגיע, החנות) ▾</button>`:'')+`<div class="o3vw" role="group" aria-label="תצוגה"><button data-o3big="1" aria-pressed="${BIG}">🖼 תמונות גדולות</button><button data-o3big="0" aria-pressed="${!BIG}">☰ רשימה מלאה (כפול, כל הכפתורים)</button></div>`;
  b.classList.toggle('big358',BIG);b.innerHTML=`${oheadHTML(o)}${sw}
  ${BIG?`<div class="o3tiles">${o.ids.map(tile).join('')}</div>`:`<div class="o3items">${o.ids.map(itemRow).join('')}</div>`}`;
  loadThumbs(o.ids);

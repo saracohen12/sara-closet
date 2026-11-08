@@ -329,3 +329,6 @@ html[data-z21n] .o3qb360 button[data-v=ret][aria-pressed=true]{background:#d9732
 .o3card .o3arr.all{color:#1f7a45}
 .o3card .o3arr small{font-weight:500;opacity:.75}
 html[data-z21n] .o3card .o3arr{color:#eeeaf6}html[data-z21n] .o3card .o3arr.all{color:#7fd6a3}
+/* v371 */
+.o3tile .o3td371{position:absolute;bottom:8px;inset-inline-start:8px;background:#7a3fb0;color:#fff;font-size:.74rem;font-weight:700;padding:2px 8px;border-radius:999px}
+#dlg .dup371{margin:8px 0}

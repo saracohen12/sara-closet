@@ -18,3 +18,10 @@
  #dlbody .z324t{max-width:560px;justify-self:center;width:100%}
 }
 #dlbody>.dright>.o3dl,#dlbody>.dright>.o3oosw{order:2}
+/* v371: "📋 הכל" – everything in one list, every folded row open */
+#dlbody .z324t{grid-template-columns:repeat(4,minmax(0,1fr))}
+#dlbody .z324t button{font-size:.86rem;gap:4px;padding:0 4px}
+html[data-d180=z50] #dlg #dlbody[data-z324=all] .ed .erow.x349>button:not(.x349s),html[data-d180=z50] #dlg #dlbody[data-z324=all] .ed .erow.x349>small{display:inline-flex!important}
+html[data-d180=z50] #dlg #dlbody[data-z324=all] .ed .erow.x349>.x349s{display:none!important}
+html[data-d180=z50] #dlg #dlbody[data-z324=all] .pd85h.f349>button.mini{display:inline-flex!important}
+html[data-d180=z50] #dlg #dlbody[data-z324=all] .pd85h.f349>.m349{display:none!important}
