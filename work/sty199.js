@@ -108,7 +108,7 @@ const hairOf=k=>{const x=LIST.find(y=>y.id==k);const pr=x?(x.p?preOf('hair',x.p)
 const zipPrompt=k=>{const p=P();if(!p||!p.hairZ)return '';const {n,pr}=hairOf(k);return p.hairZ(n,pr?pr.d:'',pr?pr.he:'',pr?pr.sp:'')};
 async function zipHair(k,b){const o=b.textContent;b.disabled=true;b.textContent='מכינה…';
  try{const f=[],get=async u=>(await fetch(u)).blob();
-  f.push({name:'wig-8.jpg',blob:await get('a8/wig_ref.jpg'+V)});f.push({name:'face-8.jpg',blob:await get('/_blob/f020f71d608d2da7304cdb0161c87206')});f.push({name:'doll-8.jpg',blob:await get('a8/sheet.jpg'+V)});
+  f.push({name:'wig-8.jpg',blob:await get('a8/wig_ref.jpg'+V)});f.push({name:'face-8.jpg',blob:await get('/_blob/18b7bec6845e8ff81659b438af7c72a4')});f.push({name:'doll-8.jpg',blob:await get('a8/sheet.jpg'+V)});
   f.push({name:'prompt.txt',blob:new Blob(['\ufeff'+zipPrompt(k)],{type:'text/plain;charset=utf-8'})});
   const {n}=hairOf(k);await R().saveFile(`hair-${String(n||k).replace(/[^\u0590-\u05FFA-Za-z0-9]+/g,'-').slice(0,30)}.zip`,await window.zip246(f));log('hair_zip',{k});
   b.textContent='✓ ירד. עכשיו ל-GPT'}catch(e){ERR('hzip',e);b.textContent='לא הצלחתי'}setTimeout(()=>{if(b.isConnected){b.textContent=o;b.disabled=false}},2600)}
@@ -243,7 +243,7 @@ async function copy(b,text){let ok=false;try{await navigator.clipboard.writeText
  if(!ok){const t=b.closest('li,.sy1')&&b.closest('li,.sy1').querySelector('textarea');try{if(t){const d=t.closest('details');if(d)d.open=true;t.focus();t.select();ok=document.execCommand('copy')}}catch(_){}}
  if(!ok){try{const t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');t.style.cssText='position:fixed;opacity:0';(VW&&VW.open?VW:(DL||document.body)).appendChild(t);t.select();ok=document.execCommand('copy');t.remove()}catch(_){}}
  const o=b.textContent;b.textContent=ok?'✓ הועתק – עכשיו ל-GPT':'לא הצלחתי, להעתיק מ"לראות את הפרומפט"';setTimeout(()=>{if(b.isConnected)b.textContent=o},2600)}
-async function dl(what){try{const u=what=='wig'?'a8/wig_ref.jpg'+V:what=='face'?'/_blob/f020f71d608d2da7304cdb0161c87206':'a8/sheet.jpg'+V;const bl=await (await fetch(u)).blob();await R().saveFile(what=='wig'?'wig-8.jpg':what=='face'?'face-8.jpg':'doll-8.jpg',bl)}catch(e){ERR('dl',e);toast_('לא הצלחתי לשמור')}}
+async function dl(what){try{const u=what=='wig'?'a8/wig_ref.jpg'+V:what=='face'?'/_blob/18b7bec6845e8ff81659b438af7c72a4':'a8/sheet.jpg'+V;const bl=await (await fetch(u)).blob();await R().saveFile(what=='wig'?'wig-8.jpg':what=='face'?'face-8.jpg':'doll-8.jpg',bl)}catch(e){ERR('dl',e);toast_('לא הצלחתי לשמור')}}
 
 // ---------- upload → cut → keep ----------
 let FI=null,FSET='',FRE='',FPRE=null,FG='';
@@ -373,13 +373,13 @@ const bPrompt=(set,its)=>{const p=P(),t=p&&p.batchS?p.batchS(set,its):'';return 
 async function zipB(set,its,b){const o=b.textContent;b.disabled=true;b.textContent='מכינה…';
  try{const f=[],get=async u=>(await fetch(u)).blob();
   if(set=='hair')f.push({name:'wig-8.jpg',blob:await get('a8/wig_ref.jpg'+V)});
-  f.push({name:'face-8.jpg',blob:await get('/_blob/f020f71d608d2da7304cdb0161c87206')});f.push({name:'doll-8.jpg',blob:await get('a8/sheet.jpg'+V)});
+  f.push({name:'face-8.jpg',blob:await get('/_blob/18b7bec6845e8ff81659b438af7c72a4')});f.push({name:'doll-8.jpg',blob:await get('a8/sheet.jpg'+V)});
   f.push({name:'prompt.txt',blob:new Blob(['﻿'+bPrompt(set,its)],{type:'text/plain;charset=utf-8'})});
   await R().saveFile(`${{hair:'hairstyles',mk:'makeup',tie:'ties'}[set]}-${its.length}.zip`,await window.zip246(f));log('sty316_zip',{set,n:its.length});
   b.textContent='✓ ירד. עכשיו ל-GPT'}catch(e){ERR('zip316',e);b.textContent='לא הצלחתי'}setTimeout(()=>{if(b.isConnected){b.textContent=o;b.disabled=false}},2600)}
 // v319 (Sara 20:12 – GPT: "לא הצלחתי לפתוח את ה-ZIP… צרפי את wig-8, face-8 ו-doll-8 כשלוש תמונות נפרדות"): the same pictures one by one, no ZIP
 async function sepB(set,b){const o=b.textContent;b.disabled=true;b.textContent='מכינה…';
- try{const get=async u=>(await fetch(u)).blob(),L=[];if(set=='hair')L.push(['wig-8.jpg','a8/wig_ref.jpg'+V]);L.push(['face-8.jpg','/_blob/f020f71d608d2da7304cdb0161c87206'],['doll-8.jpg','a8/sheet.jpg'+V]);
+ try{const get=async u=>(await fetch(u)).blob(),L=[];if(set=='hair')L.push(['wig-8.jpg','a8/wig_ref.jpg'+V]);L.push(['face-8.jpg','/_blob/18b7bec6845e8ff81659b438af7c72a4'],['doll-8.jpg','a8/sheet.jpg'+V]);
   for(const [n,u] of L)await R().saveFile(n,await get(u));log('sty319_sep',{set});b.textContent='✓ נשמרו. עכשיו ל-GPT'}catch(e){ERR('sep319',e);b.textContent='לא הצלחתי'}setTimeout(()=>{if(b.isConnected){b.textContent=o;b.disabled=false}},2600)}
 let FB=null;
 function selDo(w,b){const set=TAB,L=selItems(set);

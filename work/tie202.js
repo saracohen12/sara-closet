@@ -200,7 +200,7 @@ async function jpegOf(u){if(!u)throw new Error('no picture');const bl=/^data:/.t
 function wList(id){const {pre,pics}=choices(),all=[...pics,...pre],p=P(),T=p?p.TIES:[];let f=0;
  return txw(id).map(w=>all.find(c=>c.p==w.p)).filter(Boolean).map(c=>({c,n:c.n,file:c.doc&&c.doc.src?`tie-${String(++f).padStart(2,'0')}.jpg`:'',det:c.kind=='w'&&T[c.i]?T[c.i][1]:''}))}
 // v247 (Sara 13:22): her face close-up in 8 angles (with her wig) goes into every ZIP; and every picture she has of the scarf, not only the main one
-const FACE8='/_blob/f020f71d608d2da7304cdb0161c87206';
+const FACE8='/_blob/18b7bec6845e8ff81659b438af7c72a4';
 function scarfPics(id){const t=IT[id]||{},L=[];try{L.push(t.img?'/_blob/'+t.img:R().ph(id))}catch(_){}
  (t.pics||[]).forEach(p=>p&&p.id&&L.push('/_blob/'+p.id));(t.imgs||[]).forEach(p=>{const a=p&&(p.id||p);if(typeof a=='string'&&a)L.push('/_blob/'+a)});return [...new Set(L.filter(Boolean))].slice(0,4)}
 const batchTxt=id=>P().batch(itemTxt(id),wList(id),scarfPics(id).length);

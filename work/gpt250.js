@@ -16,7 +16,7 @@ const toast_=(m,u)=>(window.toast||(()=>{}))(m,u);
 const R=()=>window.R360;
 const it=id=>(typeof IT=='object'&&IT&&IT[id])||{};
 const nm=id=>{try{return R().nm?R().nm(id):((D[id]||{}).short||'')}catch(_){return (D[id]||{}).short||''}};
-const FACE8='/_blob/f020f71d608d2da7304cdb0161c87206';
+const FACE8='/_blob/18b7bec6845e8ff81659b438af7c72a4';
 const TY=[['dress','שמלה'],['skirt','חצאית'],['pants','מכנסיים'],['top','חולצה'],['base','חולצת בסיס'],['sweater','סוודר'],['vest','אפודה'],['jacket',"ז'קט"],['coat','מעיל'],
  ['set','סט (כמה חלקים)'],['jw','תכשיטים'],['belt','חגורה'],['shoes','נעליים'],['bag','תיק']];
 const TN=Object.fromEntries(TY);TN.necklace='שרשרת';TN.earrings='עגילים';TN.bracelet='צמיד';TN.ring='טבעת';TN.jwset='תכשיטים';TN.bag='תיק';
