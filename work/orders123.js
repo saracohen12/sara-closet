@@ -39,7 +39,7 @@ function avSum(o){let need=0,has=0;for(const id of o.ids)if(needAv(id)){need++;i
 function avDone(o){const a=avSum(o);return a.mark||a.has>=a.need}
 function picSum(o){let need=0,has=0;for(const id of o.ids)if(needPic(id)){need++;if(nUp(id))has++}return {need,has,done:!!(ORD[o.k]||{}).pd}}
 function onum(o){return o.src=='sh'||o.src=='ae'?o.k:o.k.replace(/^P0-/,'PO-')}
-function oname(o){const n=(/(\d+)\s*$/.exec(o.file)||[])[1];
+function oname(o){const n=/\d+\/\d+\s*$/.test(o.file||'')?null:(/(\d+)\s*$/.exec(o.file)||[])[1];   /* v369: a file named by its date ("חשבון 2 · 8/11") is not "קבלה 11" */
  if(o.src=='sh'||o.src=='ae')return 'הזמנה \u2066'+o.k.slice(o.src=='ae'?-6:-4)+'\u2069';
  return n?'קבלה '+n:'הזמנה \u2066'+o.k.slice(-6)+'\u2069';}
 function osum(o){const c={y:0,n:0,m:0,u:0,c:0,lk:0,no:0,ret:0,kept:0,mb:0,fix:0,paid:0};let rd=null;
