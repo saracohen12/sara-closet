@@ -323,3 +323,9 @@ html[data-z21n] .o3qb360 button{background:#2a2640;color:#eeeaf6;border-color:rg
 html[data-z21n] .o3qb360 button[aria-pressed=true]{background:#2e8b57;color:#fff}
 html[data-z21n] .o3qb360 button[data-v=ret][aria-pressed=true]{background:#d9732f}
 #dlg:has(.o3qb360) .dlwrap{padding-bottom:84px}
+/* v366: arrival line on the order card */
+.o3card .o3arr{display:block;margin:6px 0 2px;font-size:1.02rem;font-weight:700;color:#3a3046;text-align:start}
+.o3card .o3arr b{font-size:1.1rem}
+.o3card .o3arr.all{color:#1f7a45}
+.o3card .o3arr small{font-weight:500;opacity:.75}
+html[data-z21n] .o3card .o3arr{color:#eeeaf6}html[data-z21n] .o3card .o3arr.all{color:#7fd6a3}
