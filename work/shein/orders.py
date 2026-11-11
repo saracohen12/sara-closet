@@ -41,4 +41,5 @@ O+=[
 ]
 
 O+=[("5/11","GSH19E24B00NN1S",423.81,[],False)]
-O+=[("11/11","GSH1A2246002NS1",322.09,[],False)]   # v375: lines in inv_all.py I['2NS1']   # v357: lines in inv_all.py I['NN1S']
+O+=[("11/11","GSH1A2246002NS1",322.09,[],False)]
+O+=[("11/11","GSH1A224X00N8AK",281.61,[],False)]   # v376: lines in inv_all.py I['N8AK']   # v375: lines in inv_all.py I['2NS1']   # v357: lines in inv_all.py I['NN1S']
