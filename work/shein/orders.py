@@ -40,4 +40,5 @@ O+=[
 ("9/8","GSH1R424X000MNA",233.45,[("Aureia שמלת ערב רקמה ופאייטים","שמפניה-XS")],False),
 ]
 
-O+=[("5/11","GSH19E24B00NN1S",423.81,[],False)]   # v357: lines in inv_all.py I['NN1S']
+O+=[("5/11","GSH19E24B00NN1S",423.81,[],False)]
+O+=[("11/11","GSH1A2246002NS1",322.09,[],False)]   # v375: lines in inv_all.py I['2NS1']   # v357: lines in inv_all.py I['NN1S']

@@ -227,3 +227,14 @@ I['NN1S']=('5/11',[
  ('SHEIN MOD חצאית ג׳ינס ארוכה ורפויה', 'כחול כהה', 'M', 38.64, 'skirts'),
  ('SHEIN חצאית ג׳ינס קז׳ואל לבנות', 'כחול', '9Y', 33.04, 'girls')])
 TOT.update({'NN1S':423.81})
+
+# v375 (Sara 11/11 07:59): new Shein order GSH1A2246002NS1 – 7 lines from the app screenshots (paid ₪322.09, delivery 22–26/11). Men's / teen sweaters
+I['2NS1']=('11/11',[
+ ('MX Kids סוודר לבני נוער – רוכסן חצי', 'שחור', '14Y', 47.68, 'boys'),
+ ('Rove Co קרדיגן עבה לגבר עם רוכסן קדמי', 'שחור', 'XS', 53.71, 'men'),
+ ('Rove Co קרדיגן עבה לגבר עם רוכסן קדמי', 'שחור', 'XXL', 53.71, 'men'),
+ ('Manfinity Homme סוודר מינימליסטי לגבר', 'שחור', 'XL', 44.87, 'men'),
+ ('Manfinity Homme סוודר לגבר עם בלוקים של צבעים', 'שחור', 'XL', 44.87, 'men'),
+ ('Manfinity Homme סוודר סרוג חום עם פסים וחצי רוכסן', 'חום קפה', 'XXL', 35.61, 'men'),
+ ('Manfinity Homme סוודר סרוג עם פסים וחצי רוכסן', 'שחור', 'XXL', 41.64, 'men')])
+TOT.update({'2NS1':322.09})
