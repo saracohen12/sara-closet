@@ -279,7 +279,7 @@ function paintDups(){for(const c of document.querySelectorAll('.grid .card')){co
   if(b){b.textContent=`👯 ${g.length} כפולים`;b.dataset.dg89=id;b.setAttribute('role','button')}}
  const t=document.querySelector('[data-dg89open] b');if(t)t.textContent=GRP.length}
 function dupRefresh(){try{dupGroups();paintDups();if(typeof apply=='function')apply()}catch(e){ERR('dups',e)}}
-if(typeof extra=='function'){const _ex=extra;extra=function(c){if(!_ex(c))return false;try{const id=c.dataset.id;if(HID.has(id)){if(typeof F!='undefined'&&F=='dup')return true;if(typeof FLF!='undefined'&&FLF=='dup')return true;
+if(typeof extra=='function'){const _ex=extra;extra=function(c){if(!_ex(c))return false;try{const id=c.dataset.id;if(false&&HID.has(id)){   /* v379 (Sara 12/11 "כל מוצר שאני קונה חייב להיות בארון"): every copy shows, with its 👯 badge */if(typeof F!='undefined'&&F=='dup')return true;if(typeof FLF!='undefined'&&FLF=='dup')return true;
  const q=(document.getElementById('q')||{}).value||'';if(q.trim().toUpperCase()==id)return true;return false}}catch(_){}return true};window.extra=extra}
 function dupsBtn(){const r=document.querySelector('#q77 .t83');if(!r||r.querySelector('[data-dg89open]'))return;r.insertAdjacentHTML('beforeend',`<button data-dg89open>👯 כפולים <b>${GRP.length}</b></button>`)}
 function openDups(focus){dupGroups();let d=document.getElementById('dg89');if(!d){d=document.createElement('dialog');d.id='dg89';d.className='sheet9 dg89';d.dir='rtl';document.body.appendChild(d)}

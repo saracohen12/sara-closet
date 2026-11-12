@@ -513,7 +513,7 @@ $$('#cols button').forEach(b=>b.addEventListener('click',saveF));
 const _updFb=updFb;updFb=function(){_updFb();$('#fb').classList.toggle('on',$('#fb').classList.contains('on')||PMIN!=null||PMAX!=null||!!MONF||!!ORDF)};
 // remember filters
 function saveF(){try{localStorage.setItem('flt',JSON.stringify({q:$('#q').value,COL,SZ,STF,TGF,SSF,FLF,KIDF,PMIN,PMAX,MONF,ORDF,SORT,F,src:$('#src').value}))}catch(_){}}
-function loadF(){let f;try{f=JSON.parse(localStorage.getItem('flt')||'null')}catch(_){}if(!f)return;
+function loadF(){let f;try{f=JSON.parse(localStorage.getItem('flt')||'null')}catch(_){}if(!f)return;f={SORT:f.SORT||''};   /* v379: only the sort is remembered – old filters hid every new order */
  $('#q').value=f.q||'';({COL,SZ,STF,TGF,SSF,FLF,KIDF,PMIN,PMAX,MONF,ORDF,SORT}=Object.assign({COL:'',SZ:'',STF:'',TGF:'',SSF:'',FLF:'',KIDF:'',PMIN:null,PMAX:null,MONF:'',ORDF:'',SORT:''},f));F=f.F||'all';
  $('#src').value=F;$('#szf').value=SZ;$('#stf').value=STF;$('#tgf').value=TGF;$('#ssf').value=SSF;$('#flf').value=FLF;$('#monf').value=MONF;$('#ordf').value=ORDF;$('#sort').value=SORT;
  $('#pmin').value=PMIN??'';$('#pmax').value=PMAX??'';$$('#cols button').forEach(o=>o.setAttribute('aria-pressed',o.dataset.c==COL));if(SORT)sortAll()}

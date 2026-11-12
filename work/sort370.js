@@ -13,3 +13,17 @@ function paint(){try{const sel=document.getElementById('sort');if(!sel)return;le
  row.hidden=document.body.dataset.z50&&document.body.dataset.z50!='closet'}catch(e){ERR('paint',e)}}
 setInterval(paint,700);document.addEventListener('change',e=>{if(e.target&&e.target.id=='sort')setTimeout(paint,30)});
 })();
+// v379 (Sara 12/11 "את כל המוצרים החדשים אני לא רואה בארון"): when a filter is on, a clear line says so and shows everything again in one tap
+(function(){
+const ERR=(w,e)=>(window.ERRS=window.ERRS||[]).push('v379 '+w+': '+(e&&e.message||e));
+function act(){try{const L=[];if(typeof COL!='undefined'&&COL)L.push('צבע');if(typeof SZ!='undefined'&&SZ)L.push('מידה');if(typeof STF!='undefined'&&STF)L.push('מצב');if(typeof TGF!='undefined'&&TGF)L.push('סגנון');
+ if(typeof SSF!='undefined'&&SSF)L.push('עונה');if(typeof FLF!='undefined'&&FLF)L.push('רק…');if(typeof KIDF!='undefined'&&KIDF)L.push('ילד/ה');if(typeof MONF!='undefined'&&MONF)L.push('חודש');if(typeof ORDF!='undefined'&&ORDF)L.push('הזמנה');
+ if(typeof PMIN!='undefined'&&(PMIN!=null&&PMIN!==''))L.push('מחיר');if(typeof PMAX!='undefined'&&(PMAX!=null&&PMAX!==''))L.push('מחיר');if(typeof F!='undefined'&&F&&F!='all')L.push('חנות');
+ const q=document.getElementById('q');if(q&&q.value.trim())L.push('חיפוש "'+q.value.trim().slice(0,14)+'"');return [...new Set(L)]}catch(_){return []}}
+function paint(){try{let bar=document.getElementById('flt379');const on=document.body.dataset.z50=='closet',L=on?act():[];
+ if(!L.length){if(bar)bar.hidden=true;return}
+ if(!bar){bar=document.createElement('div');bar.id='flt379';bar.setAttribute('role','status');const at=document.getElementById('srt370')||document.querySelector('.ctrl');if(!at)return;at.after(bar);
+  bar.addEventListener('click',e=>{if(!e.target.closest('button'))return;try{const c=document.getElementById('pclr');if(c)c.click();const q=document.getElementById('q');if(q&&q.value){q.value='';q.dispatchEvent(new Event('input',{bubbles:true}))}if(typeof F!='undefined'&&F!='all'){F='all';const s=document.getElementById('src');if(s){s.value='all';s.dispatchEvent(new Event('change',{bubbles:true}))}}if(typeof apply=='function')apply()}catch(er){ERR('clr',er)}setTimeout(paint,100)})}
+ const h=`<span>🔎 יש סינון: ${L.join(', ')} – חלק מהמוצרים מוסתרים</span><button type="button">✕ להציג הכל</button>`;if(bar.innerHTML!=h)bar.innerHTML=h;bar.hidden=false}catch(e){ERR('paint',e)}}
+setInterval(paint,800);
+})();
