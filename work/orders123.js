@@ -259,7 +259,7 @@ function tile(id){const x=D[id],it=IT[id]||{},s=st(id);
  const b=(k,v,tx,on)=>`<button data-o3set="${k}" data-v="${v}" data-id="${H(id)}" aria-pressed="${!!on}">${tx}</button>`;
  const tag=it.oos?'🚫 בוטל':it.rnr?'🎁 כסף חזר, נשאר אצלי':it.s=='ret'?(it.refunded?'💰 הכסף חזר':it.rsent?'📮 נשלח':it.rpack?'📦 ארוז':it.rreq?'📝 ביקשתי':'↩ להחזיר'+(x.rdl?' עד '+(+x.rdl.slice(8,10))+'/'+(+x.rdl.slice(5,7)):'')):it.s=='kept'?'🏠 משאירה':(STB[s]||STB[''])[0]+' '+(STB[s]||STB[''])[1];
  return `<div class="o3tile s${s||'u'}${it.s=='ret'?' ret':it.s=='kept'?' kept':''}${V.hl==id?' hl':''}" data-o3row="${H(id)}">
- <button class="o3tp" data-o3item="${H(id)}" aria-label="פתיחת ${H(it.tname||x.short)}">${th(id,'o3ti')}<span class="o3tb">${tag}</span>${x.qty>1?`<span class="o3tq2">×${x.qty}</span>`:''}${dupsOf(id).length?'<span class="o3td371">👯 כפול</span>':''}</button>
+ <button class="o3tp" data-o3item="${H(id)}" aria-label="פתיחת ${H(it.tname||x.short)}">${th(id,'o3ti')}<span class="o3tb">${tag}</span>${x.qty>1?`<span class="o3tq2">×${x.qty}</span>`:''}${dupsOf(id).length?`<span class="o3td371" role="button" tabindex="0" data-o3dup="${H(dupsOf(id)[0])}" aria-label="יש כפול – לפתוח את הכפול">👯 כפול ‹</span>`:''}</button>
  <b class="o3tn">${H(it.tname||x.short)}</b><small class="o3tm">${[x.size&&(/^מידה/.test(x.size)?x.size:'מידה '+x.size),x.color,money(+x.paid||0)].filter(Boolean).map(v=>'<bdi>'+H(v)+'</bdi>').join(' · ')}</small>
  ${it.oos?'':`<div class="o3tqk">${b('got','y','✅ הגיע',s=='y')}${b('s','kept','🏠 משאירה',it.s=='kept'&&!it.rnr)}${b('s','ret','↩ מחזירה',it.s=='ret'&&!it.rnr)}</div>`}
  ${it.s=='ret'&&!it.rnr&&!it.oos?`<div class="o3tqk steps">${b('rreq','1','📝 ביקשתי',!!(it.rreq||it.rpack||it.rsent))}${b('rpack','1','📦 ארזתי',!!(it.rpack||it.rsent))}${b('rsent','1','📮 שלחתי',!!it.rsent)}</div>`:''}</div>`}
@@ -522,3 +522,6 @@ setTimeout(paintEntry,1200);setTimeout(paintEntry,4000);setTimeout(paintRet,1300
 // v243: the home buttons stay live – the order marks (ORD, e.g. 'arrived') load after the first paint and don't go through apply()
 setInterval(()=>{if(!document.hidden){paintEntry();paintRet()}},3000);document.addEventListener('visibilitychange',()=>{if(!document.hidden){paintEntry();paintRet()}});
 })();
+
+// v382 (Sara 12/11 23:59 "אם יש לי משהו כפול – שירשם כפול, ואז אני יכולה לפתוח ולראות את הכפול"): a tap on 👯 opens the other copy itself
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('.o3td371[data-o3dup]');if(!t)return;e.preventDefault();e.stopPropagation();try{openItem(t.dataset.o3dup)}catch(_){}},true);
