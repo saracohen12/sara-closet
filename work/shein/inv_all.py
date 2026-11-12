@@ -247,3 +247,10 @@ I['N8AK']=('11/11',[
  ('חולצת פולו סרוגה לבני נוער עם פסים אנכיים', 'שחור', '16Y', 42.23, 'boys'),
  ('ZHIHETOP מעיל מרופד לגבר עם צווארון עומד', 'שחור', 'XXXL', 94.99, 'men')])
 TOT.update({'N8AK':281.61})
+
+# v380 (Sara 12/11 23:13): Shein order GSH19H24R00N83Q – 3 lines from the app screenshots (paid ₪81.78, delivered 12/11 22:04; order date estimated from the 10–16/11 delivery window)
+I['N83Q']=('5/11',[
+ ('SHEIN Kids מכנסי סריג ספורטיביים לנערים עם בטנה חמה', 'שחור', '15Y', 21.83, 'boys'),
+ ('SHEIN חצאית ג׳ינס בגזרת A עם פפיון לילדות', 'שטיפה בינונית', '9Y', 27.20, 'girls'),
+ ('SHEIN LUNE סוודר שרוול ארוך – בלוקים בז׳-חום עם הדפס נמר', 'חום קפה', 'S', 32.75, 'sweaters')])
+TOT.update({'N83Q':81.78})
