@@ -268,3 +268,8 @@ I['2WJ5']=('27/10',[
  ('SHEIN EVRYDAY Kids סט 3 חולצות סריג מצולעות עם שרוולי נפח', 'שחור, לבן, ורוד עתיק', '10Y', 41.64, 'girls'),
  ('Three koalas סט 3 סווטשירטים לנערה – פרפר, חתול, דובדבנים', 'שחור, לבן, ורוד', '11Y', 53.71, 'girls')])
 TOT.update({'2WJ5':332.50})
+
+# v386 (Sara 15/11 01:55): Shein order GSH1A324S002QNF – 1 line from the app screenshot (₪83.33, processing on 15/11, delivery 24–30/11)
+I['2QNF']=('15/11',[
+ ('Flirla מעיל טרנץ׳ עור PU עם חזה כפול וחגורה', 'שחור', 'XS', 83.33, 'outer')])
+TOT.update({'2QNF':83.33})
