@@ -273,3 +273,13 @@ TOT.update({'2WJ5':332.50})
 I['2QNF']=('15/11',[
  ('Flirla מעיל טרנץ׳ עור PU עם חזה כפול וחגורה', 'שחור', 'XS', 83.33, 'outer')])
 TOT.update({'2QNF':83.33})
+
+# v388 (Sara 20/11 15:32): Shein order GSH1A624A00NQVE – total ₪333.27; 4 lines seen in the app screenshots (₪270.08). The 5th line (₪63.19 = the rest of the total)
+# is above the screenshots – only its small picture shows in "הוסף פריטים להזמנה זו" (a black hooded coat); name and size to confirm with a screenshot
+I['NQVE']=('20/11',[
+ ('Enjoy a happy childhood מעיל חם לנער עם בטנה תרמית ושרוולים מצולעים', 'שחור', '15Y', 84.49, 'boys'),
+ ('Enjoy a happy childhood מעיל חם לנער עם בטנה תרמית ושרוולים מצולעים', 'שחור', '16Y', 84.49, 'boys'),
+ ('LUMIGAL מעיל עור וינטג׳ עם כפתורים כפולים', 'בורגונדי', 'S', 56.23, 'outer'),
+ ('SHEIN RosyDaze ז׳קט טוויד עם צווארון עומד ואבזמים מוזהבים', 'לבן', 'S', 44.87, 'outer'),
+ ('מעיל שחור עם קפוצ׳ון (לא נראה בצילום – מחיר לפי סה"כ ההזמנה)', 'שחור', '', 63.19, 'outer')])
+TOT.update({'NQVE':333.27})
