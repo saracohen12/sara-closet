@@ -47,3 +47,4 @@ O+=[("5/11","GSH19H24R00N83Q",81.78,[],False)]   # v380: lines in inv_all.py I['
 O+=[("27/10","GSH19A246002WJ5",332.50,[],False)]   # v383: lines in inv_all.py I['2WJ5']
 O+=[("15/11","GSH1A324S002QNF",83.33,[],False)]   # v386: lines in inv_all.py I['2QNF']
 O+=[("20/11","GSH1A624A00NQVE",333.27,[],False)]   # v388: lines in inv_all.py I['NQVE']
+O+=[("22/11","GSH1A724N00108S",482.57,[],False)]   # v389: lines in inv_all.py I['108S']

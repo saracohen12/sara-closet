@@ -237,7 +237,10 @@ def retdays(x):
     except: return None
     od=_dt.date(2026,m,d); dl=od+_dt.timedelta(days=72 if x['src']=='sh' else 90)
     return (dl-TODAY).days
-INTRANSIT={'GSH1A624A00NQVE','PO-097-11517333729911206','GSH1A324S002QNF','PO-097-00522135122551206','PO-097-11860841790071206','PO-097-14235689052791005','PO-097-03301368136311091','PO-097-03240524513911005','GSH1A224X00N8AK','GSH1A2246002NS1','PO-097-18732920730231206','PO-097-02240230584951206','PO-097-13235231324791206','PO-097-13204932915831005','GSH19E24B00NN1S','P0-097-09081796910711005','P0-097-09112063498871206','P0-097-09112096036471206','GSH19F24800NGYX','P0-097-14609737083511206','P0-097-14609699308151206','P0-097-14609733274231206','P0-097-14609727468151206','P0-097-03584171136631005','GSH199249001100','GSH19X248000VSY','GSH19X24N00NM5K','GSH19624C00MEX3','GSH19T24900MS2G','GSH19Q24600NN8H','GSH19424S001CNR','GSH19C246001BGU','GSH19R24700MU9J','GSH19924N00MU5B','GSH19924N002QB0','GSH19924N00NB85','GSH199241001VHG','GSH1992410000HR','GSH199241002CRC'}
+# v389 (Sara 22/11 צילום "ממתין לאיסוף"): single items still on the way while the rest of their order arrived (an order split into parcels)
+# 25/10 Temu 1 …591091 – the 3rd parcel (black blazer, brown dotted blazer, floral dress) waits at אח לחבילה since 19/11 (Cheetah 103720637)
+ITEMTRANSIT={'T591091_0','T591091_11','T591091_12'}
+INTRANSIT={'GSH1A724N00108S','GSH1A624A00NQVE','PO-097-11517333729911206','GSH1A324S002QNF','PO-097-00522135122551206','PO-097-11860841790071206','PO-097-14235689052791005','PO-097-03301368136311091','PO-097-03240524513911005','GSH1A224X00N8AK','GSH1A2246002NS1','PO-097-18732920730231206','PO-097-02240230584951206','PO-097-13235231324791206','PO-097-13204932915831005','GSH19E24B00NN1S','P0-097-09081796910711005','P0-097-09112063498871206','P0-097-09112096036471206','GSH19F24800NGYX','P0-097-14609737083511206','P0-097-14609699308151206','P0-097-14609733274231206','P0-097-14609727468151206','P0-097-03584171136631005','GSH199249001100','GSH19X248000VSY','GSH19X24N00NM5K','GSH19624C00MEX3','GSH19T24900MS2G','GSH19Q24600NN8H','GSH19424S001CNR','GSH19C246001BGU','GSH19R24700MU9J','GSH19924N00MU5B','GSH19924N002QB0','GSH19924N00NB85','GSH199241001VHG','GSH1992410000HR','GSH199241002CRC'}
 def money(v): return f'₪{v:,.2f}'
 nav=[];secs=[];meta={};opts=[]
 ALWAYS={'base'}   # v210 (Sara 14:24): her new category, there even before she moves shirts into it
@@ -248,7 +251,7 @@ for k,label in SEC:
     nav.append(f'<a href="#{k}" data-g="{G2[k]}">{label}<span>{len(its)}</span></a>'); opts.append(f'<option value="{k}">{label} ({len(its)})</option>')
     cards=[]
     for x in its:
-        x['tags'],x['season']=tags(x); x['retd']=retdays(x); _rd,_ex=retdate(x); x['rdl']=_rd.isoformat() if _rd else None; x['rex']=_ex; x['transit']=x['order'] in INTRANSIT
+        x['tags'],x['season']=tags(x); x['retd']=retdays(x); _rd,_ex=retdate(x); x['rdl']=_rd.isoformat() if _rd else None; x['rex']=_ex; x['transit']=x['order'] in INTRANSIT or x['id'] in ITEMTRANSIT
         isd=x.get('dup') or x.get('selfdup')
         dup=(f'<span class="dup">כפול</span>' if isd else '')+('<span class="mode"><span class="dayb" role="button">חול</span><span class="shb" role="button">שבת</span></span>' if G2.get(x['cat'])=='clo' else '')+'<span class="fav" role="button" aria-label="מועדף">♡</span><span class="tr hide">בדרך</span>'
         im=f'<img data-th="{x["id"]}" alt="" loading="lazy">' if x['img'] else '<span class="noimg">אין תמונה במייל</span>'
